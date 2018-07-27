@@ -1,0 +1,9 @@
+#Thu Jul 26 09:48:00 CST 2018
+eclipse.preferences.version=1
+encoding//WebRoot/Module/cpyUser/jsp/main.jsp=UTF-8
+encoding//WebRoot/Module/cpyUser/jsp/manager.jsp=UTF-8
+encoding//src/com/patent/action/base/InitServlet.java=UTF-8
+encoding//src/com/patent/action/base/MyActionServlet.java=UTF-8
+encoding//src/com/patent/action/base/Transcode.java=UTF-8
+encoding//src/com/patent/web/NewXssHttpServletRequestWrapper.java=UTF-8
+encoding/<project>=UTF-8

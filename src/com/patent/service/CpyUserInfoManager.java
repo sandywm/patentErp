@@ -1,0 +1,135 @@
+package com.patent.service;
+
+import java.util.List;
+
+import com.patent.exception.WEBException;
+import com.patent.module.CpyUserInfo;
+
+public interface CpyUserInfoManager {
+	
+	/**
+	 * 增加代理机构员工信息
+	 * @description
+	 * @author wm
+	 * @date 2018-7-24 上午09:20:14
+	 * @param userName 员工姓名
+	 * @param userNamePy 员工姓名拼音
+	 * @param account 员工账号
+	 * @param password 员工密码
+	 * @param userSex 员工性别
+	 * @param userEmail 员工邮箱
+	 * @param userTel 员工电话
+	 * @param userInDate 员工入职时间
+	 * @param cpyId 员工所属机构
+	 * @param userScFieldIdStr 员工擅长专业领域
+	 * @return
+	 * @throws WEBException
+	 */
+	Integer addCpyUser(String userName,String userNamePy,String account,String password,String userSex,String userEmail,String userTel,
+			String userInDate,Integer cpyId,String userScFieldIdStr) throws WEBException;
+	
+	/**
+	 * 修改代理机构员工基本信息
+	 * @description
+	 * @author wm
+	 * @date 2018-7-24 上午09:21:20
+	 * @param id
+	 * @param userName 员工姓名（""不修改）
+	 * @param userNamePy 员工姓名拼音（""不修改）
+	 * @param password 员工密码（""不修改）
+	 * @param userSex 员工性别（""不修改）
+	 * @param userEmail 员工邮箱（""不修改）
+	 * @param userTel 员工电话（""不修改）
+	 * @param userOutDate 员工离职时间（""不修改）
+	 * @param userLzStatus 员工离职状态（0,1才能修改）
+	 * @param userYxStatus 员工账号有效状态（0,1才能修改）
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateBasicInfoById(Integer id,String userName,String userNamePy,String password,
+			String userSex,String userEmail,String userTel,String userOutDate,Integer userLzStatus,
+			Integer userYxStatus) throws WEBException;
+	
+	/**
+	 * 修改代理机构员工高级信息
+	 * @description
+	 * @author wm
+	 * @date 2018-7-24 上午09:23:43
+	 * @param id
+	 * @param newUserZxNum 新增的员工撰写数量（大于0修改）
+	 * @param userScFiledIdStr 员工擅长专业领域修改(""时不修改)
+	 * @param newUserExper 新增的员工经验（大于0修改）
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateInfoById(Integer id,Integer newUserZxNum,String userScFiledIdStr,Integer newUserExper) throws WEBException;
+	
+	/**
+	 * 修改运功登录信息
+	 * @description
+	 * @author wm
+	 * @date 2018-7-24 上午09:30:43
+	 * @param id
+	 * @param lastLoginDate 员工最后登录时间(""不修改)
+	 * @param loginTimes 员工登录次数
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateLoginInfoById(Integer id,String lastLoginDate,Integer loginTimes) throws WEBException;
+	
+	/**
+	 * 删除指定员工
+	 * @description
+	 * @author wm
+	 * @date 2018-7-24 上午09:32:12
+	 * @param id
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean delSpecUserById(Integer id) throws WEBException;
+	
+	/**
+	 * 根据条件分页获取代理机构员工记录列表
+	 * @description
+	 * @author wm
+	 * @date 2018-7-24 上午09:33:45
+	 * @param cpyId 代理机构编号
+	 * @param userLzStatus 员工离职状态（-1表示全部）
+	 * @param userYxStatus 员工账号有效状态(-1表示全部)
+	 * @param roleId 员工角色（-1表示全部）
+	 * @param userNamePy 用户姓名拼音（""表示全部）
+	 * @param pageNo
+	 * @param pageSize
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyUserInfo> listPageInfoByOpt(Integer cpyId,Integer userLzStatus,Integer userYxStatus,Integer roleId, 
+			String userNamePy,Integer pageNo, Integer pageSize) throws WEBException;
+	
+	/**
+	 * 根据条件获取代理机构员工记录条数
+	 * @description
+	 * @author wm
+	 * @date 2018-7-24 上午09:34:21
+	 * @param cpyId 代理机构编号
+	 * @param userLzStatus 员工离职状态（-1表示全部）
+	 * @param userYxStatus 员工账号有效状态(-1表示全部)
+	 * @param roleId 员工角色（-1表示全部）
+	 * @param userNamePy 用户姓名拼音（""表示全部）
+	 * @return
+	 * @throws WEBException
+	 */
+	Integer getCountByOpt(Integer cpyId,Integer userLzStatus,Integer userYxStatus,Integer roleId, 
+			String userNamePy) throws WEBException;
+	
+	/**
+	 * 根据账号获取代理机构员工账号信息列表
+	 * @description
+	 * @author wm
+	 * @date 2018-7-25 上午10:41:36
+	 * @param account 账号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyUserInfo> listSpecInfoByAccount(String account) throws WEBException;
+}

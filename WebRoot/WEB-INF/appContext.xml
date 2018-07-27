@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<appContext>
+	<app id="cpy_user_info_Web" class="com.patent.service.impl.CpyUserInfoManagerImpl"/>
+	<app id="cpy_role_info_Web" class="com.patent.service.impl.CpyRoleInfoManagerImpl"/>
+	<app id="cpy_info_Web" class="com.patent.service.impl.CpyInfoManagerImpl"/>
+	<app id="apply_info_Web" class="com.patent.service.impl.ApplyInfoManagerImpl"/>
+	<app id="super_user_info_Web" class="com.patent.service.impl.SuperUserManagerImpl"/>
+</appContext>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+
+<struts-config>
+  <data-sources />
+  <form-beans />
+  <global-exceptions />
+  <global-forwards />
+  <action-mappings >
+    <action path="/login"  parameter="action" scope="request" type="com.patent.action.login.LoginAction">
+      <forward name="welcome" path="/Module/cpyUser/jsp/main.jsp"></forward><!-- 管理机构其他角色主界面 -->
+      <forward name="index" path="/Module/appUser/jsp/index.jsp"></forward><!-- 申请人/公司账号界面 -->
+      <forward name="loginException" path="/Module/exception/jsp/exception.jsp"></forward><!-- 登录异常界面 -->
+      <forward name="cpyManager" path="/Module/cpyUser/jsp/manager.jsp"></forward><!-- 代理机构管理员界面 -->
+      <forward name="spWelcome" path="/Module/superManager/jsp/welcome.jsp"></forward><!-- 平台超级用户管理界面 -->
+      <forward name="signPage" path="/Module/sign/jsp/sign.jsp"></forward><!-- 注册界面 -->
+      <forward name="loginOut" path="/index.jsp"></forward><!-- 首页 -->
+    </action>
+
+  </action-mappings>
+
+  <message-resources parameter="com.yourcompany.struts.ApplicationResources" />
+</struts-config>
+

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<daoContext>
+	<dao id="cpy_user_info_Dao" class="com.patent.dao.impl.CpyUserInfoDaoImpl"/>
+	<dao id="cpy_role_info_Dao" class="com.patent.dao.impl.CpyRoleInfoDaoImpl"/>
+	<dao id="cpy_role_user_info_Dao" class="com.patent.dao.impl.CpyRoleUserInfoDaoImpl"/>
+	<dao id="cpy_info_Dao" class="com.patent.dao.impl.CpyInfoDaoImpl"/>
+	<dao id="apply_info_Dao" class="com.patent.dao.impl.ApplyInfoDaoImpl"/>
+	<dao id="super_user_info_Dao" class="com.patent.dao.impl.SuperUserDaoImpl"/>
+</daoContext>
