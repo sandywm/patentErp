@@ -435,6 +435,7 @@ public class LoginAction extends DispatchAction {
 		String comCity = Transcode.unescape(request.getParameter("city"), request);//公司所在城市
 		String comLxr = Transcode.unescape(request.getParameter("lxr"), request);//公司联系人
 		String namePy = Convert.getFirstSpell(comLxr);
+		String email = request.getParameter("email");//邮箱
 		String comTel = Transcode.unescape(request.getParameter("tel"), request);//公司联系电话
 		
 		String account = request.getParameter("account");
@@ -452,7 +453,7 @@ public class LoginAction extends DispatchAction {
 						//自动为每个代理机构初始一个管理员身份
 						Integer roleId = crm.addRole("管理员", "管理机构基本信息", cpyId);
 						//增加代理机构管理员
-						Integer cpyUserId = cum.addCpyUser(comLxr, namePy, account, md5.calcMD5(password), "0", "", comTel, CurrentTime.getStringDate(), cpyId, "");
+						Integer cpyUserId = cum.addCpyUser(comLxr, namePy, account, md5.calcMD5(password), "0", email, comTel, CurrentTime.getStringDate(), cpyId, "");
 						//增加身份绑定
 						Integer ruId = crm.addRoleUser(roleId, cpyUserId);
 						if(ruId > 0){
@@ -470,14 +471,13 @@ public class LoginAction extends DispatchAction {
 		}else if(signType.equals("app")){//申请公司注册
 			String appType = request.getParameter("appType");//申请人/公司类型
 			String appICard = request.getParameter("appiCard");//申请人/公司卡号
-			String appEmail = request.getParameter("appEmail");//申请人/公司邮箱
 			String appQQ = request.getParameter("appQQ");//申请人/公司QQ
 			boolean flag = DataBaseSqlVerify.checkSql(account);
 			if(!flag){
 				if(am.listInfoByAccount(account).size() > 0){
 					msg = "exist";
 				}else{
-					Integer appId = am.addAppInfo(appType, comName, namePy, appICard, comAddress, account, password, comLxr, comTel, appEmail, appQQ);
+					Integer appId = am.addAppInfo(appType, comName, namePy, appICard, comAddress, account, password, comLxr, comTel, email, appQQ);
 					if(appId > 0){
 						msg = "success";//成功
 					}else{
@@ -499,4 +499,6 @@ public class LoginAction extends DispatchAction {
         pw.close();
 		return null;
 	}
+	
+	
 }
