@@ -132,4 +132,12 @@ public interface CpyUserInfoManager {
 	 * @throws WEBException
 	 */
 	List<CpyUserInfo> listSpecInfoByAccount(String account) throws WEBException;
+	
+	/**
+	 * 根据主键编号获取代理机构用户详细信息
+	 * @param id 主键
+	 * @return
+	 * @throws WEBException
+	 */
+	CpyUserInfo getEntityById(Integer id) throws WEBException;
 }
