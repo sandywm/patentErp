@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee   http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-  <display-name />
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <display-name></display-name>
   <filter>
-		<filter-name>loginFilter</filter-name>
-		<filter-class>com.patent.web.UserLoginFilter</filter-class>
-		<init-param>
-			<param-name>forwardpath</param-name>
-			<param-value>/index.jsp</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>loginFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-
-  <listener> 
-        <listener-class>com.patent.web.FactoryLoaderListener</listener-class> 
-  </listener> 
-  
+    <filter-name>loginFilter</filter-name>
+    <filter-class>com.patent.web.UserLoginFilter</filter-class>
+    <init-param>
+      <param-name>forwardpath</param-name>
+      <param-value>/login.jsp</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>loginFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <listener>
+    <listener-class>com.patent.web.FactoryLoaderListener</listener-class>
+  </listener>
   <servlet>
     <servlet-name>action</servlet-name>
     <servlet-class>com.patent.action.base.MyActionServlet</servlet-class>
@@ -35,16 +33,15 @@
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
-   <servlet>
+  <servlet>
     <servlet-name>img</servlet-name>
     <servlet-class>com.patent.tools.AuthImg</servlet-class>
   </servlet>
   <servlet>
-  	<servlet-name>init</servlet-name>
-  	<servlet-class>com.patent.action.base.InitServlet</servlet-class>
-  	<load-on-startup>2</load-on-startup>
+    <servlet-name>init</servlet-name>
+    <servlet-class>com.patent.action.base.InitServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
   </servlet>
-  
   <servlet-mapping>
     <servlet-name>action</servlet-name>
     <url-pattern>*.do</url-pattern>
@@ -54,8 +51,6 @@
     <url-pattern>/authImg</url-pattern>
   </servlet-mapping>
   <session-config>
-  	<!-- 时间为分钟 -->
-  	<session-timeout>60</session-timeout>
+    <session-timeout>60</session-timeout>
   </session-config>
 </web-app>
-
