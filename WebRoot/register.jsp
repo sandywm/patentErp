@@ -3,17 +3,12 @@
 <html>
   <head>
     
-    <title>My1 JSP1 'index.jsp' starting page11</title>
-    
-	
-	<script type="text/javascript">
-		var roleName = "${sessionScope.login_user_role_name}";
-		
-	</script>
+    <title>My JSP 'register.jsp' starting page</title>
+
   </head>
   
   <body>
-  index
-    This1 is my JSP page.1111111111 <br>
+  
+    This is my JSP page. <br>
   </body>
 </html>
