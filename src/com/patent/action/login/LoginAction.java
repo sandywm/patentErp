@@ -213,16 +213,18 @@ public class LoginAction extends DispatchAction {
 			if(flag){
 				request.getSession(false).setAttribute(Constants.LOGIN_USER_ROLE_ID, roleId);
 				request.getSession(false).setAttribute(Constants.LOGIN_USER_ROLE_NAME, roleName);
-				if(roleName.equals("管理员")){
-					urlPage = "cpyManager";//管理员页面
-				}else{
-					urlPage = "welcome";//管理机构其他角色主界面
-				}
+//				if(roleName.equals("管理员")){
+//					urlPage = "cpyManager";//管理员页面
+//				}else{
+//					urlPage = "welcome";//管理机构其他角色主界面
+//				}
+				urlPage = "welcome";//管理机构其他角色主界面
 			}else{
 				urlPage = "loginException";//异常界面
 			}
 		}else if(loginType.equals("appUser")){
-			urlPage = "index";//导向申请人/公司账号界面
+			request.getSession(false).setAttribute(Constants.LOGIN_USER_ROLE_NAME, "申请人/公司");
+			urlPage = "welcome";//管理机构其他角色主界面
 		}else{
 			urlPage = "loginException";//异常界面
 		}
@@ -335,7 +337,7 @@ public class LoginAction extends DispatchAction {
 	 */
 	public ActionForward spGoPage(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return mapping.findForward("spWelcome");
+		return mapping.findForward("welcome");
 	}
 	
 	/**
@@ -499,6 +501,19 @@ public class LoginAction extends DispatchAction {
         pw.close();
 		return null;
 	}
-	
+	/**
+	 * 导向忘记密码界面
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward goForgetPage(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		return mapping.findForward("forgetPassPage");
+	}
 	
 }
