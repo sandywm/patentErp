@@ -213,6 +213,7 @@ public class LoginAction extends DispatchAction {
 			if(flag){
 				request.getSession(false).setAttribute(Constants.LOGIN_USER_ROLE_ID, roleId);
 				request.getSession(false).setAttribute(Constants.LOGIN_USER_ROLE_NAME, roleName);
+				request.getSession(false).setAttribute(Constants.LOGIN_TYPE, loginType);
 //				if(roleName.equals("管理员")){
 //					urlPage = "cpyManager";//管理员页面
 //				}else{
@@ -224,6 +225,7 @@ public class LoginAction extends DispatchAction {
 			}
 		}else if(loginType.equals("appUser")){
 			request.getSession(false).setAttribute(Constants.LOGIN_USER_ROLE_NAME, "申请人/公司");
+			request.getSession(false).setAttribute(Constants.LOGIN_TYPE, loginType);
 			urlPage = "welcome";//管理机构其他角色主界面
 		}else{
 			urlPage = "loginException";//异常界面
@@ -299,6 +301,7 @@ public class LoginAction extends DispatchAction {
 								session.setAttribute(Constants.LOGIN_TIMES, loginTimes_db);
 								session.setAttribute(Constants.LOGIN_USER_ID, su.getId());
 								session.setAttribute(Constants.LOGIN_USER_ROLE_NAME, su.getUserType());
+								request.getSession(false).setAttribute(Constants.LOGIN_TYPE, "spUser");
 								msg = "success";
 							}else{
 								msg = "lock";

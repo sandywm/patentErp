@@ -9,6 +9,7 @@ public class Constants {
 	public static final String LOGIN_REAL_NAME = "login_real_name";
 	public static final String LOGIN_USER_ROLE_ID = "login_user_role_id";
 	public static final String LOGIN_USER_ROLE_NAME = "login_user_role_name";
+	public static final String LOGIN_TYPE = "login_type";
 	
 	public static final String MESSAGE_URL = "http://222.73.117.156/msg/";
 	public static final String MESSAGE_ACCOUNT = "vip-lysy";

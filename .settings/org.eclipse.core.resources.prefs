@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #Sun Jul 29 11:28:34 CST 2018
+=======
+#Sun Jul 29 20:35:34 CST 2018
+>>>>>>> c32823f1bc6bfcb410d6566b5a24031f65fe0d87
 eclipse.preferences.version=1
 encoding//src/com/patent/action/base/InitServlet.java=UTF-8
 encoding//src/com/patent/action/base/MyActionServlet.java=UTF-8

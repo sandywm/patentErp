@@ -59,7 +59,17 @@ public class ApplyInfoManagerImpl implements ApplyInfoManager{
 	@Override
 	public ApplyInfoTb getEntityById(Integer appId) throws WEBException {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			aDao = (ApplyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_APPLY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return aDao.getEntityById(sess, appId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据主键获取详细信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override

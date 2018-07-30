@@ -14,6 +14,10 @@
       <forward name="loginOut" path="/login.jsp"></forward><!-- 登出 -->
       <forward name="welcome" path="/index.jsp"></forward><!-- 首页(其他身份)/代理机构其他角色主界面/申请人/公司账号界面、平台超级用户管理界面  -->
     </action>
+    <!-- 用户信息管理 -->
+    <action path="/user.do" parameter="action" scope="request" type="com.patent.action.user.UserAction">
+      <set-property property="cancellable" value="true" />
+    </action>
 
   </action-mappings>
 

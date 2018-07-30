@@ -128,6 +128,26 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 		}
 	}
 
+	@Override
+	public CpyUserInfo getEntityById(Integer id) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
+			Session sess = HibernateUtil.currentSession();
+			List<CpyUserInfo> cpyList = cUserDao.findInfoById(sess, id);
+			if(cpyList.size() > 0){
+				return cpyList.get(0);
+			}
+			return null;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据账号获取代理机构用户信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 	
 
 }
