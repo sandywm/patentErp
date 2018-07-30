@@ -6,7 +6,6 @@ package com.patent.action.login;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -25,19 +24,23 @@ import com.alibaba.fastjson.JSON;
 import com.patent.tools.Convert;
 import com.patent.tools.CommonTools;
 import com.patent.tools.CurrentTime;
+import com.patent.tools.InviteCode;
 import com.patent.tools.MD5;
 import com.patent.tools.DataBaseSqlVerify;
+import com.patent.tools.sendMail.MailSendInfo;
+import com.patent.tools.sendMail.SimpleMailSender;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.ApplyInfoTb;
-import com.patent.module.CpyRoleInfoTb;
 import com.patent.module.CpyRoleUserInfoTb;
 import com.patent.module.CpyUserInfo;
+import com.patent.module.SendEmailCodeInfo;
 import com.patent.module.SuperUser;
 import com.patent.service.ApplyInfoManager;
 import com.patent.service.CpyInfoManager;
 import com.patent.service.CpyRoleInfoManager;
 import com.patent.service.CpyUserInfoManager;
+import com.patent.service.SendEmailCodeInfoManager;
 import com.patent.service.SuperUserManager;
 import com.patent.util.Constants;
 
@@ -517,6 +520,160 @@ public class LoginAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		return mapping.findForward("forgetPassPage");
+	}
+	
+	/**
+	 * 根据用户提供的账号获取用户邮箱信息
+	 * @description
+	 * @author wm
+	 * @date 2018-7-30 上午08:26:34
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getUserEmailInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
+		String userType = String.valueOf(request.getParameter("userType"));
+		String account = String.valueOf(request.getParameter("account"));
+		String vCode = String.valueOf(request.getParameter("vCode"));
+		boolean userTypeFlag = (userType.equals("") || userType.equals("null"));	
+		boolean accountFlag = (account.equals("") || account.equals("null"));
+		boolean codeFlag = (vCode.equals("") || vCode.equals("null"));
+		//获取图片中的随机数字
+		HttpSession session = request.getSession(false);
+		String vercode2 = (String)session.getAttribute("rand");
+		if(!userTypeFlag){
+			if(!accountFlag){
+				if(!codeFlag && vCode.equalsIgnoreCase(vercode2)){
+					if(userType.equals("cpyUser")){
+						List<CpyUserInfo> userList_1 = cum.listSpecInfoByAccount(account);
+						if(userList_1.size() > 0){
+							map.put("result", "success");
+							map.put("id", userList_1.get(0).getId());
+							map.put("userEmail", userList_1.get(0).getUserEmail());
+						}else{
+							map.put("result", "noInfo");//查无此人
+						}
+					}else if(userType.equals("appUser")){
+						List<ApplyInfoTb> userList_2 = am.listInfoByAccount(account);
+						if(userList_2.size() > 0){
+							map.put("result", "success");
+							map.put("id", userList_2.get(0).getId());
+							map.put("userEmail", userList_2.get(0).getAppEmail());
+						}else{
+							map.put("result", "noInfo");//查无此人
+						}
+					}else{
+						map.put("result", "userTypeError");//用户类型错误
+					}
+				}else{
+					map.put("result", "vercodeFail");//验证码错误
+				}
+			}else{
+				map.put("result", "accountNull");//账号为空
+			}
+		}else{
+			map.put("result", "typeNull");//用户类型为空
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 发送邮箱验证码
+	 * @description
+	 * @author wm
+	 * @date 2018-7-30 下午04:11:44
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward sendSysEmailCode(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		SendEmailCodeInfoManager secm = (SendEmailCodeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_SEND_MAIL_CODE_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		String toUserEmail = String.valueOf(request.getParameter("userEmail"));
+		boolean flag = false;
+		String msg = "";
+		if(toUserEmail.equals("") || toUserEmail.equals("null")){
+			msg = "noEmail";
+		}else{
+			flag = CommonTools.checkEmail(toUserEmail);
+			if(flag){
+				//检查数据库中有没有刚刚发过验证码
+				List<SendEmailCodeInfo> secList = secm.listSpecInfoByOpt(toUserEmail, "");
+				if(secList.size() > 0){
+					SendEmailCodeInfo sec = secList.get(0);
+					String sendTime_base = CurrentTime.convertTimestampToString(sec.getSendTime());
+					long diffMills = CurrentTime.compareDateTime(CurrentTime.getCurrentTime(),sendTime_base);//当前时间减去发送时间
+					if(diffMills < 60000){//毫秒（1分钟以内）
+						msg = "noSend";//一分钟内只能发送一次
+					}else{
+						String code = InviteCode.getRandomNumberCode();
+						 MailSendInfo mailInfo = new MailSendInfo();    
+					      mailInfo.setMailServerHost(Constants.MAIL_SERVER_HOST);    
+					      mailInfo.setMailServerPort(Constants.MAIL_SERVER_PORT);    
+					      mailInfo.setValidate(Constants.VALIDATE_FLAG);    
+					      mailInfo.setUserName(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱账号    
+					      mailInfo.setPassword(Constants.SYSTEM_EMAIL_PASS);//您的邮箱授权码 
+					      mailInfo.setFromAddress(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱地址（同账号）  
+					      mailInfo.setToAddress(toUserEmail);//邮件接收人地址 
+					      mailInfo.setSubject("重置密码验证码");    
+					      mailInfo.setContent("你的验证码是："+code + " 该验证码30分钟内有效，请尽快使用!");      
+					      flag = SimpleMailSender.sendTextMail(mailInfo);
+					      if(flag){
+					    	  secm.updateInfoById(sec.getId(), code, CurrentTime.getCurrentTime1(), 0);
+					    	  msg = "success";
+					      }else{
+					    	  msg = "sendFail";//发送失败
+					      }
+					}
+				}else{//直接发送验证码
+					String code = InviteCode.getRandomNumberCode();
+					 MailSendInfo mailInfo = new MailSendInfo();    
+				      mailInfo.setMailServerHost(Constants.MAIL_SERVER_HOST);    
+				      mailInfo.setMailServerPort(Constants.MAIL_SERVER_PORT);    
+				      mailInfo.setValidate(Constants.VALIDATE_FLAG);    
+				      mailInfo.setUserName(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱账号    
+				      mailInfo.setPassword(Constants.SYSTEM_EMAIL_PASS);//您的邮箱授权码 
+				      mailInfo.setFromAddress(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱地址（同账号）  
+				      mailInfo.setToAddress(toUserEmail);//邮件接收人地址 
+				      mailInfo.setSubject("重置密码验证码");    
+				      mailInfo.setContent("你的验证码是："+code + " 该验证码30分钟内有效，请尽快使用!");    
+				      flag = SimpleMailSender.sendTextMail(mailInfo);
+				      if(flag){
+				    	  secm.addSEC(toUserEmail, code, CurrentTime.getCurrentTime1());
+				    	  msg = "success";
+				      }else{
+				    	  msg = "sendFail";//发送失败
+				      }
+				}
+			}else{
+				msg = "emailError";
+			}
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
 	}
 	
 }

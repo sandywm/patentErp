@@ -314,6 +314,19 @@ public class CommonTools {
 		return (int)count;
 	}
 	
+	/**
+	 * 检查邮箱格式
+	 * @description
+	 * @author wm
+	 * @date 2018-7-30 下午04:14:40
+	 * @param inputEmail
+	 * @return 证成功返回true，验证失败返回false 
+	 */
+	public static boolean checkEmail(String inputEmail){
+		String regex = "\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+        return Pattern.matches(regex, inputEmail);   
+	}
+	
 	public static void main(String[] args){
 		String[] ipArray = {"1.31.255.255","124.117.66.101","222.75.147.27","220.182.50.226","219.159.235.101","61.244.148.166","59.108.49.35","182.116.193.7","61.157.134.73"};
 //		System.out.println(CommonTools.searchIpByBaidu(ipArray[0]));

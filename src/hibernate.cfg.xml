@@ -74,6 +74,7 @@
 		<mapping resource="com/patent/xml/CpyRoleUserInfoTb.hbm.xml" />
 		<mapping resource="com/patent/xml/ModActInfoTb.hbm.xml" />
 		<mapping resource="com/patent/xml/SuperUser.hbm.xml" />
+		<mapping resource="com/patent/xml/SendEmailCodeInfo.hbm.xml" />
 
 
 	</session-factory>

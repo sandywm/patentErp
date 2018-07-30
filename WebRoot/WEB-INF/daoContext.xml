@@ -6,4 +6,5 @@
 	<dao id="cpy_info_Dao" class="com.patent.dao.impl.CpyInfoDaoImpl"/>
 	<dao id="apply_info_Dao" class="com.patent.dao.impl.ApplyInfoDaoImpl"/>
 	<dao id="super_user_info_Dao" class="com.patent.dao.impl.SuperUserDaoImpl"/>
+	<dao id="send_mail_code_info_Dao" class="com.patent.dao.impl.SendEmailCodeInfoDaoImpl"/>
 </daoContext>
