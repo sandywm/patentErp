@@ -1,97 +1,154 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<!DOCTYPE html> 
 <html>
   <head>
     <title>专利管理系统</title>
-	<link id="resetLink" rel="stylesheet" type="text/css"/>
-	<script src="/plugins/jquery/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="https://cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
-	<link href="https://cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet"/>
-	<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
-	
-	<script type="text/javascript">
-	//验证码
-	function verCode(){
-		var obj = document.getElementById("sessCode");
-		obj.src = "authImg?code="+Math.random()+100;
-	}
-	//登录
-	function login(){
-		var account = $("#account").val();
-		var password = $("#password").val();
-		var vCode = $("#inputCode").val();
-		var loginType = $("#loginType").val();
-		if(account == ""){
-			alert("账号不能为空");
-		}else if(password == ""){
-			alert("密码不能为空");
-		}else{
-			var urlStr = "login.do?action=login";
-			if(loginType == "spUser"){
-				urlStr = "login.do?action=spLogin";
-			}
-			$.ajax({
-		        type:"post",
-		        async:false,
-		        dataType:"json",
-		        url:urlStr,
-		        data:{account:account,password:password,vCode:vCode,loginType:loginType},
-		        success:function (json){
-		        	proccessLogin(json,loginType);
-		        }
-		    });
-		}
-	}
-	//处理登录
-	function proccessLogin(list,loginType){
-		if(list["result"] == "success"){
-			if(loginType == "cpyUser"){
-				var roleObj =	 list["roleList"];
-				var roleLength = roleObj.length;
-				if(roleLength == 1){//一种身份
-					window.location.href = "login.do?action=goPage&roleId="+roleObj[0].roleId+"&loginType="+loginType;
-				}else{
-					
-				}
-			}else if(loginType == "appUser"){
-				window.location.href = "login.do?action=goPage&loginType=" + loginType;
-			}else if(loginType == "spUser"){
-				window.location.href = "login.do?action=spGoPage";
-			}
-		}else if(list["result"] == "lock"){
-			alert("账号无效");
-		}else if(list["result"] == "fail"){
-			alert("账号密码错误");
-		}else if(list["result"] == "vercodeFail"){
-			alert("验证码错误");
-		}else if(list["result"] == "roleErr"){
-			alert("登录异常");
-		}
-	}
-	//回车事件
-	function enterPress(e){
-		var e = e || window.event;
-		if(e.keyCode == 13){
-			login();
-		}
-	}
-	</script>
+	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+	<link href="/plugins/layui/css/modules/layui-icon-extend/iconfont.css" rel="stylesheet" type="text/css"/>
+	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+	<link href="/css/login.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js"></script>
+	<!--  script src="/js/comConfig.js"></script>
+	<script src="/plugins/frame/js/comMethod.js"></script-->
   </head>
   
-  <body>
-  	<a href="login.do?action=goSignPage">注册</a>
-  	<a href="login.do?action=goForgetPage">忘记密码</a>
-    <i class="fa fa-hand-o-down" aria-hidden="true"></i>
-    <select id="loginType">
-    	<option value="cpyUser">代理机构用户</option>
-    	<option value="appUser">申请专利（人/公司）用户</option>
-    	<option value="spUser">平台</option>
-    </select>
-          账号：<input type="text" id="account" onkeypress="enterPress(event)"/>
-          密码：<input type="password" id="password" onkeypress="enterPress(event)"/>
-          验证码：<input type="text" id="inputCode" onkeypress="enterPress(event)"/>
-    <img id="sessCode" src="authImg" alt="请输入验证码" width="110"/>
-	<a href="javascript:void(0)" onclick="verCode()">看不清，换一张</a>
-	<input type="button" onclick="login();" value="登录"/>
+  <body>  
+  	<div class="layadmin-user-login layadmin-user-display-show">
+	    <div class="layadmin-user-login-main">
+	      <div class="layadmin-user-login-box layadmin-user-login-header">
+	        <h2>专利申请管理系统</h2>
+	        <p>Patent application management system</p>
+	      </div>
+	      <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+	      	<div class="layui-form-item">
+	      	   <label class="layadmin-user-login-icon iconfont layui-extend-wode" style="z-index:10;"></label>
+		       <select id="loginType">
+		       	<option value="">请选择账户类型</option>
+		        <option value="cpyUser">代理机构用户</option>
+    			<option value="appUser">申请专利（人/公司）用户</option>
+    			<option value="spUser">平台</option>
+		      </select>
+	      	</div>
+	        <div class="layui-form-item">
+	          <label class="layadmin-user-login-icon iconfont layui-extend-wode"></label>
+	          <input type="text" id="account" placeholder="请输入账号" onkeypress="enterPress(event)" autocomplete="off" class="layui-input">
+	        </div>
+	        <div class="layui-form-item">
+	          <label class="layadmin-user-login-icon iconfont layui-extend-mima" for="LAY-user-login-password"></label>
+	          <input type="password" id="password" placeholder="请输入密码" onkeypress="enterPress(event)" autocomplete="off" class="layui-input">
+	        </div>
+	        <div class="layui-form-item">
+	          <div class="layui-row">
+	            <div class="layui-col-xs7">
+	              <label class="layadmin-user-login-icon iconfont layui-extend-vercode" for="LAY-user-login-vercode"></label>
+	              <input type="text" id="inputCode" placeholder="请输入图形验证码" onkeypress="enterPress(event)" autocomplete="off" class="layui-input">
+	            </div>
+	            <div class="layui-col-xs5">
+	              <div style="margin-left: 10px;">
+	                <img id="sessCode" src="authImg" alt="请输入验证码" title="看不清换一张" width="130" style="cursor:pointer;"/>
+	              </div>
+	            </div>
+	          </div>
+	        </div>
+	        <div class="layui-form-item" style="margin-bottom: 20px;">
+	        	<a href="login.do?action=goSignPage" class="layadmin-link" style="float:left;margin-top:7px;">注册帐号</a>
+	            <a href="login.do?action=goForgetPage" class="layadmin-user-jump-change layadmin-link" style="margin-top: 7px;">忘记密码？</a>
+	        </div>
+	        <div class="layui-form-item">
+	          <button id="button" class="layui-btn layui-btn-fluid">登录</button>
+	        </div>
+	      </div>
+	    </div>
+	    <div class="layui-trans layadmin-user-login-footer">
+	      <p>© 2018 版权所有 Copyright@2013 Sandy.wm All Rights Reserved.</p>
+	    </div>
+  	</div>
+    
+    <script src="/plugins/jquery/jquery-1.7.2.min.js"></script>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','jquery','form'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery;
+			$("#button").on('click',function(){
+				login();
+			});
+			$("#sessCode").on('click',function(){
+				verCode();
+			});
+		});
+		function login(){
+			var account = $.trim($("#account").val());
+			var password = $.trim($("#password").val());
+			var vCode = $.trim($("#inputCode").val());
+			var loginType = $("#loginType").val();
+			console.log(loginType)
+			if(loginType == ""){
+				layer.msg("请选择账户类型", {icon:5,anim:6,time:1000});
+			}else if(account == ""){
+				layer.msg("账号不能为空", {icon:5,anim:6,time:1000});
+				$("#account").focus().addClass("layui-form-danger");
+			}else if(password == ""){
+				layer.msg("密码不能为空", {icon:5,anim:6,time:1000});
+				$("#password").focus().addClass("layui-form-danger");
+			}else{
+				var urlStr = "login.do?action=login";
+				if(loginType == "spUser"){
+					urlStr = "login.do?action=spLogin";
+				}
+				$.ajax({
+			        type:"post",
+			        async:false,
+			        dataType:"json",
+			        url:urlStr,
+			        data:{account:account,password:password,vCode:vCode,loginType:loginType},
+			        success:function (json){
+			        	proccessLogin(json,loginType);
+			        }
+			    });
+			}
+		}
+		//验证码
+		function verCode(){
+			var obj = document.getElementById("sessCode");
+			obj.src = "authImg?code="+Math.random()+100;
+		}
+		//处理登录
+		function proccessLogin(list,loginType){
+			if(list["result"] == "success"){
+				if(loginType == "cpyUser"){
+					var roleObj = list["roleList"];
+					var roleLength = roleObj.length;
+					console.log(roleObj)
+					if(roleLength == 1){//一种身份
+						window.location.href = "login.do?action=goPage&roleId="+roleObj[0].roleId+"&loginType="+loginType;
+					}else{
+						
+					}
+				}else if(loginType == "appUser"){
+					window.location.href = "login.do?action=goPage&loginType=" + loginType;
+				}else if(loginType == "spUser"){
+					window.location.href = "login.do?action=spGoPage";
+				}
+			}else if(list["result"] == "lock"){
+				layer.msg("该账号无效", {icon:5,anim:6,time:1000});
+			}else if(list["result"] == "fail"){
+				layer.msg("账号密码错误", {icon:5,anim:6,time:1000});
+			}else if(list["result"] == "vercodeFail"){
+				layer.msg("验证码错误", {icon:5,anim:6,time:1000});
+				$("#inputCode").focus().addClass("layui-form-danger");
+			}else if(list["result"] == "roleErr"){
+				layer.msg("登录异常", {icon:5,anim:6,time:1000});
+			}
+		}
+		//回车事件
+		function enterPress(e){
+			var e = e || window.event;
+			if(e.keyCode == 13){
+				login();
+			}
+		}
+	</script>
   </body>
+  
 </html>
