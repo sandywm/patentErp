@@ -79,7 +79,7 @@ public class UserLoginFilter implements Filter{
 		}
 		Integer loginFlag_dataBase = -1;
 		if(account.equals("") || account.equals("null")){
-			if(!requesturi.endsWith("/forgetPassword.do") 					
+			/*if(!requesturi.endsWith("/forgetPassword.do") 					
 					&& !requesturi.endsWith("/login.do") 
 					&& !requesturi.endsWith("/easyLogin.do")
 					&& !requesturi.endsWith("/afterlogin.do")
@@ -109,7 +109,7 @@ public class UserLoginFilter implements Filter{
 				String authorizeScript = "由于您60分钟内没上线，系统已强制您下线，请重新登录！";
 				Ability.PrintAuthorizeScript(url,authorizeScript, httpServletResponse);
                 return;
-            }
+            }*/
 			chain.doFilter(request, response);
 		}else{
 			try {

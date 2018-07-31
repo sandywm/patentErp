@@ -2,7 +2,7 @@
 <!DOCTYPE html> 
 <html>
   <head>
-    <title>专利管理系统</title>
+    <title>专利管理系统--用户登录</title>
 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/layui/css/modules/layui-icon-extend/iconfont.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
@@ -10,14 +10,18 @@
 	<script src="/plugins/pace/pace.min.js"></script>
 	<!--  script src="/js/comConfig.js"></script>
 	<script src="/plugins/frame/js/comMethod.js"></script-->
+	<style>
+		.layui-form-select dl dd.layui-this{background:#009688;}
+		body .demo-class .layui-layer-btn{border-top:1px solid #E9E7E7}
+	</style>
   </head>
   
   <body>  
   	<div class="layadmin-user-login layadmin-user-display-show">
 	    <div class="layadmin-user-login-main">
 	      <div class="layadmin-user-login-box layadmin-user-login-header">
-	        <h2>专利申请管理系统</h2>
-	        <p>Patent application management system</p>
+	        <h2>专利管理系统</h2>
+	        <p>Patent management system</p>
 	      </div>
 	      <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
 	      	<div class="layui-form-item">
@@ -59,17 +63,22 @@
 	        </div>
 	      </div>
 	    </div>
+	    <input id="roleIdInp" type="hidden"/>
 	    <div class="layui-trans layadmin-user-login-footer">
-	      <p>© 2018 版权所有 Copyright@2013 Sandy.wm All Rights Reserved.</p>
+	      <p>© 2018 版权所有 Copyright@2018 Sandy.wm All Rights Reserved.</p>
 	    </div>
   	</div>
-    
     <script src="/plugins/jquery/jquery-1.7.2.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
+	var html = "<div class='wrapper' id='detailsinfo'>" +
+    "<div class='detailsdiv'>" +
+    "<p><label>帐号：</label>" + '测试帐号' +"</p>" +
+    "</div></div>";
 		layui.use(['layer','jquery','form'],function(){
 			var layer = layui.layer,
-				$ = layui.jquery;
+				$ = layui.jquery,
+				form = layui.form;
 			$("#button").on('click',function(){
 				login();
 			});
@@ -119,11 +128,10 @@
 				if(loginType == "cpyUser"){
 					var roleObj = list["roleList"];
 					var roleLength = roleObj.length;
-					console.log(roleObj)
 					if(roleLength == 1){//一种身份
 						window.location.href = "login.do?action=goPage&roleId="+roleObj[0].roleId+"&loginType="+loginType;
-					}else{
-						
+					}else{//多重身份下执行
+						listRole(list["roleList"]);
 					}
 				}else if(loginType == "appUser"){
 					window.location.href = "login.do?action=goPage&loginType=" + loginType;
@@ -139,6 +147,46 @@
 				$("#inputCode").focus().addClass("layui-form-danger");
 			}else if(list["result"] == "roleErr"){
 				layer.msg("登录异常", {icon:5,anim:6,time:1000});
+			}
+		}
+		//多重身份下进行身份选择登录
+		function listRole(list){
+			layui.use('form',function(){
+				var html = '';
+				var form = layui.form;
+				html += '<div class="layui-form">';
+				html += '<div class="layui-input-inline">';
+				for(i=0; i<list.length; i++){
+					html += '<input type="radio" name="roleSel" value="'+ list[i].roleId +'" title="'+ list[i].roleName +'">';
+				}
+				html += '</div></div>';
+				$("#roleIdInp").val("");
+				layer.open({
+					title : '系统检测到您当前账户绑有多重身份，请选择一种身份登录',
+					skin:'layui-layer-molv',
+					type : 0, 
+					content:html, 
+					area : ['470px','200px'],
+					btn : ['进入系统','取消'],
+					yes: function(index, layero){
+						goPage();
+					}
+				});
+				form.on('radio', function(data){
+				    $("#roleIdInp").val(data.value); 
+				    //$("#roleNameInp").val(data.elem.title);
+				}); 
+				form.render();
+			});
+		}
+		//多重身份下的页面跳转
+		function goPage(){
+			var roleId =  $("#roleIdInp").val();
+			var loginType = $("#loginType").val();
+			if(roleId == ""){
+				layer.msg("请选择一个身份进入系统",{time:1000});
+			}else{
+				window.location.href = "login.do?action=goPage&roleId="+roleId+"&loginType="+loginType;
 			}
 		}
 		//回车事件
