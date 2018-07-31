@@ -37,8 +37,8 @@ public interface SuperUserManager {
 	 * @description
 	 * @author wm
 	 * @date 2018-7-26 上午08:29:44
-	 * @param password 密码
-	 * @param userName 用户身份
+	 * @param password 密码 （""时不修改）
+	 * @param userName 用户姓名（""时不修改）
 	 * @return
 	 * @throws WEBException
 	 */

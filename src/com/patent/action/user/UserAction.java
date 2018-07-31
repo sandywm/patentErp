@@ -177,7 +177,7 @@ public class UserAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
 		SuperUserManager sum = (SuperUserManager)  AppFactory.instance(null).getApp(Constants.WEB_SUPER_USER_INFO);
-		Map<String,Object> map = new HashMap<String,Object>();
+		Map<String,String> map = new HashMap<String,String>();
 		String inputPass_old = String.valueOf(request.getParameter("passOld"));
 		String newPass = String.valueOf(request.getParameter("newPass"));
 		MD5 md5 = new MD5();
@@ -190,9 +190,10 @@ public class UserAction extends DispatchAction {
 				if(cUser != null){
 					String pass_db = cUser.getUserPassword();
 					if(pass_db.equalsIgnoreCase(md5.calcMD5(inputPass_old))){
-						
+						cum.updatePassById(userId, newPass);
+						msg = "success";
 					}else{
-						msg = "noPatch";
+						msg = "noMatch";//不匹配
 					}
 				}
 			}else if(loginType.equals("appUser")){
@@ -200,7 +201,10 @@ public class UserAction extends DispatchAction {
 				if(app != null){
 					String pass_db = app.getAppPass();
 					if(pass_db.equalsIgnoreCase(md5.calcMD5(newPass))){
-						
+						am.updatePassById(userId, newPass);
+						msg = "success";
+					}else{
+						msg = "noMatch";//不匹配
 					}
 				}
 			}else if(loginType.equals("spUser")){
@@ -208,12 +212,20 @@ public class UserAction extends DispatchAction {
 				if(suList.size() > 0){
 					String pass_db = suList.get(0).getPassword();
 					if(pass_db.equalsIgnoreCase(md5.calcMD5(newPass))){
-						
+						sum.updateSUserById(userId, newPass, "");
+						msg = "success";
+					}else{
+						msg = "noMatch";//不匹配
 					}
 				}
 			}
 		}
-		
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
 		return null;
 	}
 }
