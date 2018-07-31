@@ -24,6 +24,7 @@ import com.patent.module.SuperUser;
 import com.patent.service.ApplyInfoManager;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.SuperUserManager;
+import com.patent.tools.MD5;
 import com.patent.util.Constants;
 
 /** 
@@ -66,6 +67,18 @@ public class UserAction extends DispatchAction {
 	}
 	
 	/**
+	 * 获取session中的登录类型
+	 * @author Administrator
+	 * @date 2018-7-31 下午09:39:57
+	 * @ModifiedBy
+	 * @param request
+	 * @return
+	 */
+	private String getLoginType(HttpServletRequest request){
+        String loginType = (String)request.getSession(false).getAttribute(Constants.LOGIN_TYPE);
+        return loginType;
+	}
+	/**
 	 * 获取个人用户详细记录
 	 * @param mapping
 	 * @param form
@@ -78,7 +91,7 @@ public class UserAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		Integer userId = this.getLoginUserId(request);
-		String loginType = (String)request.getSession(false).getAttribute(Constants.LOGIN_TYPE);
+		String loginType = this.getLoginType(request);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
 		SuperUserManager sum = (SuperUserManager)  AppFactory.instance(null).getApp(Constants.WEB_SUPER_USER_INFO);
@@ -141,6 +154,66 @@ public class UserAction extends DispatchAction {
         pw.write(json); 
         pw.flush();  
         pw.close();
+		return null;
+	}
+	
+	/**
+	 * 修改用户密码
+	 * @author Administrator
+	 * @date 2018-7-31 下午09:37:46
+	 * @ModifiedBy
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward updateUserPass(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		Integer userId = this.getLoginUserId(request);
+		String loginType = this.getLoginType(request);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
+		SuperUserManager sum = (SuperUserManager)  AppFactory.instance(null).getApp(Constants.WEB_SUPER_USER_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
+		String inputPass_old = String.valueOf(request.getParameter("passOld"));
+		String newPass = String.valueOf(request.getParameter("newPass"));
+		MD5 md5 = new MD5();
+		String msg = "";
+		if(inputPass_old.equals("null") || inputPass_old.equals("")){
+			msg = "oldNull";//输入原数据库密码为空
+		}else{
+			if(loginType.equals("cpyUser")){
+				CpyUserInfo cUser = cum.getEntityById(userId);
+				if(cUser != null){
+					String pass_db = cUser.getUserPassword();
+					if(pass_db.equalsIgnoreCase(md5.calcMD5(inputPass_old))){
+						
+					}else{
+						msg = "noPatch";
+					}
+				}
+			}else if(loginType.equals("appUser")){
+				ApplyInfoTb app = am.getEntityById(userId);
+				if(app != null){
+					String pass_db = app.getAppPass();
+					if(pass_db.equalsIgnoreCase(md5.calcMD5(newPass))){
+						
+					}
+				}
+			}else if(loginType.equals("spUser")){
+				List<SuperUser> suList = sum.listInfoById(userId);
+				if(suList.size() > 0){
+					String pass_db = suList.get(0).getPassword();
+					if(pass_db.equalsIgnoreCase(md5.calcMD5(newPass))){
+						
+					}
+				}
+			}
+		}
+		
 		return null;
 	}
 }

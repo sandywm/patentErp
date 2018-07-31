@@ -96,4 +96,32 @@ public class ApplyInfoManagerImpl implements ApplyInfoManager{
 		}
 	}
 
+	@Override
+	public boolean updatePassById(Integer userId, String newPass)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			aDao = (ApplyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_APPLY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ApplyInfoTb app = aDao.get(sess, userId);
+			if(app != null){
+				if(!newPass.equals("")){
+					app.setAppPass(newPass);
+					aDao.update(sess, app);
+					tran.commit();
+					return true;
+				}
+				return false;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据主键修改申请专利（人/公司）密码时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

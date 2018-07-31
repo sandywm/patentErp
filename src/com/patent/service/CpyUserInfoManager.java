@@ -140,4 +140,15 @@ public interface CpyUserInfoManager {
 	 * @throws WEBException
 	 */
 	CpyUserInfo getEntityById(Integer id) throws WEBException;
+	
+	/**根据用户编号修改用户密码
+	 * @author Administrator
+	 * @date 2018-7-31 下午08:55:44
+	 * @ModifiedBy
+	 * @param id 主键
+	 * @param newPass 新密码
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updatePassById(Integer id,String newPass) throws WEBException;
 }

@@ -448,7 +448,7 @@ public class LoginAction extends DispatchAction {
 		
 		String account = request.getParameter("account");
 		String password = request.getParameter("password");
-		if(signType.equals("cpy")){//代理机构注册
+		if(signType.equals("cpyUser")){//代理机构注册
 			String cpyFr = Transcode.unescape(request.getParameter("cpyFr"), request);//公司法人
 			boolean flag = DataBaseSqlVerify.checkSql(account);
 			if(!flag){
@@ -476,7 +476,7 @@ public class LoginAction extends DispatchAction {
 			}else{
 				msg = "unlaw";//账号含有非法字符
 			}
-		}else if(signType.equals("app")){//申请公司注册
+		}else if(signType.equals("appUser")){//申请公司注册
 			String appType = request.getParameter("appType");//申请人/公司类型
 			String appICard = request.getParameter("appiCard");//申请人/公司卡号
 			String appQQ = request.getParameter("appQQ");//申请人/公司QQ
@@ -705,18 +705,52 @@ public class LoginAction extends DispatchAction {
 							if(userType.equals("cpyUser")){
 								CpyUserInfo cUser = cum.getEntityById(userId);
 								if(cUser != null){
-									msg = "success";
-									map.put("userId", cUser.getId());
-									map.put("userPass", cUser.getUserPassword());
+									//往用户邮箱发送重置后的随机密码
+									String code = InviteCode.getRandomNumberCode();
+									 MailSendInfo mailInfo = new MailSendInfo();    
+								      mailInfo.setMailServerHost(Constants.MAIL_SERVER_HOST);    
+								      mailInfo.setMailServerPort(Constants.MAIL_SERVER_PORT);    
+								      mailInfo.setValidate(Constants.VALIDATE_FLAG);    
+								      mailInfo.setUserName(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱账号    
+								      mailInfo.setPassword(Constants.SYSTEM_EMAIL_PASS);//您的邮箱授权码 
+								      mailInfo.setFromAddress(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱地址（同账号）  
+								      mailInfo.setToAddress(userEmail);//邮件接收人地址 
+								      mailInfo.setSubject("重置密码");    
+								      mailInfo.setContent("你的随机是："+code + " 请登录系统后尽快进行修改!");    
+								      boolean flag = SimpleMailSender.sendTextMail(mailInfo);
+								      if(flag){
+								    	  //修改用户密码
+								    	  cum.updatePassById(userId, code);
+								    	  msg = "success";
+								      }else{
+								    	  msg = "sendFail";//发送失败
+								      }
 								}else{
 									msg = "noUser";//查无此人
 								}
 							}else if(userType.equals("appUser")){
 								ApplyInfoTb aUser = am.getEntityById(userId);
 								if(aUser != null){
-									msg = "success";
-									map.put("userId", aUser.getId());
-									map.put("userPass", aUser.getAppPass());
+									//往用户邮箱发送重置后的随机密码
+									String code = InviteCode.getRandomNumberCode();
+									 MailSendInfo mailInfo = new MailSendInfo();    
+								      mailInfo.setMailServerHost(Constants.MAIL_SERVER_HOST);    
+								      mailInfo.setMailServerPort(Constants.MAIL_SERVER_PORT);    
+								      mailInfo.setValidate(Constants.VALIDATE_FLAG);    
+								      mailInfo.setUserName(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱账号    
+								      mailInfo.setPassword(Constants.SYSTEM_EMAIL_PASS);//您的邮箱授权码 
+								      mailInfo.setFromAddress(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱地址（同账号）  
+								      mailInfo.setToAddress(userEmail);//邮件接收人地址 
+								      mailInfo.setSubject("重置密码");    
+								      mailInfo.setContent("你的随机是："+code + " 请登录系统后尽快进行修改!");    
+								      boolean flag = SimpleMailSender.sendTextMail(mailInfo);
+								      if(flag){
+								    	  //修改用户密码
+								    	  am.updatePassById(userId, code);
+								    	  msg = "success";
+								      }else{
+								    	  msg = "sendFail";//发送失败
+								      }
 								}else{
 									msg = "noUser";//查无此人
 								}

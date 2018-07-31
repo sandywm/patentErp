@@ -93,4 +93,16 @@ public interface ApplyInfoManager {
 	 * @throws WEBException
 	 */
 	List<ApplyInfoTb> listInfoByAccount(String account) throws WEBException;
+	
+	/**
+	 * 根据主键编号修改用户密码
+	 * @author Administrator
+	 * @date 2018-7-31 下午09:03:32
+	 * @ModifiedBy
+	 * @param userId 主键编号
+	 * @param newPass 新密码
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updatePassById(Integer userId,String newPass) throws WEBException;
 }

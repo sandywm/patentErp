@@ -12,6 +12,7 @@ import com.patent.factory.DaoFactory;
 import com.patent.module.CpyUserInfo;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.tools.HibernateUtil;
+import com.patent.tools.MD5;
 import com.patent.util.Constants;
 
 public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
@@ -148,6 +149,31 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 		}
 	}
 
-	
-
+	@Override
+	public boolean updatePassById(Integer id,String newPass) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CpyUserInfo cpyUser = cUserDao.get(sess, id);
+			if(cpyUser != null){
+				if(!newPass.equals("")){
+					cpyUser.setUserPassword(new MD5().calcMD5(newPass));
+					cUserDao.update(sess, cpyUser);
+					tran.commit();
+					return true;
+				}
+				return false;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("修改用户密码时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
 }
