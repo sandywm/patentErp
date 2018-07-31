@@ -116,8 +116,8 @@ public class LoginAction extends DispatchAction {
 									List<CpyRoleUserInfoTb> crList = crm.listInfoByUserId(userId);
 									if(crList.size() > 0){
 										List<Object> list_d = new ArrayList<Object>();
-										Map<String,Object> map_d = new HashMap<String,Object>();
 										for(Iterator<CpyRoleUserInfoTb> it = crList.iterator() ; it.hasNext() ;){
+											Map<String,Object> map_d = new HashMap<String,Object>();
 											CpyRoleUserInfoTb cru = it.next();
 											map_d.put("roleId", cru.getCpyRoleInfoTb().getId());
 											map_d.put("roleName", cru.getCpyRoleInfoTb().getRoleName());
@@ -452,8 +452,8 @@ public class LoginAction extends DispatchAction {
 			String cpyFr = Transcode.unescape(request.getParameter("cpyFr"), request);//公司法人
 			boolean flag = DataBaseSqlVerify.checkSql(account);
 			if(!flag){
-				//检查账号不能重复
-				if(cum.listSpecInfoByAccount(account).size() > 0){
+				//检查账号不能重复(两张表中账号不能相同)
+				if(cum.listSpecInfoByAccount(account).size() > 0 || am.listInfoByAccount(account).size() > 0){
 					msg = "exist";
 				}else{
 					Integer cpyId = cm.addCpy(comName, comAddress, comProv, comCity, cpyFr, comLxr, comTel);
@@ -482,7 +482,7 @@ public class LoginAction extends DispatchAction {
 			String appQQ = request.getParameter("appQQ");//申请人/公司QQ
 			boolean flag = DataBaseSqlVerify.checkSql(account);
 			if(!flag){
-				if(am.listInfoByAccount(account).size() > 0){
+				if(am.listInfoByAccount(account).size() > 0 || cum.listSpecInfoByAccount(account).size() > 0){
 					msg = "exist";
 				}else{
 					Integer appId = am.addAppInfo(appType, comName, namePy, appICard, comAddress, account, password, comLxr, comTel, email, appQQ);
@@ -540,47 +540,40 @@ public class LoginAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
 		Map<String,Object> map = new HashMap<String,Object>();
-		String userType = String.valueOf(request.getParameter("userType"));
+//		String userType = String.valueOf(request.getParameter("userType"));
 		String account = String.valueOf(request.getParameter("account"));
 		String vCode = String.valueOf(request.getParameter("vCode"));
-		boolean userTypeFlag = (userType.equals("") || userType.equals("null"));	
+//		boolean userTypeFlag = (userType.equals("") || userType.equals("null"));	
 		boolean accountFlag = (account.equals("") || account.equals("null"));
 		boolean codeFlag = (vCode.equals("") || vCode.equals("null"));
 		//获取图片中的随机数字
 		HttpSession session = request.getSession(false);
 		String vercode2 = (String)session.getAttribute("rand");
-		if(!userTypeFlag){
-			if(!accountFlag){
-				if(!codeFlag && vCode.equalsIgnoreCase(vercode2)){
-					if(userType.equals("cpyUser")){
-						List<CpyUserInfo> userList_1 = cum.listSpecInfoByAccount(account);
-						if(userList_1.size() > 0){
-							map.put("result", "success");
-							map.put("id", userList_1.get(0).getId());
-							map.put("userEmail", userList_1.get(0).getUserEmail());
-						}else{
-							map.put("result", "noInfo");//查无此人
-						}
-					}else if(userType.equals("appUser")){
-						List<ApplyInfoTb> userList_2 = am.listInfoByAccount(account);
-						if(userList_2.size() > 0){
-							map.put("result", "success");
-							map.put("id", userList_2.get(0).getId());
-							map.put("userEmail", userList_2.get(0).getAppEmail());
-						}else{
-							map.put("result", "noInfo");//查无此人
-						}
-					}else{
-						map.put("result", "userTypeError");//用户类型错误
-					}
+		if(!accountFlag){
+			if(!codeFlag && vCode.equalsIgnoreCase(vercode2)){
+				List<CpyUserInfo> userList_1 = cum.listSpecInfoByAccount(account);
+				if(userList_1.size() > 0){
+					map.put("result", "success");
+					map.put("id", userList_1.get(0).getId());
+					map.put("userEmail", userList_1.get(0).getUserEmail());
+					map.put("userType", "cpyUser");//代理机构
 				}else{
-					map.put("result", "vercodeFail");//验证码错误
+					//可能是申请人/公司的账号
+					List<ApplyInfoTb> userList_2 = am.listInfoByAccount(account);
+					if(userList_2.size() > 0){
+						map.put("result", "success");
+						map.put("id", userList_2.get(0).getId());
+						map.put("userEmail", userList_2.get(0).getAppEmail());
+						map.put("userType", "appUser");//申请人/公司
+					}else{
+						map.put("result", "noInfo");//查无此账号
+					}
 				}
 			}else{
-				map.put("result", "accountNull");//账号为空
+				map.put("result", "vercodeFail");//验证码错误
 			}
 		}else{
-			map.put("result", "typeNull");//用户类型为空
+			map.put("result", "accountNull");//账号为空
 		}
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
@@ -676,4 +669,81 @@ public class LoginAction extends DispatchAction {
 		return null;
 	}
 	
+	/**
+	 * 判断验证码，成功后返回用户ID和密码
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward checkInputPass(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
+		SendEmailCodeInfoManager secm = (SendEmailCodeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_SEND_MAIL_CODE_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
+		String userType = request.getParameter("userType");
+		String inputCode = String.valueOf(request.getParameter("inpCode"));
+		String userEmail = String.valueOf(request.getParameter("userEmail"));
+		Integer userId = CommonTools.getFinalInteger(request.getParameter("userId"));
+		String msg = "";
+		//检查验证码是否正确
+		boolean flag_e = (userEmail.equals("") || userEmail.equals("null"));
+		boolean flag_c = (inputCode.equals("") || inputCode.equals("null"));
+		if(!flag_e && !flag_c){
+			List<SendEmailCodeInfo> secList = secm.listSpecInfoByOpt(userEmail, inputCode);
+			if(secList.size() > 0){
+				Integer useStatus = secList.get(0).getUseStatus();
+				if(useStatus.equals(0)){
+					String sendTime = CurrentTime.convertTimestampToString(secList.get(0).getSendTime());
+					long diffMills = CurrentTime.compareDateTime(CurrentTime.getCurrentTime(),sendTime);//当前时间减去发送时间
+					if(diffMills < 60000 * 30){//毫秒（30分钟以内）
+						if(userId > 0){
+							if(userType.equals("cpyUser")){
+								CpyUserInfo cUser = cum.getEntityById(userId);
+								if(cUser != null){
+									msg = "success";
+									map.put("userId", cUser.getId());
+									map.put("userPass", cUser.getUserPassword());
+								}else{
+									msg = "noUser";//查无此人
+								}
+							}else if(userType.equals("appUser")){
+								ApplyInfoTb aUser = am.getEntityById(userId);
+								if(aUser != null){
+									msg = "success";
+									map.put("userId", aUser.getId());
+									map.put("userPass", aUser.getAppPass());
+								}else{
+									msg = "noUser";//查无此人
+								}
+							}else{
+								msg = "error";
+							}
+						}else{
+							msg = "error";
+						}
+					}else{
+						msg = "error";//无效或者已被使用
+					}
+				}else{
+					msg = "error";//无效或者已被使用
+				}
+			}else{
+				msg = "error";//无效或者已被使用
+			}
+		}else{
+			msg = "error";//无效或者已被使用
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
 }
