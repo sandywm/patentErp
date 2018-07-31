@@ -16,7 +16,7 @@
 	</style>
   </head>
   
-  <body>  
+  <body>   
   	<div class="layadmin-user-login layadmin-user-display-show">
 	    <div class="layadmin-user-login-main">
 	      <div class="layadmin-user-login-box layadmin-user-login-header">
