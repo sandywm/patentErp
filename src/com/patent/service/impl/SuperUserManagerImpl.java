@@ -11,6 +11,7 @@ import com.patent.factory.DaoFactory;
 import com.patent.module.SuperUser;
 import com.patent.service.SuperUserManager;
 import com.patent.tools.HibernateUtil;
+import com.patent.tools.MD5;
 import com.patent.util.Constants;
 
 public class SuperUserManagerImpl implements SuperUserManager{
@@ -67,8 +68,12 @@ public class SuperUserManagerImpl implements SuperUserManager{
 			tran = sess.beginTransaction();
 			SuperUser su = suDao.get(sess, userId);
 			if(su != null){
-				su.setPassword(password);
-				su.setUserName(userName);
+				if(!password.equals("")){
+					su.setPassword(new MD5().calcMD5(password));
+				}
+				if(!userName.equals("")){
+					su.setUserName(userName);
+				}
 				suDao.update(sess, su);
 				tran.commit();
 				return true;
