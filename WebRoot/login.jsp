@@ -8,11 +8,8 @@
 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
 	<link href="/css/login.css" rel="stylesheet" type="text/css"/>
 	<script src="/plugins/pace/pace.min.js"></script>
-	<!--  script src="/js/comConfig.js"></script>
-	<script src="/plugins/frame/js/comMethod.js"></script-->
 	<style>
 		.layui-form-select dl dd.layui-this{background:#009688;}
-		body .demo-class .layui-layer-btn{border-top:1px solid #E9E7E7}
 	</style>
   </head>
   
@@ -30,7 +27,6 @@
 		       	<option value="">请选择账户类型</option>
 		        <option value="cpyUser">代理机构用户</option>
     			<option value="appUser">申请专利（人/公司）用户</option>
-    			<option value="spUser">平台</option>
 		      </select>
 	      	</div>
 	        <div class="layui-form-item">
@@ -71,10 +67,6 @@
     <script src="/plugins/jquery/jquery-1.7.2.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-	var html = "<div class='wrapper' id='detailsinfo'>" +
-    "<div class='detailsdiv'>" +
-    "<p><label>帐号：</label>" + '测试帐号' +"</p>" +
-    "</div></div>";
 		layui.use(['layer','jquery','form'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
@@ -91,7 +83,6 @@
 			var password = $.trim($("#password").val());
 			var vCode = $.trim($("#inputCode").val());
 			var loginType = $("#loginType").val();
-			console.log(loginType)
 			if(loginType == ""){
 				layer.msg("请选择账户类型", {icon:5,anim:6,time:1000});
 			}else if(account == ""){
@@ -101,17 +92,15 @@
 				layer.msg("密码不能为空", {icon:5,anim:6,time:1000});
 				$("#password").focus().addClass("layui-form-danger");
 			}else{
-				var urlStr = "login.do?action=login";
-				if(loginType == "spUser"){
-					urlStr = "login.do?action=spLogin";
-				}
+				layer.load();
 				$.ajax({
 			        type:"post",
 			        async:false,
 			        dataType:"json",
-			        url:urlStr,
+			        url:"login.do?action=login",
 			        data:{account:account,password:password,vCode:vCode,loginType:loginType},
 			        success:function (json){
+			        	layer.closeAll('loading');
 			        	proccessLogin(json,loginType);
 			        }
 			    });
@@ -135,13 +124,12 @@
 					}
 				}else if(loginType == "appUser"){
 					window.location.href = "login.do?action=goPage&loginType=" + loginType;
-				}else if(loginType == "spUser"){
-					window.location.href = "login.do?action=spGoPage";
 				}
 			}else if(list["result"] == "lock"){
 				layer.msg("该账号无效", {icon:5,anim:6,time:1000});
 			}else if(list["result"] == "fail"){
 				layer.msg("账号密码错误", {icon:5,anim:6,time:1000});
+				verCode();
 			}else if(list["result"] == "vercodeFail"){
 				layer.msg("验证码错误", {icon:5,anim:6,time:1000});
 				$("#inputCode").focus().addClass("layui-form-danger");
