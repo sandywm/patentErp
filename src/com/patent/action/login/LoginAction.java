@@ -255,6 +255,25 @@ public class LoginAction extends DispatchAction {
 	}
 	
 	/**
+	 * 平台用户登录页面
+	 * @description
+	 * @author wm
+	 * @date 2018-8-1 下午05:57:02
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward spLoginPage(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		return mapping.findForward("spLoginPage");
+	}
+	
+	
+	/**
 	 * 平台管理人员（超级管理员登录）
 	 * @description
 	 * @author wm
