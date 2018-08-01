@@ -113,6 +113,7 @@ public class LoginAction extends DispatchAction {
 									cum.updateLoginInfoById(userId, CurrentTime.getStringDate(), loginTimes_db);
 									session.setAttribute(Constants.LOGIN_TIMES, loginTimes_db);
 									session.setAttribute(Constants.LOGIN_USER_ID, userId);
+									request.getSession(false).setAttribute(Constants.LOGIN_TYPE, loginType);
 									List<CpyRoleUserInfoTb> crList = crm.listInfoByUserId(userId);
 									if(crList.size() > 0){
 										List<Object> list_d = new ArrayList<Object>();
@@ -154,6 +155,7 @@ public class LoginAction extends DispatchAction {
 								am.updateAppLoginInfoById(appUserId, CurrentTime.getStringDate(), loginTimes);
 								session.setAttribute(Constants.LOGIN_TIMES, loginTimes);
 								session.setAttribute(Constants.LOGIN_USER_ID, appUserId);
+								request.getSession(false).setAttribute(Constants.LOGIN_TYPE, loginType);
 								msg = "success";
 							}else{
 								msg = "fail";//用户名密码不匹配
@@ -216,7 +218,6 @@ public class LoginAction extends DispatchAction {
 			if(flag){
 				request.getSession(false).setAttribute(Constants.LOGIN_USER_ROLE_ID, roleId);
 				request.getSession(false).setAttribute(Constants.LOGIN_USER_ROLE_NAME, roleName);
-				request.getSession(false).setAttribute(Constants.LOGIN_TYPE, loginType);
 //				if(roleName.equals("管理员")){
 //					urlPage = "cpyManager";//管理员页面
 //				}else{
@@ -228,7 +229,6 @@ public class LoginAction extends DispatchAction {
 			}
 		}else if(loginType.equals("appUser")){
 			request.getSession(false).setAttribute(Constants.LOGIN_USER_ROLE_NAME, "申请人/公司");
-			request.getSession(false).setAttribute(Constants.LOGIN_TYPE, loginType);
 			urlPage = "welcome";//管理机构其他角色主界面
 		}else{
 			urlPage = "loginException";//异常界面

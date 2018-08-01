@@ -1,8 +1,12 @@
 package com.patent.web;
 
 import com.patent.factory.AppFactory;
+import com.patent.module.ApplyInfoTb;
 import com.patent.module.CpyUserInfo;
+import com.patent.module.SuperUser;
+import com.patent.service.ApplyInfoManager;
 import com.patent.service.CpyUserInfoManager;
+import com.patent.service.SuperUserManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.DataBaseSqlVerify;
 import com.patent.util.Constants;
@@ -43,7 +47,9 @@ public class UserLoginFilter implements Filter{
 		String param =  httpServletRequest.getQueryString();//action动作地址
 		String filePath = "e:\\attackReport.txt";
 		String oldParam = param;
-		CpyUserInfoManager userManager = null;
+		CpyUserInfoManager cpym = null;
+		ApplyInfoManager am = null;
+		SuperUserManager sum = null;
 		if(param == null || param.equals("")){
 			
 		}else{
@@ -70,27 +76,21 @@ public class UserLoginFilter implements Filter{
 		// 通过检查session中的变量，过滤请求
 		HttpSession session = httpServletRequest.getSession(false);
 		Integer loginFlag = -1;
-		String account = "";
+		String loginType = "";
+		Integer userId = 0;
 		if(session != null){
 			//获取用户session中的loginFlag
 			loginFlag = (Integer)session.getAttribute(Constants.LOGIN_TIMES);
-			//获取用户session中的账号
-			account = String.valueOf(session.getAttribute(Constants.LOGIN_ACCOUNT));
+			//获取用户session中的用户编号
+			userId = (Integer)session.getAttribute(Constants.LOGIN_USER_ID);
+			if(userId == null){
+				userId = 0;
+			}
 		}
 		Integer loginFlag_dataBase = -1;
-		if(account.equals("") || account.equals("null")){
-			/*if(!requesturi.endsWith("/forgetPassword.do") 					
-					&& !requesturi.endsWith("/login.do") 
-					&& !requesturi.endsWith("/easyLogin.do")
-					&& !requesturi.endsWith("/afterlogin.do")
-					&& !requesturi.endsWith("/quickLogin.do")
-					&& !requesturi.endsWith("/index.do")
+		if(userId.equals(0)){
+			if(!requesturi.endsWith("/login.do") 
 					&& !requesturi.endsWith("/authImg")
-					&& !requesturi.endsWith("/StartCaptchaServlet")
-					&& !requesturi.endsWith("/VerifyCheckCodeServlet")
-					&& !requesturi.endsWith("/commonManager.do")
-					&& !requesturi.endsWith("/newsManager.do")
-					&& !requesturi.endsWith("/wxNotify.do")
 					&& !requesturi.endsWith("jsp")
 					&& !requesturi.endsWith("css") 
 					&& !requesturi.endsWith("js")
@@ -98,27 +98,41 @@ public class UserLoginFilter implements Filter{
 					&& !requesturi.endsWith("gif")
 					&& !requesturi.endsWith("jpg")
 					&& !requesturi.endsWith("jpeg")
-					&& !requesturi.endsWith("html")
-					&& !requesturi.endsWith("swf")
 					&& !requesturi.endsWith("ico")
-					&& !requesturi.endsWith("mp4")
-					&& !requesturi.endsWith("apk")
+					&& !requesturi.endsWith("ttf")
 					&& !requesturi.endsWith(httpServletRequest.getContextPath()+ "/")){
-                //System.out.println("Filter启动了作用....");
                 String url = "window.top.location.href='login.do?action=loginOut'";
 				String authorizeScript = "由于您60分钟内没上线，系统已强制您下线，请重新登录！";
 				Ability.PrintAuthorizeScript(url,authorizeScript, httpServletResponse);
                 return;
-            }*/
+            }
 			chain.doFilter(request, response);
 		}else{
 			try {
-				userManager = (CpyUserInfoManager)AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
-				//获取数据库中指定currentUser的loginFlag
-				List<CpyUserInfo> uList = userManager.listSpecInfoByAccount(account);
-				if(uList.size() > 0){
-					loginFlag_dataBase = uList.get(0).getUserLoginTimes();
+				cpym = (CpyUserInfoManager)AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+				am = (ApplyInfoManager)AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
+				sum = (SuperUserManager)AppFactory.instance(null).getApp(Constants.WEB_SUPER_USER_INFO);
+				loginType = String.valueOf(session.getAttribute(Constants.LOGIN_TYPE));
+				if(loginType.equals("cpyUser")){
+					CpyUserInfo cpyUser = cpym.getEntityById(userId);
+					if(cpyUser != null){
+						loginFlag_dataBase = cpyUser.getUserLoginTimes();
+					}
+				}else if(loginType.equals("appUser")){
+					ApplyInfoTb appUser = am.getEntityById(userId);
+					if(appUser != null){
+						loginFlag_dataBase = appUser.getUserLoginTimes();
+					}
+				}else if(loginType.equals("spUser")){
+					List<SuperUser> suList = sum.listInfoById(userId);
+					if(suList.size() > 0){
+						loginFlag_dataBase = suList.get(0).getLoginTimes();
+					}
+				}else{
+					
 				}
+				//获取数据库中指定currentUser的loginFlag
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
