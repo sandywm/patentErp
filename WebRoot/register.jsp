@@ -9,6 +9,36 @@
 	<script src="/plugins/pace/pace.min.js"></script>
   </head>
   <body>
-  	
+  	<div class="layui-form">
+		<div class="layui-input-inline">
+			<select name="province" lay-filter="province" class="province">
+				<option value="">请选择省</option>
+			</select>
+		</div>
+		<div class="layui-input-inline">
+			<select name="city" lay-filter="city" disabled>
+				<option value="">请选择市</option>
+			</select>
+		</div>
+		<div class="layui-input-inline">
+			<select name="area" lay-filter="area" disabled>
+				<option value="">请选择县/区</option>
+			</select>
+		</div>
+	</div>
+	
+  	<script src="/plugins/layui/layui.js"></script>
+  	<script type="text/javascript">
+  		layui.config({
+  			 base: '/plugins/frame/js/'  
+  		});
+  		layui.use(['address','form','jquery'],function(){
+  			var	address = layui.address(),
+  				form = layui.form
+  				$ = layui.jquery;
+  		});
+  		
+  	</script>
   </body>
 </html>
+	
