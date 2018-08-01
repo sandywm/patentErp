@@ -92,6 +92,7 @@
 				layer.msg("密码不能为空", {icon:5,anim:6,time:1000});
 				$("#password").focus().addClass("layui-form-danger");
 			}else{
+				layer.load();
 				$.ajax({
 			        type:"post",
 			        async:false,
@@ -99,6 +100,7 @@
 			        url:"login.do?action=login",
 			        data:{account:account,password:password,vCode:vCode,loginType:loginType},
 			        success:function (json){
+			        	layer.closeAll('loading');
 			        	proccessLogin(json,loginType);
 			        }
 			    });
