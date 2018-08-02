@@ -17,11 +17,14 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 
 import com.alibaba.fastjson.JSON;
+import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.ApplyInfoTb;
+import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.SuperUser;
 import com.patent.service.ApplyInfoManager;
+import com.patent.service.CpyInfoManager;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.SuperUserManager;
 import com.patent.tools.MD5;
@@ -100,15 +103,15 @@ public class UserAction extends DispatchAction {
 			ApplyInfoTb appUser = am.getEntityById(userId);
 			if(appUser != null){
 				map.put("result", "succ");
-				map.put("appId", appUser.getId());
-				map.put("appName", appUser.getAppName());
-				map.put("appType", appUser.getAppType());
+				map.put("id", appUser.getId());
+				map.put("name", appUser.getAppName());
+				map.put("type", appUser.getAppType());
 				map.put("appICard", appUser.getAppICard());
 				map.put("appAddress", appUser.getAppAddress());
 				map.put("appAccount", appUser.getAppAccount());
 				map.put("appLxr", appUser.getAppLxr());
-				map.put("appTel", appUser.getAppTel());
-				map.put("appEmail", appUser.getAppEmail());
+				map.put("tel", appUser.getAppTel());
+				map.put("email", appUser.getAppEmail());
 			}else{
 				map.put("result", "noUser");//查无此人
 			}
@@ -116,8 +119,8 @@ public class UserAction extends DispatchAction {
 			CpyUserInfo cpyUser = cum.getEntityById(userId);
 			if(cpyUser != null){
 				map.put("result", "succ");
-				map.put("userId", cpyUser.getId());
-				map.put("userName", cpyUser.getUserName());
+				map.put("id", cpyUser.getId());
+				map.put("name", cpyUser.getUserName());
 				map.put("account", cpyUser.getUserAccount());
 				map.put("password", cpyUser.getUserPassword());
 				map.put("sex", cpyUser.getUserSex());
@@ -138,11 +141,11 @@ public class UserAction extends DispatchAction {
 			if(suList.size() > 0){
 				SuperUser spUser = suList.get(0);
 				map.put("result", "succ");
-				map.put("userId", spUser.getId());
-				map.put("userName", spUser.getUserName());
+				map.put("id", spUser.getId());
+				map.put("name", spUser.getUserName());
 				map.put("account", spUser.getAccount());
 				map.put("password", spUser.getPassword());
-				map.put("userType", spUser.getUserType());
+				map.put("type", spUser.getUserType());
 			}else{
 				map.put("result", "noUser");//查无此人
 			}
@@ -228,4 +231,117 @@ public class UserAction extends DispatchAction {
         pw.close();
 		return null;
 	}
+	
+	/**
+	 * 获取用户所在的代理机构
+	 * @description
+	 * @author wm
+	 * @date 2018-8-2 上午08:37:49
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCpyDetailInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		Integer userId = this.getLoginUserId(request);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyUserInfo cpyUser = cum.getEntityById(userId);
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(cpyUser != null){
+			CpyInfoTb cpy = cpyUser.getCpyInfoTb();
+			map.put("cpyId", cpy.getId());
+			map.put("cpyName", cpy.getCpyName());
+			map.put("cpyProv", cpy.getCpyProv());
+			map.put("cpyCity", cpy.getCpyCity());
+			map.put("cpyAddress", cpy.getCpyAddress());
+			map.put("cpyFr", cpy.getCpyFr());
+			map.put("cpyYyzz", cpy.getCpyYyzz());
+			map.put("cpyLxr", cpy.getCpyLxr());
+			map.put("lxrTel", cpy.getLxrTel());
+			map.put("lxrEmail", cpy.getLxrEmail());
+			map.put("cpyUrl", cpy.getCpyUrl());
+			map.put("cpyProfile", cpy.getCpyProfile());
+			map.put("signDate", cpy.getSignDate());
+			map.put("endDate", cpy.getEndDate());
+			map.put("hotStatus", cpy.getHotStatus());
+			Integer cpyLevel = cpy.getCpyLevel();
+			String cpyLevelChi = "铁牌";
+			if(cpyLevel.equals(1)){
+				cpyLevelChi = "铜牌";
+			}else if(cpyLevel.equals(1)){
+				cpyLevelChi = "银牌";
+			}else if(cpyLevel.equals(1)){
+				cpyLevelChi = "金牌";
+			}else if(cpyLevel.equals(1)){
+				cpyLevelChi = "钻石";
+			}
+			map.put("cpyLevel", cpyLevelChi);
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 修改代理机构基本信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-2 上午09:02:58
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward updateCpylInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
+		Map<String,String> map = new HashMap<String,String>();
+		String roleName = this.getLoginRoleName(request);
+		String msg = "";
+		if(roleName.equals("管理员")){//只有管理员才能修改
+			CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
+			if(cpyUser != null){
+				Integer cpyId = cpyUser.getCpyInfoTb().getId();
+				if(cpyId > 0){
+					String cpyName = Transcode.unescape(request.getParameter("cpyName"), request);
+					String cpyProv = Transcode.unescape(request.getParameter("cpyProv"), request);
+					String cpyCity = Transcode.unescape(request.getParameter("cpyCity"), request);
+					String cpyAddress = Transcode.unescape(request.getParameter("cpyAddress"), request);
+					String cpyFr = Transcode.unescape(request.getParameter("cpyFr"), request);
+					String cpyYyzz = Transcode.unescape(request.getParameter("cpyYyzz"), request);
+					String cpyLxr = Transcode.unescape(request.getParameter("cpyLxr"), request);
+					String lxrTel = Transcode.unescape(request.getParameter("lxrTel"), request);
+					String lxrEmail = Transcode.unescape(request.getParameter("lxrEmail"), request);
+					String cpyUrl = Transcode.unescape(request.getParameter("cpyUrl"), request);
+					String cpyProfile = Transcode.unescape(request.getParameter("cpyProfile"), request);
+					boolean flag = cm.updateBasicCpyInfoById(cpyId, cpyName,cpyAddress, cpyProv, cpyCity, cpyFr, cpyLxr, lxrTel, lxrEmail, cpyYyzz,cpyUrl, cpyProfile);
+					if(flag){
+						msg = "success";
+					}else{
+						msg = "errot";
+					}
+				}
+			}
+		}else{
+			msg = "noAbility";//没有权限
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
 }

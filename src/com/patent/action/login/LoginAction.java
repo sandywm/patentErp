@@ -434,6 +434,41 @@ public class LoginAction extends DispatchAction {
 	}
 	
 	/**
+	 * 获取当前用户所在省、市
+	 * @description
+	 * @author wm
+	 * @date 2018-8-2 下午04:20:10
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getAreaJsonApp(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		Map<String,String> map = new HashMap<String,String>();
+		String currArea = CommonTools.getSelfArea(CommonTools.getIpAddress(request));
+		if(currArea.equals("un-know")){
+			map.put("result", "error");
+		}else if(currArea.equals(":")){//本地局域网
+			map.put("result", "error");
+		}else{
+			map.put("result", "success");
+			String[] currAraaArr = currArea.split(":");
+			map.put("prov", currAraaArr[0]);
+			map.put("city", currAraaArr[1]);
+		}
+		String json = JSON.toJSONString(map);
+		PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();   
+		return null;
+	}
+	
+	/**
 	 * 注册
 	 * @description
 	 * @author wm
@@ -689,7 +724,7 @@ public class LoginAction extends DispatchAction {
 	}
 	
 	/**
-	 * 判断验证码，成功后返回用户ID和密码
+	 * 判断验证码，成功后自动重置密码，并将密码发送至用户邮箱
 	 * @param mapping
 	 * @param form
 	 * @param request

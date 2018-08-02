@@ -11,6 +11,7 @@ import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ListIterator;
@@ -161,8 +162,15 @@ public class CommonTools {
 		return ipAddress;
 	}
 	
-	
-	public static String searchIpByBaidu(String ip) {
+	/**
+	 * 根据IP地址获取当前省、市
+	 * @description
+	 * @author wm
+	 * @date 2018-8-2 下午04:18:06
+	 * @param ip
+	 * @return
+	 */
+	public static String getSelfArea(String ip) {
 		String address="";
 		String prov = "",city = "";
 		String strUrl="https://sp0.baidu.com/8aQDcjqpAAV3otqbppnN2DJv/api.php?query="+ip+"&co=&resource_id=6006&t=1444747793291&ie=utf8&oe=utf8&cb=op_aladdin_callback&format=json&tn=baidu&cb=jQuery110207215902183078953_1444747767470&_=1444747767472";
@@ -175,7 +183,7 @@ public class CommonTools {
 	        // Send post request
 	        con.setDoOutput(true);
 	        BufferedReader in = new BufferedReader(
-	                new InputStreamReader(con.getInputStream()));
+	                new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 	        String inputLine;
 	        StringBuffer response = new StringBuffer();
 	 

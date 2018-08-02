@@ -46,12 +46,39 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 	}
 
 	@Override
-	public boolean updateBasicCpyInfoById(Integer id, String cpyAddress,
-			String cpyProv, String cpyCity, String cpyFr, String cpyLxr,
-			String lxrTel, String lxrEmail, String cpyUrl, String cpyProfile)
+	public boolean updateBasicCpyInfoById(Integer id, String cpyName,String cpyAddress,String cpyProv,String cpyCity,String cpyFr,
+			String cpyLxr,String lxrTel,String lxrEmail,String cpyYyzz,String cpyUrl,String cpyProfile)
 			throws WEBException {
 		// TODO Auto-generated method stub
-		return false;
+		try {
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CpyInfoTb cpy = cDao.get(sess, id);
+			if(cpy != null){
+				cpy.setCpyName(cpyName);
+				cpy.setCpyAddress(cpyAddress);
+				cpy.setCpyProv(cpyProv);
+				cpy.setCpyCity(cpyCity);
+				cpy.setCpyFr(cpyFr);
+				cpy.setCpyLxr(cpyLxr);
+				cpy.setLxrTel(lxrTel);
+				cpy.setLxrEmail(lxrEmail);
+				cpy.setCpyYyzz(cpyYyzz);
+				cpy.setCpyUrl(cpyUrl);
+				cpy.setCpyProfile(cpyProfile);
+				cDao.update(sess, cpy);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据主键修改代理机构基本信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override

@@ -31,20 +31,22 @@ public interface CpyInfoManager {
 	 * @author wm
 	 * @date 2018-7-24 下午05:11:42
 	 * @param id
-	 *@param cpyAddress 公司地址
+	 * @param cpyName 公司名字
+	 * @param cpyAddress 公司地址
 	 * @param cpyProv 公司所在省份
 	 * @param cpyCity 公司所在城市
 	 * @param cpyFr 公司法人
 	 * @param cpyLxr 公司联系人
 	 * @param lxrTel 联系人电话
 	 * @param lxrEmail 联系人邮箱
+	 * @param cpyYyzz 营业执照
 	 * @param cpyUrl 公司网址
 	 * @param cpyProfile 公司简介
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateBasicCpyInfoById(Integer id,String cpyAddress,String cpyProv,String cpyCity,String cpyFr,
-			String cpyLxr,String lxrTel,String lxrEmail,String cpyUrl,String cpyProfile) throws WEBException;
+	boolean updateBasicCpyInfoById(Integer id,String cpyName,String cpyAddress,String cpyProv,String cpyCity,String cpyFr,
+			String cpyLxr,String lxrTel,String lxrEmail,String cpyYyzz,String cpyUrl,String cpyProfile) throws WEBException;
 	
 	/**
 	 * 修改主/分公司信息编号
