@@ -10,7 +10,8 @@ public class WebUrl {
     //web-info路径
     public static String DATA_URL_WEB_INFO;
     
-    //上传文件留存地
-    public static String DATA_URL_UPLOAD;
+    
+    //上传营业执照留存地
+    public static String DATA_URL_YYZZ_UPLOAD;
     
 }

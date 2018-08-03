@@ -400,7 +400,7 @@ public class LoginAction extends DispatchAction {
 		// TODO Auto-generated method stub
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
-		String signType = String.valueOf(request.getParameter("signType"));//cpy(代理机构注册),app(申请人/公司注册)
+		String signType = String.valueOf(request.getParameter("signType"));//cpyUser(代理机构注册),appUser(申请人/公司注册)
 		String account = request.getParameter("account");
 		boolean flag = DataBaseSqlVerify.checkSql(account);
 		Map<String,String> map = new HashMap<String,String>();
@@ -408,13 +408,13 @@ public class LoginAction extends DispatchAction {
 		if(flag){
 			msg = "unlaw";//账号含有非法字符
 		}else{
-			if(signType.equals("cpy")){
+			if(signType.equals("cpyUser")){
 				if(cum.listSpecInfoByAccount(account).size() > 0){
 					msg = "exist";//存在
 				}else{
 					msg = "noExist";//不存在
 				}
-			}else if(signType.equals("app")){
+			}else if(signType.equals("appUser")){
 				if(am.listInfoByAccount(account).size() > 0){
 					msg = "exist";
 				}else{
@@ -487,7 +487,7 @@ public class LoginAction extends DispatchAction {
 		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
 		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
 		CpyInfoManager cm = (CpyInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO);
-		String signType = String.valueOf(request.getParameter("signType"));//cpy(代理机构注册),app(申请人/公司注册)
+		String signType = String.valueOf(request.getParameter("signType"));//cpyUser(代理机构注册),appUser(申请人/公司注册)
 		String msg = "";
 		MD5 md5 = new MD5();
 		

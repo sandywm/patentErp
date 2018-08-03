@@ -41,7 +41,7 @@ public class UploadImgServlet extends HttpServlet {
 		// 获取文件部件part
 		Part part = request.getPart("fileToUpload"); // request.getParts();
 		//自定义目录
-		String ipthum=WebUrl.DATA_URL_UPLOAD;
+		String ipthum=WebUrl.DATA_URL_YYZZ_UPLOAD;
 		// 获取文件服务器头部信息
 		String root = request.getServletContext().getRealPath(ipthum);
 		File file = new File(root);

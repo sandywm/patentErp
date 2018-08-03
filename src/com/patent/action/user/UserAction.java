@@ -161,6 +161,44 @@ public class UserAction extends DispatchAction {
 	}
 	
 	/**
+	 * 修改个人基本信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-3 上午11:13:55
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward updateUserDetail(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		Integer userId = this.getLoginUserId(request);
+		String loginType = this.getLoginType(request);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
+		SuperUserManager sum = (SuperUserManager)  AppFactory.instance(null).getApp(Constants.WEB_SUPER_USER_INFO);
+		if(loginType.equals("appUser")){//申请人/公司身份
+			String appiCard = request.getParameter("appiCard");
+			String address = Transcode.unescape(request.getParameter("address"), request);
+			String lxr = Transcode.unescape(request.getParameter("lxr"), request);
+			String tel = request.getParameter("tel");
+			String email = request.getParameter("email");
+			String qq = request.getParameter("qq");
+//			am.updateAppLoginInfoById(id, lastLoginDate, userLoginTimes);
+		}else if(loginType.equals("cpyUser")){//代理机构
+			
+		}else if(loginType.equals("spUser")){//平台用户
+			
+		}else{
+			
+		}
+		return null;
+	}
+	
+	/**
 	 * 修改用户密码
 	 * @author Administrator
 	 * @date 2018-7-31 下午09:37:46
@@ -328,7 +366,7 @@ public class UserAction extends DispatchAction {
 					if(flag){
 						msg = "success";
 					}else{
-						msg = "errot";
+						msg = "error";
 					}
 				}
 			}

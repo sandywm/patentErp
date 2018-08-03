@@ -76,7 +76,26 @@ public class ApplyInfoManagerImpl implements ApplyInfoManager{
 	public boolean updateAppLoginInfoById(Integer id, String lastLoginDate,
 			Integer userLoginTimes) throws WEBException {
 		// TODO Auto-generated method stub
-		return false;
+		try {
+			aDao = (ApplyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_APPLY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ApplyInfoTb app = aDao.get(sess, id);
+			if(app != null){
+				app.setLastLoginDate(lastLoginDate);
+				app.setUserLoginTimes(userLoginTimes);
+				aDao.update(sess, app);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("更新指定申请专利(人/公司)账号的登录信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override
