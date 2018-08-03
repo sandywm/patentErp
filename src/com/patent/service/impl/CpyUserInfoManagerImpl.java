@@ -49,18 +49,68 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 
 	@Override
 	public boolean updateBasicInfoById(Integer id, String userName,
-			String userNamePy, String password, String userSex,
-			String userEmail, String userTel, String userOutDate,
-			Integer userLzStatus, Integer userYxStatus) throws WEBException {
+			String userNamePy, String userSex,
+			String userEmail, String userTel) throws WEBException {
 		// TODO Auto-generated method stub
-		return false;
+		try {
+			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CpyUserInfo cUser = cUserDao.get(sess, id);
+			if(cUser != null){
+				cUser.setUserName(userName);
+				cUser.setUserNamePy(userNamePy);
+				cUser.setUserSex(userSex);
+				cUser.setUserEmail(userEmail);
+				cUser.setUserTel(userTel);
+				cUserDao.update(sess, cUser);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("修改用户基本信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override
 	public boolean updateInfoById(Integer id, Integer newUserZxNum,
-			String userScFiledIdStr, Integer newUserExper) throws WEBException {
+			String userScFiledIdStr,String userScFiledNameStr,Integer newUserExper) throws WEBException {
 		// TODO Auto-generated method stub
-		return false;
+		try {
+			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CpyUserInfo cUser = cUserDao.get(sess, id);
+			if(cUser != null){
+				if(newUserZxNum > 0){
+					cUser.setUserZxNum(cUser.getUserZxNum() + newUserZxNum);
+				}
+				if(!userScFiledIdStr.equals("") && !userScFiledNameStr.equals("")){
+					cUser.setUserScFiledId(userScFiledIdStr);
+					cUser.setUserScFiledName(userScFiledNameStr);
+				}
+				if(newUserExper > 0){
+					cUser.setUserExper(cUser.getUserExper() + newUserExper);
+				}
+				cUserDao.update(sess, cUser);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("修改代理机构用户高级信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override
@@ -173,6 +223,42 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new  WEBException("修改用户密码时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateUserInfoById(Integer id, String outDate,
+			Integer lzSatatus, Integer yxStatus) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CpyUserInfo cpyUser = cUserDao.get(sess, id);
+			if(cpyUser != null){
+				if(lzSatatus.equals(0) || lzSatatus.equals(1)){
+					if(lzSatatus.equals(0)){
+						cpyUser.setUserOutDate(outDate);
+					}else{
+						cpyUser.setUserOutDate("");
+					}
+					cpyUser.setUserLzStatus(lzSatatus);
+				}
+				if(yxStatus.equals(0) || yxStatus.equals(1)){
+					cpyUser.setUserYxStatus(yxStatus);
+				}
+				cUserDao.update(sess, cpyUser);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据主键修改用户离职、账号有效状态时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

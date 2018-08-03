@@ -11,6 +11,7 @@ import com.patent.factory.DaoFactory;
 import com.patent.module.ApplyInfoTb;
 import com.patent.service.ApplyInfoManager;
 import com.patent.tools.HibernateUtil;
+import com.patent.tools.MD5;
 import com.patent.util.Constants;
 
 public class ApplyInfoManagerImpl implements ApplyInfoManager{
@@ -126,7 +127,7 @@ public class ApplyInfoManagerImpl implements ApplyInfoManager{
 			ApplyInfoTb app = aDao.get(sess, userId);
 			if(app != null){
 				if(!newPass.equals("")){
-					app.setAppPass(newPass);
+					app.setAppPass(new MD5().calcMD5(newPass));
 					aDao.update(sess, app);
 					tran.commit();
 					return true;
@@ -138,6 +139,35 @@ public class ApplyInfoManagerImpl implements ApplyInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new  WEBException("根据主键修改申请专利（人/公司）密码时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateUserDetailById(Integer appUserId, String iCard, String address,
+			String lxr, String tel, String email, String qq)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			aDao = (ApplyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_APPLY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ApplyInfoTb app = aDao.get(sess, appUserId);
+			if(app != null){
+				app.setAppICard(iCard);
+				app.setAppAddress(address);
+				app.setAppLxr(lxr);
+				app.setAppTel(tel);
+				app.setAppEmail(email);
+				app.setAppQq(qq);
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("修改指定用户的指定信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

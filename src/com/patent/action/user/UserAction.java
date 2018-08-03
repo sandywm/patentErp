@@ -27,6 +27,7 @@ import com.patent.service.ApplyInfoManager;
 import com.patent.service.CpyInfoManager;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.SuperUserManager;
+import com.patent.tools.Convert;
 import com.patent.tools.MD5;
 import com.patent.util.Constants;
 
@@ -102,7 +103,7 @@ public class UserAction extends DispatchAction {
 		if(loginType.equals("appUser")){//申请人/公司身份
 			ApplyInfoTb appUser = am.getEntityById(userId);
 			if(appUser != null){
-				map.put("result", "succ");
+				map.put("result", "success");
 				map.put("id", appUser.getId());
 				map.put("name", appUser.getAppName());
 				map.put("type", appUser.getAppType());
@@ -118,11 +119,10 @@ public class UserAction extends DispatchAction {
 		}else if(loginType.equals("cpyUser")){//代理机构
 			CpyUserInfo cpyUser = cum.getEntityById(userId);
 			if(cpyUser != null){
-				map.put("result", "succ");
+				map.put("result", "success");
 				map.put("id", cpyUser.getId());
 				map.put("name", cpyUser.getUserName());
 				map.put("account", cpyUser.getUserAccount());
-				map.put("password", cpyUser.getUserPassword());
 				map.put("sex", cpyUser.getUserSex());
 				map.put("email", cpyUser.getUserEmail());
 				map.put("tel", cpyUser.getUserTel());
@@ -140,11 +140,10 @@ public class UserAction extends DispatchAction {
 			List<SuperUser> suList = sum.listInfoById(userId);
 			if(suList.size() > 0){
 				SuperUser spUser = suList.get(0);
-				map.put("result", "succ");
+				map.put("result", "success");
 				map.put("id", spUser.getId());
 				map.put("name", spUser.getUserName());
 				map.put("account", spUser.getAccount());
-				map.put("password", spUser.getPassword());
 				map.put("type", spUser.getUserType());
 			}else{
 				map.put("result", "noUser");//查无此人
@@ -161,7 +160,7 @@ public class UserAction extends DispatchAction {
 	}
 	
 	/**
-	 * 修改个人基本信息
+	 * 修改个人基本信息(代理机构和申请人/公司用)
 	 * @description
 	 * @author wm
 	 * @date 2018-8-3 上午11:13:55
@@ -179,7 +178,8 @@ public class UserAction extends DispatchAction {
 		String loginType = this.getLoginType(request);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
-		SuperUserManager sum = (SuperUserManager)  AppFactory.instance(null).getApp(Constants.WEB_SUPER_USER_INFO);
+		boolean flag = false;
+		Map<String,Boolean> map = new HashMap<String,Boolean>();
 		if(loginType.equals("appUser")){//申请人/公司身份
 			String appiCard = request.getParameter("appiCard");
 			String address = Transcode.unescape(request.getParameter("address"), request);
@@ -187,14 +187,28 @@ public class UserAction extends DispatchAction {
 			String tel = request.getParameter("tel");
 			String email = request.getParameter("email");
 			String qq = request.getParameter("qq");
-//			am.updateAppLoginInfoById(id, lastLoginDate, userLoginTimes);
+			flag = am.updateUserDetailById(userId, appiCard, address, lxr, tel, email, qq);
 		}else if(loginType.equals("cpyUser")){//代理机构
-			
-		}else if(loginType.equals("spUser")){//平台用户
-			
+			String userName = Transcode.unescape(request.getParameter("name"), request);
+			String userNamePy =  Convert.getFirstSpell(userName);
+			String userSex = request.getParameter("sex");
+			String userEmail = request.getParameter("email");
+			String userTel = request.getParameter("tel");
+			flag = cum.updateBasicInfoById(userId, userName, userNamePy, userSex, userEmail, userTel);
+			if(flag){
+				String userScFiledIdStr = request.getParameter("userScFiledIdStr");
+				String userScFiledNameStr = Transcode.unescape(request.getParameter("userScFiledNameStr"), request);
+				flag = cum.updateInfoById(userId, 0, userScFiledIdStr, userScFiledNameStr, 0);
+			}
 		}else{
 			
 		}
+		map.put("result", flag);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
 		return null;
 	}
 	
@@ -241,7 +255,7 @@ public class UserAction extends DispatchAction {
 				ApplyInfoTb app = am.getEntityById(userId);
 				if(app != null){
 					String pass_db = app.getAppPass();
-					if(pass_db.equalsIgnoreCase(md5.calcMD5(newPass))){
+					if(pass_db.equalsIgnoreCase(md5.calcMD5(inputPass_old))){
 						am.updatePassById(userId, newPass);
 						msg = "success";
 					}else{
@@ -252,7 +266,7 @@ public class UserAction extends DispatchAction {
 				List<SuperUser> suList = sum.listInfoById(userId);
 				if(suList.size() > 0){
 					String pass_db = suList.get(0).getPassword();
-					if(pass_db.equalsIgnoreCase(md5.calcMD5(newPass))){
+					if(pass_db.equalsIgnoreCase(md5.calcMD5(inputPass_old))){
 						sum.updateSUserById(userId, newPass, "");
 						msg = "success";
 					}else{
@@ -271,7 +285,7 @@ public class UserAction extends DispatchAction {
 	}
 	
 	/**
-	 * 获取用户所在的代理机构
+	 * 获取用户所在的代理机构信息
 	 * @description
 	 * @author wm
 	 * @date 2018-8-2 上午08:37:49
@@ -291,6 +305,7 @@ public class UserAction extends DispatchAction {
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(cpyUser != null){
 			CpyInfoTb cpy = cpyUser.getCpyInfoTb();
+			map.put("result", "success");
 			map.put("cpyId", cpy.getId());
 			map.put("cpyName", cpy.getCpyName());
 			map.put("cpyProv", cpy.getCpyProv());
@@ -318,6 +333,8 @@ public class UserAction extends DispatchAction {
 				cpyLevelChi = "钻石";
 			}
 			map.put("cpyLevel", cpyLevelChi);
+		}else{
+			map.put("result", "error");
 		}
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  

@@ -106,4 +106,21 @@ public interface ApplyInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updatePassById(Integer userId,String newPass) throws WEBException;
+	
+	/**
+	 * 修改指定用户的指定信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-3 下午04:03:09
+	 * @param appUserId 用户编号
+	 * @param iCard 公司机构代码/个人身份证号
+	 * @param address 申请人/公司地址
+	 * @param lxr 申请人/公司联系人
+	 * @param tel 申请人/公司电话
+	 * @param email 申请人/公司邮箱
+	 * @param qq 申请人/公司QQ
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateUserDetailById(Integer appUserId, String iCard,String address,String lxr,String tel,String email,String qq) throws WEBException;
 }

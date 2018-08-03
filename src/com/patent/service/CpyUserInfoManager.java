@@ -38,19 +38,14 @@ public interface CpyUserInfoManager {
 	 * @param id
 	 * @param userName 员工姓名（""不修改）
 	 * @param userNamePy 员工姓名拼音（""不修改）
-	 * @param password 员工密码（""不修改）
 	 * @param userSex 员工性别（""不修改）
 	 * @param userEmail 员工邮箱（""不修改）
 	 * @param userTel 员工电话（""不修改）
-	 * @param userOutDate 员工离职时间（""不修改）
-	 * @param userLzStatus 员工离职状态（0,1才能修改）
-	 * @param userYxStatus 员工账号有效状态（0,1才能修改）
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateBasicInfoById(Integer id,String userName,String userNamePy,String password,
-			String userSex,String userEmail,String userTel,String userOutDate,Integer userLzStatus,
-			Integer userYxStatus) throws WEBException;
+	boolean updateBasicInfoById(Integer id,String userName,String userNamePy,
+			String userSex,String userEmail,String userTel) throws WEBException;
 	
 	/**
 	 * 修改代理机构员工高级信息
@@ -60,14 +55,15 @@ public interface CpyUserInfoManager {
 	 * @param id
 	 * @param newUserZxNum 新增的员工撰写数量（大于0修改）
 	 * @param userScFiledIdStr 员工擅长专业领域修改(""时不修改)
+	 * @param userScFiledNameStr 员工擅长专业领域修改(""时不修改)
 	 * @param newUserExper 新增的员工经验（大于0修改）
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateInfoById(Integer id,Integer newUserZxNum,String userScFiledIdStr,Integer newUserExper) throws WEBException;
+	boolean updateInfoById(Integer id,Integer newUserZxNum,String userScFiledIdStr,String userScFiledNameStr,Integer newUserExper) throws WEBException;
 	
 	/**
-	 * 修改运功登录信息
+	 * 修改员工登录信息
 	 * @description
 	 * @author wm
 	 * @date 2018-7-24 上午09:30:43
@@ -153,4 +149,18 @@ public interface CpyUserInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updatePassById(Integer id,String newPass) throws WEBException;
+	
+	/**
+	 * 根据主键修改用户离职、账号有效状态
+	 * @description
+	 * @author wm
+	 * @date 2018-8-3 下午04:39:59
+	 * @param id
+	 * @param outDate 离职时间（""时不修改）
+	 * @param lzSatatus 离职状态（-1时不修改）
+	 * @param yxStatus 有效状态（-1时不修改）
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateUserInfoById(Integer id,String outDate,Integer lzSatatus,Integer yxStatus) throws WEBException;
 }
