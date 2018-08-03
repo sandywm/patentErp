@@ -12,7 +12,7 @@ public class PageConst
     public static int getPageNo(String pageNoStr, int pageCount)
     {
         int pageNo;
-        if(pageNoStr == null || pageNoStr.trim().equals(""))
+        if(pageNoStr == "null" || pageNoStr.trim().equals(""))
             pageNo = 0;
         try
         {

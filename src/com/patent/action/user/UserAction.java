@@ -23,8 +23,10 @@ import com.patent.module.ApplyInfoTb;
 import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.SuperUser;
+import com.patent.page.PageConst;
 import com.patent.service.ApplyInfoManager;
 import com.patent.service.CpyInfoManager;
+import com.patent.service.CpyRoleInfoManager;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.SuperUserManager;
 import com.patent.tools.Convert;
@@ -398,5 +400,142 @@ public class UserAction extends DispatchAction {
         pw.close();
 		return null;
 	}
+
+	/**
+	 * 管理员增加代理机构员工
+	 * @author Administrator
+	 * @date 2018-8-3 下午10:45:42
+	 * @ModifiedBy
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward addCpyUserInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
+		String roleName = this.getLoginRoleName(request);
+		Integer userId = this.getLoginUserId(request);
+		CpyUserInfo cUser = cum.getEntityById(userId);
+		Integer cpyId = 0;
+		String msg = "";
+		if(cUser != null){
+			cpyId = cUser.getCpyInfoTb().getId();
+			if(roleName.equals("管理员")){//只有管理员才能增加
+				String userName = Transcode.unescape(request.getParameter("name"), request);
+				String userNamePy =  Convert.getFirstSpell(userName);
+				String account = request.getParameter("account");
+				String userSex = request.getParameter("sex");
+				String userEmail = request.getParameter("email");
+				String userTel = request.getParameter("tel");
+				String inDate = request.getParameter("inDate");
+				String userScFiledIdStr = request.getParameter("userScFiledIdStr");
+				String userScFiledNameStr = Transcode.unescape(request.getParameter("userScFiledNameStr"), request);
+				Integer roleId = Integer.parseInt(request.getParameter("roleId"));
+				Integer cpyUserId = cum.addCpyUser(cpyId, userName, userNamePy, account, new MD5().calcMD5("123456"), userSex, 
+						userEmail, userTel, inDate, userScFiledIdStr, userScFiledNameStr);
+				if(cpyUserId > 0){
+					//绑定员工角色
+					Integer cruId = crm.addRoleUser(roleId, cpyUserId);
+					if(cruId > 0){
+						msg = "success";
+					}else{
+						msg = "error";
+					}
+				}else{
+					msg = "error";	
+				}
+			}else{
+				msg = "noAbility";
+			}
+		}else{
+			msg = "fail";
+		}
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
 	
+	/**
+	 * 根据条件分页获取当前代理机构的所有用户列表
+	 * @author Administrator
+	 * @date 2018-8-3 下午11:09:41
+	 * @ModifiedBy
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCpyUserPageInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+		Integer cpyId = 0;
+		if(cUser != null){
+			cpyId = cUser.getCpyInfoTb().getId();
+			Integer userLzStatus = Integer.parseInt(request.getParameter("userLzStatus"));
+			Integer userYxStatus = Integer.parseInt(request.getParameter("userYxStatus"));
+			Integer roleId = Integer.parseInt(request.getParameter("roleId"));
+			String userNamePy = request.getParameter("userNamePy");
+			Integer count = cum.getCountByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy);
+			if(count > 0){
+				Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("pageSize")), 10);
+				Integer pageCount = PageConst.getPageCount(count, pageSize);
+				Integer pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
+				List<CpyUserInfo> cUserList = cum.listPageInfoByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy, pageNo, pageSize);
+				Map<String,Object> map = new HashMap<String,Object>();
+				
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * 根据条件获取当前代理机构的所有用户记录条数
+	 * @author Administrator
+	 * @date 2018-8-3 下午11:10:41
+	 * @ModifiedBy
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCpyUserCount(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+		Integer cpyId = 0;
+		Integer count = 0;
+		Map<String,Integer> map = new HashMap<String,Integer>();
+		if(cUser != null){
+			cpyId = cUser.getCpyInfoTb().getId();
+			Integer userLzStatus = Integer.parseInt(request.getParameter("userLzStatus"));
+			Integer userYxStatus = Integer.parseInt(request.getParameter("userYxStatus"));
+			Integer roleId = Integer.parseInt(request.getParameter("roleId"));
+			String userNamePy = request.getParameter("userNamePy");
+			count = cum.getCountByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy);
+		}
+		map.put("result", count);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
 }

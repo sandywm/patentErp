@@ -541,7 +541,7 @@ public class LoginAction extends DispatchAction {
 				if(am.listInfoByAccount(account).size() > 0 || cum.listSpecInfoByAccount(account).size() > 0){
 					msg = "exist";
 				}else{
-					Integer appId = am.addAppInfo(appType, comName, namePy, appICard, comAddress, account, password, comLxr, comTel, email, appQQ);
+					Integer appId = am.addAppInfo(appType, comName, namePy, appICard, comAddress, account, md5.calcMD5(password), comLxr, comTel, email, appQQ);
 					if(appId > 0){
 						msg = "success";//成功
 					}else{
