@@ -18,17 +18,17 @@ public class ApplyInfoManagerImpl implements ApplyInfoManager{
 	ApplyInfoDao aDao = null;
 	Transaction tran = null;
 	@Override
-	public Integer addAppInfo(String appType, String appName, String appNamePy,
-			String appICard, String appAddress, String account,
-			String password, String appLxr, String lxrTel, String appEmail,
-			String appQQ) throws WEBException {
+	public Integer addAppInfo(String appType, String appName, String appNamePy,String appICard,
+			String appAddress, String appAccount, String appPass,
+			String appLxr, String appTel, String appEmail, String appQq) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			aDao = (ApplyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_APPLY_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			ApplyInfoTb app = new ApplyInfoTb(appType, appName, appNamePy,account,
-					password, appLxr, lxrTel,"",0);
+			ApplyInfoTb app = new ApplyInfoTb(appType, appName, appNamePy,appICard,
+					appAddress, appAccount, appPass,appLxr, appTel, appEmail, 
+					appQq,"",0);
 			aDao.save(sess, app);
 			tran.commit();
 			return app.getId();

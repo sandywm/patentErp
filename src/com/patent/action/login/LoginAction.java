@@ -492,30 +492,31 @@ public class LoginAction extends DispatchAction {
 		MD5 md5 = new MD5();
 		
 		String comName = Transcode.unescape(request.getParameter("name"), request);//公司名字
-		String comAddress = Transcode.unescape(request.getParameter("address"), request);//公司地址
+		String comAddress = "";//公司地址
 		String comProv = Transcode.unescape(request.getParameter("prov"), request);//公司所在省份
 		String comCity = Transcode.unescape(request.getParameter("city"), request);//公司所在城市
 		String comLxr = Transcode.unescape(request.getParameter("lxr"), request);//公司联系人
-		String namePy = Convert.getFirstSpell(comLxr);
-		String email = request.getParameter("email");//邮箱
+		String email = request.getParameter("email");//个人邮箱--用于找回密码
 		String comTel = Transcode.unescape(request.getParameter("tel"), request);//公司联系电话
 		
 		String account = request.getParameter("account");
 		String password = request.getParameter("password");
 		if(signType.equals("cpyUser")){//代理机构注册
-			String cpyFr = Transcode.unescape(request.getParameter("cpyFr"), request);//公司法人
+			String cpyFr = "";//公司法人
 			boolean flag = DataBaseSqlVerify.checkSql(account);
 			if(!flag){
 				//检查账号不能重复(两张表中账号不能相同)
 				if(cum.listSpecInfoByAccount(account).size() > 0 || am.listInfoByAccount(account).size() > 0){
 					msg = "exist";
 				}else{
-					Integer cpyId = cm.addCpy(comName, comAddress, comProv, comCity, cpyFr, comLxr, comTel);
+					Integer cpyId = cm.addCpy(comName, comAddress, comProv, comCity, cpyFr, "", comLxr, comTel, "", 
+							"0", 0, "", "", CurrentTime.getStringDate(), CurrentTime.stringToDate_1(CurrentTime.getFinalDate(Constants.freeDays)), 0, 0);
 					if(cpyId > 0){
 						//自动为每个代理机构初始一个管理员身份
 						Integer roleId = crm.addRole("管理员", "管理机构基本信息", cpyId);
 						//增加代理机构管理员
-						Integer cpyUserId = cum.addCpyUser(comLxr, namePy, account, md5.calcMD5(password), "0", email, comTel, CurrentTime.getStringDate(), cpyId, "");
+						Integer cpyUserId = cum.addCpyUser(cpyId, "", "", account, md5.calcMD5(password), "m", 
+								email, "", CurrentTime.getStringDate(), "", "");
 						//增加身份绑定
 						Integer ruId = crm.addRoleUser(roleId, cpyUserId);
 						if(ruId > 0){
@@ -532,8 +533,9 @@ public class LoginAction extends DispatchAction {
 			}
 		}else if(signType.equals("appUser")){//申请公司注册
 			String appType = request.getParameter("appType");//申请人/公司类型
-			String appICard = request.getParameter("appiCard");//申请人/公司卡号
-			String appQQ = request.getParameter("appQQ");//申请人/公司QQ
+			String namePy = Convert.getFirstSpell(comName);
+			String appICard = "";//申请人/公司卡号
+			String appQQ = "";//申请人/公司QQ
 			boolean flag = DataBaseSqlVerify.checkSql(account);
 			if(!flag){
 				if(am.listInfoByAccount(account).size() > 0 || cum.listSpecInfoByAccount(account).size() > 0){

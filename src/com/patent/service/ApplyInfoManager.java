@@ -26,8 +26,9 @@ public interface ApplyInfoManager {
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addAppInfo(String appType,String appName,String appNamePy,String appICard,String appAddress,
-			String account,String password,String appLxr,String lxrTel,String appEmail,String appQQ) throws WEBException;
+	Integer addAppInfo(String appType, String appName, String appNamePy,String appICard,
+			String appAddress, String appAccount, String appPass,
+			String appLxr, String appTel, String appEmail, String appQq) throws WEBException;
 	
 	/**
 	 * 根据条件分页获取申请专利(人/公司)信息记录列表

@@ -9,6 +9,7 @@ import com.patent.dao.CpyInfoDao;
 import com.patent.dao.CpyUserInfoDao;
 import com.patent.exception.WEBException;
 import com.patent.factory.DaoFactory;
+import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.tools.HibernateUtil;
@@ -21,10 +22,10 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 	CpyInfoDao cDao = null;
 	Transaction tran = null;
 	@Override
-	public Integer addCpyUser(String userName, String userNamePy,
-			String account, String password, String userSex, String userEmail,
-			String userTel, String userInDate, Integer cpyId,
-			String userScFieldIdStr) throws WEBException {
+	public Integer addCpyUser(Integer cpyId, String userName,String userNamePy,
+			String userAccount, String userPassword, String userSex,
+			String userEmail, String userTel, String userInDate,
+			String userScFieldIdStr, String userScFiledName) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
@@ -32,8 +33,8 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
 			CpyUserInfo cpyUser = new CpyUserInfo(cDao.get(sess, cpyId), userName,userNamePy,
-					account, password, userSex,userEmail, userTel, userInDate,"", 1, 1,
-					0, "", "","", 0,0);
+					userAccount, userPassword, userSex,userEmail, userTel, userInDate,
+					"", 1, 1,0, userScFieldIdStr, userScFiledName, "",0,0);
 			cUserDao.save(sess, cpyUser);
 			tran.commit();
 			return cpyUser.getId();

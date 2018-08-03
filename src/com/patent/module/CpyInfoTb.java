@@ -18,6 +18,7 @@ public class CpyInfoTb implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private Integer id;
 	private String cpyName;
+	private String cpyNamePy;
 	private String cpyAddress;
 	private String cpyProv;
 	private String cpyCity;
@@ -47,11 +48,13 @@ public class CpyInfoTb implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public CpyInfoTb(String cpyName, String cpyAddress, String cpyProv,
+	public CpyInfoTb(String cpyName, String cpyNamePy,String cpyAddress, String cpyProv,
 			String cpyCity, String cpyFr, String cpyYyzz, String cpyLxr,
-			String lxrTel, String cpySubId, Integer cpyParId, Date signDate,
-			Date endDate, Integer hotStatus, Integer cpyLevel) {
+			String lxrTel, String lxrEmail, String cpySubId, Integer cpyParId,
+			String cpyUrl, String cpyProfile, Date signDate, Date endDate,
+			Integer hotStatus, Integer cpyLevel) {
 		this.cpyName = cpyName;
+		this.cpyNamePy = cpyNamePy;
 		this.cpyAddress = cpyAddress;
 		this.cpyProv = cpyProv;
 		this.cpyCity = cpyCity;
@@ -59,8 +62,11 @@ public class CpyInfoTb implements java.io.Serializable {
 		this.cpyYyzz = cpyYyzz;
 		this.cpyLxr = cpyLxr;
 		this.lxrTel = lxrTel;
+		this.lxrEmail = lxrEmail;
 		this.cpySubId = cpySubId;
 		this.cpyParId = cpyParId;
+		this.cpyUrl = cpyUrl;
+		this.cpyProfile = cpyProfile;
 		this.signDate = signDate;
 		this.endDate = endDate;
 		this.hotStatus = hotStatus;
@@ -68,13 +74,14 @@ public class CpyInfoTb implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public CpyInfoTb(Integer id,String cpyName, String cpyAddress, String cpyProv,
+	public CpyInfoTb(Integer id,String cpyName, String cpyNamePy,String cpyAddress, String cpyProv,
 			String cpyCity, String cpyFr, String cpyYyzz, String cpyLxr,
 			String lxrTel, String lxrEmail, String cpySubId, Integer cpyParId,
 			String cpyUrl, String cpyProfile, Date signDate, Date endDate,
 			Integer hotStatus, Integer cpyLevel) {
 		this.id = id;
 		this.cpyName = cpyName;
+		this.cpyNamePy = cpyNamePy;
 		this.cpyAddress = cpyAddress;
 		this.cpyProv = cpyProv;
 		this.cpyCity = cpyCity;
@@ -277,6 +284,14 @@ public class CpyInfoTb implements java.io.Serializable {
 
 	public void setZlajMainInfoTbs(Set<ZlajMainInfoTb> zlajMainInfoTbs) {
 		this.zlajMainInfoTbs = zlajMainInfoTbs;
+	}
+
+	public String getCpyNamePy() {
+		return cpyNamePy;
+	}
+
+	public void setCpyNamePy(String cpyNamePy) {
+		this.cpyNamePy = cpyNamePy;
 	}
 
 

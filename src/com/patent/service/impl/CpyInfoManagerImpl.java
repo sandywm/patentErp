@@ -11,6 +11,7 @@ import com.patent.exception.WEBException;
 import com.patent.factory.DaoFactory;
 import com.patent.module.CpyInfoTb;
 import com.patent.service.CpyInfoManager;
+import com.patent.tools.Convert;
 import com.patent.tools.CurrentTime;
 import com.patent.tools.HibernateUtil;
 import com.patent.util.Constants;
@@ -22,7 +23,9 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 	
 	@Override
 	public Integer addCpy(String cpyName, String cpyAddress, String cpyProv,
-			String cpyCity, String cpyFr, String cpyLxr, String lxrTel)
+			String cpyCity, String cpyFr, String cpyYyzz, String cpyLxr, String lxrTel,
+			String lxrEmail,String cpySubId,Integer cpyParId,String cpyUrl, String cpyProfile, 
+			String signDate, Date endDate,Integer hotStatus, Integer cpyLevel)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		
@@ -30,9 +33,9 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			CpyInfoTb cpy = new CpyInfoTb(cpyName, cpyAddress, cpyProv,cpyCity, cpyFr, "", cpyLxr,
-					lxrTel, "0", 0, CurrentTime.stringToDate_1(CurrentTime.getStringDate()),
-					CurrentTime.stringToDate_1(CurrentTime.getFinalDate(Constants.freeDays)), 0, 0);		
+			CpyInfoTb cpy = new CpyInfoTb(cpyName, Convert.getFirstSpell(cpyName),cpyAddress, cpyProv,cpyCity, cpyFr, cpyYyzz, cpyLxr,
+					lxrTel, lxrEmail, cpySubId, cpyParId, cpyUrl,cpyProfile,CurrentTime.stringToDate_1(signDate),
+					endDate, hotStatus, cpyLevel);	
 			cDao.save(sess, cpy);
 			tran.commit();
 			return cpy.getId();

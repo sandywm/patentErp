@@ -18,12 +18,26 @@ public interface CpyInfoManager {
 	 * @param cpyProv 公司所在省份
 	 * @param cpyCity 公司所在城市
 	 * @param cpyFr 公司法人
+	 * @param cpyYyzz 公司营业执照
 	 * @param cpyLxr 公司联系人
 	 * @param lxrTel 联系人电话
+	 * @param lxrEmail 联系人邮箱
+	 * @param cpySubId 子公司
+	 * @param cpyParId 主公司
+	 * @param cpyUrl 公司网址
+	 * @param cpyProfile 公司简介
+	 * @param signDate 注册时间
+	 * @param endDate 到期时间
+	 * @param hotStatus 公司热度
+	 * @param cpyLevel 公司会员等级
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addCpy(String cpyName,String cpyAddress,String cpyProv,String cpyCity,String cpyFr,String cpyLxr,String lxrTel) throws WEBException;
+	Integer addCpy(String cpyName, String cpyAddress, String cpyProv,
+			String cpyCity, String cpyFr, String cpyYyzz, String cpyLxr,
+			String lxrTel, String lxrEmail, String cpySubId, Integer cpyParId,
+			String cpyUrl, String cpyProfile, String signDate, Date endDate,
+			Integer hotStatus, Integer cpyLevel) throws WEBException;
 	
 	/**
 	 * 修改代理机构基本信息

@@ -20,6 +20,11 @@
                 <comment>申请人/公司名字</comment>
             </column>
         </property>
+        <property name="appNamePy" type="java.lang.String">
+            <column name="app_name_py" length="20"  not-null="true">
+                <comment>申请人/公司名字拼音</comment>
+            </column>
+        </property>
         <property name="appICard" type="java.lang.String">
             <column name="app_iCard" length="50">
                 <comment>公司机构代码/个人身份证号</comment>
@@ -51,7 +56,7 @@
             </column>
         </property>
         <property name="appEmail" type="java.lang.String">
-            <column name="app_email" length="40">
+            <column name="app_email" length="40"  not-null="true">
                 <comment>申请人/公司邮箱</comment>
             </column>
         </property>

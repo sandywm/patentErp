@@ -15,8 +15,13 @@
                 <comment>代理公司名字</comment>
             </column>
         </property>
+         <property name="cpyNamePy" type="java.lang.String">
+            <column name="cpy_name_py" length="50" not-null="true">
+                <comment>代理公司名字拼音</comment>
+            </column>
+        </property>
         <property name="cpyAddress" type="java.lang.String">
-            <column name="cpy_address" length="100" not-null="true">
+            <column name="cpy_address" length="100">
                 <comment>公司地址</comment>
             </column>
         </property>
@@ -31,12 +36,12 @@
             </column>
         </property>
         <property name="cpyFr" type="java.lang.String">
-            <column name="cpy_fr" length="20" not-null="true">
+            <column name="cpy_fr" length="20">
                 <comment>公司法人</comment>
             </column>
         </property>
         <property name="cpyYyzz" type="java.lang.String">
-            <column name="cpy_yyzz" length="100" not-null="true">
+            <column name="cpy_yyzz" length="100">
                 <comment>公司营业执照</comment>
             </column>
         </property>

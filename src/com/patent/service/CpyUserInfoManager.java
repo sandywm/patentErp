@@ -20,13 +20,15 @@ public interface CpyUserInfoManager {
 	 * @param userEmail 员工邮箱
 	 * @param userTel 员工电话
 	 * @param userInDate 员工入职时间
-	 * @param cpyId 员工所属机构
+	 * @param userScFiledName 员工擅长专业领域
 	 * @param userScFieldIdStr 员工擅长专业领域
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addCpyUser(String userName,String userNamePy,String account,String password,String userSex,String userEmail,String userTel,
-			String userInDate,Integer cpyId,String userScFieldIdStr) throws WEBException;
+	Integer addCpyUser(Integer cpyId, String userName,String userNamePy,
+			String userAccount, String userPassword, String userSex,
+			String userEmail, String userTel, String userInDate,
+			String userScFieldIdStr, String userScFiledName) throws WEBException;
 	
 	/**
 	 * 修改代理机构员工基本信息

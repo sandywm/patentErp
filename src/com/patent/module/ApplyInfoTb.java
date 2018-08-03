@@ -38,15 +38,20 @@ public class ApplyInfoTb implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public ApplyInfoTb(String appType, String appName, String appNamePy,String appAccount,
-			String appPass, String appLxr, String appTel,String lastLoginDate,Integer userLoginTimes) {
+	public ApplyInfoTb(String appType, String appName, String appNamePy,String appICard,
+			String appAddress, String appAccount, String appPass,
+			String appLxr, String appTel, String appEmail, String appQq,String lastLoginDate,Integer userLoginTimes) {
 		this.appType = appType;
 		this.appName = appName;
 		this.appNamePy = appNamePy;
+		this.appICard = appICard;
+		this.appAddress = appAddress;
 		this.appAccount = appAccount;
 		this.appPass = appPass;
 		this.appLxr = appLxr;
 		this.appTel = appTel;
+		this.appEmail = appEmail;
+		this.appQq = appQq;
 		this.lastLoginDate = lastLoginDate;
 		this.userLoginTimes = userLoginTimes;
 	}
