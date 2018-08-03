@@ -1,0 +1,168 @@
+body{
+	background:#f2f2f2;
+}
+.registerWrap{
+    position: relative;
+    left: 0;
+    top: 0;
+    padding: 110px 0;
+    min-height: 100%;
+    box-sizing: border-box;
+}
+.regHeader{
+	text-align:center;
+}
+.regHeader h2{
+	margin-bottom: 10px;
+    font-weight: 300;
+    font-size: 30px;
+    color: #000;
+}
+.regHeader p{
+    font-weight: 300;
+    color: #999;
+}
+.layadmin-user-login-footer{
+	position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    line-height: 30px;
+    padding: 20px;
+    text-align: center;
+    box-sizing: border-box;
+    color: rgba(0,0,0,.5);
+}
+.selectRole,
+.roleRegister{
+	margin:40px 0;
+}
+.selRoleWrap{
+	text-align:center;
+}
+.comRegIcon{
+	font-size:80px;
+	color:rgba(0,0,0,.2);
+}
+.inpLabel{
+	display:block;
+	cursor:pointer;
+	position:relative;
+	padding:30px 0;
+}
+.inpLabel p{
+	font-size:16px;
+	color:#333;
+}
+.inpLabel span{
+	width:18px;
+	height:18px;
+	position:absolute;
+	left:50%;
+	margin-left:-11px;
+	z-index:1;
+	border:2px solid #c2c2c2;
+	border-radius:50%;
+	bottom:5px;
+}
+.inpLabel span.current{
+	border-color:#009688;
+}
+.inpLabel span b{
+	width:10px;
+	height:10px;
+	border-radius:50%;
+	position:absolute;
+	left:4px;
+	top:4px;
+	background:#009688;
+	display:none;
+}
+.inpLabel span.current b{
+	display:block;
+}
+.hasSelColor{
+	color:rgba(0,150,136,.8);
+}
+.btnWrap{
+	width:300px;
+	margin:0 auto;
+}
+.btnWrap button{
+	width:47%;
+	padding:0px;
+	float:left;
+}
+.btnWrap button:first-child{
+	border-radius:2px 0 0 2px;
+}
+.layui-btn+.layui-btn{
+	margin-left:0px;
+	border-radius:0px 2px 2px 0px;
+}
+.layui-btn:hover{
+	background:#FF8000;
+}
+.defBtn,.defBtn:active{
+	cursor:default;
+	opacity:.6;
+}
+.defBtn:hover{
+	background:#009688;
+	opacity:.6;
+}
+/* 注册表单通用样式 */
+.layui-form-label{
+	width:90px;
+	margin-left:150px;
+}
+.layui-form-item .layui-input-inline{
+	width:300px;
+}
+.selectDistrict{
+	width:145px !important;
+}
+.rightRole{
+	border-left:1px dashed #666;
+	position:relative;
+}
+.rolePart,
+.hasAcc{
+	width:200px;
+	text-align:center;
+	position:absolute;
+	left:50%;
+	margin-left:-100px;
+}
+.rolePart{
+	top:100px;
+	height:140px;
+	border-bottom:1px dashed #666;
+}
+.hasAcc{
+	top:250px;
+}
+.hasAcc a:hover{
+	color:#FF8000;
+}
+.rolePart i{
+	font-size:100px;
+	color:#009688;
+	opacity:.8;
+	filter:alpha(opacity=80);
+}
+.rolePart p{
+	color:#333;
+	font-size:16px;
+}
+.subBtn{
+	width:141px;
+	height:38px;
+	border-radius:0 2px 2px 0;
+	position:absolute;
+	left:50%;
+	margin-left:-9px;
+	bottom:72px;
+}
+
+

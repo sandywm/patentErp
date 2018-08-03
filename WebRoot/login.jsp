@@ -9,6 +9,7 @@
 	<link href="/css/login.css" rel="stylesheet" type="text/css"/>
 	<script src="/plugins/pace/pace.min.js"></script>
 	<style>
+		body{background:#f2f2f2;}
 		.layui-form-select dl dd.layui-this{background:#009688;}
 	</style>
   </head>

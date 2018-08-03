@@ -11,7 +11,7 @@ layui.define(["form","jquery"],function(exports){
                 proHtml += '<option value="' + data[i].code + '">' + data[i].name + '</option>';
             }
             //初始化省数据
-            $("select[name=province]").append(proHtml);
+            $("select[name=prov]").append(proHtml);
             form.render();
             form.on('select(province)', function (proData) {
                 $("select[name=area]").html('<option value="">请选择县/区</option>');
