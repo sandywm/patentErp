@@ -197,7 +197,6 @@
 					$(".roleRegister").show().removeClass("layui-anim-fadeout").addClass("layui-anim layui-anim-fadein");
 					$("#prevBtn").removeClass("defBtn");
 		  			renderForm();
-		  			console.log(selGrComp + "--selGrComp")
 		  			showRolePicName();
 		  			if(selGrComp == "gr"){
 		  				$("#canChange_gr").val("gr").html("个人");
@@ -263,10 +262,11 @@
 			//表单提交
 			form.on('submit(registerNow)',function(data){
 		  		var field = data.field;
-		  		console.log(field)
 		  		for(var attr in field){
 		  			if(attr == "lxr" || attr == "name"){
-		  				field[attr] = escape(field[attr]);
+		  				field[attr] = $.trim(escape(field[attr]));
+		  			}else if(attr == "password" || attr == "comfirmPas"){
+		  				field[attr] = field[attr].replace(/\s/g,"");
 		  			}
 		  		}
 		  		if(field.password !== field.comfirmPas){
@@ -286,11 +286,13 @@
 			        			window.location.href = "login.do?action=loginOut";
 			        		});
 			        	}else if(json["result"] == "unlaw"){
-			        		layer.msg("账号含有非法字符,请从新注册",{icon:5,anim:6,time:1000});
+			        		layer.msg("账号含有非法字符,请从新填写",{icon:5,anim:6,time:1000});
+			        		$("#accountInp").focus().addClass("layui-form-danger");
 			        	}else if(json["result"] == "fail"){
 			        		layer.msg("注册失败",{icon:5,anim:6,time:1000});
 			        	}else if(json["result"] == "exist"){
-			        		layer.msg("该账号已存在，请从心输入",{icon:5,anim:6,time:1000});
+			        		layer.msg("该账号已存在，请从新输入",{icon:5,anim:6,time:1000});
+			        		$("#accountInp").focus().addClass("layui-form-danger");
 			        	}
 			        }
 		    	});
@@ -307,7 +309,7 @@
 					layer.tips("账号由4-12个字符(字母，数字，下划线组成)", "#accountInp", {tips:[2,'#FF8000'],time:0});
 				});
 				$("input[name = 'password']").focus(function(){
-					layer.tips("密码由6-16个字符(字母，数字，符号组成)", "input[name = 'password']", {tips:[2,'#FF8000'],time:0});
+					layer.tips("密码由6-16个字符(字母，数字，符号组成),不能输入空格", "input[name = 'password']", {tips:[2,'#FF8000'],time:0});
 				}); 
 				$("input[name = 'email']").focus(function(){
 					layer.tips("用于找回密码使用，请务必认真填写！", "input[name = 'email']", {tips:[2,'#FF8000'],time:0});
@@ -321,7 +323,6 @@
 					var flag = checkExistAcc(account);
 					if(flag){
 						layer.msg(strInfo,{icon:5,anim:6,time:1000});
-						$("#accountInp").focus().addClass("layui-form-danger");
 					}
 				});
 			}
