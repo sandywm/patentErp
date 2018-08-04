@@ -68,10 +68,6 @@
 	      <p>© 2018 版权所有 Copyright@2018 Sandy.wm All Rights Reserved.</p>
 	    </div>
   	</div>
-  	
-  	
-  	
-
 	<script src="/plugins/jquery/jquery-1.7.2.min.js"></script>
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
@@ -83,9 +79,6 @@
 			var	layer = layui.layer,
 				form = layui.form,
 				$ = layui.jquery;
-			$(function(){
-				
-	  		});
 			//切换显示右侧对应身份
 			function showRolePicName(){
 				var appTypeSelVal = $("#appTypeSel").val();
