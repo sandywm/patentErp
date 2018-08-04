@@ -102,4 +102,26 @@ public interface CpyRoleInfoManager {
 	 * @throws WEBException
 	 */
 	List<CpyRoleInfoTb> listInfoById(Integer id) throws WEBException;
+	
+	/**
+	 * 根据角色编号获取用户列表
+	 * @author Administrator
+	 * @date 2018-8-4 下午10:23:16
+	 * @ModifiedBy
+	 * @param roleId 角色编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyRoleUserInfoTb> listInfoByRoleId(Integer roleId) throws WEBException;
+	
+	/**
+	 * 根据角色编号删除角色信息
+	 * @author Administrator
+	 * @date 2018-8-4 下午10:28:11
+	 * @ModifiedBy
+	 * @param roleId 角色编号
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean delRoleById(Integer roleId) throws WEBException;
 }

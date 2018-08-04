@@ -5,7 +5,9 @@
 package com.patent.action.role;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -172,6 +174,12 @@ public class RoleAction extends DispatchAction {
 					String roleName_db = rList.get(0).getRoleName();
 					if(roleName_db.equals(roleName)){
 						//相同说明没修改，不进行重名检查
+						boolean flag = crm.updateRoleById(roleId, roleName, roleProfile);
+						if(flag){
+							msg = "success";
+						}else{
+							msg = "error";
+						}
 					}else{
 						if(crm.listInfoByOpt(cpyId, roleName).size() > 0){
 							msg = "exist";//已存在
@@ -190,6 +198,88 @@ public class RoleAction extends DispatchAction {
 			}else{
 				msg = "noAbility";
 			}
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 获取代理机构下的角色列表
+	 * @author Administrator
+	 * @date 2018-8-4 下午10:03:46
+	 * @ModifiedBy
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getRoleList(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		Integer userId = this.getLoginUserId(request);
+		CpyUserInfo cUser = cum.getEntityById(userId);
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(cUser != null){
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cpyId);
+			List<Object> list_d = new ArrayList<Object>();
+			for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
+				CpyRoleInfoTb cr = it.next();
+				Map<String,Object> map_d = new HashMap<String,Object>();
+				map_d.put("id", cr.getId());
+				map_d.put("roleName", cr.getRoleName());
+				map_d.put("roleProfile", cr.getRoleProfile());
+				list_d.add(map_d);
+			}
+			map.put("roleList", list_d);
+		}else{
+			map.put("roleList", new ArrayList<Object>());
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	public ActionForward delRole(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub 
+		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		Integer userId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		String msg = "";
+		boolean abilityFlag = false;
+		if(this.getLoginRoleName(request).equals("管理员")){
+			abilityFlag = true;
+		}else{
+			//检查用户有无删除的权限
+		}
+		if(abilityFlag){
+			Integer roleId = Integer.parseInt(request.getParameter("roleId"));
+			//检查有无绑定该角色的用户
+			if(crm.listInfoByRoleId(roleId).size() > 0){
+				msg = "existUser";
+			}else{
+				boolean flag = crm.delRoleById(roleId);
+				if(flag){
+					msg = "success";
+				}else{
+					msg = "error";
+				}
+			}
+		}else{
+			msg = "noAbility";
 		}
 		map.put("result", msg);
 		String json = JSON.toJSONString(map);

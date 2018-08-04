@@ -187,4 +187,40 @@ public class CpyRoleInfoManagerImpl implements CpyRoleInfoManager{
 		}
 	}
 
+	@Override
+	public List<CpyRoleUserInfoTb> listInfoByRoleId(Integer roleId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cruDao = (CpyRoleUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_ROLE_USER_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cruDao.findInfoByOpt(sess, roleId, 0);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据角色编号获取角色用户列表信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean delRoleById(Integer roleId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			crDao = (CpyRoleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_ROLE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			crDao.delete(sess, roleId);
+			tran.commit();
+			return true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("删除指定角色信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

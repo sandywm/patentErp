@@ -690,4 +690,44 @@ public class UserAction extends DispatchAction {
         pw.close();
 		return null;
 	}
+	
+	/**
+	 * 增加平台用户
+	 * @author Administrator
+	 * @date 2018-8-4 下午11:09:21
+	 * @ModifiedBy
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward addSpUser(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		SuperUserManager sum = (SuperUserManager) AppFactory.instance(null).getApp(Constants.WEB_SUPER_USER_INFO);
+		String roleName = this.getLoginRoleName(request);
+		String msg = "";
+		if(roleName.equals("super")){//超级管理员
+			String account = request.getParameter("account");
+			String userName = Transcode.unescape(request.getParameter("userName"), request);
+			String userType = request.getParameter("userType");//cwu:财务，zjl:总经理
+			Integer sUserId = sum.addSUser(account, new MD5().calcMD5("123456"), userName, userType);
+			if(sUserId > 0){
+				msg = "success";
+			}else{
+				msg = "error";
+			}
+		}else{
+			msg = "noAbility";
+		}
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
 }

@@ -772,7 +772,7 @@ public class LoginAction extends DispatchAction {
 								      mailInfo.setFromAddress(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱地址（同账号）  
 								      mailInfo.setToAddress(userEmail);//邮件接收人地址 
 								      mailInfo.setSubject("重置密码");    
-								      mailInfo.setContent("你的随机是："+code + " 请登录系统后尽快进行修改!");    
+								      mailInfo.setContent("你的随机密码是："+code + " 请登录系统后尽快进行修改!");    
 								      boolean flag = SimpleMailSender.sendTextMail(mailInfo);
 								      if(flag){
 								    	  //修改用户密码
