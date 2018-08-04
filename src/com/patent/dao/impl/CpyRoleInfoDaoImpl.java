@@ -47,4 +47,19 @@ public class CpyRoleInfoDaoImpl implements CpyRoleInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<CpyRoleInfoTb> findInfoByOpt(Session sess, Integer cpyId,
+			String roleName) {
+		// TODO Auto-generated method stub
+		String hql = " from CpyRoleInfoTb as cr where cr.cpyInfoTb.id = "+cpyId + " and cr.roleName = '"+roleName+"'";
+		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public List<CpyRoleInfoTb> findInfoById(Session sess, Integer id) {
+		// TODO Auto-generated method stub
+		String hql = " from  CpyRoleInfoTb as cr where cr.id = "+id;
+		return sess.createQuery(hql).list();
+	}
+
 }

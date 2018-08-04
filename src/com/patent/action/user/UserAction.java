@@ -5,7 +5,9 @@
 package com.patent.action.user;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +23,7 @@ import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.ApplyInfoTb;
 import com.patent.module.CpyInfoTb;
+import com.patent.module.CpyRoleUserInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.SuperUser;
 import com.patent.page.PageConst;
@@ -84,6 +87,24 @@ public class UserAction extends DispatchAction {
         String loginType = (String)request.getSession(false).getAttribute(Constants.LOGIN_TYPE);
         return loginType;
 	}
+	
+	/**
+	 * 导向个人信息修改页面(包括密码修改)
+	 * @description
+	 * @author wm
+	 * @date 2018-8-4 下午04:24:43
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward goUserDetailPage(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return mapping.findForward("udPage");
+	}
+	
 	/**
 	 * 获取个人用户详细记录
 	 * @param mapping
@@ -214,6 +235,7 @@ public class UserAction extends DispatchAction {
 		return null;
 	}
 	
+	
 	/**
 	 * 修改用户密码
 	 * @author Administrator
@@ -284,6 +306,23 @@ public class UserAction extends DispatchAction {
         pw.flush();  
         pw.close();
 		return null;
+	}
+	
+	/**
+	 * 导向代理机构信息修改页面
+	 * @description
+	 * @author wm
+	 * @date 2018-8-4 下午04:27:59
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward goCpyDetailPage(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return mapping.findForward("cpyDetailPage");
 	}
 	
 	/**
@@ -402,6 +441,23 @@ public class UserAction extends DispatchAction {
 	}
 
 	/**
+	 * 导向管理机构下员工列表页面
+	 * @description
+	 * @author wm
+	 * @date 2018-8-4 下午04:29:04
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward goUserPage(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return mapping.findForward("userPage");
+	}
+	
+	/**
 	 * 管理员增加代理机构员工
 	 * @author Administrator
 	 * @date 2018-8-3 下午10:45:42
@@ -479,9 +535,11 @@ public class UserAction extends DispatchAction {
 	public ActionForward getCpyUserPageInfo(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
 		Integer currLoginUserId = this.getLoginUserId(request);
 		CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
 		Integer cpyId = 0;
+		Map<String,Object> map = new HashMap<String,Object>();
 		if(cUser != null){
 			cpyId = cUser.getCpyInfoTb().getId();
 			Integer userLzStatus = Integer.parseInt(request.getParameter("userLzStatus"));
@@ -494,11 +552,58 @@ public class UserAction extends DispatchAction {
 				Integer pageCount = PageConst.getPageCount(count, pageSize);
 				Integer pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
 				List<CpyUserInfo> cUserList = cum.listPageInfoByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy, pageNo, pageSize);
-				Map<String,Object> map = new HashMap<String,Object>();
-				
+				List<Object> list_u = new ArrayList<Object>();
+				for(Iterator<CpyUserInfo> it = cUserList.iterator() ; it.hasNext();){
+					CpyUserInfo cUser_a = it.next();
+					Map<String,Object> map_u = new HashMap<String,Object>();
+					map_u.put("userId", cUser_a.getId());
+					map_u.put("name", cUser_a.getUserName());
+					map_u.put("account", cUser_a.getUserAccount());
+					map_u.put("sex", cUser_a.getUserSex());
+					map_u.put("email", cUser_a.getUserEmail());
+					map_u.put("inDate", cUser_a.getUserInDate());
+					map_u.put("outDate", cUser_a.getUserOutDate());
+					Integer lzStatus = cUser_a.getUserLzStatus();
+					String lzStatusChi = "在职";
+					if(lzStatus.equals(0)){
+						lzStatusChi = "离职";
+					}
+					map_u.put("lzStatus", lzStatusChi);
+					Integer yxStatus = cUser_a.getUserYxStatus();
+					String yxStatusChi = "有效";
+					if(yxStatus.equals(0)){
+						yxStatusChi = "无效";
+					}
+					map_u.put("yxStatus", yxStatusChi);
+					map_u.put("zxNum", cUser_a.getUserZxNum());
+					map_u.put("scFiledName", cUser_a.getUserScFiledName());
+					map_u.put("exper", cUser_a.getUserExper());
+					//获取用户角色
+					List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(cUser_a.getId());
+					String roleName = "";
+					for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
+						CpyRoleUserInfoTb ru = it_1.next();
+						roleName += ru.getCpyRoleInfoTb().getRoleName() + ",";
+					}
+					if(!roleName.equals("")){
+						roleName = roleName.substring(0, roleName.length() - 1);
+					}
+					map_u.put("roleName", roleName);
+					list_u.add(map_u);
+				}
+				map.put("result", "success");
+				map.put("uInfo", list_u);
+			}else{
+				map.put("result", "noInfo");
 			}
+		}else{
+			map.put("result", "fail");
 		}
-		
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
 		return null;
 	}
 	
@@ -531,6 +636,53 @@ public class UserAction extends DispatchAction {
 			count = cum.getCountByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy);
 		}
 		map.put("result", count);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 设置员工离职、账号有效
+	 * @description
+	 * @author wm
+	 * @date 2018-8-4 上午11:34:18
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward setUserInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		boolean ailityFlag = false;
+		String msg = "";
+		if(this.getLoginRoleName(request).equals("管理员")){//如果是管理员直接跳过（管理员直接拥有权限）
+			ailityFlag = true;
+		}else{
+			//获取当前用户是否有修改权限
+		}
+		if(ailityFlag){
+			Integer cpyUserId = Integer.parseInt(request.getParameter("userId"));
+			Integer lzSatatus = Integer.parseInt(request.getParameter("lzSatatus"));
+			String outDate = request.getParameter("outDate");
+			Integer yxStatus = Integer.parseInt(request.getParameter("yxStatus"));
+			boolean flag = cum.updateUserInfoById(cpyUserId, outDate, lzSatatus, yxStatus);
+			if(flag){
+				msg = "success";
+			}else{
+				msg = "error";
+			}
+		}else{
+			msg = "noAbility";
+		}
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("result", msg);
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
         pw.write(json); 

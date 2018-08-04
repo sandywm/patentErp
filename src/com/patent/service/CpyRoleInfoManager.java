@@ -79,4 +79,27 @@ public interface CpyRoleInfoManager {
 	 * @throws WEBException
 	 */
 	List<CpyRoleUserInfoTb> listInfoByUserId(Integer userId) throws WEBException;
+	
+	/**
+	 * 获取指定代理机构指定角色名称的信息列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-4 下午05:25:36
+	 * @param cpyId 代理机构编号
+	 * @param roleName 角色名称
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyRoleInfoTb> listInfoByOpt(Integer cpyId,String roleName) throws WEBException;
+	
+	/**
+	 * 根据主键获取角色信息列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-4 下午05:39:39
+	 * @param id 主键
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyRoleInfoTb> listInfoById(Integer id) throws WEBException;
 }

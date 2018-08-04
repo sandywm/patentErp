@@ -50,4 +50,27 @@ public interface CpyRoleInfoDao {
 	 * @return
 	 */
 	List<CpyRoleInfoTb> findInfoByCpyId(Session sess,Integer cpyId);
+	
+	/**
+	 * 根据角色名称获取指定代理机构的角色名字是否存在
+	 * @description
+	 * @author wm
+	 * @date 2018-8-4 下午05:23:00
+	 * @param sess
+	 * @param cpyId 代理机构编号
+	 * @param roleName 角色名字
+	 * @return
+	 */
+	List<CpyRoleInfoTb> findInfoByOpt(Session sess,Integer cpyId,String roleName);
+	
+	/**
+	 * 根据角色编号获取角色信息列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-4 下午05:38:33
+	 * @param sess
+	 * @param id 主键
+	 * @return
+	 */
+	List<CpyRoleInfoTb> findInfoById(Session sess,Integer id);
 }

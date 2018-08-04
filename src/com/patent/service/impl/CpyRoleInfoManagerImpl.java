@@ -50,7 +50,27 @@ public class CpyRoleInfoManagerImpl implements CpyRoleInfoManager{
 	public boolean updateRoleById(Integer id, String roleName,
 			String roleProfile) throws WEBException {
 		// TODO Auto-generated method stub
-		return false;
+		try {
+			crDao = (CpyRoleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_ROLE_INFO);
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CpyRoleInfoTb cr = crDao.get(sess, id);
+			if(cr != null){
+				cr.setRoleName(roleName);
+				cr.setRoleProfile(roleProfile);
+				crDao.update(sess, cr);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改角色信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override
@@ -80,7 +100,24 @@ public class CpyRoleInfoManagerImpl implements CpyRoleInfoManager{
 	public boolean delRoleUserByOpt(Integer roleId, Integer userId)
 			throws WEBException {
 		// TODO Auto-generated method stub
-		return false;
+		try {
+			cruDao = (CpyRoleUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_ROLE_USER_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			List<CpyRoleUserInfoTb> cruList = cruDao.findInfoByOpt(sess, roleId, userId);
+			if(cruList.size() > 0){
+				cruDao.delete(sess, cruList.get(0).getId());
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("删除指定用户指定角色信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override
@@ -112,6 +149,39 @@ public class CpyRoleInfoManagerImpl implements CpyRoleInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("获取指定用户的角色信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<CpyRoleInfoTb> listInfoByOpt(Integer cpyId, String roleName)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			crDao = (CpyRoleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_ROLE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return crDao.findInfoByOpt(sess, cpyId, roleName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定代理机构指定角色名称的信息列表信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<CpyRoleInfoTb> listInfoById(Integer id) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			crDao = (CpyRoleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_ROLE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return crDao.findInfoById(sess, id);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键获取角色信息列表信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

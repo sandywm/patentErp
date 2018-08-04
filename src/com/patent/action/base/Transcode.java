@@ -80,7 +80,7 @@ public class Transcode {
                     }  
                 }  
             }  
-            return tmp.toString();
+            return tmp.toString().replaceAll(" ","");
     	}
     }  
     
