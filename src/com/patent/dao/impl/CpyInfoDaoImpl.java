@@ -43,13 +43,13 @@ public class CpyInfoDaoImpl implements CpyInfoDao{
 	}
 
 	@Override
-	public List<CpyInfoTb> findPageInfoByOpt(Session sess, String cpyName,
+	public List<CpyInfoTb> findPageInfoByOpt(Session sess, String cpyNamePy,
 			String cpyProv, String cpyCity, String cpyFr, String cpyLxr,
 			Integer cpyLevel,Integer gqStatus, Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
 		String hql = " from CpyInfoTb as cpy where 1 = 1";
-		if(!cpyName.equals("")){
-			hql += " and cpy.cpyName like '%"+cpyName+"%'";
+		if(!cpyNamePy.equals("")){
+			hql += " and cpy.cpyNamePy like '%"+cpyNamePy+"%'";
 		}
 		if(!cpyProv.equals("")){
 			hql += " and cpy.cpyProv = '"+cpyProv+"'";
@@ -79,12 +79,12 @@ public class CpyInfoDaoImpl implements CpyInfoDao{
 	}
 
 	@Override
-	public Integer getCountByOpt(Session sess, String cpyName, String cpyProv,
+	public Integer getCountByOpt(Session sess, String cpyNamePy, String cpyProv,
 			String cpyCity, String cpyFr, String cpyLxr, Integer cpyLevel,Integer gqStatus) {
 		// TODO Auto-generated method stub
 		String hql = "select count(cpy.id) from CpyInfoTb as cpy where 1 = 1";
-		if(!cpyName.equals("")){
-			hql += " and cpy.cpyName like '%"+cpyName+"%'";
+		if(!cpyNamePy.equals("")){
+			hql += " and cpy.cpyNamePy like '%"+cpyNamePy+"%'";
 		}
 		if(!cpyProv.equals("")){
 			hql += " and cpy.cpyProv = '"+cpyProv+"'";
@@ -127,6 +127,13 @@ public class CpyInfoDaoImpl implements CpyInfoDao{
 			Integer cpyParId) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public List<CpyInfoTb> findEndDateCpyInfo(Session sess) {
+		// TODO Auto-generated method stub
+		String hql = " from CpyInfoTb as cpy where (TO_DAYS(cpy.endDate) - TO_DAYS(NOW())) in (5,1,0,-1)";
+		return sess.createQuery(hql).list();
 	}
 
 }

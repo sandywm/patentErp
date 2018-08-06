@@ -45,18 +45,18 @@ public interface CpyInfoDao {
 	 * @author wm
 	 * @date 2018-7-24 上午09:45:31
 	 * @param sess
-	 * @param cpyName 代理机构名称(""表示全部)--模糊查询
+	 * @param cpyNamePy 代理机构名称拼音(""表示全部)--模糊查询
 	 * @param cpyProv 代理机构所在身份(""表示全部)
 	 * @param cpyCity 代理机构所在城市(""表示全部)
 	 * @param cpyFr 代理机构法人(""表示全部)
 	 * @param cpyLxr 代理机构联系人(""表示全部)
 	 * @param cpyLevel 代理机构会员级别(-1表示全部)
-	 * @param gqStatus 代理机构过期状态（0：未过期，1：已过期）
+	 * @param gqStatus 代理机构过期状态（-1表示全部,0：未过期，1：已过期）
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 */
-	List<CpyInfoTb> findPageInfoByOpt(Session sess,String cpyName,String cpyProv,String cpyCity,String cpyFr,
+	List<CpyInfoTb> findPageInfoByOpt(Session sess,String cpyNamePy,String cpyProv,String cpyCity,String cpyFr,
 			String cpyLxr,Integer cpyLevel,Integer gqStatus,Integer pageNo,Integer pageSize);
 	
 	/**
@@ -65,16 +65,16 @@ public interface CpyInfoDao {
 	 * @author wm
 	 * @date 2018-7-24 上午09:49:54
 	 * @param sess
-	 * @param cpyName 代理机构名称(""表示全部)--模糊查询
+	 * @param cpyNamePy 代理机构名称拼音(""表示全部)--模糊查询
 	 * @param cpyProv 代理机构所在身份(""表示全部)
 	 * @param cpyCity 代理机构所在城市(""表示全部)
 	 * @param cpyFr 代理机构法人(""表示全部)
 	 * @param cpyLxr 代理机构联系人(""表示全部)
 	 * @param cpyLevel 代理机构会员级别(-1表示全部)
-	 * @param gqStatus 代理机构过期状态（0：未过期，1：已过期）
+	 * @param gqStatus 代理机构过期状态（-1表示全部,0：未过期，1：已过期）
 	 * @return
 	 */
-	Integer getCountByOpt(Session sess,String cpyName,String cpyProv,String cpyCity,String cpyFr,
+	Integer getCountByOpt(Session sess,String cpyNamePy,String cpyProv,String cpyCity,String cpyFr,
 			String cpyLxr,Integer cpyLevel,Integer gqStatus);
 	
 	/**
@@ -110,4 +110,14 @@ public interface CpyInfoDao {
 	 * @return
 	 */
 	boolean updateCpyParInfoById(Session sess,Integer id,Integer cpyParId);
+	
+	/**
+	 * 获取所有即将到期或者已到期的代理机构（即将到期5、1天内/已到期0,1天内进行邮件提醒）
+	 * @description
+	 * @author wm
+	 * @date 2018-8-6 下午04:27:02
+	 * @param sess
+	 * @return
+	 */
+	List<CpyInfoTb> findEndDateCpyInfo(Session sess);
 }

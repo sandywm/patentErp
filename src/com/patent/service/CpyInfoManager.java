@@ -94,18 +94,19 @@ public interface CpyInfoManager {
 	 * @description
 	 * @author wm
 	 * @date 2018-7-24 下午05:16:07
-	 * @param cpyName 代理机构名称(""表示全部)--模糊查询
+	 * @param cpyNamePy 代理机构名称拼音(""表示全部)--模糊查询
 	 * @param cpyProv 代理机构所在身份(""表示全部)
 	 * @param cpyCity 代理机构所在城市(""表示全部)
 	 * @param cpyFr 代理机构法人(""表示全部)
 	 * @param cpyLxr 代理机构联系人(""表示全部)
 	 * @param cpyLevel 代理机构会员级别(-1表示全部)
+	 * @param yxStatus 有效状态--会员是否过期(-1[全部],0[未过期],1[已过期])
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 * @throws WEBException
 	 */
-	List<CpyInfoTb> listPageInfoByOpt(String cpyName,String cpyProv, String cpyCity, String cpyFr, String cpyLxr,
+	List<CpyInfoTb> listPageInfoByOpt(String cpyNamePy,String cpyProv, String cpyCity, String cpyFr, String cpyLxr,
 			Integer cpyLevel,Integer yxStatus, Integer pageNo, Integer pageSize)throws WEBException;
 	
 	/**
@@ -113,15 +114,26 @@ public interface CpyInfoManager {
 	 * @description
 	 * @author wm
 	 * @date 2018-7-24 下午05:16:37
-	 * @param cpyName 代理机构名称(""表示全部)--模糊查询
+	 * @param cpyNamePy 代理机构名称拼音(""表示全部)--模糊查询
 	 * @param cpyProv 代理机构所在身份(""表示全部)
 	 * @param cpyCity 代理机构所在城市(""表示全部)
 	 * @param cpyFr 代理机构法人(""表示全部)
 	 * @param cpyLxr 代理机构联系人(""表示全部)
 	 * @param cpyLevel 代理机构会员级别(-1表示全部)
+	 * @param yxStatus 有效状态--会员是否过期(-1[全部],0[未过期],1[已过期])
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer getCountByOpt(String cpyName,String cpyProv, String cpyCity, String cpyFr, String cpyLxr,
+	Integer getCountByOpt(String cpyNamePy,String cpyProv, String cpyCity, String cpyFr, String cpyLxr,
 			Integer cpyLevel,Integer yxStatus)throws WEBException;
+	
+	/**
+	 * 获取所有即将到期或者已到期的代理机构（即将到期5、1天内/已到期0,1天内进行邮件提醒）
+	 * @description
+	 * @author wm
+	 * @date 2018-8-6 下午04:57:44
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyInfoTb> listEndDateCpyInfo()throws WEBException;
 }

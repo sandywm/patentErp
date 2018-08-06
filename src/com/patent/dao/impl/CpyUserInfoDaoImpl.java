@@ -101,4 +101,14 @@ public class CpyUserInfoDaoImpl implements CpyUserInfoDao{
 		return CommonTools.longToInt(count_obj);
 	}
 
+	@Override
+	public List<CpyUserInfo> findManagerInfoByOpt(Session sess, Integer cpyId,
+			String roleName) {
+		// TODO Auto-generated method stub
+		String hql = " from CpyUserInfo as cu where cu.cpyInfoTb.id = "+cpyId;
+		hql += " and cu.userLzStatus = 1 and cu.userYxStatus = 1";
+		hql += " and exists(select cru.id from CpyRoleUserInfoTb as cru where cru.cpyUserInfo.id = cu.id and cru.cpyRoleInfoTb.roleName = '"+roleName+"' )";
+		return sess.createQuery(hql).list();
+	}
+
 }

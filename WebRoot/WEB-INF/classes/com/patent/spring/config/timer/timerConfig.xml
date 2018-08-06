@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	   
+		 <!-- 
+		 	 配置自定义动作执行时间
+			 1.秒
+			 2.分
+			 3.小时
+			 4.月份中的日期（1-31）
+			 5.月份（1-12或JAN-DEC)
+			 6.星期中的日期（1-7或SUN-SAT）
+			 7.年份（1970-2099） 
+			  每个元素都显示的规定一个值（如6），一个区间（9-12），一个列表（9，11，13）或一个通配符（*）。因为4和6这两个元素是互斥的，
+			  因此应该通过设置一个问号（？）来表明不想设置的那个字段，“/”如果值组合就表示重复次数（10/6表示每10秒重复6次）。  
+		  -->
+	 	<!-- 
+	 		"0 0 12 * * ?"    每天中午十二点触发 
+			"0 15 10 ? * *"    每天早上10：15触发 
+			"0 15 10 * * ?"    每天早上10：15触发 
+			"0 15 10 * * ? *"    每天早上10：15触发 
+			"0 15 10 * * ? 2005"    2005年的每天早上10：15触发 
+			"0 * 14 * * ?"    每天从下午2点开始到2点59分每分钟一次触发 
+			"0 0/5 14 * * ?"    每天从下午2点开始到2：55分结束每5分钟一次触发 
+			"0 0/5 14,18 * * ?"    每天的下午2点至2：55和6点至6点55分两个时间段内每5分钟一次触发 
+			"0 0-5 14 * * ?"    每天14:00至14:05每分钟一次触发 
+			"0 10,44 14 ? 3 WED"    三月的每周三的14：10和14：44触发 
+			"0 15 10 ? * MON-FRI"    每个周一、周二、周三、周四、周五的10：15触发 
+	 	 -->
+	 	<!-- 配置启动定时器 -->
+	 	<bean id="doScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		   	<property name="triggers">
+		     	<list>
+		      		<ref local="SendMsgTaskTrigger"/> 
+		     	</list>
+		   	</property>
+		</bean>
+ 	
+ 	<!-- 初始化全平台学习统计任务配置 -->
+	<bean id="SendMsgTask" class="com.patent.spring.config.timer.SendEndDateMsg"/><!-- 定时加载的目标类 -->
+	<bean id="SendMsg" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"><!-- 配置定时器详情 -->
+		<property name="targetObject"><!-- 指定任务类 -->
+			<ref bean="SendMsgTask"/>
+		</property>
+		<property name="targetMethod"><!-- 指定任务方法 -->
+		 	<value>executeAll</value>
+		</property>
+	</bean>
+	<bean id="SendMsgTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean"><!-- 配置定时器时间间隔 -->
+   		<property name="jobDetail">
+     		<ref bean="SendMsg"/>
+   		</property>
+   		<property name="cronExpression">
+    		<value>0 0 5 * * ?</value><!-- 每天上午5点执行 -->
+   		</property>
+ 	</bean>
+</beans>

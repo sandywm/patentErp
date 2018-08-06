@@ -95,4 +95,16 @@ public interface CpyUserInfoDao {
 	 * @return
 	 */
 	Integer getCountByOpt(Session sess,Integer cpyId,Integer userLzStatus,Integer userYxStatus,Integer roleId,String userNamePy);
+	
+	/**
+	 * 获取指定代理机构所有的管理员用户信息（在职、有效）--定时发送到期邮件用
+	 * @description
+	 * @author wm
+	 * @date 2018-8-6 下午05:12:14
+	 * @param sess
+	 * @param cpyId 代理机构编号
+	 * @param roleName 角色(管理员)
+	 * @return
+	 */
+	List<CpyUserInfo> findManagerInfoByOpt(Session sess,Integer cpyId,String roleName);
 }

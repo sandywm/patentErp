@@ -263,4 +263,21 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 			HibernateUtil.closeSession();
 		}
 	}
+
+	@Override
+	public List<CpyUserInfo> listManagerInfoByOpt(Integer cpyId, String roleName)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cUserDao.findManagerInfoByOpt(sess, cpyId, roleName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("获取指定代理机构所有的管理员用户信息（在职、有效）--定时发送到期邮件用时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
 }

@@ -25,6 +25,10 @@
     <action path="/role.do" parameter="action" scope="request" type="com.patent.action.role.RoleAction">
       <set-property property="cancellable" value="true" />
     </action>
+    <!-- 代理机构管理 -->
+    <action path="/cpyManager.do" parameter="action" scope="request"  type="com.patent.action.cpy.CpyManagerAction">
+      <set-property property="cancellable" value="true" />
+    </action>
 
   </action-mappings>
 

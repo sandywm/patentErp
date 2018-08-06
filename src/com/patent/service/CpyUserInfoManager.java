@@ -163,4 +163,16 @@ public interface CpyUserInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateUserInfoById(Integer id,String outDate,Integer lzSatatus,Integer yxStatus) throws WEBException;
+	
+	/**
+	 * 获取指定代理机构所有的管理员用户信息（在职、有效）--定时发送到期邮件用
+	 * @description
+	 * @author wm
+	 * @date 2018-8-6 下午05:10:30
+	 * @param cpyId 代理机构编号
+	 * @param roleName 角色(管理员)
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyUserInfo> listManagerInfoByOpt(Integer cpyId,String roleName) throws WEBException;
 }

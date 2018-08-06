@@ -99,7 +99,7 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 	}
 
 	@Override
-	public List<CpyInfoTb> listPageInfoByOpt(String cpyName, String cpyProv,
+	public List<CpyInfoTb> listPageInfoByOpt(String cpyNamePy, String cpyProv,
 			String cpyCity, String cpyFr, String cpyLxr, Integer cpyLevel,
 			Integer yxStatus, Integer pageNo, Integer pageSize)
 			throws WEBException {
@@ -108,11 +108,27 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 	}
 
 	@Override
-	public Integer getCountByOpt(String cpyName, String cpyProv,
+	public Integer getCountByOpt(String cpyNamePy, String cpyProv,
 			String cpyCity, String cpyFr, String cpyLxr, Integer cpyLevel,
 			Integer yxStatus) throws WEBException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<CpyInfoTb> listEndDateCpyInfo() throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cDao.findEndDateCpyInfo(sess);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("获取所有即将到期或者已到期的代理机构（即将到期5、1天内/已到期0,1天内进行邮件提醒）信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 }

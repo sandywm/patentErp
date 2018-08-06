@@ -24,5 +24,7 @@ public class InitServlet extends HttpServlet
     	WebUrl.DATA_URL_WEB_INFO = getServletContext().getRealPath("/WEB-INF/");
     	
     	WebUrl.DATA_URL_YYZZ_UPLOAD = getServletContext().getRealPath("/Module/uploadFile/yyzz");
+    	
+    	WebUrl.LOG_URL = getServletContext().getRealPath("/Module/sendLog");
     }
 }

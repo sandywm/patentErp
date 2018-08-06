@@ -2,6 +2,7 @@
 <FlowViewLayout Version="1.2">
   <StrutsActivity path="/login.do" location="50,50" dimension="248,104" />
   <StrutsActivity path="/user.do.do" location="650,1050" dimension="239,104" />
+  <StrutsActivity path="/role.do.do" location="50,1250" dimension="236,104" />
   <StrutsActivity path="/register.jsp" location="950,650" dimension="102,53" />
   <StrutsActivity path="/spUserLogin.jsp" location="950,1050" dimension="130,53" />
   <StrutsActivity path="/login.jsp" location="650,850" dimension="86,53" />
@@ -21,7 +22,7 @@
   <StrutsActivity path="/exception.jsp" location="50,850" dimension="113,53" />
   <StrutsActivity path="/main.jsp" location="950,850" dimension="85,53" />
   <StrutsActivity path="/r.jsp" location="50,1050" dimension="62,53" />
-  <StrutsActivity path="/role.do.do" location="50,1250" dimension="236,104" />
+  <StrutsActivity path="/cpyManager.do.do" />
   <StrutsTransition id="/login.do,forgetPassPage,/forgetPass.jsp,1" routingType="0">
     <AutomaticBendpoints>
       <AbsolutePoint location="174,102" />
