@@ -70,7 +70,7 @@
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
-		    common:   'common'// 表示模块文件的名字
+		    common:  'common'// 表示模块文件的名字
 		}).use(['layer','jquery','form','common'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,

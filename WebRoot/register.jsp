@@ -105,31 +105,31 @@
 	  			}
 	  			//登录账号
 	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label">登录账号</label>';
-	  			strHtml += '<div class="layui-input-inline"><input id="accountInp" type="text" name="account" required lay-verify="judgeAcc" placeholder="请输入账号" autocomplete="off" class="layui-input"></div></div>';
+	  			strHtml += '<div class="layui-input-inline"><input id="accountInp" type="text" name="account" required lay-verify="judgeAcc" placeholder="请输入账号" autocomplete="off" class="layui-input" maxlength="12"></div></div>';
 	  			//登录密码
 	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label">登录密码</label>';
-	  			strHtml += '<div class="layui-input-inline"><input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input"></div></div>';
+	  			strHtml += '<div class="layui-input-inline"><input type="password" name="password" required lay-verify="judgePass" placeholder="请输入密码" autocomplete="off" class="layui-input" maxlength="16"></div></div>';
 	  			//确认密码
 	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label">确认密码</label>';
-	  			strHtml += '<div class="layui-input-inline"><input type="password" name="comfirmPas" required lay-verify="required" placeholder="请再次确认密码" autocomplete="off" class="layui-input"></div></div>';
+	  			strHtml += '<div class="layui-input-inline"><input type="password" name="comfirmPas" required lay-verify="required" placeholder="请再次确认密码" autocomplete="off" class="layui-input" maxlength="16"></div></div>';
 				//个人邮箱
 	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label">个人邮箱</label>';
 	  			strHtml += '<div class="layui-input-inline"><input type="email" name="email" lay-verify="email" placeholder="请输入个人邮箱" autocomplete="off" class="layui-input"></div></div>';
 	  			if(signType == 'appUser'){
 	  				//申请人名字(默认) 另一种就是公司名字
 	  	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label canChange_name">申请人姓名</label>';
-	  	  			strHtml += '<div class="layui-input-inline"><input id="applyerName" type="text" name="name" required  lay-verify="judegeName" placeholder="请输入申请人姓名" autocomplete="off" class="layui-input"></div></div>';
+	  	  			strHtml += '<div class="layui-input-inline"><input id="applyerName" type="text" name="name" required  lay-verify="judegeName" placeholder="请输入申请人姓名" autocomplete="off" class="layui-input" maxlength="4"></div></div>';
 	  			}else if(signType == 'cpyUser'){
 	  				//代理机构名称
 	  	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label canChange_name">代理机构名称</label>';
-	  	  			strHtml += '<div class="layui-input-inline"><input type="text" name="name" required  lay-verify="judegeCompName" placeholder="请输入代理机构名称" autocomplete="off" class="layui-input"></div></div>';
+	  	  			strHtml += '<div class="layui-input-inline"><input type="text" name="name" required  lay-verify="judegeCompName" placeholder="请输入代理机构名称" autocomplete="off" class="layui-input" maxlength="20"></div></div>';
 	  			}
 	  			//联系人
 	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label">联系人</label>';
-	  			strHtml += '<div class="layui-input-inline"><input type="text" name="lxr" required  lay-verify="judegeName" placeholder="请输入联系人姓名" autocomplete="off" class="layui-input"></div></div>';
+	  			strHtml += '<div class="layui-input-inline"><input type="text" name="lxr" required  lay-verify="judegeName" placeholder="请输入联系人姓名" autocomplete="off" class="layui-input" maxlength="4"></div></div>';
 	  			//联系人电话
 	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label canChange_tel">联系人电话</label>';
-	  			strHtml += '<div class="layui-input-inline"><input type="tel" name="tel" lay-verify="phone" placeholder="请输入联系人手机号" autocomplete="off" class="layui-input"></div></div>';
+	  			strHtml += '<div class="layui-input-inline"><input type="tel" name="tel" lay-verify="phoneNum" placeholder="请输入联系人手机号" autocomplete="off" class="layui-input" maxlength="11"></div></div>';
 
 	  			$('#formWrap').html(strHtml);
 	  			$('.rightRole').height($('#formWrap').height());
@@ -139,10 +139,10 @@
 				var value = data.value;
 				if(value != 'gr'){
 					$('.canChange_name').html('公司名称');
-					$('input[name="name"]').attr('placeholder','请输入公司名称').attr('lay-verify','judegeCompName');
+					$('input[name="name"]').val('').attr('placeholder','请输入公司名称').attr('lay-verify','judegeCompName').attr('maxlength','20');
 				}else{
 					$('.canChange_name').html('申请人姓名');
-					$('input[name="name"]').attr('placeholder','请输入申请人姓名').attr('lay-verify','judegeName');
+					$('input[name="name"]').val('').attr('placeholder','请输入申请人姓名').attr('lay-verify','judegeName').attr('maxlength','4');
 				}
 				showRolePicName();
 			});
@@ -196,7 +196,7 @@
 		  				$("#canChange_dz").val("dzyx").html("大专院校");
 		  				$(".layui-select-title input").val("个人");
 		  				$(".canChange_name").html("申请人姓名");
-						$("input[name='name']").attr("placeholder","请输入申请人姓名").attr("lay-verify","judegeName");
+						$("input[name='name']").attr("placeholder","请输入申请人姓名").attr("lay-verify","judegeName").attr("maxlength","4");
 		  				$(".rolePart").find("i").addClass("layui-extend-geren").removeClass("layui-extend-company layui-extend-jigou");
 	  					$(".rolePart").find("p").html("当前选择用户：个人用户");
 	  					
@@ -205,7 +205,7 @@
 		  				$("#canChange_dz").val("gr").html("个人");
 		  				$(".layui-select-title input").val("大专院校");
 		  				$(".canChange_name").html("公司名称");
-						$("input[name='name']").attr("placeholder","请输入公司名称").attr("lay-verify","judegeCompName");
+						$("input[name='name']").attr("placeholder","请输入公司名称").attr("lay-verify","judegeCompName").attr("maxlength","20");
 		  				$(".rolePart").find("i").addClass("layui-extend-company").removeClass("layui-extend-geren layui-extend-jigou");
 	  					$(".rolePart").find("p").html("当前选择用户：公司用户");
 		  			}
@@ -227,8 +227,19 @@
 						return '注册账号不能为中文';
 					}else if(!regSpec.test(value)){
 						return '注册账号不能有特殊字符、标点、或空格';
-					}else if(value.length < 4){
-						return '注册账号长度不能小于4个字符';
+					}else if(value.length < 4 || value.length > 16){
+						return '注册账号长度不能小于4个字符不能大于16个字符';
+					}
+				},
+				judgePass : function(value){
+					if(value == ''){
+						return '密码不能为空';
+					}else{
+						if(value.length < 6){
+							return '密码的长度不能小于6位';
+						}else if(value.length > 16){
+							return '密码的长度不大于小于16位';
+						}
 					}
 				},
 				judegeName : function(value, item){
@@ -250,6 +261,17 @@
 				    }else if(value.length < 4 || value.length > 20){
 				    	 return comName + '名称最少为4个字符最多为20个字符';
 				    }
+				},
+				phoneNum : function(value){
+					var v= value.replace(/ /g,"");
+					if(v!='' && v.length == 11){
+						var reg = /^1[3|4|5|7|8][0-9]\d{4,8}$/;
+						if(!reg.test(value)){
+							return '手机号码格式不对,请从新输入';
+						}
+					}else{
+						return '手机号码格式不对,请从新输入';
+					}
 				}
 			});
 			//表单提交

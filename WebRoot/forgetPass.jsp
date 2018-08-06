@@ -98,11 +98,11 @@
   	</div>
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
-  		var count = 60
+  		var count = 60;
 	  	layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
-		    common:   'common'// 表示模块文件的名字
+		    common: 'common'// 表示模块文件的名字
 		}).use(["common","jquery","layer"],function(){
 			var $ = layui.jquery,
 				layer = layui.layer,
