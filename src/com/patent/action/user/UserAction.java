@@ -89,6 +89,23 @@ public class UserAction extends DispatchAction {
 	}
 	
 	/**
+	 * 导向欢迎首页界面
+	 * @author Administrator
+	 * @date 2018-8-7 下午09:00:58
+	 * @ModifiedBy
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward goWelcomePage(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return mapping.findForward("welcome");
+	}
+	
+	/**
 	 * 导向个人信息修改页面
 	 * @description
 	 * @author wm

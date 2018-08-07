@@ -62,8 +62,8 @@
   </StrutsTransition>
   <StrutsTransition id="/user.do.do,udPage,/index.jsp,1" routingType="0">
     <AutomaticBendpoints>
-      <AbsolutePoint location="799,1050" />
-      <AbsolutePoint location="799,676" />
+      <AbsolutePoint location="829,1050" />
+      <AbsolutePoint location="829,676" />
       <AbsolutePoint location="738,676" />
     </AutomaticBendpoints>
   </StrutsTransition>
@@ -75,8 +75,8 @@
   </StrutsTransition>
   <StrutsTransition id="/user.do.do,userPage,/index.jsp,1" routingType="0">
     <AutomaticBendpoints>
-      <AbsolutePoint location="769,1050" />
-      <AbsolutePoint location="769,778" />
+      <AbsolutePoint location="799,1050" />
+      <AbsolutePoint location="799,778" />
       <AbsolutePoint location="694,778" />
       <AbsolutePoint location="694,703" />
     </AutomaticBendpoints>
@@ -88,6 +88,14 @@
       <AbsolutePoint location="-25,578" />
       <AbsolutePoint location="694,578" />
       <AbsolutePoint location="694,650" />
+    </AutomaticBendpoints>
+  </StrutsTransition>
+  <StrutsTransition id="/user.do.do,welcome,/index.jsp,1" routingType="0">
+    <AutomaticBendpoints>
+      <AbsolutePoint location="769,1050" />
+      <AbsolutePoint location="769,808" />
+      <AbsolutePoint location="664,808" />
+      <AbsolutePoint location="664,703" />
     </AutomaticBendpoints>
   </StrutsTransition>
   <StrutsTransition id="/user.do.do,uPassPage,/index.jsp,1" routingType="0">

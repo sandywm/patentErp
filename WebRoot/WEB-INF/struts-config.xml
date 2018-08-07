@@ -17,6 +17,7 @@
     </action>
     <!-- 用户信息管理 -->
     <action path="/user.do" parameter="action" scope="request" type="com.patent.action.user.UserAction">
+      <forward name="welcome" path="/index.jsp"></forward><!-- 欢迎页面 -->
       <forward name="udPage" path="/index.jsp"></forward><!-- 导向个人信息修改页面 -->
       <forward name="uPassPage" path="/index.jsp"></forward><!-- 导向密码修改页面 -->
       <forward name="userPage" path="/index.jsp"></forward><!-- 导向管理机构下员工列表页面 -->
