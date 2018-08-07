@@ -41,9 +41,13 @@ public class ModuleInfoDaoImpl implements ModuleInfoDao{
 	}
 
 	@Override
-	public List<ModuleInfoTb> findAllInfo(Session sess) {
+	public List<ModuleInfoTb> findInfoByLevel(Session sess,Integer modLevel) {
 		// TODO Auto-generated method stub
-		String hql = " from ModuleInfoTb";
+		String hql = " from ModuleInfoTb as mi";
+		if(modLevel >= 0){
+			hql += " where mi.modLevel = "+modLevel;
+		}
+		hql += "  order by mi.modLevel asc,mi.orderNo asc";
 		return sess.createQuery(hql).list();
 	}
 

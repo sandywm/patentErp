@@ -45,8 +45,9 @@ public interface ModuleInfoDao {
 	 * @description
 	 * @author wm
 	 * @date 2018-8-7 下午05:41:34
+	 * @param modLevel 模块级别 -1为全部[0(铜牌),1(银牌),2(金牌),3(钻石)]
 	 * @param sess
 	 * @return
 	 */
-	List<ModuleInfoTb> findAllInfo(Session sess);
+	List<ModuleInfoTb> findInfoByLevel(Session sess,Integer modLevel);
 }

@@ -8,4 +8,5 @@
 	<dao id="super_user_info_Dao" class="com.patent.dao.impl.SuperUserDaoImpl"/>
 	<dao id="send_mail_code_info_Dao" class="com.patent.dao.impl.SendEmailCodeInfoDaoImpl"/>
 	<dao id="mail_info_Dao" class="com.patent.dao.impl.MailInfoDaoImpl"/>
+	<dao id="js_field_info_Dao" class="com.patent.dao.impl.JsFiledInfoDaoImpl"/>
 </daoContext>

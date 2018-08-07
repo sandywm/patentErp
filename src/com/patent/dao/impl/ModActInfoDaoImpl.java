@@ -43,7 +43,7 @@ public class ModActInfoDaoImpl implements ModActInfoDao{
 	@Override
 	public List<ModActInfoTb> findSpecInfo(Session sess, Integer modId) {
 		// TODO Auto-generated method stub
-		String hql = " from ModActInfoTb as ma where ma.moduleInfoTb.id = "+modId;
+		String hql = " from ModActInfoTb as ma where ma.moduleInfoTb.id = "+modId + " order by ma.orderNo asc";
 		return sess.createQuery(hql).list();
 	}
 

@@ -32,7 +32,7 @@
         </property>
         <property name="modLevel" type="java.lang.Integer">
             <column name="mod_level" not-null="true">
-                <comment>模块级别[1(铜牌),2(银牌),3(金牌),4(钻石)]</comment>
+                <comment>模块级别[0(铜牌),1(银牌),2(金牌),3(钻石)]</comment>
             </column>
         </property>
         <set name="modActInfoTbs" inverse="true">

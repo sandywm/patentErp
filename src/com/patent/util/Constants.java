@@ -28,6 +28,7 @@ public class Constants {
 	public static final String WEB_SUPER_USER_INFO = "super_user_info_Web";
 	public static final String WEB_SEND_MAIL_CODE_INFO = "send_mail_code_info_Web";
 	public static final String WEB_MAIL_INFO = "mail_info_Web";
+	public static final String WEB_JS_FIELD_INFO = "js_field_info_Web";
 	
 	//-------------------DAO-------------------------//
 	public static final String DAO_CPY_USER_INFO = "cpy_user_info_Dao";
@@ -38,4 +39,5 @@ public class Constants {
 	public static final String DAO_SUPER_USER_INFO = "super_user_info_Dao";
 	public static final String DAO_SEND_MAIL_CODE_INFO = "send_mail_code_info_Dao";
 	public static final String DAO_MAIL_INFO = "mail_info_Dao";
+	public static final String DAO_JS_FIELD_INFO = "js_field_info_Dao";
 }
