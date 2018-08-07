@@ -71,6 +71,7 @@ public class CpyInfoDaoImpl implements CpyInfoDao{
 		}else if(gqStatus.equals(1)){//已过期
 			hql += " and cpy.endDate <= '"+CurrentTime.getStringDate()+"'";
 		}
+		hql += " order by cpy.cpyLevel desc,cpy.hotStatus desc";
 		int offset = (pageNo - 1) * pageSize;
 		if (offset < 0) {
 			offset = 0;

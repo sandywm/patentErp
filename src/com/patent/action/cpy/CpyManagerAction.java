@@ -6,6 +6,7 @@ package com.patent.action.cpy;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,8 +23,12 @@ import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.CpyInfoTb;
+import com.patent.module.CpyUserInfo;
 import com.patent.page.PageConst;
 import com.patent.service.CpyInfoManager;
+import com.patent.service.CpyUserInfoManager;
+import com.patent.tools.CommonTools;
+import com.patent.tools.CurrentTime;
 import com.patent.util.Constants;
 
 /** 
@@ -107,7 +112,7 @@ public class CpyManagerAction extends DispatchAction {
 	}
 	
 	/**
-	 * 分页获取代理机构列表
+	 * 分页获取代理机构列表(会员等级、公司热度降序排列)
 	 * @description
 	 * @author wm
 	 * @date 2018-8-6 上午10:21:48
@@ -175,6 +180,198 @@ public class CpyManagerAction extends DispatchAction {
 		}else{
 			map.put("result", "noInfo");
 		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 修改代理机构到期时间、公司会员等级(超级管理员手动修改,代理机构管理员在购买的时候成功后自动修改)
+	 * @description
+	 * @author wm
+	 * @date 2018-8-7 下午04:18:08
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward updateCpyInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Date endDate = null;
+		String msg = "";
+		String endDateStr = request.getParameter("enDate");
+		if(!endDateStr.equals("")){
+			endDate = CurrentTime.stringToDate_1(endDateStr);
+		}
+		Integer hotStatus = CommonTools.getFinalInteger(request.getParameter("hotStatus"));
+		Integer cpyLevel = Integer.parseInt(request.getParameter("cpyLevel"));
+		Integer cpyId = 0;
+		if(this.getLoginRoleName(request).equals("super")){//平台管理员--可以修改任何代理机构
+			cpyId = Integer.parseInt(request.getParameter("cpyId"));
+			boolean flag = cm.updateCpyInfoById(cpyId, endDate, hotStatus, cpyLevel);
+			if(flag){
+				msg = "success";
+			}else{
+				msg = "error";
+			}
+		}else if(this.getLoginRoleName(request).equals("管理员")){//代理机构管理员只能通过购买会员的形式修改到期时间、公司会员等级
+			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
+			if(cUser != null){
+				cpyId = cUser.getCpyInfoTb().getId();
+				boolean flag = cm.updateCpyInfoById(cpyId, endDate, hotStatus, cpyLevel);
+				if(flag){
+					msg = "success";
+				}else{
+					msg = "error";
+				}
+			}else{
+				msg = "fail";
+			}
+		}else{
+			msg = "noAbility";
+		}
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 导向代理机构信息修改页面
+	 * @description
+	 * @author wm
+	 * @date 2018-8-4 下午04:27:59
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward goCpyDetailPage(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return mapping.findForward("cpyDetailPage");
+	}
+	
+	/**
+	 * 获取用户所在的代理机构信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-2 上午08:37:49
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCpyDetailInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		Integer userId = this.getLoginUserId(request);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyUserInfo cpyUser = cum.getEntityById(userId);
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(cpyUser != null){
+			CpyInfoTb cpy = cpyUser.getCpyInfoTb();
+			map.put("result", "success");
+			map.put("cpyId", cpy.getId());
+			map.put("cpyName", cpy.getCpyName());
+			map.put("cpyProv", cpy.getCpyProv());
+			map.put("cpyCity", cpy.getCpyCity());
+			map.put("cpyAddress", cpy.getCpyAddress());
+			map.put("cpyFr", cpy.getCpyFr());
+			map.put("cpyYyzz", cpy.getCpyYyzz());
+			map.put("cpyLxr", cpy.getCpyLxr());
+			map.put("lxrTel", cpy.getLxrTel());
+			map.put("lxrEmail", cpy.getLxrEmail());
+			map.put("cpyUrl", cpy.getCpyUrl());
+			map.put("cpyProfile", cpy.getCpyProfile());
+			map.put("signDate", cpy.getSignDate());
+			map.put("endDate", cpy.getEndDate());
+			map.put("hotStatus", cpy.getHotStatus());
+			Integer cpyLevel = cpy.getCpyLevel();
+			String cpyLevelChi = "铁牌";
+			if(cpyLevel.equals(1)){
+				cpyLevelChi = "铜牌";
+			}else if(cpyLevel.equals(1)){
+				cpyLevelChi = "银牌";
+			}else if(cpyLevel.equals(1)){
+				cpyLevelChi = "金牌";
+			}else if(cpyLevel.equals(1)){
+				cpyLevelChi = "钻石";
+			}
+			map.put("cpyLevel", cpyLevelChi);
+		}else{
+			map.put("result", "error");
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 修改代理机构基本信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-2 上午09:02:58
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward updateCpylInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
+		Map<String,String> map = new HashMap<String,String>();
+		String roleName = this.getLoginRoleName(request);
+		String msg = "";
+		if(roleName.equals("管理员")){//只有管理员才能修改
+			CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
+			if(cpyUser != null){
+				Integer cpyId = cpyUser.getCpyInfoTb().getId();
+				if(cpyId > 0){
+					String cpyName = Transcode.unescape(request.getParameter("cpyName"), request);
+					String cpyProv = Transcode.unescape(request.getParameter("cpyProv"), request);
+					String cpyCity = Transcode.unescape(request.getParameter("cpyCity"), request);
+					String cpyAddress = Transcode.unescape(request.getParameter("cpyAddress"), request);
+					String cpyFr = Transcode.unescape(request.getParameter("cpyFr"), request);
+					String cpyYyzz = Transcode.unescape(request.getParameter("cpyYyzz"), request);
+					String cpyLxr = Transcode.unescape(request.getParameter("cpyLxr"), request);
+					String lxrTel = Transcode.unescape(request.getParameter("lxrTel"), request);
+					String lxrEmail = Transcode.unescape(request.getParameter("lxrEmail"), request);
+					String cpyUrl = Transcode.unescape(request.getParameter("cpyUrl"), request);
+					String cpyProfile = Transcode.unescape(request.getParameter("cpyProfile"), request);
+					boolean flag = cm.updateBasicCpyInfoById(cpyId, cpyName,cpyAddress, cpyProv, cpyCity, cpyFr, cpyLxr, lxrTel, lxrEmail, cpyYyzz,cpyUrl, cpyProfile);
+					if(flag){
+						msg = "success";
+					}else{
+						msg = "error";
+					}
+				}
+			}
+		}else{
+			msg = "noAbility";//没有权限
+		}
+		map.put("result", msg);
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
         pw.write(json); 

@@ -95,7 +95,33 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 	public boolean updateCpyInfoById(Integer id, Date endDate,
 			Integer hotStatus, Integer cpyLevel) throws WEBException {
 		// TODO Auto-generated method stub
-		return false;
+		try {
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CpyInfoTb cpy = cDao.get(sess, id);
+			if(cpy != null){
+				if(endDate != null){
+					cpy.setEndDate(endDate);
+				}
+				if(!hotStatus.equals(0)){
+					cpy.setHotStatus(cpy.getHotStatus() + hotStatus);
+				}
+				if(!cpyLevel.equals(-1)){
+					cpy.setCpyLevel(cpyLevel);
+				}
+				cDao.update(sess, cpy);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据主键修改代理机构结束日期、公司热度、会员等级信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override
@@ -104,7 +130,17 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 			Integer yxStatus, Integer pageNo, Integer pageSize)
 			throws WEBException {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cDao.findPageInfoByOpt(sess, cpyNamePy, cpyProv, cpyCity, cpyFr, cpyLxr, cpyLevel, yxStatus, pageNo, pageSize);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据条件分页获取代理公司信息记录列表信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override
@@ -112,7 +148,17 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 			String cpyCity, String cpyFr, String cpyLxr, Integer cpyLevel,
 			Integer yxStatus) throws WEBException {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cDao.getCountByOpt(sess, cpyNamePy, cpyProv, cpyCity, cpyFr, cpyLxr, cpyLevel, yxStatus);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据条件获取代理公司信息记录条数信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override

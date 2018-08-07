@@ -13,6 +13,7 @@ import com.patent.module.CpyUserInfo;
 import com.patent.service.CpyInfoManager;
 import com.patent.service.CpyRoleInfoManager;
 import com.patent.service.CpyUserInfoManager;
+import com.patent.service.MailInfoManager;
 import com.patent.tools.CurrentTime;
 import com.patent.tools.sendMail.MailSendInfo;
 import com.patent.tools.sendMail.SimpleMailSender;
@@ -32,13 +33,7 @@ public class SendEndDateMsg {
 	public static void sendEDMsg() throws Exception{
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
-		MailSendInfo mailInfo = new MailSendInfo();    
-	      mailInfo.setMailServerHost(Constants.MAIL_SERVER_HOST);    
-	      mailInfo.setMailServerPort(Constants.MAIL_SERVER_PORT);    
-	      mailInfo.setValidate(Constants.VALIDATE_FLAG);    
-	      mailInfo.setUserName(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱账号    
-	      mailInfo.setPassword(Constants.SYSTEM_EMAIL_PASS);//您的邮箱授权码 
-	      mailInfo.setFromAddress(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱地址（同账号）  
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
 	      //获取需要发送邮件提醒的代理机构的邮箱(5,1,0,-1)四天时发送邮件
 	      List<CpyInfoTb> cpyList = cm.listEndDateCpyInfo();
 	      if(cpyList.size() > 0){
@@ -63,6 +58,13 @@ public class SendEndDateMsg {
 	    				  String userEmail_manager = cUser.getUserEmail();
 	    				  if(!userEmail_manager.equals("")){
 	    					  Integer days_diff = CurrentTime.compareDate(CurrentTime.getStringDate(), CurrentTime.dateConvertToString(cpy.getEndDate()));
+	    					  MailSendInfo mailInfo = new MailSendInfo();    
+	    				      mailInfo.setMailServerHost(Constants.MAIL_SERVER_HOST);    
+	    				      mailInfo.setMailServerPort(Constants.MAIL_SERVER_PORT);    
+	    				      mailInfo.setValidate(Constants.VALIDATE_FLAG);    
+	    				      mailInfo.setUserName(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱账号    
+	    				      mailInfo.setPassword(Constants.SYSTEM_EMAIL_PASS);//您的邮箱授权码 
+	    				      mailInfo.setFromAddress(Constants.SYSTEM_EMAIL_ACCOUNT);//邮箱地址（同账号）  
 	    					  mailInfo.setToAddress(userEmail_manager);//邮件接收人地址 
 	    				      mailInfo.setSubject("代理机构会员到期提醒"); 
 	    				      String endChi = "";
@@ -72,7 +74,9 @@ public class SendEndDateMsg {
 	    				    	  endChi = "已于";
 	    				      }
 	    				      endChi += CurrentTime.dateConvertToString(cpy.getEndDate())+"到期,为了不影响您的使用，请及时续订";;
-	    				      mailInfo.setContent("尊敬的"+cpyLevelChi+"用户,您的会员"+endChi);   
+	    				      mailInfo.setContent("尊敬的"+cpyLevelChi+"用户,您的会员"+endChi);  
+	    				      //发送系统平台邮件
+	    				      mm.addMail("endM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", "代理机构会员到期提醒", "尊敬的"+cpyLevelChi+"用户,您的会员"+endChi);
 	    				      boolean flag = SimpleMailSender.sendTextMail(mailInfo);
 	    				      String logPath = WebUrl.LOG_URL + "/" + CurrentTime.getStringDate() + ".txt";
     				    	  File file = new File(logPath);

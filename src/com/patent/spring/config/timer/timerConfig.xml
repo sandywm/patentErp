@@ -44,7 +44,7 @@
 			<ref bean="SendMsgTask"/>
 		</property>
 		<property name="targetMethod"><!-- 指定任务方法 -->
-		 	<value>executeAll</value>
+		 	<value>sendEDMsg</value>
 		</property>
 	</bean>
 	<bean id="SendMsgTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean"><!-- 配置定时器时间间隔 -->

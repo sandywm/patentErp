@@ -113,7 +113,7 @@ public class LoginAction extends DispatchAction {
 									cum.updateLoginInfoById(userId, CurrentTime.getStringDate(), loginTimes_db);
 									session.setAttribute(Constants.LOGIN_TIMES, loginTimes_db);
 									session.setAttribute(Constants.LOGIN_USER_ID, userId);
-									request.getSession(false).setAttribute(Constants.LOGIN_TYPE, loginType);
+									session.setAttribute(Constants.LOGIN_TYPE, loginType);
 									List<CpyRoleUserInfoTb> crList = crm.listInfoByUserId(userId);
 									if(crList.size() > 0){
 										List<Object> list_d = new ArrayList<Object>();
@@ -155,7 +155,7 @@ public class LoginAction extends DispatchAction {
 								am.updateAppLoginInfoById(appUserId, CurrentTime.getStringDate(), loginTimes);
 								session.setAttribute(Constants.LOGIN_TIMES, loginTimes);
 								session.setAttribute(Constants.LOGIN_USER_ID, appUserId);
-								request.getSession(false).setAttribute(Constants.LOGIN_TYPE, loginType);
+								session.setAttribute(Constants.LOGIN_TYPE, loginType);
 								msg = "success";
 							}else{
 								msg = "fail";//用户名密码不匹配
@@ -323,7 +323,7 @@ public class LoginAction extends DispatchAction {
 								session.setAttribute(Constants.LOGIN_TIMES, loginTimes_db);
 								session.setAttribute(Constants.LOGIN_USER_ID, su.getId());
 								session.setAttribute(Constants.LOGIN_USER_ROLE_NAME, su.getUserType());
-								request.getSession(false).setAttribute(Constants.LOGIN_TYPE, "spUser");
+								session.setAttribute(Constants.LOGIN_TYPE, "spUser");
 								msg = "success";
 							}else{
 								msg = "lock";

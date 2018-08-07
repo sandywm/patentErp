@@ -6,4 +6,5 @@
 	<app id="apply_info_Web" class="com.patent.service.impl.ApplyInfoManagerImpl"/>
 	<app id="super_user_info_Web" class="com.patent.service.impl.SuperUserManagerImpl"/>
 	<app id="send_mail_code_info_Web" class="com.patent.service.impl.SendEmailCodeInfoManagerImpl"/>
+	<app id="mail_info_Web" class="com.patent.service.impl.MailInfoManagerImpl"/>
 </appContext>

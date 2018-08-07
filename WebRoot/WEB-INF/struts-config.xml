@@ -18,7 +18,6 @@
     <!-- 用户信息管理 -->
     <action path="/user.do" parameter="action" scope="request" type="com.patent.action.user.UserAction">
       <forward name="udPage" path="/index.jsp"></forward><!-- 导向个人信息修改页面(包括密码修改) -->
-      <forward name="cpyDetailPage" path="/index.jsp"></forward><!-- 导向代理机构信息修改页面 -->
       <forward name="userPage" path="/index.jsp"></forward><!-- 导向管理机构下员工列表页面 -->
     </action>
     <!-- 角色信息管理 -->
@@ -27,6 +26,10 @@
     </action>
     <!-- 代理机构管理 -->
     <action path="/cpyManager.do" parameter="action" scope="request"  type="com.patent.action.cpy.CpyManagerAction">
+      <forward name="cpyDetailPage" path="/index.jsp"></forward><!-- 导向代理机构信息修改页面 -->
+    </action>
+    <!-- 模块管理 -->
+    <action path="/moduleM.do" parameter="action" scope="request" type="com.patent.action.module.ModuleManagerAction">
       <set-property property="cancellable" value="true" />
     </action>
 
