@@ -4,6 +4,7 @@
   <StrutsActivity path="/user.do.do" location="650,1050" dimension="239,104" />
   <StrutsActivity path="/role.do.do" location="50,1250" dimension="236,104" />
   <StrutsActivity path="/cpyManager.do.do" location="350,1250" dimension="282,104" />
+  <StrutsActivity path="/moduleM.do.do" location="950,1250" dimension="329,104" />
   <StrutsActivity path="/register.jsp" location="950,650" dimension="102,53" />
   <StrutsActivity path="/spUserLogin.jsp" location="950,1050" dimension="130,53" />
   <StrutsActivity path="/login.jsp" location="650,850" dimension="86,53" />
@@ -23,7 +24,6 @@
   <StrutsActivity path="/exception.jsp" location="50,850" dimension="113,53" />
   <StrutsActivity path="/main.jsp" location="950,850" dimension="85,53" />
   <StrutsActivity path="/r.jsp" location="50,1050" dimension="62,53" />
-  <StrutsActivity path="/moduleM.do.do" location="950,1250" dimension="329,104" />
   <StrutsTransition id="/login.do,forgetPassPage,/forgetPass.jsp,1" routingType="0">
     <AutomaticBendpoints>
       <AbsolutePoint location="174,102" />
@@ -88,6 +88,12 @@
       <AbsolutePoint location="-25,578" />
       <AbsolutePoint location="694,578" />
       <AbsolutePoint location="694,650" />
+    </AutomaticBendpoints>
+  </StrutsTransition>
+  <StrutsTransition id="/user.do.do,uPassPage,/index.jsp,1" routingType="0">
+    <AutomaticBendpoints>
+      <AbsolutePoint location="769,1102" />
+      <AbsolutePoint location="694,676" />
     </AutomaticBendpoints>
   </StrutsTransition>
 </FlowViewLayout>

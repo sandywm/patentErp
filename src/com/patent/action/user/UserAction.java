@@ -89,7 +89,7 @@ public class UserAction extends DispatchAction {
 	}
 	
 	/**
-	 * 导向个人信息修改页面(包括密码修改)
+	 * 导向个人信息修改页面
 	 * @description
 	 * @author wm
 	 * @date 2018-8-4 下午04:24:43
@@ -103,6 +103,23 @@ public class UserAction extends DispatchAction {
 	public ActionForward goUserDetailPage(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return mapping.findForward("udPage");
+	}
+	
+	/**
+	 * 导向个人密码修改页面
+	 * @author Administrator
+	 * @date 2018-8-7 下午08:52:10
+	 * @ModifiedBy
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward goUpdatePassPage(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return mapping.findForward("uPassPage");
 	}
 	
 	/**
