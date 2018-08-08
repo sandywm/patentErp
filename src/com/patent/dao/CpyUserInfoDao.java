@@ -107,4 +107,16 @@ public interface CpyUserInfoDao {
 	 * @return
 	 */
 	List<CpyUserInfo> findManagerInfoByOpt(Session sess,Integer cpyId,String roleName);
+	
+	/**
+	 * 获取指定代理机构下擅长指定专业的员工列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-8 上午10:55:50
+	 * @param sess
+	 * @param scFieldId 擅长专业编号
+	 * @param cpyId 代理机构编号
+	 * @return
+	 */
+	List<CpyUserInfo> findInfoByOpt(Session sess,Integer scFieldId,Integer cpyId);
 }

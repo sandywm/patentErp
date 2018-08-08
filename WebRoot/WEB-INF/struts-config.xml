@@ -31,7 +31,11 @@
       <forward name="cpyDetailPage" path="/index.jsp"></forward><!-- 导向代理机构信息修改页面 -->
     </action>
     <!-- 模块管理 -->
-    <action path="/moduleM" parameter="action" scope="request" type="com.patent.action.module.ModuleManagerAction">
+    <action path="/modM" parameter="action" scope="request" type="com.patent.action.module.ModuleManagerAction">
+      <set-property property="cancellable" value="true" />
+    </action>
+    <!-- 专业技术区域管理 -->
+    <action path="/jfm" parameter="action" scope="request" type="com.patent.action.jfield.JsFieldManagerAction">
       <set-property property="cancellable" value="true" />
     </action>
 

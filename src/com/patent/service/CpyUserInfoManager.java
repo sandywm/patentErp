@@ -175,4 +175,16 @@ public interface CpyUserInfoManager {
 	 * @throws WEBException
 	 */
 	List<CpyUserInfo> listManagerInfoByOpt(Integer cpyId,String roleName) throws WEBException;
+	
+	/**
+	 * 获取指定代理机构下擅长指定专业的员工列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-8 上午11:04:46
+	 * @param scFieldId 擅长专业编号
+	 * @param cpyId 代理机构编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyUserInfo> listInfoByOpt(Integer cpyId,Integer scFieldId) throws WEBException;
 }

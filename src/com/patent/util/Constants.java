@@ -29,6 +29,9 @@ public class Constants {
 	public static final String WEB_SEND_MAIL_CODE_INFO = "send_mail_code_info_Web";
 	public static final String WEB_MAIL_INFO = "mail_info_Web";
 	public static final String WEB_JS_FIELD_INFO = "js_field_info_Web";
+	public static final String WEB_MODULE_INFO = "module_info_Web";
+	public static final String WEB_MOD_ACT_INFO = "mod_act_info_Web";
+	public static final String WEB_ACT_ROLE_INFO = "act_role_info_Web";
 	
 	//-------------------DAO-------------------------//
 	public static final String DAO_CPY_USER_INFO = "cpy_user_info_Dao";
@@ -40,4 +43,7 @@ public class Constants {
 	public static final String DAO_SEND_MAIL_CODE_INFO = "send_mail_code_info_Dao";
 	public static final String DAO_MAIL_INFO = "mail_info_Dao";
 	public static final String DAO_JS_FIELD_INFO = "js_field_info_Dao";
+	public static final String DAO_MODULE_INFO = "module_info_Dao";
+	public static final String DAO_MOD_ACT_INFO = "mod_act_info_Dao";
+	public static final String DAO_ACT_ROLE_INFO = "act_role_info_Dao";
 }

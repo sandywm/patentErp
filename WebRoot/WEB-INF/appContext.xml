@@ -8,4 +8,7 @@
 	<app id="send_mail_code_info_Web" class="com.patent.service.impl.SendEmailCodeInfoManagerImpl"/>
 	<app id="mail_info_Web" class="com.patent.service.impl.MailInfoManagerImpl"/>
 	<app id="js_field_info_Web" class="com.patent.service.impl.JsFiledInfoManagerImpl"/>
+	<app id="module_info_Web" class="com.patent.service.impl.ModuleInfoManagerImpl"/>
+	<app id="mod_act_info_Web" class="com.patent.service.impl.ModActInfoManagerImpl"/>
+	<app id="act_role_info_Web" class="com.patent.service.impl.ActRoleInfoManagerImpl"/>
 </appContext>

@@ -9,4 +9,7 @@
 	<dao id="send_mail_code_info_Dao" class="com.patent.dao.impl.SendEmailCodeInfoDaoImpl"/>
 	<dao id="mail_info_Dao" class="com.patent.dao.impl.MailInfoDaoImpl"/>
 	<dao id="js_field_info_Dao" class="com.patent.dao.impl.JsFiledInfoDaoImpl"/>
+	<dao id="module_info_Dao" class="com.patent.dao.impl.ModuleInfoDaoImpl"/>
+	<dao id="mod_act_info_Dao" class="com.patent.dao.impl.ModActInfoDaoImpl"/>
+	<dao id="act_role_info_Dao" class="com.patent.dao.impl.ActRoleInfoDaoImpl"/>
 </daoContext>

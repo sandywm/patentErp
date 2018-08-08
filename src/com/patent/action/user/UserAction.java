@@ -22,15 +22,15 @@ import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.ApplyInfoTb;
-import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyRoleUserInfoTb;
 import com.patent.module.CpyUserInfo;
+import com.patent.module.JsFiledInfoTb;
 import com.patent.module.SuperUser;
 import com.patent.page.PageConst;
 import com.patent.service.ApplyInfoManager;
-import com.patent.service.CpyInfoManager;
 import com.patent.service.CpyRoleInfoManager;
 import com.patent.service.CpyUserInfoManager;
+import com.patent.service.JsFiledInfoManager;
 import com.patent.service.SuperUserManager;
 import com.patent.tools.Convert;
 import com.patent.tools.MD5;
@@ -156,6 +156,7 @@ public class UserAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
 		SuperUserManager sum = (SuperUserManager)  AppFactory.instance(null).getApp(Constants.WEB_SUPER_USER_INFO);
+		JsFiledInfoManager jsm = (JsFiledInfoManager) AppFactory.instance(null).getApp(Constants.WEB_JS_FIELD_INFO);
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(loginType.equals("appUser")){//申请人/公司身份
 			ApplyInfoTb appUser = am.getEntityById(userId);
@@ -186,10 +187,35 @@ public class UserAction extends DispatchAction {
 				map.put("inDate", cpyUser.getUserInDate());
 				map.put("outDate", cpyUser.getUserOutDate());
 				map.put("lzStatus", cpyUser.getUserLzStatus());
-				map.put("zxNum", cpyUser.getUserZxNum());
-				map.put("scFiled", cpyUser.getUserScFiledId());
-				map.put("scFiledName", cpyUser.getUserScFiledName());
-				map.put("useExp", cpyUser.getUserExper());
+				//-----------------------------------------//
+				if(!this.getLoginRoleName(request).equals("管理员")){
+					//下面数据为代理机构其他用户所有
+					map.put("zxNum", cpyUser.getUserZxNum());
+					map.put("scFiled", cpyUser.getUserScFiledId());
+					Integer cpyId = cum.getEntityById(userId).getCpyInfoTb().getId();
+					List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, cpyUser.getUserScFiledId());
+					String scFiledName = "";
+					for(Iterator<JsFiledInfoTb> it = jsList.iterator() ; it.hasNext();){
+						JsFiledInfoTb js = it.next();
+						scFiledName += js.getZyName() + ",";
+					}
+					if(!scFiledName.equals("")){
+						scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+					}
+					map.put("scFiledName", scFiledName);
+					//获取该代理机构所有的专业列表
+					List<JsFiledInfoTb> jsList_all = jsm.listInfoByOpt(cpyId, "");
+					List<Object> list_d = new ArrayList<Object>();
+					for(Iterator<JsFiledInfoTb> it_1 = jsList_all.iterator() ; it_1.hasNext();){
+						JsFiledInfoTb js = it_1.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("jsId", js.getId());
+						map_d.put("zyName", js.getZyName());
+						list_d.add(map_d);
+					}
+					map.put("jsInfo", list_d);
+					map.put("useExp", cpyUser.getUserExper());
+				}
 			}else{
 				map.put("result", "noUser");//查无此人
 			}

@@ -280,4 +280,21 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 			HibernateUtil.closeSession();
 		}
 	}
+
+	@Override
+	public List<CpyUserInfo> listInfoByOpt(Integer cpyId, Integer scFieldId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cUserDao.findInfoByOpt(sess, scFieldId, cpyId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("获取指定代理机构下擅长指定专业的员工列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
 }
