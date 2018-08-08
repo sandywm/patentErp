@@ -4,6 +4,9 @@
  */
 package com.patent.action.module;
 
+import java.util.Iterator;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.ActionForm;
@@ -11,6 +14,13 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 
+import com.patent.factory.AppFactory;
+import com.patent.module.CpyUserInfo;
+import com.patent.module.ModActInfoTb;
+import com.patent.module.ModuleInfoTb;
+import com.patent.service.CpyUserInfoManager;
+import com.patent.service.ModActInfoManager;
+import com.patent.service.ModuleInfoManager;
 import com.patent.util.Constants;
 
 /** 
@@ -69,10 +79,21 @@ public class ModuleManagerAction extends DispatchAction {
 	 * @param request
 	 * @param response
 	 * @return
+	 * @throws Exception 
 	 */
 	public ActionForward getModuleDetail(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) {
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
+		ModuleInfoManager mm = (ModuleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MODULE_INFO);
+		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
+		List<ModuleInfoTb> mList = mm.listInfoByLevel(-1);
+		for(Iterator<ModuleInfoTb> it = mList.iterator() ; it.hasNext();){
+			ModuleInfoTb mod = it.next();
+			List<ModActInfoTb> acList = mam.listInfoByModId(mod.getId());
+			for(Iterator<ModActInfoTb> it_1 = acList.iterator() ; it_1.hasNext();){
+				ModActInfoTb ma = it_1.next();
+			}
+		}
 		return null;
 	}
 	
