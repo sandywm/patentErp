@@ -187,6 +187,8 @@ public class UserAction extends DispatchAction {
 				map.put("inDate", cpyUser.getUserInDate());
 				map.put("outDate", cpyUser.getUserOutDate());
 				map.put("lzStatus", cpyUser.getUserLzStatus());
+				map.put("yxStatus", cpyUser.getUserYxStatus());
+				map.put("type", this.getLoginRoleName(request));
 				//-----------------------------------------//
 				if(!this.getLoginRoleName(request).equals("管理员")){
 					//下面数据为代理机构其他用户所有
@@ -280,8 +282,7 @@ public class UserAction extends DispatchAction {
 			flag = cum.updateBasicInfoById(userId, userName, userNamePy, userSex, userEmail, userTel);
 			if(flag){
 				String userScFiledIdStr = request.getParameter("userScFiledIdStr");
-				String userScFiledNameStr = Transcode.unescape(request.getParameter("userScFiledNameStr"), request);
-				flag = cum.updateInfoById(userId, 0, userScFiledIdStr, userScFiledNameStr, 0);
+				flag = cum.updateInfoById(userId, 0, userScFiledIdStr, "", 0);
 			}
 		}else{
 			
@@ -417,10 +418,9 @@ public class UserAction extends DispatchAction {
 				String userTel = request.getParameter("tel");
 				String inDate = request.getParameter("inDate");
 				String userScFiledIdStr = request.getParameter("userScFiledIdStr");
-				String userScFiledNameStr = Transcode.unescape(request.getParameter("userScFiledNameStr"), request);
 				Integer roleId = Integer.parseInt(request.getParameter("roleId"));
 				Integer cpyUserId = cum.addCpyUser(cpyId, userName, userNamePy, account, new MD5().calcMD5("123456"), userSex, 
-						userEmail, userTel, inDate, userScFiledIdStr, userScFiledNameStr);
+						userEmail, userTel, inDate, userScFiledIdStr, "");
 				if(cpyUserId > 0){
 					//绑定员工角色
 					Integer cruId = crm.addRoleUser(roleId, cpyUserId);
