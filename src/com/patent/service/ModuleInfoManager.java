@@ -32,4 +32,15 @@ public interface ModuleInfoManager {
 	 * @throws WEBException
 	 */
 	List<ModuleInfoTb> listInfoByLevel(Integer modLevel) throws WEBException;
+	
+	/**
+	 * 根据模块名字获取模块列表信息
+	 * @author Administrator
+	 * @date 2018-8-8 下午10:39:37
+	 * @ModifiedBy
+	 * @param modName 模块名字
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ModuleInfoTb> listInfoByName(String modName) throws WEBException;
 }

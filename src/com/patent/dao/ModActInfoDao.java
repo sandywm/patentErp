@@ -49,4 +49,17 @@ public interface ModActInfoDao {
 	 * @return
 	 */
 	List<ModActInfoTb> findSpecInfo(Session sess,Integer modId);
+	
+	/**
+	 * 列出指定模块下指定模块动作的模块动作列表
+	 * @author Administrator
+	 * @date 2018-8-8 下午10:44:22
+	 * @ModifiedBy
+	 * @param sess
+	 * @param modId
+	 * @param actNameChi 模块动作中文
+	 * @param actNameEng 模块动作英文
+	 * @return
+	 */
+	List<ModActInfoTb> findSpecInfoByOpt(Session sess,Integer modId,String actNameChi,String actNameEng);
 }

@@ -4,8 +4,11 @@
  */
 package com.patent.action.module;
 
+import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +17,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 
+import com.alibaba.fastjson.JSON;
+import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.ModActInfoTb;
@@ -107,10 +112,66 @@ public class ModuleManagerAction extends DispatchAction {
 	 * @param request
 	 * @param response
 	 * @return
+	 * @throws Exception 
 	 */
 	public ActionForward addModule(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) {
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
+		ModuleInfoManager mm = (ModuleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MODULE_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
+			String modName = Transcode.unescape(request.getParameter("modName"), request);
+			String modPic = String.valueOf(request.getParameter("modPic"));
+			String resUrl = request.getParameter("resUrl");
+			Integer orderNo = Integer.parseInt(request.getParameter("orderNo"));
+			Integer modLevel = Integer.parseInt(request.getParameter("modLevel"));
+			if(mm.listInfoByName(modName).size() > 0){
+				map.put("result", "exist");
+			}else{
+				Integer modId = mm.addModule(modName, modPic, resUrl, orderNo, modLevel);
+				if(modId > 0){
+					map.put("result", "success");
+				}else{
+					map.put("result", "error");
+				}
+			}
+		}else{
+			map.put("result", "noAbility");
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 增加指定模块的模块动作
+	 * @author Administrator
+	 * @date 2018-8-8 下午10:32:44
+	 * @ModifiedBy
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward addModAct(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ModuleInfoManager mm = (ModuleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MODULE_INFO);
+		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
+			Integer modId = Integer.parseInt(request.getParameter("modId"));
+			String actNameChi = Transcode.unescape(request.getParameter("actNameChi"), request);
+			String actNameEng = request.getParameter("actNameEng");
+//			mam.
+			Integer orderNo = Integer.parseInt(request.getParameter("orderNo"));
+			mam.addMAct(actNameChi, actNameEng, orderNo, modId);
+		}
 		return null;
 	}
 }

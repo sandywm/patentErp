@@ -55,4 +55,21 @@ public class ModuleInfoManagerImpl implements ModuleInfoManager{
 		}
 	}
 
+	@Override
+	public List<ModuleInfoTb> listInfoByName(String modName)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mDao = (ModuleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MODULE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return mDao.findInfoByName(sess, modName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据模块名字获取模块信息列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

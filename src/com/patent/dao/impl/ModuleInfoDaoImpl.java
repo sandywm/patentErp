@@ -51,4 +51,11 @@ public class ModuleInfoDaoImpl implements ModuleInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<ModuleInfoTb> findInfoByName(Session sess, String modName) {
+		// TODO Auto-generated method stub
+		String hql = " from ModuleInfoTb as mi where mi.modName = '"+modName+"'";
+		return sess.createQuery(hql).list();
+	}
+
 }

@@ -50,4 +50,15 @@ public interface ModuleInfoDao {
 	 * @return
 	 */
 	List<ModuleInfoTb> findInfoByLevel(Session sess,Integer modLevel);
+	
+	/**
+	 * 根据模块名字获取模块信息列表
+	 * @author Administrator
+	 * @date 2018-8-8 下午10:37:27
+	 * @ModifiedBy
+	 * @param sess
+	 * @param modName 模块名字
+	 * @return
+	 */
+	List<ModuleInfoTb> findInfoByName(Session sess,String modName);
 }
