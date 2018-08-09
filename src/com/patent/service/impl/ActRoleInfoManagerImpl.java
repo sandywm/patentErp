@@ -8,7 +8,6 @@ import org.hibernate.Transaction;
 import com.patent.dao.ActRoleInfoDao;
 import com.patent.dao.CpyRoleInfoDao;
 import com.patent.dao.ModActInfoDao;
-import com.patent.dao.ModuleInfoDao;
 import com.patent.exception.WEBException;
 import com.patent.factory.DaoFactory;
 import com.patent.module.ActRoleInfoTb;

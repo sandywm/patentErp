@@ -168,7 +168,7 @@ public class ApplyInfoManagerImpl implements ApplyInfoManager{
 	public boolean updateUserDetailById(Integer appUserId, String iCard, String address,
 			String lxr, String tel, String email, String qq)
 			throws WEBException {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub1
 		try {
 			aDao = (ApplyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_APPLY_INFO);
 			Session sess = HibernateUtil.currentSession();

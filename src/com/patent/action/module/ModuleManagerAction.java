@@ -306,7 +306,7 @@ public class ModuleManagerAction extends DispatchAction {
 	 * 代理机构管理员为机构角色绑定模块动作
 	 * @description
 	 * @author wm
-	 * @date 2018-8-9 下午04:37:38
+	 * @date 2018-8-9 下午04:37:39
 	 * @param mapping
 	 * @param form
 	 * @param request

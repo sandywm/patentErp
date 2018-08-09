@@ -624,7 +624,7 @@ public class UserAction extends DispatchAction {
 	/**
 	 * 增加平台用户
 	 * @author Administrator
-	 * @date 2018-8-4 下午11:09:21
+	 * @date 2018-8-4 下午11:09:22
 	 * @ModifiedBy
 	 * @param mapping
 	 * @param form

@@ -9,7 +9,6 @@ import com.patent.dao.CpyInfoDao;
 import com.patent.dao.CpyUserInfoDao;
 import com.patent.exception.WEBException;
 import com.patent.factory.DaoFactory;
-import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.tools.HibernateUtil;

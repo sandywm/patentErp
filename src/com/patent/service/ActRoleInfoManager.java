@@ -10,7 +10,7 @@ public interface ActRoleInfoManager {
 	/**
 	 * 增加角色动作信息
 	 * @author Administrator
-	 * @date 2018-8-7 下午10:20:28
+	 * @date 2018-8-7 下午10:20:29
 	 * @ModifiedBy
 	 * @param roleId 角色编号
 	 * @param actId 动作编号

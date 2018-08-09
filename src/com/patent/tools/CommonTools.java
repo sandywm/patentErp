@@ -336,7 +336,7 @@ public class CommonTools {
 	}
 	
 	/**
-	 * 检查当前登录用户有无执行当前动作的权利(add,del,update,list)统一文字
+	 * 检查当前登录用户有无执行当前动作的权利(add,del,update,list)统一文字格式
 	 * @author Administrator
 	 * @date 2018-8-9 下午10:58:34
 	 * @ModifiedBy

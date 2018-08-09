@@ -21,7 +21,7 @@ public class JsFiledInfoManagerImpl implements JsFiledInfoManager{
 	Transaction tran = null;
 	@Override
 	public Integer addJF(String zyName, Integer cpyId) throws WEBException {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub1
 		try {
 			jfDao = (JsFiledInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_JS_FIELD_INFO);
 			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
