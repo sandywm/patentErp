@@ -161,6 +161,8 @@ public class ApplyInfoManagerImpl implements ApplyInfoManager{
 				app.setAppTel(tel);
 				app.setAppEmail(email);
 				app.setAppQq(qq);
+				aDao.update(sess, app);
+				tran.commit();
 				return true;
 			}
 			return false;
