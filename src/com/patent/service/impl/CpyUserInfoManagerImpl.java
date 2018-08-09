@@ -152,7 +152,18 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 			String userNamePy, Integer pageNo, Integer pageSize)
 			throws WEBException {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cUserDao.findPageInfoByOpt(sess, cpyId, userLzStatus, userYxStatus, 
+					roleId, userNamePy, pageNo, pageSize);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据条件分页获取代理机构员工记录列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override
@@ -160,7 +171,17 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 			Integer userYxStatus, Integer roleId, String userNamePy)
 			throws WEBException {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cUserDao.getCountByOpt(sess, cpyId, userLzStatus, userYxStatus, roleId, userNamePy);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据条件获取代理机构员工记录条数时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override

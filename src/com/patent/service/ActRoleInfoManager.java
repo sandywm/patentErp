@@ -53,4 +53,14 @@ public interface ActRoleInfoManager {
 	 * @throws WEBException
 	 */
 	boolean delInfoByOpt(Integer roleId,Integer actId) throws WEBException; 
+	
+	/**
+	 * 批量删除指定主键编号组合的角色动作绑定关系
+	 * @author Administrator
+	 * @date 2018-8-9 下午10:26:28
+	 * @ModifiedBy
+	 * @param idStr 主键编号组合
+	 * @throws WEBException
+	 */
+	void delBatchInfoById(String idStr) throws WEBException; 
 }

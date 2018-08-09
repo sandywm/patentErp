@@ -98,4 +98,34 @@ public class ActRoleInfoManagerImpl implements ActRoleInfoManager{
 			HibernateUtil.closeSession();
 		}
 	}
+
+	@Override
+	public void delBatchInfoById(String idStr) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			arDao = (ActRoleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ACT_ROLE_INFO);
+			crDao = (CpyRoleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_ROLE_INFO);
+			maDao = (ModActInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MOD_ACT_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			String[] idArr = idStr.split(",");
+			Integer idLen = idArr.length;
+			for(Integer i = 0 ; i < idLen ; i++){
+				arDao.delete(sess, Integer.parseInt(idArr[i]));
+				if(i % 10 == 0){
+					sess.flush();
+					sess.clear();
+					tran.commit();
+					tran = sess.beginTransaction();
+				}
+			}
+			tran.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("批量删除指定主键编号组合的角色动作绑定关系时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
 }

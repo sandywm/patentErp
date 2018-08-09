@@ -47,14 +47,34 @@ public class ApplyInfoManagerImpl implements ApplyInfoManager{
 			String appNamePy, String appLxr, String lxrTel, Integer pageNo,
 			Integer pageSize) throws WEBException {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			aDao = (ApplyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_APPLY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return aDao.findPageInfoByOpt(sess, appType, appNamePy, lxrTel, pageNo, pageSize);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据条件分页获取申请专利(人/公司)信息记录列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override
 	public Integer getCountByOpt(String appType, String appNamePy,
 			String appLxr, String lxrTel) throws WEBException {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			aDao = (ApplyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_APPLY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return aDao.getCountByOpt(sess, appType, appNamePy, lxrTel);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据条件获取申请专利(人/公司)信息记录条数时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override

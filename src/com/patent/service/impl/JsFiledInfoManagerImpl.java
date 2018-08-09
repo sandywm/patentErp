@@ -109,13 +109,33 @@ public class JsFiledInfoManagerImpl implements JsFiledInfoManager{
 	public List<JsFiledInfoTb> listPageInfoByCpyId(Integer cpyId,Integer pageNo,Integer pageSize)
 			throws WEBException {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			jfDao = (JsFiledInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_JS_FIELD_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return jfDao.findPageInfoByCpyId(sess, cpyId, pageNo, pageSize);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("分页获取指定代理机构下的专业列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override
 	public Integer getCountByCpyId(Integer cpyId) throws WEBException {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			jfDao = (JsFiledInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_JS_FIELD_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return jfDao.getCountByCpyId(sess, cpyId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定代理机构下的专业列表记录条数时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override

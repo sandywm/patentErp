@@ -22,10 +22,12 @@ import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.ActRoleInfoTb;
+import com.patent.module.CpyRoleInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.ModActInfoTb;
 import com.patent.module.ModuleInfoTb;
 import com.patent.service.ActRoleInfoManager;
+import com.patent.service.CpyRoleInfoManager;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.ModActInfoManager;
 import com.patent.service.ModuleInfoManager;
@@ -315,29 +317,68 @@ public class ModuleManagerAction extends DispatchAction {
 	public ActionForward bindMod(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
-		ModuleInfoManager mm = (ModuleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MODULE_INFO);
-		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
 		ActRoleInfoManager arm = (ActRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ACT_ROLE_INFO);
 		String loginRoleName = this.getLoginRoleName(request);
 		Map<String,String> map = new HashMap<String,String>();
 		String msg = "";
+		boolean flag = false;
 		if(loginRoleName.equals("管理员")){//只有代理机构才有绑定的权限
 			Integer selRoleId = Integer.parseInt(request.getParameter("selRoleId"));
 			String selMaIdStr = request.getParameter("selMaIdStr");
-			//先后去指定角色存在的绑定关系
-			List<ActRoleInfoTb> arList = arm.listInfoByOpt(selRoleId, 0);
-			if(arList.size() > 0){
-				//需要把已存在绑定的和当前选择的进行对比
-			}else{
-				//直接增加绑定关系
-				if(!selMaIdStr.equals("")){
-					arm.addBatchARole(selRoleId, selMaIdStr);
+			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			//获取该代理机构下所有的角色
+			List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cpyId);
+			if(crList.size() > 0){
+				for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
+					CpyRoleInfoTb cr = it.next();
+					if(cr.getId().equals(selRoleId)){
+						flag = true;
+						break;
+					}
 				}
+			}else{
+				msg = "fail";
+			}
+			if(!selMaIdStr.equals("") && flag){
+				selMaIdStr = selMaIdStr.substring(0, selMaIdStr.length() - 1);
+				//先后去指定角色存在的绑定关系
+				List<ActRoleInfoTb> arList = arm.listInfoByOpt(selRoleId, 0);
+				if(arList.size() > 0){
+					//全部删除，然后重新增加
+					String idStr = "";
+					for(Iterator<ActRoleInfoTb> it = arList.iterator() ; it.hasNext();){
+						ActRoleInfoTb ar = it.next();
+						idStr += ar.getId() + ",";
+					}
+					idStr = idStr.substring(0, idStr.length() - 1);
+					arm.delBatchInfoById(idStr);
+					//批量增加绑定关系
+					if(!selMaIdStr.equals("")){
+						selMaIdStr = selMaIdStr.substring(0, selMaIdStr.length() - 1);
+						arm.addBatchARole(selRoleId, selMaIdStr);
+					}
+				}else{
+					//直接增加绑定关系
+					if(!selMaIdStr.equals("")){
+						selMaIdStr = selMaIdStr.substring(0, selMaIdStr.length() - 1);
+						arm.addBatchARole(selRoleId, selMaIdStr);
+					}
+				}
+			}else{
+				msg = "fail";
 			}
 		}else{
 			msg = "noAbility";
 		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
 		return null;
 	}
 }

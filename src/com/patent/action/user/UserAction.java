@@ -171,6 +171,7 @@ public class UserAction extends DispatchAction {
 				map.put("appLxr", appUser.getAppLxr());
 				map.put("tel", appUser.getAppTel());
 				map.put("email", appUser.getAppEmail());
+				map.put("qq", appUser.getAppQq());
 			}else{
 				map.put("result", "noUser");//查无此人
 			}
@@ -433,6 +434,7 @@ public class UserAction extends DispatchAction {
 					msg = "error";	
 				}
 			}else{
+				//检查当前用户有误增加员工的权利
 				msg = "noAbility";
 			}
 		}else{
