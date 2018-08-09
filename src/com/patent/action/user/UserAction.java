@@ -280,8 +280,8 @@ public class UserAction extends DispatchAction {
 			String userEmail = request.getParameter("email");
 			String userTel = request.getParameter("tel");
 			flag = cum.updateBasicInfoById(userId, userName, userNamePy, userSex, userEmail, userTel);
-			if(flag){
-				String userScFiledIdStr = request.getParameter("userScFiledIdStr");
+			if(flag && !this.getLoginRoleName(request).equals("管理员")){
+				String userScFiledIdStr = String.valueOf(request.getParameter("userScFiledIdStr"));
 				flag = cum.updateInfoById(userId, 0, userScFiledIdStr, "", 0);
 			}
 		}else{

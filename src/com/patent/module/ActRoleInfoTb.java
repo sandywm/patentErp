@@ -22,6 +22,11 @@ public class ActRoleInfoTb implements java.io.Serializable {
 	public ActRoleInfoTb() {
 	}
 
+	public ActRoleInfoTb(CpyRoleInfoTb cpyRoleInfoTb, ModActInfoTb modActInfoTb) {
+		this.cpyRoleInfoTb = cpyRoleInfoTb;
+		this.modActInfoTb = modActInfoTb;
+	}
+	
 	/** full constructor */
 	public ActRoleInfoTb(Integer id,CpyRoleInfoTb cpyRoleInfoTb, ModActInfoTb modActInfoTb) {
 		this.id = id;

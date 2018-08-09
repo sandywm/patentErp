@@ -41,10 +41,15 @@ public class ActRoleInfoDaoImpl implements ActRoleInfoDao{
 	}
 	
 	@Override
-	public List<ActRoleInfoTb> findSpecInfoByRoleId(Session sess, Integer roleId) {
+	public List<ActRoleInfoTb> findSpecInfoByOpt(Session sess,Integer roleId,Integer maId) {
 		// TODO Auto-generated method stub
-		String hql = " from ActRoleInfoTb as ar where ar.cpyRoleInfoTb.id = "+roleId;
+		String hql = " from ActRoleInfoTb as ar where 1=1";
+		if(roleId > 0){
+			hql += " and ar.cpyRoleInfoTb.id = "+roleId;
+		}
+		if(maId > 0){
+			hql += " and ar.modActInfoTb.id = "+maId;
+		}
 		return sess.createQuery(hql).list();
 	}
-
 }

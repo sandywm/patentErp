@@ -95,7 +95,7 @@ public class MailInfoManagerImpl implements MailInfoManager{
 			tran = sess.beginTransaction();
 			String[] mailIdArr = mailIdStr.split(",");
 			Integer mailIdLen = mailIdArr.length;
-			if(mailIdLen > 1){
+			if(mailIdLen >= 1){
 				for(Integer i = 0 ; i < mailIdLen ; i++){
 					mDao.delete(sess, Integer.parseInt(mailIdArr[i]));
 					if(i % 10 == 0){

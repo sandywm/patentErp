@@ -20,15 +20,27 @@ public interface ActRoleInfoManager {
 	Integer addARole(Integer roleId,Integer actId) throws WEBException; 
 	
 	/**
-	 * 根据角色获取该角色所有动作
+	 * 批量增加角色动作绑定关系
+	 * @description
+	 * @author wm
+	 * @date 2018-8-9 下午05:06:16
+	 * @param roleId 角色编号
+	 * @param actIdStr 动作编号组合
+	 * @throws WEBException
+	 */
+	void addBatchARole(Integer roleId,String actIdStr) throws WEBException;
+	
+	/**
+	 * 根据角色、模块动作编号获取角色动作绑定列表
 	 * @author Administrator
 	 * @date 2018-8-7 下午10:21:02
 	 * @ModifiedBy
-	 * @param roleId
+	 * @param roleId  角色编号（0表示全部）
+	 * @param maId 模块动作编号（0表示全部）
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ActRoleInfoTb> listInfoByRoleId(Integer roleId) throws WEBException; 
+	List<ActRoleInfoTb> listInfoByOpt(Integer roleId,Integer maId) throws WEBException; 
 	
 	/**
 	 * 删除指定角色指定动作的角色动作绑定关系

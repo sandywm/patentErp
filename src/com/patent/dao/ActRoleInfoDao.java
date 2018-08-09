@@ -40,13 +40,14 @@ public interface ActRoleInfoDao {
 	void update(Session sess,ActRoleInfoTb arInfo);
 	
 	/**
-	 * 获取指定角色的模块动作列表
+	 * 获取指定角色、指定动作模块编号的模块动作列表
 	 * @description
 	 * @author wm
 	 * @date 2018-8-7 下午05:47:13
 	 * @param sess
-	 * @param roleId 角色编号
+	 * @param roleId 角色编号 （0时表示全部）
+	 * @param maId 模块动作编号（0时表示全部）
 	 * @return
 	 */
-	List<ActRoleInfoTb> findSpecInfoByRoleId(Session sess,Integer roleId);
+	List<ActRoleInfoTb> findSpecInfoByOpt(Session sess,Integer roleId,Integer maId);
 }
