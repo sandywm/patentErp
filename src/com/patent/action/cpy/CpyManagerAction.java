@@ -274,6 +274,14 @@ public class CpyManagerAction extends DispatchAction {
 	 */
 	public ActionForward goCpyDetailPage(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		boolean abilityFlag = false;
+		if(this.getLoginRoleName(request).equals("管理员")){
+			abilityFlag = true;
+		}else{
+			//获取当前用户是否有修改权限
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCpy");
+		}
+		request.setAttribute("abilityFlag", abilityFlag);
 		return mapping.findForward("cpyDetailPage");
 	}
 	
