@@ -311,8 +311,8 @@ public class CpyManagerAction extends DispatchAction {
 			map.put("lxrEmail", cpy.getLxrEmail());
 			map.put("cpyUrl", cpy.getCpyUrl());
 			map.put("cpyProfile", cpy.getCpyProfile());
-			map.put("signDate", cpy.getSignDate());
-			map.put("endDate", cpy.getEndDate());
+			map.put("signDate", CurrentTime.dateConvertToString(cpy.getSignDate()));
+			map.put("endDate", CurrentTime.dateConvertToString(cpy.getEndDate()));
 			map.put("hotStatus", cpy.getHotStatus());
 			Integer cpyLevel = cpy.getCpyLevel();
 			String cpyLevelChi = "铜牌";
