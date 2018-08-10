@@ -72,6 +72,19 @@ public class CpyManagerAction extends DispatchAction {
 	}
 	
 	/**
+	 * 获取session中的登录类型
+	 * @author Administrator
+	 * @date 2018-7-31 下午09:39:57
+	 * @ModifiedBy
+	 * @param request
+	 * @return
+	 */
+	private String getLoginType(HttpServletRequest request){
+        String loginType = (String)request.getSession(false).getAttribute(Constants.LOGIN_TYPE);
+        return loginType;
+	}
+	
+	/**
 	 * 导向所有代理机构列表页面
 	 * @description
 	 * @author wm
@@ -274,12 +287,16 @@ public class CpyManagerAction extends DispatchAction {
 	 */
 	public ActionForward goCpyDetailPage(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		boolean abilityFlag = false;
-		if(this.getLoginRoleName(request).equals("管理员")){
-			abilityFlag = true;
+		boolean abilityFlag = false;//修改权限
+		if(this.getLoginType(request).equals("cpyUser")){
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				//获取当前用户是否有修改权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCpy");
+			}
 		}else{
-			//获取当前用户是否有修改权限
-			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCpy");
+			abilityFlag = false;
 		}
 		request.setAttribute("abilityFlag", abilityFlag);
 		return mapping.findForward("cpyDetailPage");
