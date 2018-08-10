@@ -27,6 +27,7 @@ import com.patent.module.CpyUserInfo;
 import com.patent.service.CpyRoleInfoManager;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.util.Constants;
+import com.patent.web.Ability;
 
 /** 
  * MyEclipse Struts
@@ -44,6 +45,16 @@ public class RoleAction extends DispatchAction {
 	 */
 	private Integer getLoginUserId(HttpServletRequest request){
         Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ID);
+        return userId;
+	}
+	
+	/**
+	 * 获取session中的用户角色编号
+	 * @param request
+	 * @return
+	 */
+	private Integer getLoginRoleId(HttpServletRequest request){
+        Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ROLE_ID);
         return userId;
 	}
 	
@@ -102,7 +113,7 @@ public class RoleAction extends DispatchAction {
 				abilityFlag = true;
 			}else{
 				//获取当前用户有无增加角色的权限，如果是管理员直接跳过（管理员直接拥有权限）
-				
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addRole");
 			}
 			if(abilityFlag){
 				String roleName = Transcode.unescape(request.getParameter("inpRoleName"), request);
@@ -162,7 +173,7 @@ public class RoleAction extends DispatchAction {
 				abilityFlag = true;
 			}else{
 				//获取当前用户有无增加角色的权限，如果是管理员直接跳过（管理员直接拥有权限）
-				
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upRole");
 			}
 			if(abilityFlag){
 				Integer roleId = Integer.parseInt(request.getParameter("roleId"));
@@ -256,7 +267,6 @@ public class RoleAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub 
 		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO); 
-		Integer userId = this.getLoginUserId(request);
 		Map<String,Object> map = new HashMap<String,Object>();
 		String msg = "";
 		boolean abilityFlag = false;
@@ -264,6 +274,7 @@ public class RoleAction extends DispatchAction {
 			abilityFlag = true;
 		}else{
 			//检查用户有无删除的权限
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "delRole");
 		}
 		if(abilityFlag){
 			Integer roleId = Integer.parseInt(request.getParameter("roleId"));

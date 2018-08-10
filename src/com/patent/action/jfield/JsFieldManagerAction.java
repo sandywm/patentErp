@@ -27,6 +27,7 @@ import com.patent.page.PageConst;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.JsFiledInfoManager;
 import com.patent.util.Constants;
+import com.patent.web.Ability;
 
 /** 
  * MyEclipse Struts
@@ -44,6 +45,16 @@ public class JsFieldManagerAction extends DispatchAction {
 	 */
 	private Integer getLoginUserId(HttpServletRequest request){
         Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ID);
+        return userId;
+	}
+	
+	/**
+	 * 获取session中的用户角色编号
+	 * @param request
+	 * @return
+	 */
+	private Integer getLoginRoleId(HttpServletRequest request){
+        Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ROLE_ID);
         return userId;
 	}
 	
@@ -239,7 +250,7 @@ public class JsFieldManagerAction extends DispatchAction {
 			abilityFlag = true;
 		}else{
 			//需要查看当前用户有无增加权限
-			
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addJf");
 		}
 		if(abilityFlag){
 			if(cUser != null){
@@ -289,7 +300,7 @@ public class JsFieldManagerAction extends DispatchAction {
 			abilityFlag = true;
 		}else{
 			//需要查看当前用户有无增加权限
-			
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "delJf");
 		}
 		if(abilityFlag){
 			if(cUser != null){
@@ -349,7 +360,7 @@ public class JsFieldManagerAction extends DispatchAction {
 			abilityFlag = true;
 		}else{
 			//需要查看当前用户有无增加权限
-			
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upJf");
 		}
 		if(abilityFlag){
 			if(cUser != null){

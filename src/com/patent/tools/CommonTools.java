@@ -335,18 +335,6 @@ public class CommonTools {
         return Pattern.matches(regex, inputEmail);   
 	}
 	
-	/**
-	 * 检查当前登录用户有无执行当前动作的权利(add,del,update,list)统一文字格式
-	 * @author Administrator
-	 * @date 2018-8-9 下午10:58:34
-	 * @ModifiedBy
-	 * @return
-	 */
-	public static boolean checkAbility(Integer currLoginRoleId,String actionStr){
-		
-		return false;
-	}
-	
 	public static void main(String[] args){
 		String[] ipArray = {"1.31.255.255","124.117.66.101","222.75.147.27","220.182.50.226","219.159.235.101","61.244.148.166","59.108.49.35","182.116.193.7","61.157.134.73"};
 //		System.out.println(CommonTools.searchIpByBaidu(ipArray[0]));

@@ -63,4 +63,16 @@ public interface ActRoleInfoManager {
 	 * @throws WEBException
 	 */
 	void delBatchInfoById(String idStr) throws WEBException; 
+	
+	/**
+	 * 获取指定角色、指定模块动作ENG的角色动作列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-10 上午10:42:17
+	 * @param roleId 角色编号
+	 * @param actNameEng 模块动作ENG
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ActRoleInfoTb> listInfoByOpt(Integer roleId,String actNameEng) throws WEBException; 
 }

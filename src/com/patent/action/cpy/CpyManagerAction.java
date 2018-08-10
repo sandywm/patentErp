@@ -30,6 +30,7 @@ import com.patent.service.CpyUserInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.CurrentTime;
 import com.patent.util.Constants;
+import com.patent.web.Ability;
 
 /** 
  * MyEclipse Struts
@@ -47,6 +48,16 @@ public class CpyManagerAction extends DispatchAction {
 	 */
 	private Integer getLoginUserId(HttpServletRequest request){
         Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ID);
+        return userId;
+	}
+	
+	/**
+	 * 获取session中的用户角色编号
+	 * @param request
+	 * @return
+	 */
+	private Integer getLoginRoleId(HttpServletRequest request){
+        Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ROLE_ID);
         return userId;
 	}
 	
@@ -204,7 +215,7 @@ public class CpyManagerAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO);
-		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+//		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		Date endDate = null;
 		String msg = "";
 		String endDateStr = request.getParameter("enDate");
@@ -223,18 +234,19 @@ public class CpyManagerAction extends DispatchAction {
 				msg = "error";
 			}
 		}else if(this.getLoginRoleName(request).equals("管理员")){//代理机构管理员只能通过购买会员的形式修改到期时间、公司会员等级
-			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
-			if(cUser != null){
-				cpyId = cUser.getCpyInfoTb().getId();
-				boolean flag = cm.updateCpyInfoById(cpyId, endDate, hotStatus, cpyLevel);
-				if(flag){
-					msg = "success";
-				}else{
-					msg = "error";
-				}
-			}else{
-				msg = "fail";
-			}
+			//暂时去掉管理员修改代理机构期限、会员等级
+//			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
+//			if(cUser != null){
+//				cpyId = cUser.getCpyInfoTb().getId();
+//				boolean flag = cm.updateCpyInfoById(cpyId, endDate, hotStatus, cpyLevel);
+//				if(flag){
+//					msg = "success";
+//				}else{
+//					msg = "error";
+//				}
+//			}else{
+//				msg = "fail";
+//			}
 		}else{
 			msg = "noAbility";
 		}
@@ -303,14 +315,14 @@ public class CpyManagerAction extends DispatchAction {
 			map.put("endDate", cpy.getEndDate());
 			map.put("hotStatus", cpy.getHotStatus());
 			Integer cpyLevel = cpy.getCpyLevel();
-			String cpyLevelChi = "铁牌";
-			if(cpyLevel.equals(1)){
+			String cpyLevelChi = "铜牌";
+			if(cpyLevel.equals(0)){
 				cpyLevelChi = "铜牌";
 			}else if(cpyLevel.equals(1)){
 				cpyLevelChi = "银牌";
-			}else if(cpyLevel.equals(1)){
+			}else if(cpyLevel.equals(2)){
 				cpyLevelChi = "金牌";
-			}else if(cpyLevel.equals(1)){
+			}else if(cpyLevel.equals(3)){
 				cpyLevelChi = "钻石";
 			}
 			map.put("cpyLevel", cpyLevelChi);
@@ -344,7 +356,14 @@ public class CpyManagerAction extends DispatchAction {
 		Map<String,String> map = new HashMap<String,String>();
 		String roleName = this.getLoginRoleName(request);
 		String msg = "";
+		boolean abilityFlag = false;
 		if(roleName.equals("管理员")){//只有管理员才能修改
+			abilityFlag = true;
+		}else{
+			//获取当前用户是否有修改权限
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCpy");
+		}
+		if(abilityFlag){
 			CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
 			if(cpyUser != null){
 				Integer cpyId = cpyUser.getCpyInfoTb().getId();

@@ -50,4 +50,16 @@ public interface ActRoleInfoDao {
 	 * @return
 	 */
 	List<ActRoleInfoTb> findSpecInfoByOpt(Session sess,Integer roleId,Integer maId);
+	
+	/**
+	 * 获取指定角色、指定模块动作ENG的角色动作列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-10 上午10:26:07
+	 * @param sess
+	 * @param roleId 角色编号
+	 * @param actNameEng 模块动作ENG
+	 * @return
+	 */
+	List<ActRoleInfoTb> findSpecInfoByOpt(Session sess,Integer roleId,String actNameEng);
 }

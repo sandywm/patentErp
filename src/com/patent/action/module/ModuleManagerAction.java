@@ -381,4 +381,89 @@ public class ModuleManagerAction extends DispatchAction {
         pw.close();
 		return null;
 	}
+	
+	/**
+	 * 获取个人模块列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-10 下午04:09:53
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getSelfModule(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ModuleInfoManager mm = (ModuleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MODULE_INFO);
+		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		ActRoleInfoManager arm = (ActRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ACT_ROLE_INFO);
+		String loginRoleName = this.getLoginRoleName(request);
+		List<ModuleInfoTb> mList = new ArrayList<ModuleInfoTb>();
+		if(loginRoleName.equals("super")){//超管获取所有模块列表
+			mList = mm.listInfoByLevel(-1);
+		}else{//代理机构员工获取和代理机构级别相同的模块列表
+			mList = mm.listInfoByLevel(cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getCpyLevel());
+		}
+		
+//		List<ActRole> arm.listInfoByOpt(this.getLoginRoleId(request), 0);
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<Object> list_d = new ArrayList<Object>();
+		for(Iterator<ModuleInfoTb> it = mList.iterator() ; it.hasNext();){
+			ModuleInfoTb mod = it.next();
+			Map<String,Object> map_1 = new HashMap<String,Object>();
+			map_1.put("modId", mod.getId());
+			map_1.put("modName", mod.getModName());
+			map_1.put("modUrl", mod.getResUrl());
+			map_1.put("modLevel", mod.getModLevel());
+			String modLevelChi = "";
+			Integer modLevel = mod.getModLevel();
+			if(modLevel.equals(0)){
+				modLevelChi = "铜牌";
+			}else if(modLevel.equals(1)){
+				modLevelChi = "银牌";
+			}else if(modLevel.equals(2)){
+				modLevelChi = "金牌";
+			}else if(modLevel.equals(3)){
+				modLevelChi = "钻石";
+			}
+			map_1.put("modLevelChi", modLevelChi);
+			//获取该模块下的模块动作列表
+			List<ModActInfoTb> maList = mam.listInfoByModId(mod.getId());
+			List<Object> list_ma = new ArrayList<Object>();
+			Integer selRoleId = CommonTools.getFinalInteger(request.getParameter("selRoleId"));
+			for(Iterator<ModActInfoTb> it_1 = maList.iterator() ; it_1.hasNext();){
+				ModActInfoTb ma = it_1.next();
+				Map<String,Object> map_2 = new HashMap<String,Object>();
+				map_2.put("maId", ma.getId());
+				map_2.put("actNameChi", ma.getActNameChi());
+				map_2.put("actNameEng", ma.getActNameEng());
+				map_2.put("orderNo", ma.getOrderNo());
+				map_2.put("modId",mod.getId());
+				if(selRoleId > 0){
+					if(arm.listInfoByOpt(selRoleId, ma.getId()).size() == 0){
+						map_2.put("bindFlag",false);
+					}else{
+						map_2.put("bindFlag",true);
+					}
+				}else{
+					map_2.put("bindFlag",false);
+				}
+				list_ma.add(map_2);
+			}
+			map_1.put("modActInfo", list_ma);
+			list_d.add(map_1);
+		}
+		map.put("result", list_d);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
 }

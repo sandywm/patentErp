@@ -127,4 +127,21 @@ public class ActRoleInfoManagerImpl implements ActRoleInfoManager{
 			HibernateUtil.closeSession();
 		}
 	}
+
+	@Override
+	public List<ActRoleInfoTb> listInfoByOpt(Integer roleId, String actNameEng)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			arDao = (ActRoleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ACT_ROLE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return arDao.findSpecInfoByOpt(sess, roleId, actNameEng);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定角色、指定模块动作ENG的角色动作列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
 }
