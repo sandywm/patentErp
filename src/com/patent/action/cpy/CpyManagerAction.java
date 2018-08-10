@@ -246,7 +246,7 @@ public class CpyManagerAction extends DispatchAction {
 			}else{
 				msg = "error";
 			}
-		}else if(this.getLoginRoleName(request).equals("管理员")){//代理机构管理员只能通过购买会员的形式修改到期时间、公司会员等级
+//		}else if(this.getLoginRoleName(request).equals("管理员")){//代理机构管理员只能通过购买会员的形式修改到期时间、公司会员等级
 			//暂时去掉管理员修改代理机构期限、会员等级
 //			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
 //			if(cUser != null){
@@ -379,14 +379,17 @@ public class CpyManagerAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
 		Map<String,String> map = new HashMap<String,String>();
-		String roleName = this.getLoginRoleName(request);
 		String msg = "";
 		boolean abilityFlag = false;
-		if(roleName.equals("管理员")){//只有管理员才能修改
-			abilityFlag = true;
+		if(this.getLoginType(request).equals("cpyUser")){
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				//获取当前用户是否有修改权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCpy");
+			}
 		}else{
-			//获取当前用户是否有修改权限
-			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCpy");
+			abilityFlag = false;
 		}
 		if(abilityFlag){
 			CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));

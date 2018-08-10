@@ -74,6 +74,19 @@ public class ModuleManagerAction extends DispatchAction {
 	}
 	
 	/**
+	 * 获取session中的登录类型
+	 * @author Administrator
+	 * @date 2018-7-31 下午09:39:57
+	 * @ModifiedBy
+	 * @param request
+	 * @return
+	 */
+	private String getLoginType(HttpServletRequest request){
+        String loginType = (String)request.getSession(false).getAttribute(Constants.LOGIN_TYPE);
+        return loginType;
+	}
+	
+	/**
 	 * 导向模块管理界面
 	 * @description
 	 * @author wm
@@ -113,7 +126,7 @@ public class ModuleManagerAction extends DispatchAction {
 		List<ModuleInfoTb> mList = new ArrayList<ModuleInfoTb>();
 		if(loginRoleName.equals("super")){//超管获取所有模块列表
 			mList = mm.listInfoByLevel(-1);
-		}else{//代理机构员工获取和代理机构级别相同的模块列表
+		}else if(this.getLoginType(request).equals("cpyUser")){//代理机构员工获取和代理机构级别相同的模块列表
 			mList = mm.listInfoByLevel(cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getCpyLevel());
 		}
 		Map<String,Object> map = new HashMap<String,Object>();
@@ -397,68 +410,56 @@ public class ModuleManagerAction extends DispatchAction {
 	public ActionForward getSelfModule(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
-		ModuleInfoManager mm = (ModuleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MODULE_INFO);
-		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
-		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ActRoleInfoManager arm = (ActRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ACT_ROLE_INFO);
 		String loginRoleName = this.getLoginRoleName(request);
-		List<ModuleInfoTb> mList = new ArrayList<ModuleInfoTb>();
-		if(loginRoleName.equals("super")){//超管获取所有模块列表
-			mList = mm.listInfoByLevel(-1);
-		}else{//代理机构员工获取和代理机构级别相同的模块列表
-			mList = mm.listInfoByLevel(cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getCpyLevel());
-		}
-		
-//		List<ActRole> arm.listInfoByOpt(this.getLoginRoleId(request), 0);
-		
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<Object> list_d = new ArrayList<Object>();
-		for(Iterator<ModuleInfoTb> it = mList.iterator() ; it.hasNext();){
-			ModuleInfoTb mod = it.next();
-			Map<String,Object> map_1 = new HashMap<String,Object>();
-			map_1.put("modId", mod.getId());
-			map_1.put("modName", mod.getModName());
-			map_1.put("modUrl", mod.getResUrl());
-			map_1.put("modLevel", mod.getModLevel());
-			String modLevelChi = "";
-			Integer modLevel = mod.getModLevel();
-			if(modLevel.equals(0)){
-				modLevelChi = "铜牌";
-			}else if(modLevel.equals(1)){
-				modLevelChi = "银牌";
-			}else if(modLevel.equals(2)){
-				modLevelChi = "金牌";
-			}else if(modLevel.equals(3)){
-				modLevelChi = "钻石";
-			}
-			map_1.put("modLevelChi", modLevelChi);
-			//获取该模块下的模块动作列表
-			List<ModActInfoTb> maList = mam.listInfoByModId(mod.getId());
-			List<Object> list_ma = new ArrayList<Object>();
-			Integer selRoleId = CommonTools.getFinalInteger(request.getParameter("selRoleId"));
-			for(Iterator<ModActInfoTb> it_1 = maList.iterator() ; it_1.hasNext();){
-				ModActInfoTb ma = it_1.next();
-				Map<String,Object> map_2 = new HashMap<String,Object>();
-				map_2.put("maId", ma.getId());
-				map_2.put("actNameChi", ma.getActNameChi());
-				map_2.put("actNameEng", ma.getActNameEng());
-				map_2.put("orderNo", ma.getOrderNo());
-				map_2.put("modId",mod.getId());
-				if(selRoleId > 0){
-					if(arm.listInfoByOpt(selRoleId, ma.getId()).size() == 0){
-						map_2.put("bindFlag",false);
-					}else{
-						map_2.put("bindFlag",true);
+		if(this.getLoginType(request).equals("cpyUser")){//代理机构员工
+			if(!loginRoleName.equals("管理员")){//代理机构中管理员以外的其他身份
+				List<ActRoleInfoTb> arList = arm.listInfoByOpt(this.getLoginRoleId(request), 0);
+				if(arList.size() > 0){
+					List<Object> list_d = new ArrayList<Object>();
+					List<ModuleInfoTb> list_m = new ArrayList<ModuleInfoTb>();
+					for(Iterator<ActRoleInfoTb> it = arList.iterator() ; it.hasNext();){
+						ActRoleInfoTb ar = it.next();
+						ModuleInfoTb module = ar.getModActInfoTb().getModuleInfoTb();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						if(list_d.size() == 0){//首次
+							map_d.put("modId", module.getId());
+							map_d.put("modName", module.getModName());
+							map_d.put("modUrl", module.getResUrl());
+							list_d.add(map_d);
+							list_m.add(module);
+						}else{
+							//判断list_m中有无相同的modId
+							Integer exist_status = 1;
+							for(Iterator<ModuleInfoTb> it_1 = list_m.iterator() ; it_1.hasNext();){
+								ModuleInfoTb mod_exist = it_1.next();
+								if(mod_exist.getId().equals(module.getId())){
+									exist_status = 0;
+									break;
+								}else{
+									exist_status = 1;//不存在
+								}
+							}
+							if(exist_status.equals(1)){//不存在
+								map_d.put("modId", module.getId());
+								map_d.put("modName", module.getModName());
+								map_d.put("modUrl", module.getResUrl());
+								list_d.add(map_d);
+								list_m.add(module);
+							}
+						}
 					}
+					map.put("result", list_d);
 				}else{
-					map_2.put("bindFlag",false);
+					map.put("result", new ArrayList<Object>());
 				}
-				list_ma.add(map_2);
+			}else{
+				map.put("result", new ArrayList<Object>());
 			}
-			map_1.put("modActInfo", list_ma);
-			list_d.add(map_1);
+		}else{//除了代理机构以外其他用户不获取模块列表
+			map.put("result", new ArrayList<Object>());
 		}
-		map.put("result", list_d);
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
         pw.write(json); 
