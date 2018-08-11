@@ -20,6 +20,11 @@
                 <comment>专利标题</comment>
             </column>
         </property>
+        <property name="zlNo" type="java.lang.String">
+            <column name="zl_no" length="80">
+                <comment>专利号(可以是两个专利号的组合)</comment>
+            </column>
+        </property>
         <property name="zlType" type="java.lang.String">
             <column name="zl_type" length="20" not-null="true">
                 <comment>专利类型fm,syxx,wg,fmxx（发明、实用新型、外观、发明+新型）</comment>
@@ -65,9 +70,9 @@
                 <comment>领取时间</comment>
             </column>
         </property>
-        <property name="ajId" type="java.lang.Integer">
-            <column name="aj_id" not-null="true">
-                <comment>案件编号</comment>
+        <property name="ajIdStr" type="java.lang.String">
+            <column name="aj_id_str" not-null="true">
+                <comment>案件编号组合(当发布的是新型+发明时)</comment>
             </column>
         </property>
     </class>

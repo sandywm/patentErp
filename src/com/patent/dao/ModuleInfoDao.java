@@ -41,7 +41,7 @@ public interface ModuleInfoDao {
 	void update(Session sess,ModuleInfoTb mInfo);
 	
 	/**
-	 * 列出所有模块列表
+	 * 列出指定级别及其以下所有模块列表
 	 * @description
 	 * @author wm
 	 * @date 2018-8-7 下午05:41:34

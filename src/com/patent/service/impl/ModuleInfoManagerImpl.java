@@ -49,7 +49,7 @@ public class ModuleInfoManagerImpl implements ModuleInfoManager{
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new WEBException("根据模块级别获取模块列表信息时出现异常!");
+			throw new WEBException("获取指定模块级别及其以下的模块列表信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

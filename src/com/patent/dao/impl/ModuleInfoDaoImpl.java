@@ -45,7 +45,7 @@ public class ModuleInfoDaoImpl implements ModuleInfoDao{
 		// TODO Auto-generated method stub
 		String hql = " from ModuleInfoTb as mi";
 		if(modLevel >= 0){
-			hql += " where mi.modLevel = "+modLevel;
+			hql += " where mi.modLevel <= "+modLevel;
 		}
 		hql += "  order by mi.modLevel asc,mi.orderNo asc";
 		return sess.createQuery(hql).list();

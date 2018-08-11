@@ -53,12 +53,6 @@ import com.patent.util.Constants;
  */
 public class LoginAction extends DispatchAction {
 	
-	//获取session中的用户ID
-	private Integer getUserID(HttpServletRequest request){
-        Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ID);
-        return userId;
-	}
-
 	/** 
 	 * Method execute
 	 * @param mapping

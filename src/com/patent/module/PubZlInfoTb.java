@@ -17,6 +17,7 @@ public class PubZlInfoTb implements java.io.Serializable {
 	private Integer id;
 	private ApplyInfoTb applyInfoTb;
 	private String zlTitle;
+	private String zlNo;
 	private String zlType;
 	private String zlUpCl;
 	private Date zlNewDate;
@@ -26,7 +27,7 @@ public class PubZlInfoTb implements java.io.Serializable {
 	private Integer lqCpyId;
 	private String lqCpyName;
 	private Date lqDate;
-	private Integer ajId;
+	private String ajIdStr;
 
 	// Constructors
 
@@ -34,12 +35,13 @@ public class PubZlInfoTb implements java.io.Serializable {
 	public PubZlInfoTb() {
 	}
 
-	public PubZlInfoTb(ApplyInfoTb applyInfoTb, String zlTitle, String zlType,
+	public PubZlInfoTb(ApplyInfoTb applyInfoTb, String zlTitle, String zlNo,String zlType,
 			String zlUpCl, Date zlNewDate, Integer zlStatus, Integer lqUserId,
 			String lqUserName, Integer lqCpyId, String lqCpyName, Date lqDate,
-			Integer ajId) {
+			String ajIdStr) {
 		this.applyInfoTb = applyInfoTb;
 		this.zlTitle = zlTitle;
+		this.zlNo = zlNo;
 		this.zlType = zlType;
 		this.zlUpCl = zlUpCl;
 		this.zlNewDate = zlNewDate;
@@ -49,17 +51,18 @@ public class PubZlInfoTb implements java.io.Serializable {
 		this.lqCpyId = lqCpyId;
 		this.lqCpyName = lqCpyName;
 		this.lqDate = lqDate;
-		this.ajId = ajId;
+		this.ajIdStr = ajIdStr;
 	}
 	
 	/** full constructor */
-	public PubZlInfoTb(Integer id,ApplyInfoTb applyInfoTb, String zlTitle, String zlType,
+	public PubZlInfoTb(Integer id,ApplyInfoTb applyInfoTb, String zlTitle, String zlNo,String zlType,
 			String zlUpCl, Date zlNewDate, Integer zlStatus, Integer lqUserId,
 			String lqUserName, Integer lqCpyId, String lqCpyName, Date lqDate,
-			Integer ajId) {
+			String ajIdStr) {
 		this.id = id;
 		this.applyInfoTb = applyInfoTb;
 		this.zlTitle = zlTitle;
+		this.zlNo = zlNo;
 		this.zlType = zlType;
 		this.zlUpCl = zlUpCl;
 		this.zlNewDate = zlNewDate;
@@ -69,7 +72,7 @@ public class PubZlInfoTb implements java.io.Serializable {
 		this.lqCpyId = lqCpyId;
 		this.lqCpyName = lqCpyName;
 		this.lqDate = lqDate;
-		this.ajId = ajId;
+		this.ajIdStr = ajIdStr;
 	}
 
 	// Property accessors
@@ -170,12 +173,20 @@ public class PubZlInfoTb implements java.io.Serializable {
 		this.lqDate = lqDate;
 	}
 
-	public Integer getAjId() {
-		return this.ajId;
+	public String getAjIdStr() {
+		return this.ajIdStr;
 	}
 
-	public void setAjId(Integer ajId) {
-		this.ajId = ajId;
+	public void setAjIdStr(String ajIdStr) {
+		this.ajIdStr = ajIdStr;
+	}
+
+	public String getZlNo() {
+		return zlNo;
+	}
+
+	public void setZlNo(String zlNo) {
+		this.zlNo = zlNo;
 	}
 
 }

@@ -22,6 +22,7 @@ import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.ActRoleInfoTb;
+import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyRoleInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.ModActInfoTb;
@@ -32,6 +33,7 @@ import com.patent.service.CpyUserInfoManager;
 import com.patent.service.ModActInfoManager;
 import com.patent.service.ModuleInfoManager;
 import com.patent.tools.CommonTools;
+import com.patent.tools.CurrentTime;
 import com.patent.util.Constants;
 
 /** 
@@ -104,7 +106,7 @@ public class ModuleManagerAction extends DispatchAction {
 	}
 	
 	/**
-	 * 获取平台所有模块(超级管理员)，当是代理机构管理员时，获取同等级的平台模块并需要传递selRoleId参数
+	 * 获取平台所有模块(超级管理员)，当是代理机构管理员时，获取同等级的平台及其以下模块并需要传递selRoleId参数
 	 * @description
 	 * @author wm
 	 * @date 2018-8-7 下午05:03:31
@@ -124,10 +126,17 @@ public class ModuleManagerAction extends DispatchAction {
 		ActRoleInfoManager arm = (ActRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ACT_ROLE_INFO);
 		String loginRoleName = this.getLoginRoleName(request);
 		List<ModuleInfoTb> mList = new ArrayList<ModuleInfoTb>();
+		boolean endFlag = true;//未过期
 		if(loginRoleName.equals("super")){//超管获取所有模块列表
 			mList = mm.listInfoByLevel(-1);
 		}else if(this.getLoginType(request).equals("cpyUser")){//代理机构员工获取和代理机构级别相同的模块列表
-			mList = mm.listInfoByLevel(cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getCpyLevel());
+			//获取当前代理机构是否到期
+			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+			String cpyEndDate = CurrentTime.dateConvertToString(cpy.getEndDate());
+			if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0){//已过期
+				endFlag = false;//已过期
+			}
+			mList = mm.listInfoByLevel(cpy.getCpyLevel());
 		}
 		Map<String,Object> map = new HashMap<String,Object>();
 		List<Object> list_d = new ArrayList<Object>();
@@ -138,6 +147,15 @@ public class ModuleManagerAction extends DispatchAction {
 			map_1.put("modName", mod.getModName());
 			map_1.put("modUrl", mod.getResUrl());
 			map_1.put("modLevel", mod.getModLevel());
+			if(endFlag){//未过期
+				map_1.put("useFlag", true);
+			}else{//已过期
+				if(mod.getModLevel() > 0){//铜牌以上的模块--全部不能设置
+					map_1.put("useFlag", false);
+				}else{//铜牌的模块一直免费使用
+					map_1.put("useFlag", true);
+				}
+			}
 			String modLevelChi = "";
 			Integer modLevel = mod.getModLevel();
 			if(modLevel.equals(0)){
@@ -411,14 +429,21 @@ public class ModuleManagerAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		ActRoleInfoManager arm = (ActRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ACT_ROLE_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		String loginRoleName = this.getLoginRoleName(request);
 		Map<String,Object> map = new HashMap<String,Object>();
+		boolean endFlag = true;//未过期
 		if(this.getLoginType(request).equals("cpyUser")){//代理机构员工
 			if(!loginRoleName.equals("管理员")){//代理机构中管理员以外的其他身份
 				List<ActRoleInfoTb> arList = arm.listInfoByOpt(this.getLoginRoleId(request), 0);
 				if(arList.size() > 0){
 					List<Object> list_d = new ArrayList<Object>();
 					List<ModuleInfoTb> list_m = new ArrayList<ModuleInfoTb>();
+					CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+					String cpyEndDate = CurrentTime.dateConvertToString(cpy.getEndDate());
+					if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0){//已过期
+						endFlag = false;//已过期
+					}
 					for(Iterator<ActRoleInfoTb> it = arList.iterator() ; it.hasNext();){
 						ActRoleInfoTb ar = it.next();
 						ModuleInfoTb module = ar.getModActInfoTb().getModuleInfoTb();
@@ -427,6 +452,15 @@ public class ModuleManagerAction extends DispatchAction {
 							map_d.put("modId", module.getId());
 							map_d.put("modName", module.getModName());
 							map_d.put("modUrl", module.getResUrl());
+							if(endFlag){//未过期
+								map_d.put("useFlag", true);
+							}else{
+								if(cpy.getCpyLevel() > 0){//铜牌以上的会员
+									map_d.put("useFlag", false);
+								}else{//铜牌的模块一直免费使用
+									map_d.put("useFlag", true);
+								}
+							}
 							list_d.add(map_d);
 							list_m.add(module);
 						}else{

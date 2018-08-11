@@ -23,7 +23,7 @@ public interface ModuleInfoManager {
 	Integer addModule(String modName,String modPic,String resUrl,Integer orderNo,Integer modLevel) throws WEBException;
 	
 	/**
-	 * 获取所有模块列表
+	 * 获取指定模块级别及其以下的模块列表信息
 	 * @author Administrator
 	 * @date 2018-8-7 下午10:02:24
 	 * @ModifiedBy
