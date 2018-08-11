@@ -182,61 +182,6 @@ public class LoginAction extends DispatchAction {
 	}
 	
 	/**
-	 * 根据所选身份跳转页面
-	 * @description
-	 * @author wm
-	 * @date 2018-7-25 下午04:07:32
-	 * @param mapping
-	 * @param form
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	public ActionForward goPage(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// TODO Auto-generated method stub
-		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
-		Integer roleId = CommonTools.getFinalInteger(request.getParameter("roleId"));
-		String roleName = "";
-		String loginType = String.valueOf(request.getParameter("loginType"));//cpyUser:代理机构员工登录,appUser:申请人/公司账号登录
-		String urlPage = "";
-		if(loginType.equals("cpyUser")){
-			//判断当前用户是否真的有该身份(用户破坏)
-			boolean flag = false;
-			List<CpyRoleUserInfoTb> crList = crm.listInfoByUserId(this.getUserID(request));
-			if(crList.size() > 0){
-				for(Iterator<CpyRoleUserInfoTb> it = crList.iterator() ; it.hasNext() ;){
-					CpyRoleUserInfoTb cru = it.next();
-					if(cru.getCpyRoleInfoTb().getId().equals(roleId)){
-						flag = true;
-						roleName = cru.getCpyRoleInfoTb().getRoleName();
-						break;
-					}
-				}
-			}
-			if(flag){
-				request.getSession(false).setAttribute(Constants.LOGIN_USER_ROLE_ID, roleId);
-				request.getSession(false).setAttribute(Constants.LOGIN_USER_ROLE_NAME, roleName);
-//				if(roleName.equals("管理员")){
-//					urlPage = "cpyManager";//管理员页面
-//				}else{
-//					urlPage = "welcome";//管理机构其他角色主界面
-//				}
-				urlPage = "welcome";//管理机构其他角色主界面
-			}else{
-				urlPage = "loginException";//异常界面
-			}
-		}else if(loginType.equals("appUser")){
-			request.getSession(false).setAttribute(Constants.LOGIN_USER_ROLE_NAME, "申请人/公司");
-			urlPage = "welcome";//管理机构其他角色主界面
-		}else{
-			urlPage = "loginException";//异常界面
-		}
-		return mapping.findForward(urlPage);
-	}
-	
-	/**
 	 * 登出系统
 	 * @description
 	 * @author wm
@@ -252,7 +197,7 @@ public class LoginAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		request.getSession(false).invalidate();
 		return mapping.findForward("loginOut");
-	}
+	}	
 	
 	/**
 	 * 平台用户登录页面
@@ -271,7 +216,6 @@ public class LoginAction extends DispatchAction {
 		
 		return mapping.findForward("spLoginPage");
 	}
-	
 	
 	/**
 	 * 平台管理人员（超级管理员登录）
@@ -347,24 +291,7 @@ public class LoginAction extends DispatchAction {
         pw.close();
 		return null;
 	}
-	
-	/**
-	 * 平台管理人员导向页面
-	 * @description
-	 * @author wm
-	 * @date 2018-7-26 上午09:13:05
-	 * @param mapping
-	 * @param form
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	public ActionForward spGoPage(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return mapping.findForward("welcome");
-	}
-	
+
 	/**
 	 * 注册界面
 	 * @description

@@ -8,16 +8,16 @@
   <global-forwards />
   <action-mappings >
     <action path="/login"  parameter="action" scope="request" type="com.patent.action.login.LoginAction">
-      <forward name="loginException" path="/exception/jsp/exception.jsp"></forward><!-- 登录异常界面 -->
       <forward name="signPage" path="/register.jsp"></forward><!-- 注册界面 -->
       <forward name="forgetPassPage" path="/forgetPass.jsp"></forward><!-- 忘记密码界面 -->
       <forward name="loginOut" path="/login.jsp"></forward><!-- 登出 -->
-      <forward name="welcome" path="/index.jsp"></forward><!-- 首页(其他身份)/代理机构其他角色主界面/申请人/公司账号界面、平台超级用户管理界面  -->
       <forward name="spLoginPage" path="/spUserLogin.jsp"></forward><!-- 平台用户登录界面 -->
     </action>
     <!-- 用户信息管理 -->
     <action path="/user" parameter="action" scope="request" type="com.patent.action.user.UserAction">
-      <forward name="welcome" path="/index.jsp"></forward><!-- 欢迎页面 -->
+      <forward name="loginException" path="/exception/jsp/exception.jsp"></forward><!-- 登录异常界面 -->
+      <forward name="welcome" path="/index.jsp"></forward><!-- 首页(其他身份)/代理机构其他角色主界面/申请人/公司账号界面、平台超级用户管理界面  -->
+      <forward name="index" path="/index.jsp"></forward><!-- 欢迎页面 -->
       <forward name="udPage" path="/Module/userManager/jsp/userBasicInfo.jsp"></forward><!-- 导向个人信息修改页面 -->
       <forward name="uPassPage" path="/index.jsp"></forward><!-- 导向密码修改页面 -->
       <forward name="userPage" path="/index.jsp"></forward><!-- 导向管理机构下员工列表页面 -->

@@ -4,6 +4,8 @@
   <StrutsActivity path="/user.do" location="650,1050" dimension="239,104" />
   <StrutsActivity path="/role.do" location="50,1250" dimension="236,104" />
   <StrutsActivity path="/cpyManager.do" location="350,1250" dimension="282,104" />
+  <StrutsActivity path="/modM.do" location="1250,750" dimension="329,104" />
+  <StrutsActivity path="/jfm.do" location="1250,550" dimension="306,104" />
   <StrutsActivity path="/register.jsp" location="950,650" dimension="102,53" />
   <StrutsActivity path="/spUserLogin.jsp" location="950,1050" dimension="130,53" />
   <StrutsActivity path="/login.jsp" location="650,850" dimension="86,53" />
@@ -24,14 +26,6 @@
   <StrutsActivity path="/exception.jsp" location="50,850" dimension="113,53" />
   <StrutsActivity path="/main.jsp" location="950,850" dimension="85,53" />
   <StrutsActivity path="/r.jsp" location="50,1050" dimension="62,53" />
-  <StrutsActivity path="/jfm.do" location="1250,550" dimension="306,104" />
-  <StrutsActivity path="/modM.do" location="1250,750" dimension="329,104" />
-  <StrutsTransition id="/login.do,forgetPassPage,/forgetPass.jsp,1" routingType="0">
-    <AutomaticBendpoints>
-      <AbsolutePoint location="174,102" />
-      <AbsolutePoint location="0,0" />
-    </AutomaticBendpoints>
-  </StrutsTransition>
   <StrutsTransition id="/login.do,loginOut,/login.jsp,1" routingType="0">
     <AutomaticBendpoints>
       <AbsolutePoint location="298,118" />
@@ -48,6 +42,32 @@
       <AbsolutePoint location="1001,650" />
     </AutomaticBendpoints>
   </StrutsTransition>
+  <StrutsTransition id="/login.do,spLoginPage,/spUserLogin.jsp,1" routingType="0">
+    <AutomaticBendpoints>
+      <AbsolutePoint location="174,102" />
+      <AbsolutePoint location="0,0" />
+    </AutomaticBendpoints>
+  </StrutsTransition>
+  <StrutsTransition id="/user.do,index,/index.jsp,1" routingType="0">
+    <AutomaticBendpoints>
+      <AbsolutePoint location="769,1102" />
+      <AbsolutePoint location="694,676" />
+    </AutomaticBendpoints>
+  </StrutsTransition>
+  <StrutsTransition id="/user.do,udPage,/Module/userManager/jsp/userBasicInfo.jsp,1" routingType="0">
+    <AutomaticBendpoints>
+      <AbsolutePoint location="889,1118" />
+      <AbsolutePoint location="1228,1118" />
+      <AbsolutePoint location="1228,276" />
+      <AbsolutePoint location="1250,276" />
+    </AutomaticBendpoints>
+  </StrutsTransition>
+  <StrutsTransition id="/login.do,forgetPassPage,/forgetPass.jsp,1" routingType="0">
+    <AutomaticBendpoints>
+      <AbsolutePoint location="174,102" />
+      <AbsolutePoint location="0,0" />
+    </AutomaticBendpoints>
+  </StrutsTransition>
   <StrutsTransition id="/login.do,loginException,/exception/jsp/exception.jsp,1" routingType="0">
     <AutomaticBendpoints>
       <AbsolutePoint location="298,148" />
@@ -56,10 +76,11 @@
       <AbsolutePoint location="546,876" />
     </AutomaticBendpoints>
   </StrutsTransition>
-  <StrutsTransition id="/login.do,spLoginPage,/spUserLogin.jsp,1" routingType="0">
+  <StrutsTransition id="/user.do,userPage,/index.jsp,1" routingType="0">
     <AutomaticBendpoints>
-      <AbsolutePoint location="174,102" />
-      <AbsolutePoint location="0,0" />
+      <AbsolutePoint location="829,1050" />
+      <AbsolutePoint location="829,676" />
+      <AbsolutePoint location="738,676" />
     </AutomaticBendpoints>
   </StrutsTransition>
   <StrutsTransition id="/cpyManager.do,cpyDetailPage,/index.jsp,1" routingType="0">
@@ -71,13 +92,6 @@
       <AbsolutePoint location="724,650" />
     </AutomaticBendpoints>
   </StrutsTransition>
-  <StrutsTransition id="/user.do,userPage,/index.jsp,1" routingType="0">
-    <AutomaticBendpoints>
-      <AbsolutePoint location="829,1050" />
-      <AbsolutePoint location="829,676" />
-      <AbsolutePoint location="738,676" />
-    </AutomaticBendpoints>
-  </StrutsTransition>
   <StrutsTransition id="/user.do,welcome,/index.jsp,1" routingType="0">
     <AutomaticBendpoints>
       <AbsolutePoint location="769,1050" />
@@ -86,12 +100,11 @@
       <AbsolutePoint location="664,703" />
     </AutomaticBendpoints>
   </StrutsTransition>
-  <StrutsTransition id="/user.do,udPage,/Module/userManager/jsp/userBasicInfo.jsp,1" routingType="0">
+  <StrutsTransition id="/user.do,loginException,/exception/jsp/exception.jsp,1" routingType="0">
     <AutomaticBendpoints>
-      <AbsolutePoint location="889,1118" />
-      <AbsolutePoint location="1228,1118" />
-      <AbsolutePoint location="1228,276" />
-      <AbsolutePoint location="1250,276" />
+      <AbsolutePoint location="650,1088" />
+      <AbsolutePoint location="484,1088" />
+      <AbsolutePoint location="484,903" />
     </AutomaticBendpoints>
   </StrutsTransition>
   <StrutsTransition id="/user.do,uPassPage,/index.jsp,1" routingType="0">
