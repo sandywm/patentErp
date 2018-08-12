@@ -12,4 +12,5 @@
 	<dao id="module_info_Dao" class="com.patent.dao.impl.ModuleInfoDaoImpl"/>
 	<dao id="mod_act_info_Dao" class="com.patent.dao.impl.ModActInfoDaoImpl"/>
 	<dao id="act_role_info_Dao" class="com.patent.dao.impl.ActRoleInfoDaoImpl"/>
+	<dao id="pub_zl_info_Dao" class="com.patent.dao.impl.PubZlInfoDaoImpl"/>
 </daoContext>

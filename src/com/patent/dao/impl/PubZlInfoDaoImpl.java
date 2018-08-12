@@ -104,8 +104,13 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 			String ajIdStr) {
 		// TODO Auto-generated method stub
 		String hql = " from PubZlInfoTb as pz where pz.lqCpyId = "+lqCpyId;
-		hql += " and pz.ajIdStr";
-		return null;
+		if(ajIdStr.indexOf(",") >= 0){
+			//两个案件编号的组合
+			hql += " and pz.ajIdStr in ("+ajIdStr+")"; 
+		}else{//单个案件
+			hql += " and pz.ajIdStr = "+Integer.parseInt(ajIdStr);
+		}
+		return sess.createQuery(hql).list();
 	}
 
 }

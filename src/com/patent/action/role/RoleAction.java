@@ -183,7 +183,9 @@ public class RoleAction extends DispatchAction {
 				List<CpyRoleInfoTb> rList = crm.listInfoById(roleId);
 				if(rList.size() > 0){
 					String roleName_db = rList.get(0).getRoleName();
-					if(roleName_db.equals(roleName)){
+					if(roleName.equals("管理员")){//管理员字段不能进行修改
+						msg = "error";
+					}else if(roleName_db.equals(roleName)){
 						//相同说明没修改，不进行重名检查
 						boolean flag = crm.updateRoleById(roleId, roleName, roleProfile);
 						if(flag){
@@ -266,10 +268,12 @@ public class RoleAction extends DispatchAction {
 	public ActionForward delRole(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub 
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO); 
 		Map<String,Object> map = new HashMap<String,Object>();
 		String msg = "";
 		boolean abilityFlag = false;
+		boolean flag = false;
 		if(this.getLoginRoleName(request).equals("管理员")){
 			abilityFlag = true;
 		}else{
@@ -278,16 +282,37 @@ public class RoleAction extends DispatchAction {
 		}
 		if(abilityFlag){
 			Integer roleId = Integer.parseInt(request.getParameter("roleId"));
-			//检查有无绑定该角色的用户
-			if(crm.listInfoByRoleId(roleId).size() > 0){
-				msg = "existUser";
-			}else{
-				boolean flag = crm.delRoleById(roleId);
-				if(flag){
-					msg = "success";
+			//获取当前代理机构有无该角色
+			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
+			List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cUser.getCpyInfoTb().getId());
+			for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
+				CpyRoleInfoTb cr = it.next();
+				if(cr.getId().equals(roleId)){
+					flag = true;
+					break;
 				}else{
-					msg = "error";
+					flag = false;
 				}
+			}
+			if(flag){
+				if(crm.listInfoById(roleId).get(0).getRoleName().equals("管理员")){
+					//管理员不能删除
+					msg = "noDel";
+				}else{
+					//检查有无绑定该角色的用户
+					if(crm.listInfoByRoleId(roleId).size() > 0){
+						msg = "existUser";
+					}else{
+						flag = crm.delRoleById(roleId);
+						if(flag){
+							msg = "success";
+						}else{
+							msg = "error";
+						}
+					}
+				}
+			}else{
+				msg = "fail";
 			}
 		}else{
 			msg = "noAbility";

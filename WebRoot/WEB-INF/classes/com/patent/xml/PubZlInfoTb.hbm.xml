@@ -20,6 +20,11 @@
                 <comment>专利标题</comment>
             </column>
         </property>
+        <property name="zlContent" type="java.lang.String">
+            <column name="zl_content" length="300">
+                <comment>专利内容简介</comment>
+            </column>
+        </property>
         <property name="zlNo" type="java.lang.String">
             <column name="zl_no" length="80">
                 <comment>专利号(可以是两个专利号的组合)</comment>

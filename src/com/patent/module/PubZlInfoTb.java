@@ -17,6 +17,7 @@ public class PubZlInfoTb implements java.io.Serializable {
 	private Integer id;
 	private ApplyInfoTb applyInfoTb;
 	private String zlTitle;
+	private String zlContent;
 	private String zlNo;
 	private String zlType;
 	private String zlUpCl;
@@ -35,12 +36,13 @@ public class PubZlInfoTb implements java.io.Serializable {
 	public PubZlInfoTb() {
 	}
 
-	public PubZlInfoTb(ApplyInfoTb applyInfoTb, String zlTitle, String zlNo,String zlType,
+	public PubZlInfoTb(ApplyInfoTb applyInfoTb, String zlTitle, String zlContent,String zlNo,String zlType,
 			String zlUpCl, Date zlNewDate, Integer zlStatus, Integer lqUserId,
 			String lqUserName, Integer lqCpyId, String lqCpyName, Date lqDate,
 			String ajIdStr) {
 		this.applyInfoTb = applyInfoTb;
 		this.zlTitle = zlTitle;
+		this.zlContent = zlContent;
 		this.zlNo = zlNo;
 		this.zlType = zlType;
 		this.zlUpCl = zlUpCl;
@@ -55,13 +57,14 @@ public class PubZlInfoTb implements java.io.Serializable {
 	}
 	
 	/** full constructor */
-	public PubZlInfoTb(Integer id,ApplyInfoTb applyInfoTb, String zlTitle, String zlNo,String zlType,
+	public PubZlInfoTb(Integer id,ApplyInfoTb applyInfoTb, String zlTitle, String zlContent,String zlNo,String zlType,
 			String zlUpCl, Date zlNewDate, Integer zlStatus, Integer lqUserId,
 			String lqUserName, Integer lqCpyId, String lqCpyName, Date lqDate,
 			String ajIdStr) {
 		this.id = id;
 		this.applyInfoTb = applyInfoTb;
 		this.zlTitle = zlTitle;
+		this.zlContent = zlContent;
 		this.zlNo = zlNo;
 		this.zlType = zlType;
 		this.zlUpCl = zlUpCl;
@@ -187,6 +190,14 @@ public class PubZlInfoTb implements java.io.Serializable {
 
 	public void setZlNo(String zlNo) {
 		this.zlNo = zlNo;
+	}
+
+	public String getZlContent() {
+		return zlContent;
+	}
+
+	public void setZlContent(String zlContent) {
+		this.zlContent = zlContent;
 	}
 
 }
