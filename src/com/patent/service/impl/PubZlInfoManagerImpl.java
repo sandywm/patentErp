@@ -97,7 +97,6 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 					pz.setLqCpyId(lqCpyId);
 					pz.setLqCpyName(lqCpyName);
 					pz.setLqDate(lqDate);
-				}else if(zlStatus.equals(-1)){//-1状态时为修改案件号
 					pz.setAjIdStr(ajIdStr);
 				}
 				pzDao.update(sess, pz);

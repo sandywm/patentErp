@@ -313,7 +313,7 @@ public class RoleAction extends DispatchAction {
 			}
 			if(flag){
 				if(crm.listInfoById(roleId).get(0).getRoleName().equals("管理员")){
-					//管理员不能删除
+					//管理员角色不能删除
 					msg = "noDel";
 				}else{
 					//检查有无绑定该角色的用户
