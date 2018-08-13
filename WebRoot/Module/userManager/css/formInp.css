@@ -1,0 +1,54 @@
+.layui-form-label{
+	width:115px !important;
+}
+input[type="text"]:disabled{
+	background:#f1f1f1;
+}
+.layui-form-item .layui-input-inline{
+	width:230px !important;
+}
+.layui-btn{
+	width:100%;
+}
+.noThisPeo{
+	height:80px;
+	margin:50px auto;
+	color:#999;
+	text-align:center;
+}
+.noThisPeo i{
+	font-size:80px;
+	color:#999;
+}
+.noThisPeo p{
+	margin-top:10px;
+}
+.noThisPeo a{
+	color:#999;
+	text-decoration:underline;
+}
+.noThisPeo a:hover{
+	color:#23262E;
+}
+.icon-svg{
+   width: 1em; height: 1em;
+   vertical-align: -0.15em;
+   fill: currentColor;
+   overflow: hidden;
+   font-size:28px;
+   float:left;
+   margin-top:5px;
+}
+.layui-input-inline p{
+	line-height:38px;
+	float:left;
+	margin-left:4px;
+}
+.layui-extend-huo{
+	font-size:24px !important;
+	cursor:pointer;
+	color:#d81e06;
+}
+.layui-input-inline textarea{
+	width:460px;
+}
