@@ -8,20 +8,42 @@ layui.define(["form","jquery"],function(exports){
         var proHtml = '',that = this;
         $.get("plugins/frame/json/address.json", function (data) {
             for (var i = 0; i < data.length; i++) {
-                proHtml += '<option value="' + data[i].code + '">' + data[i].name + '</option>';
+            	proHtml += '<option value="' + data[i].code + '">' + data[i].name + '</option>';
             }
             //初始化省数据
-            $("select[name=prov]").append(proHtml);
+            $("select[name=cpyProvSel]").append(proHtml);
+            
             form.render();
             form.on('select(province)', function (proData) {
-                $("select[name=area]").html('<option value="">请选择县/区</option>');
+            	$("#provVal").val("");
                 var value = proData.value;
                 if (value > 0) {
                     that.citys(data[$(this).index() - 1].childs);
                 } else {
-                    $("select[name=city]").attr("disabled", "disabled");
+                    $("select[name=cpyCitySel]").attr("disabled", "disabled");
                 }
+                var options=$("select[name=cpyProvSel] option:selected");
+                $("#provInp").val(options.text());
+                $("#cityInp").val("");
             });
+            if($("#provInp").val() != ""){ //表示已经保存了省、市到数据库
+            	//根据当前的省的值拿取其对应市区的值
+            	var hasDataCityHtml = '<option value="">请选择市</option>';
+            	for (var i = 0; i < data.length; i++) {
+            		if($("#provInp").val() == data[i].name){
+            			for(var j=0;j<data[i].childs.length;j++){
+            				hasDataCityHtml += '<option value="' + data[i].childs[j].code + '">' + data[i].childs[j].name + '</option>';
+            			}
+            		}
+            	}
+            	$("select[name=cpyCitySel]").html(hasDataCityHtml);
+            	form.render('select');
+            	form.on('select(city)',function(cityData){
+            		var options=$("select[name=cpyCitySel] option:selected");
+                    //console.log(options.text() + "--单独选择市");
+                    $("#cityInp").val(options.text());
+            	});
+            }
         });
     };
 
@@ -29,9 +51,9 @@ layui.define(["form","jquery"],function(exports){
     Address.prototype.citys = function(citys) {
         var cityHtml = '<option value="">请选择市</option>',that = this;
         for (var i = 0; i < citys.length; i++) {
-            cityHtml += '<option value="' + citys[i].code + '">' + citys[i].name + '</option>';
+        	cityHtml += '<option value="' + citys[i].code + '">' + citys[i].name + '</option>';
         }
-        $("select[name=city]").html(cityHtml).removeAttr("disabled");
+        $("select[name=cpyCitySel]").html(cityHtml).removeAttr("disabled");
         form.render();
         form.on('select(city)', function (cityData) {
             var value = cityData.value;
@@ -40,6 +62,9 @@ layui.define(["form","jquery"],function(exports){
             } else {
                 $("select[name=area]").attr("disabled", "disabled");
             }
+            var options=$("select[name=cpyCitySel] option:selected");
+            //console.log(options.text() + "--通过省加载市")
+            $("#cityInp").val(options.text());
         });
     };
 

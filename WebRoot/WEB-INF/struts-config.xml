@@ -14,21 +14,21 @@
       <forward name="spLoginPage" path="/spUserLogin.jsp"></forward><!-- 平台用户登录界面 -->
     </action>
     <!-- 用户信息管理 -->
-    <action path="/user" parameter="action" scope="request" type="com.patent.action.user.UserAction">
+    <action path="/user" parameter="action" scope="request" type="com.patent.action.user.UserAction">    
       <forward name="loginException" path="/exception/jsp/exception.jsp"></forward><!-- 登录异常界面 -->
-      <forward name="welcome" path="/index.jsp"></forward><!-- 首页(其他身份)/代理机构其他角色主界面/申请人/公司账号界面、平台超级用户管理界面  -->
-      <forward name="index" path="/index.jsp"></forward><!-- 欢迎页面 -->
+      <forward name="index" path="/Module/welcome/jsp/welcome.jsp"></forward><!-- 首页(其他身份)/代理机构其他角色主界面/申请人/公司账号界面、平台超级用户管理界面  -->
+      <forward name="welcome" path="/index.jsp"></forward><!-- 欢迎页面 -->
       <forward name="udPage" path="/Module/userManager/jsp/userBasicInfo.jsp"></forward><!-- 导向个人信息修改页面 -->
-      <forward name="uPassPage" path="/index.jsp"></forward><!-- 导向密码修改页面 -->
+      <forward name="uPassPage" path="/Module/updatePass/jsp/updatePass.jsp"></forward><!-- 导向密码修改页面 -->
       <forward name="userPage" path="/index.jsp"></forward><!-- 导向管理机构下员工列表页面 -->
     </action>
     <!-- 角色信息管理 -->
     <action path="/role" parameter="action" scope="request" type="com.patent.action.role.RoleAction">
-      <set-property property="cancellable" value="true" />
+      <forward name="rolePage" path="/Module/roleManager/jsp/roleManager.jsp"></forward><!-- 角色管理页面 -->
     </action>
     <!-- 代理机构管理 -->
     <action path="/cpyManager" parameter="action" scope="request"  type="com.patent.action.cpy.CpyManagerAction">
-      <forward name="cpyDetailPage" path="/index.jsp"></forward><!-- 导向代理机构信息修改页面 -->
+      <forward name="cpyDetailPage" path="/Module/cpyDetailInfo/jsp/cpyDetailInfo.jsp"></forward><!-- 导向代理机构信息修改页面 -->
     </action>
     <!-- 模块管理 -->
     <action path="/modM" parameter="action" scope="request" type="com.patent.action.module.ModuleManagerAction">

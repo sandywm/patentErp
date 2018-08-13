@@ -131,12 +131,12 @@
 						var roleObj = list["roleList"];
 						var roleLength = roleObj.length;
 						if(roleLength == 1){//一种身份
-							window.location.href = "login.do?action=goPage&roleId="+roleObj[0].roleId+"&loginType="+loginType;
+							window.location.href = "user.do?action=goPage&roleId="+roleObj[0].roleId+"&loginType="+loginType;
 						}else{//多重身份下执行
 							listRole(list["roleList"]);
 						}
 					}else if(loginType == "appUser"){
-						window.location.href = "login.do?action=goPage&loginType=" + loginType;
+						window.location.href = "user.do?action=goPage&loginType=" + loginType;
 					}
 				}else if(list["result"] == "lock"){
 					layer.msg("该账号无效", {icon:5,anim:6,time:1000});
@@ -187,7 +187,7 @@
 				if(roleId == ""){
 					layer.msg("请选择一个身份进入系统",{time:1000});
 				}else{
-					window.location.href = "login.do?action=goPage&roleId="+roleId+"&loginType="+loginType;
+					window.location.href = "user.do?action=goPage&roleId="+roleId+"&loginType="+loginType;
 				}
 			}
 			//回车事件

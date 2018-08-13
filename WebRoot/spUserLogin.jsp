@@ -97,7 +97,7 @@
 		//处理登录
 		function proccessLogin(list){
 			if(list["result"] == "success"){
-				window.location.href = "login.do?action=spGoPage";
+				window.location.href = "user.do?action=spGoPage";
 			}else if(list["result"] == "lock"){
 				layer.msg("该账号无效", {icon:5,anim:6,time:1000});
 			}else if(list["result"] == "fail"){
