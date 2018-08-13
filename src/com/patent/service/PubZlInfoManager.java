@@ -117,4 +117,16 @@ public interface PubZlInfoManager {
 	 * @return
 	 */
 	List<PubZlInfoTb> listSpecInfoByOpt(Integer lqCpyId,String ajIdStr)throws WEBException ;
+	
+	/**
+	 * 获取指定主键、指定发布人编号的专利发布信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-13 上午11:37:42
+	 * @param id 主键
+	 * @param pubId 发布人编号（0时不查询）
+	 * @return
+	 * @throws WEBException
+	 */
+	List<PubZlInfoTb> listSpecInfoByOpt(Integer id,Integer pubId)throws WEBException ;
 }

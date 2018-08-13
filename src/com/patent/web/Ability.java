@@ -51,4 +51,30 @@ public class Ability
 		}
 		return false;
     }
+    
+    /**
+     * 打开页面时获取当前用户权限（增加、修改、删除）
+     * @description
+     * @author wm
+     * @date 2018-8-13 下午05:03:10
+     * @param actNameEngArr
+     * @param loginType
+     * @param loginRoleName
+     * @return
+     * @throws Exception 
+     */
+    public static String getAbilityInfo(String actNameEngArr,String loginType,String loginRoleName,Integer roleId) throws Exception{
+    	String abilityStr = "false,false,false";
+    	if(loginType.equals("cpyUser")){
+    		if(loginRoleName.equals("管理员")){
+    			abilityStr = "true,true,true";
+    		}else{
+    			boolean addFlag = Ability.checkAuthorization(roleId, actNameEngArr.split(",")[0]);
+    			boolean upFlag = Ability.checkAuthorization(roleId, actNameEngArr.split(",")[1]);
+    			boolean delFlag = Ability.checkAuthorization(roleId, actNameEngArr.split(",")[2]);
+    			abilityStr = addFlag + "," + upFlag + "," + delFlag;
+    		}
+    	}
+    	return abilityStr;
+    }
 }

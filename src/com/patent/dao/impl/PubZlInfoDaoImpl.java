@@ -113,4 +113,15 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<PubZlInfoTb> findSpecInfoByOpt(Session sess, Integer id,
+			Integer pubId) {
+		// TODO Auto-generated method stub
+		String hql = " from PubZlInfoTb as pz where pz.id = "+id;
+		if(pubId > 0){
+			hql += " and pz.applyInfoTb.id = "+pubId;
+		}
+		return sess.createQuery(hql).list();
+	}
+
 }

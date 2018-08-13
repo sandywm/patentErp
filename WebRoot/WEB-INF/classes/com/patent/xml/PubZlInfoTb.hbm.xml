@@ -76,7 +76,7 @@
             </column>
         </property>
         <property name="ajIdStr" type="java.lang.String">
-            <column name="aj_id_str" not-null="true">
+            <column name="aj_id_str">
                 <comment>案件编号组合(当发布的是新型+发明时)</comment>
             </column>
         </property>

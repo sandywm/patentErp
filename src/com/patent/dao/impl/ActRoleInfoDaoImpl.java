@@ -57,7 +57,7 @@ public class ActRoleInfoDaoImpl implements ActRoleInfoDao{
 	public List<ActRoleInfoTb> findSpecInfoByOpt(Session sess, Integer roleId,
 			String actNameEng) {
 		// TODO Auto-generated method stub
-		String hql = " from ActRoleInfoTb as ar where ar.cpyRoleInfoTb.id = "+roleId + " and ar.cpyRoleInfoTb.actNameEng = '"+actNameEng+"'";
+		String hql = " from ActRoleInfoTb as ar where ar.cpyRoleInfoTb.id = "+roleId + " and ar.modActInfoTb.actNameEng = '"+actNameEng+"'";
 		return sess.createQuery(hql).list();
 	}
 }

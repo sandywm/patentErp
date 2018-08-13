@@ -86,4 +86,16 @@ public interface PubZlInfoDao {
 	 * @return
 	 */
 	List<PubZlInfoTb> findSpecInfoByOpt(Session sess,Integer lqCpyId,String ajIdStr);
+	
+	/**
+	 * 获取指定主键、指定发布人编号的专利发布信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-13 上午11:35:41
+	 * @param sess
+	 * @param id 主键
+	 * @param pubId 发布人编号（0时不查询）
+	 * @return
+	 */
+	List<PubZlInfoTb> findSpecInfoByOpt(Session sess,Integer id,Integer pubId);
 }
