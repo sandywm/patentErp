@@ -13,7 +13,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -96,24 +95,10 @@ public class RoleAction extends DispatchAction {
 	public ActionForward goRolePage(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
-//		boolean delFlag = false;//删除权限
-//		boolean upFlag = false;//修改权限
-//		boolean addFlag = false;//增加权限
-//		if(this.getLoginType(request).equals("cpyUser")){
-//			if(this.getLoginRoleName(request).equals("管理员")){
-//				delFlag = upFlag = addFlag = true;
-//			}else{
-//				//获取当前用户有无增加角色的权限，如果是管理员直接跳过（管理员直接拥有权限）
-//				delFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "delRole");
-//				upFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upRole");
-//				addFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addRole");
-//			}
-//		}
 		String[] myAbility = Ability.getAbilityInfo("addRole,upRole,delRole", this.getLoginType(request), this.getLoginRoleName(request), this.getLoginRoleId(request)).split(",");
-		request.setAttribute("delFlag", Boolean.parseBoolean(myAbility[0]));
-		request.setAttribute("upFlag", Boolean.parseBoolean(myAbility[1]));
-		request.setAttribute("addFlag", Boolean.parseBoolean(myAbility[2]));
-		System.out.println(myAbility[0] + "," + myAbility[1] + "," + myAbility[2]);
+		request.setAttribute("delFlag", myAbility[0]);
+		request.setAttribute("upFlag", myAbility[1]);
+		request.setAttribute("addFlag", myAbility[2]);
 		return mapping.findForward("rolePage");
 	}
 	
@@ -328,7 +313,7 @@ public class RoleAction extends DispatchAction {
 			}
 			if(flag){
 				if(crm.listInfoById(roleId).get(0).getRoleName().equals("管理员")){
-					//管理员不能删除
+					//管理员角色不能删除
 					msg = "noDel";
 				}else{
 					//检查有无绑定该角色的用户

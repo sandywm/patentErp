@@ -454,6 +454,10 @@ public class UserAction extends DispatchAction {
 	 */
 	public ActionForward goUserPage(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String[] myAbility = Ability.getAbilityInfo("addUser,upUser,delUser", this.getLoginType(request), this.getLoginRoleName(request), this.getLoginRoleId(request)).split(",");
+		request.setAttribute("delFlag", myAbility[0]);
+		request.setAttribute("upFlag", myAbility[1]);
+		request.setAttribute("addFlag", myAbility[2]);
 		return mapping.findForward("userPage");
 	}
 	
@@ -484,7 +488,7 @@ public class UserAction extends DispatchAction {
 			if(roleName.equals("管理员")){
 				abilityFlag = true;
 			}else{//不是管理员，就需要查看是否有增加的权限
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addCpyUser");
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addUser");
 			}
 			if(abilityFlag){
 				String userName = Transcode.unescape(request.getParameter("name"), request);
@@ -670,7 +674,7 @@ public class UserAction extends DispatchAction {
 			abilityFlag = true;
 		}else{
 			//获取当前用户是否有修改权限
-			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCpyUser");
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upUser");
 		}
 		if(abilityFlag){
 			Integer cpyUserId = Integer.parseInt(request.getParameter("userId"));

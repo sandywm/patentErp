@@ -25,10 +25,13 @@ import com.patent.factory.AppFactory;
 import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.page.PageConst;
+import com.patent.service.ApplyInfoManager;
 import com.patent.service.CpyInfoManager;
+import com.patent.service.CpyRoleInfoManager;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.CurrentTime;
+import com.patent.tools.MD5;
 import com.patent.util.Constants;
 import com.patent.web.Ability;
 
@@ -94,10 +97,15 @@ public class CpyManagerAction extends DispatchAction {
 	 * @param request
 	 * @param response
 	 * @return
+	 * @throws Exception 
 	 */
 	public ActionForward goCpyPage(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) {
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
+		String[] myAbility = Ability.getAbilityInfo("addCpy,upCpy,delCpy", this.getLoginType(request), this.getLoginRoleName(request), this.getLoginRoleId(request)).split(",");
+		request.setAttribute("delFlag", myAbility[0]);
+		request.setAttribute("upFlag", myAbility[1]);
+		request.setAttribute("addFlag", myAbility[2]);
 		return mapping.findForward("cpyPage");
 	}
 	
@@ -417,6 +425,82 @@ public class CpyManagerAction extends DispatchAction {
 			}
 		}else{
 			msg = "noAbility";//没有权限
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	public ActionForward addSubCpylInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
+		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
+		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		String msg = "";
+		boolean abilityFlag = false;
+		if(this.getLoginType(request).equals("cpyUser")){
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				//获取当前用户是否有修改权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addCpy");
+			}
+		}else{
+			abilityFlag = false;
+		}
+		if(abilityFlag){
+			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+			Integer cpyParId = cpy.getId();
+			String comName = Transcode.unescape(request.getParameter("name"), request);//子公司名字
+			String comAddress = "";//公司地址
+			String comProv = Transcode.unescape(request.getParameter("prov"), request);//子公司所在省份
+			String comCity = Transcode.unescape(request.getParameter("city"), request);//子公司所在城市
+			String comLxr = Transcode.unescape(request.getParameter("lxr"), request);//子公司联系人
+			String email = request.getParameter("email");//个人邮箱--用于找回密码
+			String comTel = Transcode.unescape(request.getParameter("tel"), request);//子公司联系电话
+			
+			String account = request.getParameter("account");
+			String password = request.getParameter("password");
+			//检查账号不能重复(两张表中账号不能相同)
+			if(cum.listSpecInfoByAccount(account).size() > 0 || am.listInfoByAccount(account).size() > 0){
+				msg = "exist";
+			}else{
+				//获取主代理机构下目前拥有的子公司个数
+				if(cpy.getCpySubId().equals("")){//没有子公司
+					if(cpy.getCpyLevel().equals(0)){//免费会员不能增加子公司
+						msg = "lowerlevel";
+					}
+				}
+				Integer cpyId = cm.addCpy(comName, comAddress, comProv, comCity, cpy.getCpyFr(), cpy.getCpyYyzz(), comLxr, comTel, "", 
+						"", cpyParId, cpy.getCpyUrl(), cpy.getCpyProfile(), CurrentTime.dateConvertToString(cpy.getSignDate()), cpy.getEndDate(), 
+						0, 0);
+				if(cpyId > 0){
+					//自动为每个代理机构初始一个管理员身份
+					Integer roleId = crm.addRole("管理员", "管理机构基本信息", cpyId);
+					//增加代理机构管理员
+					Integer cpyUserId = cum.addCpyUser(cpyId, "", "", account, new MD5().calcMD5(password), "m", 
+							email, "", CurrentTime.getStringDate(), "", "");
+					//增加身份绑定
+					Integer ruId = crm.addRoleUser(roleId, cpyUserId);
+					if(ruId > 0){
+						msg = "success";//成功
+						//修改主公司的子公司信息
+						cm.updateJoinInfoById(cpyParId, 0, cpyId);
+					}else{
+						msg = "fail";//失败
+					}
+				}else{
+					msg = "fail";//失败
+				}
+			}
+		}else{
+			 msg = "noAbility";
 		}
 		map.put("result", msg);
 		String json = JSON.toJSONString(map);

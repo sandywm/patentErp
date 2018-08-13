@@ -6,6 +6,7 @@ package com.patent.action.pubZl.PubZl;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,8 +22,11 @@ import org.apache.struts.actions.DispatchAction;
 import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
+import com.patent.module.CpyInfoTb;
+import com.patent.module.CpyUserInfo;
 import com.patent.module.PubZlInfoTb;
 import com.patent.page.PageConst;
+import com.patent.service.CpyUserInfoManager;
 import com.patent.service.PubZlInfoManager;
 import com.patent.tools.CurrentTime;
 import com.patent.util.Constants;
@@ -280,20 +284,53 @@ public class PubZlAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		String msg = "";
 		Integer pubId = Integer.parseInt(request.getParameter("pubId"));
+		Integer zlStatus = Integer.parseInt(request.getParameter("zlStatus"));
+		Integer lqUserId = 0;
+		String lqUserName = "";
+		Integer lqCpyId = 0;
+		String lqCpyName = "";
+		Date lqDate = null;
+		String ajIdStr = "";
+		boolean flag = false;
 		if(this.getLoginType(request).equals("appUser")){//申请人/公司修改专利状态
 			Integer currUserId = this.getLoginUserId(request);
-			Integer zlStatus = Integer.parseInt(request.getParameter("zlStatus"));
 			if(pzm.listSpecInfoByOpt(pubId, currUserId).size() > 0){
-				boolean flag = pzm.updatePubZlById(pubId, zlStatus, 0, "", 0, "", null, "");//申请人/公司只能修改为未领取
-			}else{
-				msg = "fail";
+				flag = true;
 			}
 		}else if(this.getLoginType(request).equals("cpyUser")){//当是代理机构员工时
-//			pzm.updatePubZlById(pubId, zlStatus, this.getLoginUserId(request), lqUserName, lqCpyId, lqCpyName, lqDate, ajIdStr);
+			//必须是银牌以上会员并且没到期才能接任务
+			CpyUserInfo cUser = cum.getEntityById(lqUserId);
+			CpyInfoTb cpy = cUser.getCpyInfoTb();
+			if(cpy.getCpyLevel() > 0 && CurrentTime.compareDate(CurrentTime.getStringDate(), CurrentTime.dateConvertToString(cpy.getEndDate())) > 0){
+				if(zlStatus.equals(1)){//被代理机构员工接受
+					lqUserId = this.getLoginUserId(request);
+					lqUserName = cUser.getUserName();
+					lqCpyId = cUser.getCpyInfoTb().getId();
+					lqCpyName = cUser.getCpyInfoTb().getCpyName();
+					lqDate = CurrentTime.stringToDate_1(CurrentTime.getStringDate());
+					ajIdStr = request.getParameter("ajIdStr");
+				}
+				flag = true;
+			}
 		}
+		if(flag){
+			flag = pzm.updatePubZlById(pubId, zlStatus, lqUserId, lqUserName, lqCpyId, lqCpyName, lqDate, ajIdStr);
+			if(flag){
+				msg = "success";
+			}else{
+				msg = "error";
+			}
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
 		return null;
 	}
 }

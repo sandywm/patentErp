@@ -88,7 +88,26 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 	public boolean updateJoinInfoById(Integer id, Integer cpyParId,
 			Integer cpySubId) throws WEBException {
 		// TODO Auto-generated method stub
-		return false;
+		try {
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CpyInfoTb cpy = cDao.get(sess, id);
+			if(cpy != null){
+				cpy.setCpyParId(cpyParId);
+				cpy.setCpySubId(cpy.getCpySubId() + "," + cpySubId);
+				cDao.update(sess, cpy);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据主键修改代理机构结束日期、公司热度、会员等级信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override

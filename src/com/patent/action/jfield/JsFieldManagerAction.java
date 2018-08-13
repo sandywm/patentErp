@@ -69,6 +69,19 @@ public class JsFieldManagerAction extends DispatchAction {
 	}
 	
 	/**
+	 * 获取session中的登录类型
+	 * @author Administrator
+	 * @date 2018-7-31 下午09:39:57
+	 * @ModifiedBy
+	 * @param request
+	 * @return
+	 */
+	private String getLoginType(HttpServletRequest request){
+        String loginType = (String)request.getSession(false).getAttribute(Constants.LOGIN_TYPE);
+        return loginType;
+	}
+	
+	/**
 	 * 导向专业区域列表页面
 	 * @description
 	 * @author wm
@@ -81,8 +94,12 @@ public class JsFieldManagerAction extends DispatchAction {
 	 * @throws Exception 
 	 */
 	public ActionForward goJfPage(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response){
+			HttpServletRequest request, HttpServletResponse response) throws Exception{
 		// TODO Auto-generated method stub
+		String[] myAbility = Ability.getAbilityInfo("addJf,upJf,delJf", this.getLoginType(request), this.getLoginRoleName(request), this.getLoginRoleId(request)).split(",");
+		request.setAttribute("delFlag", myAbility[0]);
+		request.setAttribute("upFlag", myAbility[1]);
+		request.setAttribute("addFlag", myAbility[2]);
 		return mapping.findForward("jsPage");
 	}
 	
