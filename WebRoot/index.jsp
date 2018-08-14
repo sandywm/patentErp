@@ -109,8 +109,8 @@
 	        		}
 	        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)"><i class="iconfont layui-extend-guanli"></i>代理机构管理</a>';
 	        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" tab-id="4">代理机构员工管理</a></dd>';
-	        		liItem += '<dd class="navLi"><a href="javascript:void(0)" tab-id="5">代理机构角色管理</a></dd>';
-	        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="role.do?action=goRolePage" tab-id="6">代理机构角色模块管理</a></dd>';
+	        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="role.do?action=goRolePage" tab-id="5">代理机构角色管理</a></dd>';
+	        		liItem += '<dd class="navLi"><a href="javascript:void(0)" tab-id="6">代理机构角色模块管理</a></dd>';
 	        		liItem += '<dd class="navLi"><a href="javascript:void(0)" tab-id="7">代理机构主/子公司</a></dd></dl></li>';
 		        	liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="8"><i class="iconfont layui-extend-goumai"></i>会员续费/购买</a></li>';
 	        	}else if(roleName == '申请人/公司' && loginType == 'appUser'){//申请人/公司

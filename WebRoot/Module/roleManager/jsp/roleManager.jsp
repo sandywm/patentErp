@@ -181,10 +181,9 @@
 	        					var field = {inpRoleName : escape(inpRoleName),roleProfile : escape(roleProfile)};
 	        					url = "role.do?action=addRole";
 	        				}else{//表示编辑角色
-	        					var field = {roleId : $("#roleIdInp").val(),inpRoleName : inpRoleName,roleProfile : roleProfile};
+	        					var field = {roleId : $("#roleIdInp").val(),inpRoleName : escape(inpRoleName),roleProfile : escape(roleProfile)};
 	        					url = "role.do?action=updateRole";
 	        				}
-	        				console.log(field)
 	        				$.ajax({
 	      						type:"post",
 	    				        async:false,
@@ -192,32 +191,24 @@
 	    				        data :field,
 	    				        url:url,
 	    				        success:function (json){
-	    				        	if(globalOpts == "addBtn"){//表示增加角色
-	    				        		if(json["result"] == "success"){
-		    				        		layer.msg("添加成功",{icon:1,time:1000},function(){
+	    				        	if(json["result"] == "success"){
+	    				        		if(globalOpts == "addBtn"){//表示增加角色
+	    				        			layer.msg("添加成功",{icon:1,time:1000},function(){
 		    				        			window.location.reload(true);
 		    				        		});
-		    				        	}else if(json["result"] == "error"){
-		    				        		layer.msg("系统错误，请重试", {icon:5,anim:6,time:1000});
-		    				        	}else if(json["result"] == "noAbility"){
-		    				        		layer.msg("对不起，您暂无权限增加角色", {icon:5,anim:6,time:1000});
-		    				        	}else if(json["result"] == "fail"){
-		    				        		layer.msg("添加失败，请重试", {icon:5,anim:6,time:1000});
-		    				        	}
-	    				        	}else{
-	    				        		if(json["result"] == "success"){
-		    				        		layer.msg("编辑成功",{icon:1,time:1000},function(){
+	    				        		}else{
+	    				        			layer.msg("编辑成功",{icon:1,time:1000},function(){
 		    				        			window.location.reload(true);
 		    				        		});
-		    				        	}else if(json["result"] == "exist"){
-		    				        		layer.msg("角色名称存在，请从新编辑", {icon:5,anim:6,time:1000});
-		    				        	}else if(json["result"] == "error"){
-		    				        		layer.msg("系统错误，请重试", {icon:5,anim:6,time:1000});
-		    				        	}else if(json["result"] == "noAbility"){
-		    				        		layer.msg("对不起，您暂无权限编辑角色", {icon:5,anim:6,time:1000});
-		    				        	}else if(json["result"] == "fail"){
-		    				        		layer.msg("编辑失败，请重试", {icon:5,anim:6,time:1000});
-		    				        	}
+	    				        		}
+	    				        	}else if(json["result"] == "exist"){
+	    				        		layer.msg("角色名称存在，请重新编辑", {icon:5,anim:6,time:1000});
+	    				        	}else if(json["result"] == "error"){
+	    				        		layer.msg("系统错误，请重试", {icon:5,anim:6,time:1000});
+	    				        	}else if(json["result"] == "noAbility"){
+	    				        		layer.msg("对不起，您暂无权限增加编辑角色", {icon:5,anim:6,time:1000});
+	    				        	}else if(json["result"] == "fail"){
+	    				        		layer.msg("添加失败，请重试", {icon:5,anim:6,time:1000});
 	    				        	}
 	    				        }
 	      					});
