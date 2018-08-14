@@ -112,22 +112,24 @@ public class CpyInfoDaoImpl implements CpyInfoDao{
 	}
 
 	@Override
-	public List<CpyInfoTb> findSubInfoByParCpyId(Session sess, Integer parCpyId) {
+	public List<CpyInfoTb> findParInfoByParCpyId(Session sess, Integer parCpyId) {
 		// TODO Auto-generated method stub
-		return null;
+		String hql = " from CpyInfoTb as cpy where cpy.id = "+parCpyId;
+		return sess.createQuery(hql).list();
 	}
 
 	@Override
-	public List<CpyInfoTb> findParInfoBySubCpyId(Session sess, Integer subCpyId) {
+	public List<CpyInfoTb> findSubInfoBySubCpyId(Session sess, String subCpyIdStr) {
 		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean updateCpyParInfoById(Session sess, Integer id,
-			Integer cpyParId) {
-		// TODO Auto-generated method stub
-		return false;
+		String hql = " from CpyInfoTb as cpy where";
+		if(!subCpyIdStr.equals("")){
+			if(subCpyIdStr.split(",").length == 1){
+				hql += " and cpy.id = "+Integer.parseInt(subCpyIdStr);
+			}else{
+				hql += " and cpy.id in ("+subCpyIdStr+")";
+			}
+		}
+		return sess.createQuery(hql).list();
 	}
 
 	@Override

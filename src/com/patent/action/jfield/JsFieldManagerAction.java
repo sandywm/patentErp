@@ -273,11 +273,15 @@ public class JsFieldManagerAction extends DispatchAction {
 			if(cUser != null){
 				Integer cpyId = cUser.getCpyInfoTb().getId();
 				String zyName = Transcode.unescape(request.getParameter("zyName"), request);
-				Integer jfId = jsm.addJF(zyName, cpyId);
-				if(jfId > 0){
-					map.put("result", "success");
+				if(jsm.listInfoByOpt_1(cpyId, zyName).size() > 0){
+					map.put("result", "exist");
 				}else{
-					map.put("result", "error");
+					Integer jfId = jsm.addJF(zyName, cpyId);
+					if(jfId > 0){
+						map.put("result", "success");
+					}else{
+						map.put("result", "error");
+					}
 				}
 			}
 		}else{

@@ -12,7 +12,7 @@
         </id>
         <property name="mailType" type="java.lang.String">
             <column name="mail_type" length="20" not-null="true">
-                <comment>TaskM(任务通知),endM(到期通知),buyM(会员购买通知)</comment>
+                <comment>taskM(任务通知),endM(到期通知),buyM(会员购买通知)</comment>
             </column>
         </property>
         <property name="sendInfo" type="java.lang.String">

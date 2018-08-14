@@ -64,6 +64,8 @@ public interface CpyInfoManager {
 	
 	/**
 	 * 修改主/分公司信息编号
+	 * 当cpyParId大于0时，cpySubId必须为0，id表示的是子公司的编号--增加子公司的主公司编号
+	 * 当cpyParId等于0时，cpySubId必须大于0，id表示的是主公司的编号--增加主公司的子公司编号
 	 * @description
 	 * @author wm
 	 * @date 2018-7-24 下午05:12:25
@@ -136,4 +138,17 @@ public interface CpyInfoManager {
 	 * @throws WEBException
 	 */
 	List<CpyInfoTb> listEndDateCpyInfo()throws WEBException;
+	
+	/**
+	 * 根据代理公司编号、公司类型获取主/子公司信息列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-14 下午05:01:11
+	 * @param cpyIdStr 代理公司编号
+	 * @param cpyType 代理公司类型（par-表示子公司查看主公司,sub--表示主公司查看子公司）
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyInfoTb> listParSubCpyInfo(String cpyIdStr,String cpyType)throws WEBException;
+	
 }

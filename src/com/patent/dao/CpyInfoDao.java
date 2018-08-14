@@ -78,7 +78,7 @@ public interface CpyInfoDao {
 			String cpyLxr,Integer cpyLevel,Integer gqStatus);
 	
 	/**
-	 * 根据主公司编号获取所有分公司信息
+	 * 根据主公司编号获取主公司信息（子公司获取主公司）
 	 * @description
 	 * @author wm
 	 * @date 2018-7-24 上午09:51:49
@@ -86,10 +86,10 @@ public interface CpyInfoDao {
 	 * @param parCpyId
 	 * @return
 	 */
-	List<CpyInfoTb> findSubInfoByParCpyId(Session sess,Integer parCpyId);
+	List<CpyInfoTb> findParInfoByParCpyId(Session sess,Integer parCpyId);
 	
 	/**
-	 * 根据分公司获取主公司信息
+	 * 根据分公司获取分公司信息列表（主公司获取分公司）
 	 * @description
 	 * @author wm
 	 * @date 2018-7-24 上午10:06:30
@@ -97,19 +97,7 @@ public interface CpyInfoDao {
 	 * @param subCpyId
 	 * @return
 	 */
-	List<CpyInfoTb> findParInfoBySubCpyId(Session sess,Integer subCpyId);
-	
-	/**
-	 * 修改指定代理机构的主公司编号
-	 * @description 修改的同时也要修改主公司的分公司信息编号
-	 * @author wm
-	 * @date 2018-7-24 上午09:53:48
-	 * @param sess
-	 * @param id 指定代理机构编号
-	 * @param cpyParId 主公司编号
-	 * @return
-	 */
-	boolean updateCpyParInfoById(Session sess,Integer id,Integer cpyParId);
+	List<CpyInfoTb> findSubInfoBySubCpyId(Session sess,String subCpyIdStr);
 	
 	/**
 	 * 获取所有即将到期或者已到期的代理机构（即将到期5、1天内/已到期0,1天内进行邮件提醒）
@@ -120,4 +108,5 @@ public interface CpyInfoDao {
 	 * @return
 	 */
 	List<CpyInfoTb> findEndDateCpyInfo(Session sess);
+	
 }

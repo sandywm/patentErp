@@ -94,8 +94,16 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 			tran = sess.beginTransaction();
 			CpyInfoTb cpy = cDao.get(sess, id);
 			if(cpy != null){
-				cpy.setCpyParId(cpyParId);
-				cpy.setCpySubId(cpy.getCpySubId() + "," + cpySubId);
+				if(cpyParId > 0){
+					cpy.setCpyParId(cpyParId);
+				}
+				if(cpySubId > 0){
+					if(cpy.getCpySubId().equals("")){
+						cpy.setCpySubId(String.valueOf(cpySubId));
+					}else{
+						cpy.setCpySubId(cpy.getCpySubId() + "," + cpySubId);
+					}
+				}
 				cDao.update(sess, cpy);
 				tran.commit();
 				return true;
@@ -104,7 +112,7 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new  WEBException("根据主键修改代理机构结束日期、公司热度、会员等级信息时出现异常!");
+			throw new  WEBException("修改主/分公司信息编号时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}
@@ -191,6 +199,27 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new  WEBException("获取所有即将到期或者已到期的代理机构（即将到期5、1天内/已到期0,1天内进行邮件提醒）信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<CpyInfoTb> listParSubCpyInfo(String cpyIdStr,String cpyType)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			if(cpyType.equals("par")){
+				return cDao.findParInfoByParCpyId(sess, Integer.parseInt(cpyIdStr));
+			}else{
+				return cDao.findSubInfoBySubCpyId(sess, cpyIdStr);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据代理公司编号、公司类型获取主/子公司信息列表时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

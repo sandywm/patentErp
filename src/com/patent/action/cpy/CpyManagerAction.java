@@ -435,6 +435,115 @@ public class CpyManagerAction extends DispatchAction {
 		return null;
 	}
 	
+	/**
+	 * 导向子/主公司列表页面
+	 * @description
+	 * @author wm
+	 * @date 2018-8-14 上午11:39:01
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward goSubParCpyPage(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String[] myAbility = Ability.getAbilityInfo("addCpy,upCpy,delCpy", this.getLoginType(request), this.getLoginRoleName(request), this.getLoginRoleId(request)).split(",");
+		request.setAttribute("delFlag", myAbility[0]);
+		request.setAttribute("upFlag", myAbility[1]);
+		request.setAttribute("addFlag", myAbility[2]);
+		return mapping.findForward("subCpyPage");
+	}
+	
+	/**
+	 * 获取子/主公司信息列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-14 下午05:39:24
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getSubParCpyData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
+		CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+		Integer parId = cpy.getCpyParId();
+		String subIdStr = cpy.getCpySubId();
+		List<CpyInfoTb> cpyList = new ArrayList<CpyInfoTb>();
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<Object> list_d = new ArrayList<Object>();
+		if(parId.equals(0)){//没有主公司
+			if(!subIdStr.equals("")){//存在子公司
+				cpyList = cm.listParSubCpyInfo(subIdStr, "sub");
+				map.put("result", "existInfo");
+			}else{
+				map.put("result", "noInfo");
+			}
+			map.put("psInfo", "sub");
+		}else{//存在主公司-说明自己是子公司
+			cpyList = cm.listParSubCpyInfo(subIdStr, "par");
+			map.put("result", "existInfo");
+			map.put("psInfo", "par");
+		}
+		for(Iterator<CpyInfoTb> it = cpyList.iterator() ; it.hasNext();){
+			CpyInfoTb cpy_t = it.next();
+			Map<String,Object> map_d = new HashMap<String,Object>();
+			map_d.put("cpyId", cpy_t.getId());
+			map_d.put("cpyName", cpy_t.getCpyName());
+			map_d.put("cpyProv", cpy_t.getCpyProv());
+			map_d.put("cpyCity", cpy_t.getCpyCity());
+			map_d.put("cpyAddress", cpy_t.getCpyAddress());
+			map_d.put("cpyFr", cpy_t.getCpyFr());
+			map_d.put("cpyYyzz", cpy_t.getCpyYyzz());
+			map_d.put("cpyLxr", cpy_t.getCpyLxr());
+			map_d.put("lxrTel", cpy_t.getLxrTel());
+			map_d.put("lxrEmail", cpy_t.getLxrEmail());
+			map_d.put("cpyUrl", cpy_t.getCpyUrl());
+			map_d.put("cpyProfile", cpy_t.getCpyProfile());
+			map_d.put("signDate", CurrentTime.dateConvertToString(cpy_t.getSignDate()));
+			map_d.put("endDate", CurrentTime.dateConvertToString(cpy_t.getEndDate()));
+			map_d.put("hotStatus", cpy_t.getHotStatus());
+			Integer cpyLevel = cpy_t.getCpyLevel();
+			String cpyLevelChi = "铜牌";
+			if(cpyLevel.equals(0)){
+				cpyLevelChi = "铜牌";
+			}else if(cpyLevel.equals(1)){
+				cpyLevelChi = "银牌";
+			}else if(cpyLevel.equals(2)){
+				cpyLevelChi = "金牌";
+			}else if(cpyLevel.equals(3)){
+				cpyLevelChi = "钻石";
+			}
+			map_d.put("cpyLevel", cpyLevelChi);
+			list_d.add(map_d);
+		}
+		map.put("cpyInfo", list_d);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 添加子公司
+	 * @description
+	 * @author wm
+	 * @date 2018-8-14 上午11:34:37
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	public ActionForward addSubCpylInfo(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
@@ -475,6 +584,8 @@ public class CpyManagerAction extends DispatchAction {
 				if(cpy.getCpySubId().equals("")){//没有子公司
 					if(cpy.getCpyLevel().equals(0)){//免费会员不能增加子公司
 						msg = "lowerlevel";
+					}else if(cpy.getCpyLevel().equals(1)){//银牌能增加二个子公司
+						msg = "outNum";
 					}
 				}
 				Integer cpyId = cm.addCpy(comName, comAddress, comProv, comCity, cpy.getCpyFr(), cpy.getCpyYyzz(), comLxr, comTel, "", 
