@@ -49,3 +49,6 @@
 .layui-tab-title{
 	border:none;
 }
+.layui-layer-molv .layui-layer-btn .layui-layer-btn1{
+	background:#fff !important;
+}
