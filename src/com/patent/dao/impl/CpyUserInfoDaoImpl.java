@@ -115,7 +115,7 @@ public class CpyUserInfoDaoImpl implements CpyUserInfoDao{
 	public List<CpyUserInfo> findInfoByOpt(Session sess, Integer scFieldId,
 			Integer cpyId) {
 		// TODO Auto-generated method stub
-		String hql = "from CpyUserInfo as cu where cu.cpyInfoTb.id = "+cpyId + " and FIND_IN_SET("+scFieldId+",cu.userScFiledId)";
+		String hql = "from CpyUserInfo as cu where cu.cpyInfoTb.id = "+cpyId + " and FIND_IN_SET("+scFieldId+",cu.userScFiledId) > 0";
 		return sess.createQuery(hql).list();
 	}
 
