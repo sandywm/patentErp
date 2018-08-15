@@ -268,7 +268,7 @@ public class JsFieldManagerAction extends DispatchAction {
 		if(this.getLoginRoleName(request).equals("管理员")){
 			abilityFlag = true;
 		}else{
-			//需要查看当前用户有无增加权限
+			//需要查看当前用户有无增加权限111
 			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addJf");
 		}
 		if(abilityFlag){
