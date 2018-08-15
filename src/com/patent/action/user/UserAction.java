@@ -546,67 +546,69 @@ public class UserAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
 		Integer currLoginUserId = this.getLoginUserId(request);
-		CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
-		Integer cpyId = 0;
 		Map<String,Object> map = new HashMap<String,Object>();
-		if(cUser != null){
-			cpyId = cUser.getCpyInfoTb().getId();
-			Integer userLzStatus = Integer.parseInt(request.getParameter("userLzStatus"));
-			Integer userYxStatus = Integer.parseInt(request.getParameter("userYxStatus"));
-			Integer roleId = Integer.parseInt(request.getParameter("roleId"));
-			String userNamePy = request.getParameter("userNamePy");
-			Integer count = cum.getCountByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy);
-			if(count > 0){
-				Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("pageSize")), 10);
-				Integer pageCount = PageConst.getPageCount(count, pageSize);
-				Integer pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
-				List<CpyUserInfo> cUserList = cum.listPageInfoByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy, pageNo, pageSize);
-				List<Object> list_u = new ArrayList<Object>();
-				for(Iterator<CpyUserInfo> it = cUserList.iterator() ; it.hasNext();){
-					CpyUserInfo cUser_a = it.next();
-					Map<String,Object> map_u = new HashMap<String,Object>();
-					map_u.put("userId", cUser_a.getId());
-					map_u.put("name", cUser_a.getUserName());
-					map_u.put("account", cUser_a.getUserAccount());
-					map_u.put("sex", cUser_a.getUserSex());
-					map_u.put("email", cUser_a.getUserEmail());
-					map_u.put("inDate", cUser_a.getUserInDate());
-					map_u.put("outDate", cUser_a.getUserOutDate());
-					Integer lzStatus = cUser_a.getUserLzStatus();
-					String lzStatusChi = "在职";
-					if(lzStatus.equals(0)){
-						lzStatusChi = "离职";
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = 0;
+			if(cUser != null){
+				cpyId = cUser.getCpyInfoTb().getId();
+				Integer userLzStatus = Integer.parseInt(request.getParameter("userLzStatus"));
+				Integer userYxStatus = Integer.parseInt(request.getParameter("userYxStatus"));
+				Integer roleId = Integer.parseInt(request.getParameter("roleId"));
+				String userNamePy = request.getParameter("userNamePy");
+				Integer count = cum.getCountByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy);
+				if(count > 0){
+					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("pageSize")), 10);
+					Integer pageCount = PageConst.getPageCount(count, pageSize);
+					Integer pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
+					List<CpyUserInfo> cUserList = cum.listPageInfoByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy, pageNo, pageSize);
+					List<Object> list_u = new ArrayList<Object>();
+					for(Iterator<CpyUserInfo> it = cUserList.iterator() ; it.hasNext();){
+						CpyUserInfo cUser_a = it.next();
+						Map<String,Object> map_u = new HashMap<String,Object>();
+						map_u.put("userId", cUser_a.getId());
+						map_u.put("name", cUser_a.getUserName());
+						map_u.put("account", cUser_a.getUserAccount());
+						map_u.put("sex", cUser_a.getUserSex());
+						map_u.put("email", cUser_a.getUserEmail());
+						map_u.put("inDate", cUser_a.getUserInDate());
+						map_u.put("outDate", cUser_a.getUserOutDate());
+						Integer lzStatus = cUser_a.getUserLzStatus();
+						String lzStatusChi = "在职";
+						if(lzStatus.equals(0)){
+							lzStatusChi = "离职";
+						}
+						map_u.put("lzStatus", lzStatusChi);
+						Integer yxStatus = cUser_a.getUserYxStatus();
+						String yxStatusChi = "有效";
+						if(yxStatus.equals(0)){
+							yxStatusChi = "无效";
+						}
+						map_u.put("yxStatus", yxStatusChi);
+						map_u.put("zxNum", cUser_a.getUserZxNum());
+						map_u.put("scFiledName", cUser_a.getUserScFiledName());
+						map_u.put("exper", cUser_a.getUserExper());
+						//获取用户角色
+						List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(cUser_a.getId());
+						String roleName = "";
+						for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
+							CpyRoleUserInfoTb ru = it_1.next();
+							roleName += ru.getCpyRoleInfoTb().getRoleName() + ",";
+						}
+						if(!roleName.equals("")){
+							roleName = roleName.substring(0, roleName.length() - 1);
+						}
+						map_u.put("roleName", roleName);
+						list_u.add(map_u);
 					}
-					map_u.put("lzStatus", lzStatusChi);
-					Integer yxStatus = cUser_a.getUserYxStatus();
-					String yxStatusChi = "有效";
-					if(yxStatus.equals(0)){
-						yxStatusChi = "无效";
-					}
-					map_u.put("yxStatus", yxStatusChi);
-					map_u.put("zxNum", cUser_a.getUserZxNum());
-					map_u.put("scFiledName", cUser_a.getUserScFiledName());
-					map_u.put("exper", cUser_a.getUserExper());
-					//获取用户角色
-					List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(cUser_a.getId());
-					String roleName = "";
-					for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
-						CpyRoleUserInfoTb ru = it_1.next();
-						roleName += ru.getCpyRoleInfoTb().getRoleName() + ",";
-					}
-					if(!roleName.equals("")){
-						roleName = roleName.substring(0, roleName.length() - 1);
-					}
-					map_u.put("roleName", roleName);
-					list_u.add(map_u);
+					map.put("result", "success");
+					map.put("uInfo", list_u);
+				}else{
+					map.put("result", "noInfo");
 				}
-				map.put("result", "success");
-				map.put("uInfo", list_u);
 			}else{
-				map.put("result", "noInfo");
+				map.put("result", "fail");
 			}
-		}else{
-			map.put("result", "fail");
 		}
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
@@ -632,17 +634,19 @@ public class UserAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		Integer currLoginUserId = this.getLoginUserId(request);
-		CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
-		Integer cpyId = 0;
-		Integer count = 0;
 		Map<String,Integer> map = new HashMap<String,Integer>();
-		if(cUser != null){
-			cpyId = cUser.getCpyInfoTb().getId();
-			Integer userLzStatus = Integer.parseInt(request.getParameter("userLzStatus"));
-			Integer userYxStatus = Integer.parseInt(request.getParameter("userYxStatus"));
-			Integer roleId = Integer.parseInt(request.getParameter("roleId"));
-			String userNamePy = request.getParameter("userNamePy");
-			count = cum.getCountByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy);
+		Integer count = 0;
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = 0;
+			if(cUser != null){
+				cpyId = cUser.getCpyInfoTb().getId();
+				Integer userLzStatus = Integer.parseInt(request.getParameter("userLzStatus"));
+				Integer userYxStatus = Integer.parseInt(request.getParameter("userYxStatus"));
+				Integer roleId = Integer.parseInt(request.getParameter("roleId"));
+				String userNamePy = request.getParameter("userNamePy");
+				count = cum.getCountByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy);
+			}
 		}
 		map.put("result", count);
 		String json = JSON.toJSONString(map);

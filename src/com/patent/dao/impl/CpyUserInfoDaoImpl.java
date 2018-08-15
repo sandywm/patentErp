@@ -61,10 +61,10 @@ public class CpyUserInfoDaoImpl implements CpyUserInfoDao{
 			Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
 		String hql =" from CpyUserInfo as cu where cu.cpyInfoTb.id = "+cpyId;
-		if(userLzStatus.equals(-1)){
+		if(!userLzStatus.equals(-1)){
 			hql += " and cu.userLzStatus = "+userLzStatus;
 		}
-		if(userYxStatus.equals(-1)){
+		if(!userYxStatus.equals(-1)){
 			hql += " and cu.userYxStatus = "+userYxStatus;
 		}
 		if(!userNamePy.equals("")){
@@ -85,10 +85,10 @@ public class CpyUserInfoDaoImpl implements CpyUserInfoDao{
 			Integer userLzStatus,Integer userYxStatus,Integer roleId, String userNamePy) {
 		// TODO Auto-generated method stub
 		String hql ="select count(cu.id) from CpyUserInfo as cu where cu.cpyInfoTb.id = "+cpyId;
-		if(userLzStatus.equals(-1)){
+		if(!userLzStatus.equals(-1)){
 			hql += " and cu.userLzStatus = "+userLzStatus;
 		}
-		if(userYxStatus.equals(-1)){
+		if(!userYxStatus.equals(-1)){
 			hql += " and cu.userYxStatus = "+userYxStatus;
 		}
 		if(!userNamePy.equals("")){
