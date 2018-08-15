@@ -317,7 +317,7 @@ public class CommonTools {
 	public static Integer longToInt(Object count_obj){
 		long count = 0;
 		if(count_obj != null){
-			count = (Long) count_obj;
+			count =  Long.parseLong(String.valueOf( count_obj));
 		}
 		return (int)count;
 	}

@@ -18,3 +18,25 @@
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
 }
+/* 头部添加按钮公共标签 */
+.newAddBtn{
+	right:0;
+	top:0;
+	height:100%;
+	display:block;
+	background:#009688;
+	text-align:center;
+	padding:0 20px;
+	text-indent:18px;
+	color:#fff;
+}
+.newAddBtn:hover{
+	opacity:.8;
+	color:#fff;
+}
+.newAddBtn i{
+	font-size:25px;
+	position:absolute;
+	left:-8px;
+	top:0px;
+}

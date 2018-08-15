@@ -72,6 +72,9 @@ public class JsFiledInfoDaoImpl implements JsFiledInfoDao{
 		String hql = "select count(js.id) from JsFiledInfoTb as js where js.cpyInfoTb.id = "+cpyId;
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);
+//		long count = Long.parseLong(String.valueOf(sess.createQuery(hql).uniqueResult()));
+//		Integer count_1 = (int)count;
+//		return count_1;
 	}
 
 	@Override

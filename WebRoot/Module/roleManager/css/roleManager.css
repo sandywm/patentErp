@@ -1,26 +1,5 @@
 @import url("../../../css/common.css");
 @import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
-.addRole{
-	right:0;
-	top:0;
-	height:100%;
-	display:block;
-	background:#009688;
-	text-align:center;
-	padding:0 20px;
-	text-indent:18px;
-	color:#fff;
-}
-.addRole:hover{
-	opacity:.8;
-	color:#fff;
-}
-.addRole i{
-	font-size:25px;
-	position:absolute;
-	left:-8px;
-	top:0px;
-}
 /* 角色列表 */
 #roleList li{
 	float:left;
@@ -29,20 +8,25 @@
 	position: relative;
 	margin:0 0 20px 20px;
 }
+#roleList li:first-child{
+	cursor:default;
+}
 #roleList li .topRoleName{
 	height:50px;
 	line-height:50px;
 	text-align:center;
-	background:#393D49;
+	background:#22b8aa;
 	font-size:18px;
 	color:#fff;
 	font-weight:600;
+	border-radius:6px 6px 0 0;
 }
 .roleProfile{
 	height:80px;
 	background:#ebebeb;
 	text-align:center;
 	padding-top:10px;
+	border-radius:0 0 6px 6px;
 }
 .roleProfile strong{
 	font-size:16px;
@@ -62,6 +46,7 @@
 	background:rgba(13,10,49,.7);
 	text-align:center;
 	display:none;
+	border-radius:6px;
 }
 #roleList li:hover .smFunDiv{
 	display:block;

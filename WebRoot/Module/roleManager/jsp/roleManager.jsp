@@ -20,7 +20,7 @@
   				<div class="layui-card">
   					<div class="layui-card-header posRel">
   						<span>代理机构角色管理</span>
-  						<a id="addRole" class="posAbs addRole" opts="addBtn" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加角色</a>
+  						<a id="addRole" class="posAbs newAddBtn" opts="addBtn" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加角色</a>
   					</div>
   					<div class="layui-card-body" pad15>
   						<div id="roleList"></div>
@@ -33,7 +33,7 @@
     <script type="text/javascript">
     	var delFlag = "${ requestScope.delFlag }",
     		upFlag = "${ requestScope.upFlag }",
-    		addFlag = "${ requestScope.addFlag }";
+    		addFlag = "${ requestScope.addFlag }",
     		globalOpts = "addBtn";
     	layui.use(['layer','jquery'],function(){
     		var layer = layui.layer,
@@ -42,28 +42,31 @@
    				data : {
        				roleId : "",
        				roleName : "",
-       				roleProfile : ""
+       				roleProfile : "",
+       				globalIndex : 0
        			},
     			init : function(){
     				this.onLoad();
-    				this.bindEvent();
+    				this.bindEvent(),
+    				this.bindEvent_multi();
     			},
     			onLoad : function(){
     				//获取代理机构下角色列表
   					layer.load("1");
-  					$.ajax({
-  						type:"post",
-				        async:false,
-				        dataType:"json",
-				        url:"role.do?action=getRoleList",
-				        success:function (json){
-				        	layer.closeAll("loading");	
-				        	var roleList = json.roleList;
-				        	console.log(roleList)
-				        	//回填基本信息
-				        	getRoleList(roleList);
-				        }
-  					});
+    				this.loadRoleList();	
+    			},
+    			loadRoleList : function(){
+        			$.ajax({
+    					type:"post",
+    			        async:false,
+    			        dataType:"json",
+    			        url:"role.do?action=getRoleList",
+    			        success:function (json){
+    			        	layer.closeAll("loading");	
+    			        	var roleList = json.roleList;
+    			        	getRoleList(roleList);
+    			        }
+    				});
     			},
     			bindEvent : function(){
     				var _this = this;
@@ -77,7 +80,7 @@
             				addEditRoleCon += '<div class="comRoleDiv"><span class="fl">角色名：</span><input id="inpRoleName" type="text" placeholder="请输入角色名(6字以内)" maxlength="6"></div>';
             				addEditRoleCon += '<div class="comRoleDiv"><span class="fl">角色简介：</span><input id="roleProfile" type="text" placeholder="请输入角色简介(20字以内)" maxlength="20"></div>';
             				addEditRoleCon += '</div>';
-    	            		layer.open({
+            				_this.data.globalIndex = layer.open({
     	        				title : '添加角色',
     	        				type: 1,
     	        				skin: 'addEditRole', //样式类名
@@ -95,14 +98,15 @@
     	        			layer.msg("抱歉，您没有权限添加角色！", {icon:5,anim:6,time:1000});
     	        		}	
     				});
+    			},
+    			bindEvent_multi : function(){
+    				var _this = this;
     				//编辑角色
     				$(".editABtn").on("click",function(){
     					var addEditRoleCon = '';
     					_this.data.roleId =  $(this).attr("roleId");
 						_this.data.roleName = $(this).attr("roleName");
 						_this.data.roleProfile = $(this).attr("roleProfile");
-						
-						console.log(_this.data.roleId +"=roleId" + _this.data.roleName + "=roleName" + _this.data.roleProfile + "=roleProfile");
 						
         				addEditRoleCon += '<div class="addEditRoleCon">';
         				addEditRoleCon += '<input type="hidden" id="roleIdInp" value="'+ _this.data.roleId +'"/>';
@@ -111,7 +115,7 @@
         				addEditRoleCon += '</div>';
     					if(upFlag){
     						globalOpts = $(this).parent().attr("opts");
-    						layer.open({
+    						_this.data.globalIndex = layer.open({
     	        				title : '编辑角色',
     	        				type: 1,
     	        				skin: 'addEditRole', //样式类名
@@ -128,7 +132,6 @@
     					}else{
     						layer.msg("抱歉，您没有权限编辑角色！", {icon:5,anim:6,time:1000});
     					}
-    					
     				});
     				//删除角色
        				$(".delABtn").on("click",function(){
@@ -147,7 +150,8 @@
        					        success:function (json){
        					        	if(json["result"] == "success"){
        					        		layer.msg("删除成功",{icon:1,time:1000},function(){
-	    				        			window.location.reload(true);
+	    				        			_this.loadRoleList();
+	    				        			_this.bindEvent_multi();
 	    				        		});
        					        	}else if(json["result"] == "existUser"){
        					        		layer.msg("该角色已绑定用户，不能删除", {icon:5,anim:6,time:1000});
@@ -163,6 +167,7 @@
     			},
     			//增加编辑角色共同方法
     			addRole : function(){
+    				var _this = this;
     				var inpRoleName = $.trim($("#inpRoleName").val()),
         			roleProfile = $.trim($("#roleProfile").val());
 	        		if(inpRoleName == ""){
@@ -194,11 +199,16 @@
 	    				        	if(json["result"] == "success"){
 	    				        		if(globalOpts == "addBtn"){//表示增加角色
 	    				        			layer.msg("添加成功",{icon:1,time:1000},function(){
-		    				        			window.location.reload(true);
+		    				        			_this.loadRoleList();
+		    				        			_this.bindEvent_multi();
+		    				        			layer.close(_this.data.globalIndex);
 		    				        		});
 	    				        		}else{
 	    				        			layer.msg("编辑成功",{icon:1,time:1000},function(){
-		    				        			window.location.reload(true);
+		    				        			_this.loadRoleList();
+		    				        			_this.bindEvent_multi();
+		    				        			layer.close(_this.data.globalIndex);
+
 		    				        		});
 	    				        		}
 	    				        	}else if(json["result"] == "exist"){

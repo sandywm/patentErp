@@ -43,7 +43,7 @@
   						type:"post",
 				        async:false,
 				        dataType:"json",
-				        url:"user.do?action=getUserDetail",
+				        url:"jfm.do?action=getJfCount",
 				        success:function (json){
 				        	layer.closeAll("loading");	
 				        	//回填基本信息

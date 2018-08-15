@@ -36,7 +36,7 @@
     </action>
     <!-- 专业技术区域管理 -->
     <action path="/jfm" parameter="action" scope="request" type="com.patent.action.jfield.JsFieldManagerAction">
-      <set-property property="cancellable" value="true" />
+      <forward name="jsPage" path="/Module/professFieldManager/jsp/profesField.jsp"></forward><!-- 角色管理页面 -->
     </action>
     <!-- 发布专利模块管理 -->
     <action path="/pubZl" parameter="action" scope="request" type="com.patent.action.pubZl.PubZl.PubZlAction">
