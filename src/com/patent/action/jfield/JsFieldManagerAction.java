@@ -107,7 +107,7 @@ public class JsFieldManagerAction extends DispatchAction {
 	 * 获取指定代理机构下的专业列表
 	 * @description
 	 * @author wm
-	 * @date 2018-8-8 上午10:43:58
+	 * @date 2018-8-8 上午10:43:01
 	 * @param mapping
 	 * @param form
 	 * @param request
