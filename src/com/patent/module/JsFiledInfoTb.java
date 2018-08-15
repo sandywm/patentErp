@@ -15,6 +15,7 @@ public class JsFiledInfoTb implements java.io.Serializable {
 	private Integer id;
 	private CpyInfoTb cpyInfoTb;
 	private String zyName;
+	private String zyProfile;
 
 	// Constructors
 
@@ -23,9 +24,10 @@ public class JsFiledInfoTb implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public JsFiledInfoTb(CpyInfoTb cpyInfoTb, String zyName) {
+	public JsFiledInfoTb(CpyInfoTb cpyInfoTb, String zyName,String zyProfile) {
 		this.cpyInfoTb = cpyInfoTb;
 		this.zyName = zyName;
+		this.zyProfile = zyProfile;
 	}
 
 	// Property accessors
@@ -52,6 +54,14 @@ public class JsFiledInfoTb implements java.io.Serializable {
 
 	public void setZyName(String zyName) {
 		this.zyName = zyName;
+	}
+
+	public String getZyProfile() {
+		return zyProfile;
+	}
+
+	public void setZyProfile(String zyProfile) {
+		this.zyProfile = zyProfile;
 	}
 
 }

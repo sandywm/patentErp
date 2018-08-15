@@ -20,5 +20,10 @@
                 <comment>专业名称</comment>
             </column>
         </property>
+        <property name="zyProfile" type="java.lang.String">
+            <column name="zy_profile" length="50">
+                <comment>专业介绍</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

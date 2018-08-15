@@ -6,16 +6,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ListIterator;
-import java.util.Map;
+//import java.util.ArrayList;
+//import java.util.HashMap;
+//import java.util.ListIterator;
+//import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -336,7 +334,7 @@ public class CommonTools {
 	}
 	
 	public static void main(String[] args){
-		String[] ipArray = {"1.31.255.255","124.117.66.101","222.75.147.27","220.182.50.226","219.159.235.101","61.244.148.166","59.108.49.35","182.116.193.7","61.157.134.73"};
+//		String[] ipArray = {"1.31.255.255","124.117.66.101","222.75.147.27","220.182.50.226","219.159.235.101","61.244.148.166","59.108.49.35","182.116.193.7","61.157.134.73"};
 //		System.out.println(CommonTools.searchIpByBaidu(ipArray[0]));
 //		System.out.println(CommonTools.searchIpByBaidu(ipArray[1]));
 //		System.out.println(CommonTools.searchIpByBaidu(ipArray[2]));
@@ -346,37 +344,37 @@ public class CommonTools {
 //		System.out.println(CommonTools.searchIpByBaidu(ipArray[6]));
 //		System.out.println(CommonTools.searchIpByBaidu(ipArray[7]));
 //		System.out.println(CommonTools.searchIpByBaidu(ipArray[8]));
-		float aa = (float) (3.13 + 3.16) / 2;
-		System.out.println(aa);
-		System.out.println(Convert.convertInputNumber(aa));
-		Map<String,String> map = new HashMap<String,String>();
-		map.put("userId", "10");
-		map.put("img1", "img1");
-		map.put("img2", "img2");
-		for(Map.Entry<String, String> entry : map.entrySet()){
-			System.out.println("key = " + entry.getKey() + "  value = " + entry.getValue());
-		}
-		System.out.println("-------------");
-		for(String value :map.values()){
-			System.out.println("value = "+value);
-		}
-		System.out.println("-------------");
-		
-		ListIterator<Map.Entry<String, String>> i = new ArrayList<Map.Entry<String, String>>(map.entrySet()).listIterator(map.size());
-		while(i.hasPrevious()){
-			Map.Entry<String, String> entry = i.previous();
-			System.out.println("key = " + entry.getKey() + "  value = " + entry.getValue());
-		}
-		System.out.println(CommonTools.getInStoreNo("A_001223"));
-		
-		System.out.println(CommonTools.checkMobile(""));
-		System.out.println(CommonTools.checkMobile("133110"));
-		System.out.println(CommonTools.checkMobile("13311089766"));
-		float aba = 118 * 100 / 1000f;
-		double abc = 118 * 100d / 100000;
+//		float aa = (float) (3.13 + 3.16) / 2;
+//		System.out.println(aa);
+//		System.out.println(Convert.convertInputNumber(aa));
+//		Map<String,String> map = new HashMap<String,String>();
+//		map.put("userId", "10");
+//		map.put("img1", "img1");
+//		map.put("img2", "img2");
+//		for(Map.Entry<String, String> entry : map.entrySet()){
+//			System.out.println("key = " + entry.getKey() + "  value = " + entry.getValue());
+//		}
+//		System.out.println("-------------");
+//		for(String value :map.values()){
+//			System.out.println("value = "+value);
+//		}
+//		System.out.println("-------------");
+//		
+//		ListIterator<Map.Entry<String, String>> i = new ArrayList<Map.Entry<String, String>>(map.entrySet()).listIterator(map.size());
+//		while(i.hasPrevious()){
+//			Map.Entry<String, String> entry = i.previous();
+//			System.out.println("key = " + entry.getKey() + "  value = " + entry.getValue());
+//		}
+//		System.out.println(CommonTools.getInStoreNo("A_001223"));
+//		
+//		System.out.println(CommonTools.checkMobile(""));
+//		System.out.println(CommonTools.checkMobile("133110"));
+//		System.out.println(CommonTools.checkMobile("13311089766"));
+//		float aba = 118 * 100 / 1000f;
+//		double abc = 118 * 100d / 100000;
 //		String aaa = Convert.convertInputNumber_1(118 * 100d / 100000);
 //		System.out.println(Double.parseDouble(aaa));
 //		System.out.println(aba);
-		System.out.println(abc);
+//		System.out.println(abc);
 	}
 }

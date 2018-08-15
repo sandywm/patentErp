@@ -273,10 +273,11 @@ public class JsFieldManagerAction extends DispatchAction {
 			if(cUser != null){
 				Integer cpyId = cUser.getCpyInfoTb().getId();
 				String zyName = Transcode.unescape(request.getParameter("zyName"), request);
+				String zyProfile = Transcode.unescape(request.getParameter("zyProfile"), request);
 				if(jsm.listInfoByOpt_1(cpyId, zyName).size() > 0){
 					map.put("result", "exist");
 				}else{
-					Integer jfId = jsm.addJF(zyName, cpyId);
+					Integer jfId = jsm.addJF(zyName, cpyId,zyProfile);
 					if(jfId > 0){
 						map.put("result", "success");
 					}else{
@@ -388,6 +389,7 @@ public class JsFieldManagerAction extends DispatchAction {
 				Integer cpyId = cUser.getCpyInfoTb().getId();
 				Integer jfId = Integer.parseInt(request.getParameter("jfId"));
 				String zyName = Transcode.unescape(request.getParameter("zyName"), request);
+				String zyProfile = Transcode.unescape(request.getParameter("zyProfile"), request);
 				List<JsFiledInfoTb> jfList = jsm.listInfoByOpt(cpyId, String.valueOf(jfId));
 				if(jfList.size() > 0){
 					String zyName_db = jfList.get(0).getZyName();
@@ -398,7 +400,7 @@ public class JsFieldManagerAction extends DispatchAction {
 						if(jsm.listInfoByOpt_1(cpyId, zyName).size() > 0){
 							map.put("result", "exist");//名字重名
 						}else{
-							boolean flag = jsm.updateJfById(jfId, zyName);
+							boolean flag = jsm.updateJfById(jfId, zyName,zyProfile);
 							if(flag){
 								map.put("result", "success");
 							}else{

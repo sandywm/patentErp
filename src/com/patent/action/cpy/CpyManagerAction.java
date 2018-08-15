@@ -544,7 +544,7 @@ public class CpyManagerAction extends DispatchAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public ActionForward addSubCpylInfo(ActionMapping mapping, ActionForm form,
+	public ActionForward addSubCpyInfo(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
@@ -576,6 +576,7 @@ public class CpyManagerAction extends DispatchAction {
 			
 			String account = request.getParameter("account");
 			String password = request.getParameter("password");
+			boolean flag = false;
 			//检查账号不能重复(两张表中账号不能相同)
 			if(cum.listSpecInfoByAccount(account).size() > 0 || am.listInfoByAccount(account).size() > 0){
 				msg = "exist";
@@ -584,30 +585,52 @@ public class CpyManagerAction extends DispatchAction {
 				if(cpy.getCpySubId().equals("")){//没有子公司
 					if(cpy.getCpyLevel().equals(0)){//免费会员不能增加子公司
 						msg = "lowerlevel";
-					}else if(cpy.getCpyLevel().equals(1)){//银牌能增加二个子公司
-						msg = "outNum";
+						flag = false;
+					}else{//银牌能增加1个子公司
+						flag = true;
+					}
+				}else{//存在有子公司
+					Integer subCpyLen = cpy.getCpySubId().split(",").length;
+					if(cpy.getCpyLevel().equals(1)){//银牌
+						flag = false;
+					}else if(cpy.getCpyLevel().equals(2)){//金牌
+						if(subCpyLen < Constants.SUB_CPY_NUM_JP){
+							flag = true;
+						}else{
+							flag = false;
+						}
+					}else if(cpy.getCpyLevel().equals(3)){//钻石
+						if(subCpyLen < Constants.SUB_CPY_NUM_ZS){
+							flag = true;
+						}else{
+							flag = false;
+						}
 					}
 				}
-				Integer cpyId = cm.addCpy(comName, comAddress, comProv, comCity, cpy.getCpyFr(), cpy.getCpyYyzz(), comLxr, comTel, "", 
-						"", cpyParId, cpy.getCpyUrl(), cpy.getCpyProfile(), CurrentTime.dateConvertToString(cpy.getSignDate()), cpy.getEndDate(), 
-						0, 0);
-				if(cpyId > 0){
-					//自动为每个代理机构初始一个管理员身份
-					Integer roleId = crm.addRole("管理员", "管理机构基本信息", cpyId);
-					//增加代理机构管理员
-					Integer cpyUserId = cum.addCpyUser(cpyId, "", "", account, new MD5().calcMD5(password), "m", 
-							email, "", CurrentTime.getStringDate(), "", "");
-					//增加身份绑定
-					Integer ruId = crm.addRoleUser(roleId, cpyUserId);
-					if(ruId > 0){
-						msg = "success";//成功
-						//修改主公司的子公司信息
-						cm.updateJoinInfoById(cpyParId, 0, cpyId);
+				if(flag){
+					Integer cpyId = cm.addCpy(comName, comAddress, comProv, comCity, cpy.getCpyFr(), cpy.getCpyYyzz(), comLxr, comTel, "", 
+							"", cpyParId, cpy.getCpyUrl(), cpy.getCpyProfile(), CurrentTime.dateConvertToString(cpy.getSignDate()), cpy.getEndDate(), 
+							0, 0);
+					if(cpyId > 0){
+						//自动为每个代理机构初始一个管理员身份
+						Integer roleId = crm.addRole("管理员", "管理机构基本信息", cpyId);
+						//增加代理机构管理员
+						Integer cpyUserId = cum.addCpyUser(cpyId, "", "", account, new MD5().calcMD5(password), "m", 
+								email, "", CurrentTime.getStringDate(), "", "");
+						//增加身份绑定
+						Integer ruId = crm.addRoleUser(roleId, cpyUserId);
+						if(ruId > 0){
+							msg = "success";//成功
+							//修改主公司的子公司信息
+							cm.updateJoinInfoById(cpyParId, 0, cpyId);
+						}else{
+							msg = "fail";//失败
+						}
 					}else{
 						msg = "fail";//失败
 					}
 				}else{
-					msg = "fail";//失败
+					msg = "outNum";//超过当前会员最大子公司数量
 				}
 			}
 		}else{
@@ -619,6 +642,31 @@ public class CpyManagerAction extends DispatchAction {
         pw.write(json); 
         pw.flush();  
         pw.close();
+		return null;
+	}
+	
+	/**
+	 * 解除
+	 * @description
+	 * @author wm
+	 * @date 2018-8-15 上午09:47:08
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward unBindCpyInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
+		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
+		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		String msg = "";
+		boolean abilityFlag = false;
+		
 		return null;
 	}
 }

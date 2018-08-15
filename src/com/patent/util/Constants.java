@@ -17,6 +17,10 @@ public class Constants {
 	public static final String SYSTEM_EMAIL_ACCOUNT = "service_cus@163.com";// //邮箱账号
 	public static final String SYSTEM_EMAIL_PASS = "32011823wmk";// 您的邮箱授权码 
 	
+	public static final Integer SUB_CPY_NUM_YP = 1;//银牌对应的子公司个数
+	public static final Integer SUB_CPY_NUM_JP = 3;//金牌对应的子公司个数
+	public static final Integer SUB_CPY_NUM_ZS = 5;//钻石对应的子公司个数
+	
 	public static final Integer freeDays = 15;//代理机构注册免费天数
 	
 

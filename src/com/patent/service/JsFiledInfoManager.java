@@ -14,10 +14,11 @@ public interface JsFiledInfoManager {
 	 * @ModifiedBy
 	 * @param zyName 专业技术名称
 	 * @param cpyId 代理机构编号
+	 * @param zyProfile 专业简介
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addJF(String zyName,Integer cpyId)throws WEBException;
+	Integer addJF(String zyName,Integer cpyId,String zyProfile)throws WEBException;
 	
 	/**
 	 * 根据条件获取专业技术区域信息列表
@@ -26,6 +27,7 @@ public interface JsFiledInfoManager {
 	 * @ModifiedBy
 	 * @param cpyId 代理机构编号
 	 * @param jsIdStr 员工擅长专业编号组合（""时表示全部）
+	 * @param zyProfile 专业简介
 	 * @return
 	 * @throws WEBException
 	 */
@@ -41,7 +43,7 @@ public interface JsFiledInfoManager {
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateJfById(Integer jfId,String zyName)throws WEBException;
+	boolean updateJfById(Integer jfId,String zyName,String zyProfile)throws WEBException;
 	
 	/**
 	 * 删除指定专业编号的专业信息（没有员工擅长此专业时）

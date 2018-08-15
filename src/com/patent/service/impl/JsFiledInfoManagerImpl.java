@@ -20,14 +20,14 @@ public class JsFiledInfoManagerImpl implements JsFiledInfoManager{
 	CpyInfoDao cDao = null;
 	Transaction tran = null;
 	@Override
-	public Integer addJF(String zyName, Integer cpyId) throws WEBException {
+	public Integer addJF(String zyName, Integer cpyId,String zyProfile) throws WEBException {
 		// TODO Auto-generated method stub1
 		try {
 			jfDao = (JsFiledInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_JS_FIELD_INFO);
 			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			JsFiledInfoTb jd = new JsFiledInfoTb(cDao.get(sess, cpyId),zyName);
+			JsFiledInfoTb jd = new JsFiledInfoTb(cDao.get(sess, cpyId),zyName,zyProfile);
 			jfDao.save(sess, jd);
 			tran.commit();
 			return jd.getId();
@@ -58,7 +58,7 @@ public class JsFiledInfoManagerImpl implements JsFiledInfoManager{
 	}
 
 	@Override
-	public boolean updateJfById(Integer jfId, String zyName)
+	public boolean updateJfById(Integer jfId, String zyName,String zyProfile)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -70,6 +70,7 @@ public class JsFiledInfoManagerImpl implements JsFiledInfoManager{
 			if(jd != null){
 				if(!zyName.equals("")){
 					jd.setZyName(zyName);
+					jd.setZyProfile(zyProfile);
 					jfDao.update(sess, jd);
 					tran.commit();
 				}
