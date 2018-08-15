@@ -394,20 +394,15 @@ public class JsFieldManagerAction extends DispatchAction {
 				String zyProfile = Transcode.unescape(request.getParameter("zyProfile"), request);
 				List<JsFiledInfoTb> jfList = jsm.listInfoByOpt(cpyId, String.valueOf(jfId));
 				if(jfList.size() > 0){
-					String zyName_db = jfList.get(0).getZyName();
-					if(zyName.equals(zyName_db)){
-						map.put("result", "success");//不修改数据库
+					//需要判断是否重复
+					if(jsm.listInfoByOpt_1(cpyId, zyName).size() > 0){
+						map.put("result", "exist");//名字重名
 					}else{
-						//需要判断是否重复
-						if(jsm.listInfoByOpt_1(cpyId, zyName).size() > 0){
-							map.put("result", "exist");//名字重名
+						boolean flag = jsm.updateJfById(jfId, zyName,zyProfile);
+						if(flag){
+							map.put("result", "success");
 						}else{
-							boolean flag = jsm.updateJfById(jfId, zyName,zyProfile);
-							if(flag){
-								map.put("result", "success");
-							}else{
-								map.put("result", "error");
-							}
+							map.put("result", "error");
 						}
 					}
 				}else{
