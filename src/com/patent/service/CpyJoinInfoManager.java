@@ -54,10 +54,15 @@ public interface CpyJoinInfoManager {
 	boolean delCJById(Integer id) throws WEBException;
 	
 	/**
-	 * 根据条件获取申请合并记录列表
+	 * 根据条件获取分/主公司合并信息记录列表
 	 * @author Administrator
-	 * @date 2018-8-15 下午11:14:57
+	 * @date 2018-8-15 下午11:32:21
 	 * @ModifiedBy
+	 * @param parCpyId 主公司编号（0时表示全部）
+	 * @param subCpyId  子公司编号（0时表示全部）
+	 * @param joinStatus 合并状态 （-1时表示全部）
+	 * @param applyCpyId 申请公司编号 （0时表示全部）
+	 * @param czDate 操作时间 （""时表示全部）
 	 * @return
 	 * @throws WEBException
 	 */
