@@ -382,7 +382,7 @@ public class CpyManagerAction extends DispatchAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public ActionForward updateCpylInfo(ActionMapping mapping, ActionForm form,
+	public ActionForward updateCpyBasicInfo(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
