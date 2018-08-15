@@ -135,7 +135,7 @@ public class JsFieldManagerAction extends DispatchAction {
 					Map<String,Object> map_d = new HashMap<String,Object>();
 					map_d.put("id", jf.getId());
 					map_d.put("zyName", jf.getZyName());
-					map_d.put("zyProfile", jf.getZyProfile() == null ? "暂无简介" : jf.getZyProfile());
+					map_d.put("zyProfile", jf.getZyProfile() == "" ? "暂无简介" : jf.getZyProfile());
 					list_d.add(map_d);
 				}
 				msg = "success";
@@ -190,7 +190,7 @@ public class JsFieldManagerAction extends DispatchAction {
 					Map<String,Object> map_d = new HashMap<String,Object>();
 					map_d.put("id", jf.getId());
 					map_d.put("zyName", jf.getZyName());
-					map_d.put("zyProfile", jf.getZyProfile() == null ? "暂无简介" : jf.getZyProfile());
+					map_d.put("zyProfile", jf.getZyProfile() == "" ? "暂无简介" : jf.getZyProfile());
 					list_d.add(map_d);
 				}
 				msg = "success";

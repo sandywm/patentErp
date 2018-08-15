@@ -449,10 +449,9 @@ public class CpyManagerAction extends DispatchAction {
 	 */
 	public ActionForward goSubParCpyPage(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		String[] myAbility = Ability.getAbilityInfo("bindCpy,unBindCpy,delCpy", this.getLoginType(request), this.getLoginRoleName(request), this.getLoginRoleId(request)).split(",");
+		String[] myAbility = Ability.getAbilityInfo("bindCpy,unBindCpy", this.getLoginType(request), this.getLoginRoleName(request), this.getLoginRoleId(request)).split(",");
 		request.setAttribute("bindFlag", myAbility[0]);
 		request.setAttribute("unBindFlag", myAbility[1]);
-		request.setAttribute("addFlag", myAbility[2]);
 		return mapping.findForward("subCpyPage");
 	}
 	
@@ -566,6 +565,11 @@ public class CpyManagerAction extends DispatchAction {
 		if(abilityFlag){
 			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
 			Integer cpyParId = cpy.getId();
+			
+			//分两种情况添加（1：通过分/主公司合并信息进行添加，2：通过手动添加）
+			//option_1
+			
+			//option_2
 			String comName = Transcode.unescape(request.getParameter("name"), request);//子公司名字
 			String comAddress = "";//公司地址
 			String comProv = Transcode.unescape(request.getParameter("prov"), request);//子公司所在省份
@@ -675,6 +679,11 @@ public class CpyManagerAction extends DispatchAction {
 			}
 		}else{
 			abilityFlag = false;
+		}
+		if(abilityFlag){
+			
+		}else{
+			msg = "noAbility";
 		}
 		return null;
 	}

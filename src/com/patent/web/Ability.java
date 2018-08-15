@@ -64,17 +64,32 @@ public class Ability
      * @throws Exception 
      */
     public static String getAbilityInfo(String actNameEngArr,String loginType,String loginRoleName,Integer roleId) throws Exception{
-    	String abilityStr = "false,false,false";
-    	if(loginType.equals("cpyUser")){
-    		if(loginRoleName.equals("管理员")){
-    			abilityStr = "true,true,true";
-    		}else{
-    			boolean addFlag = Ability.checkAuthorization(roleId, actNameEngArr.split(",")[0]);
-    			boolean upFlag = Ability.checkAuthorization(roleId, actNameEngArr.split(",")[1]);
-    			boolean delFlag = Ability.checkAuthorization(roleId, actNameEngArr.split(",")[2]);
-    			abilityStr = addFlag + "," + upFlag + "," + delFlag;
-    		}
+    	String abilityStr = "";
+    	if(actNameEngArr.split(",").length == 2){
+    		abilityStr = "false,false";
+        	if(loginType.equals("cpyUser")){
+        		if(loginRoleName.equals("管理员")){
+        			abilityStr = "true,true";
+        		}else{
+        			boolean addFlag = Ability.checkAuthorization(roleId, actNameEngArr.split(",")[0]);
+        			boolean upFlag = Ability.checkAuthorization(roleId, actNameEngArr.split(",")[1]);
+        			abilityStr = addFlag + "," + upFlag;
+        		}
+        	}
+    	}else{//3种
+    		abilityStr = "false,false,false";
+        	if(loginType.equals("cpyUser")){
+        		if(loginRoleName.equals("管理员")){
+        			abilityStr = "true,true,true";
+        		}else{
+        			boolean addFlag = Ability.checkAuthorization(roleId, actNameEngArr.split(",")[0]);
+        			boolean upFlag = Ability.checkAuthorization(roleId, actNameEngArr.split(",")[1]);
+        			boolean delFlag = Ability.checkAuthorization(roleId, actNameEngArr.split(",")[2]);
+        			abilityStr = addFlag + "," + upFlag + "," + delFlag;
+        		}
+        	}
     	}
+    	
     	return abilityStr;
     }
 }

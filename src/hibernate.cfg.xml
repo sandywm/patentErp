@@ -36,7 +36,9 @@
 		<!-- 是否验证，检查连接 -->
 		<property name="hibernate.c3p0.validate">true</property>
 		<!-- 防止hibernate3.0查询不出中文的异常 -->
-		<property name="hibernate.query.factory_class">org.hibernate.hql.classic.ClassicQueryTranslatorFactory</property>
+		<property name="hibernate.query.factory_class">
+			org.hibernate.hql.classic.ClassicQueryTranslatorFactory
+		</property>
 		<!-- SQL dialect -->
 		<property name="dialect">
 			org.hibernate.dialect.ExtendedMySQLDialect
@@ -77,6 +79,7 @@
 		<mapping resource="com/patent/xml/SuperUser.hbm.xml" />
 		<mapping resource="com/patent/xml/SendEmailCodeInfo.hbm.xml" />
 		<mapping resource="com/patent/xml/MailInfoTb.hbm.xml" />
+		<mapping resource="com/patent/xml/CpyJoinInfoTb.hbm.xml" />
 
 
 	</session-factory>

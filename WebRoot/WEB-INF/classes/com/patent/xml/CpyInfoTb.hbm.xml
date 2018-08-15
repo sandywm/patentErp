@@ -140,5 +140,13 @@
             </key>
             <one-to-many class="com.patent.module.ZlajMainInfoTb" />
         </set>
+        <set name="cpyJoinInfoTbs" inverse="true">
+            <key>
+                <column name="apply_cpy_id" not-null="true">
+                    <comment>申请公司编号</comment>
+                </column>
+            </key>
+            <one-to-many class="com.patent.module.CpyJoinInfoTb" />
+        </set>
     </class>
 </hibernate-mapping>
