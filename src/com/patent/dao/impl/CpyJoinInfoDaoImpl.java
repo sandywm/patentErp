@@ -6,7 +6,9 @@ import org.hibernate.Session;
 
 import com.patent.dao.CpyJoinInfoDao;
 import com.patent.module.CpyJoinInfoTb;
+import com.patent.tools.CommonTools;
 
+@SuppressWarnings("unchecked")
 public class CpyJoinInfoDaoImpl implements CpyJoinInfoDao{
 
 	@Override
@@ -44,7 +46,23 @@ public class CpyJoinInfoDaoImpl implements CpyJoinInfoDao{
 			Integer subCpyId, Integer joinStatus, Integer applyCpyId,
 			String czDate) {
 		// TODO Auto-generated method stub
-		return null;
+		String hql = " from CpyJoinInfoTb as cj where 1 = 1";
+		if(parCpyId > 0){
+			hql += " and cj.parCpyId = "+parCpyId;
+		}
+		if(subCpyId > 0){
+			hql += "and cj.subCpyId = "+subCpyId;
+		}
+		if(!joinStatus.equals(-1)){
+			hql += " and cj.joinStatus = "+joinStatus;
+		}
+		if(applyCpyId > 0){
+			hql += " and cj.cpyInfoTb.id = "+applyCpyId;
+		}
+		if(!czDate.equals("")){
+			hql += " and cj.czDate = '"+czDate+"'";
+		}
+		return sess.createQuery(hql).list();
 	}
 
 	@Override
@@ -52,7 +70,27 @@ public class CpyJoinInfoDaoImpl implements CpyJoinInfoDao{
 			Integer parCpyId, Integer subCpyId, Integer joinStatus,
 			Integer applyCpyId, String czDate, Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
-		return null;
+		String hql = " from CpyJoinInfoTb as cj where 1 = 1";
+		if(parCpyId > 0){
+			hql += " and cj.parCpyId = "+parCpyId;
+		}
+		if(subCpyId > 0){
+			hql += "and cj.subCpyId = "+subCpyId;
+		}
+		if(!joinStatus.equals(-1)){
+			hql += " and cj.joinStatus = "+joinStatus;
+		}
+		if(applyCpyId > 0){
+			hql += " and cj.cpyInfoTb.id = "+applyCpyId;
+		}
+		if(!czDate.equals("")){
+			hql += " and cj.czDate = '"+czDate+"'";
+		}
+		int offset = (pageNo - 1) * pageSize;
+		if (offset < 0) {
+			offset = 0;
+		}
+		return sess.createQuery(hql).setFirstResult(offset).setMaxResults(pageSize).list();
 	}
 
 	@Override
@@ -60,7 +98,24 @@ public class CpyJoinInfoDaoImpl implements CpyJoinInfoDao{
 			Integer subCpyId, Integer joinStatus, Integer applyCpyId,
 			String czDate) {
 		// TODO Auto-generated method stub
-		return null;
+		String hql = "select count(cj.id) from CpyJoinInfoTb as cj where 1 = 1";
+		if(parCpyId > 0){
+			hql += " and cj.parCpyId = "+parCpyId;
+		}
+		if(subCpyId > 0){
+			hql += "and cj.subCpyId = "+subCpyId;
+		}
+		if(!joinStatus.equals(-1)){
+			hql += " and cj.joinStatus = "+joinStatus;
+		}
+		if(applyCpyId > 0){
+			hql += " and cj.cpyInfoTb.id = "+applyCpyId;
+		}
+		if(!czDate.equals("")){
+			hql += " and cj.czDate = '"+czDate+"'";
+		}
+		Object countObj = sess.createQuery(hql).uniqueResult();
+		return CommonTools.longToInt(countObj);
 	}
 
 }

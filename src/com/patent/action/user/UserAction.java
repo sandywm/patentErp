@@ -573,6 +573,7 @@ public class UserAction extends DispatchAction {
 						map_u.put("email", cUser_a.getUserEmail());
 						map_u.put("inDate", cUser_a.getUserInDate());
 						map_u.put("outDate", cUser_a.getUserOutDate());
+						map_u.put("selfFlag", cUser_a.getId() == currLoginUserId ? true : false);
 						Integer lzStatus = cUser_a.getUserLzStatus();
 						String lzStatusChi = "在职";
 						if(lzStatus.equals(0)){
@@ -685,11 +686,15 @@ public class UserAction extends DispatchAction {
 			Integer lzSatatus = Integer.parseInt(request.getParameter("lzSatatus"));
 			String outDate = request.getParameter("outDate");
 			Integer yxStatus = Integer.parseInt(request.getParameter("yxStatus"));
-			boolean flag = cum.updateUserInfoById(cpyUserId, outDate, lzSatatus, yxStatus);
-			if(flag){
-				msg = "success";
-			}else{
+			if(cpyUserId.equals(this.getLoginUserId(request))){
 				msg = "error";
+			}else{
+				boolean flag = cum.updateUserInfoById(cpyUserId, outDate, lzSatatus, yxStatus);
+				if(flag){
+					msg = "success";
+				}else{
+					msg = "error";
+				}
 			}
 		}else{
 			msg = "noAbility";
