@@ -449,9 +449,9 @@ public class CpyManagerAction extends DispatchAction {
 	 */
 	public ActionForward goSubParCpyPage(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		String[] myAbility = Ability.getAbilityInfo("addCpy,upCpy,delCpy", this.getLoginType(request), this.getLoginRoleName(request), this.getLoginRoleId(request)).split(",");
-		request.setAttribute("delFlag", myAbility[0]);
-		request.setAttribute("upFlag", myAbility[1]);
+		String[] myAbility = Ability.getAbilityInfo("bindCpy,unBindCpy,delCpy", this.getLoginType(request), this.getLoginRoleName(request), this.getLoginRoleId(request)).split(",");
+		request.setAttribute("bindFlag", myAbility[0]);
+		request.setAttribute("unBindFlag", myAbility[1]);
 		request.setAttribute("addFlag", myAbility[2]);
 		return mapping.findForward("subCpyPage");
 	}
@@ -558,7 +558,7 @@ public class CpyManagerAction extends DispatchAction {
 				abilityFlag = true;
 			}else{
 				//获取当前用户是否有修改权限
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addCpy");
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "bindCpy");
 			}
 		}else{
 			abilityFlag = false;
@@ -646,7 +646,7 @@ public class CpyManagerAction extends DispatchAction {
 	}
 	
 	/**
-	 * 解除主\
+	 * 解除主\子公司关系
 	 * @description
 	 * @author wm
 	 * @date 2018-8-15 上午09:47:08
@@ -666,7 +666,16 @@ public class CpyManagerAction extends DispatchAction {
 		Map<String,String> map = new HashMap<String,String>();
 		String msg = "";
 		boolean abilityFlag = false;
-		
+		if(this.getLoginType(request).equals("cpyUser")){
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				//获取当前用户是否有修改权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "unBindCpy");
+			}
+		}else{
+			abilityFlag = false;
+		}
 		return null;
 	}
 }
