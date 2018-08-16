@@ -882,4 +882,63 @@ public class UserAction extends DispatchAction {
         pw.close();
 		return null;
 	}
+	
+	/**
+	 * 重置用户密码
+	 * @author Administrator
+	 * @date 2018-8-16 下午10:36:57
+	 * @ModifiedBy
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward initUserPass(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		String loginType = this.getLoginType(request);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		SuperUserManager sum = (SuperUserManager)  AppFactory.instance(null).getApp(Constants.WEB_SUPER_USER_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		boolean abilityFlag = false;
+		String msg = "";
+		if(this.getLoginRoleName(request).equals("管理员")){//如果是管理员直接跳过（管理员直接拥有权限）
+			abilityFlag = true;
+		}else{
+			//获取当前用户是否有修改权限
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upUser");
+		}
+		if(abilityFlag){
+			Integer selUserId = CommonTools.getFinalInteger(request.getParameter("userId"));
+			if(loginType.equals("cpyUser")){
+				//需要修改的用户必须和自己是同一代理机构
+				CpyUserInfo cUser = cum.getEntityById(selUserId);
+				if(cUser != null){
+					CpyUserInfo currCuser = cum.getEntityById(this.getLoginUserId(request));
+					if(cUser.getCpyInfoTb().getId().equals(currCuser.getCpyInfoTb().getId())){
+						cum.updatePassById(selUserId, "123456");
+						msg = "success";
+					}else{
+						msg = "error";
+					}
+				}else{
+					msg = "error";
+				}
+			}else if(loginType.equals("spUser")){
+				sum.updateSUserById(selUserId, "123456", "");
+				msg = "success";
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
 }
