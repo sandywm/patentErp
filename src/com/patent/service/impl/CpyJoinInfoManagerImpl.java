@@ -9,7 +9,6 @@ import com.patent.dao.CpyInfoDao;
 import com.patent.dao.CpyJoinInfoDao;
 import com.patent.exception.WEBException;
 import com.patent.factory.DaoFactory;
-import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyJoinInfoTb;
 import com.patent.service.CpyJoinInfoManager;
 import com.patent.tools.HibernateUtil;
@@ -105,7 +104,7 @@ public class CpyJoinInfoManagerImpl implements CpyJoinInfoManager{
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new WEBException("删除指定主键的合并申请记录（在没处理之前可以删除）时出现异常!");
+			throw new WEBException("根据条件获取分/主公司合并信息记录列表时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

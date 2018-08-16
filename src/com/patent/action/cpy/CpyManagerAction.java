@@ -27,6 +27,7 @@ import com.patent.module.CpyUserInfo;
 import com.patent.page.PageConst;
 import com.patent.service.ApplyInfoManager;
 import com.patent.service.CpyInfoManager;
+import com.patent.service.CpyJoinInfoManager;
 import com.patent.service.CpyRoleInfoManager;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.tools.CommonTools;
@@ -549,6 +550,7 @@ public class CpyManagerAction extends DispatchAction {
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
 		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
 		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
+		CpyJoinInfoManager cjm = (CpyJoinInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_JOIN_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		String msg = "";
 		boolean abilityFlag = false;

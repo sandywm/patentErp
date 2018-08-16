@@ -592,6 +592,7 @@ public class UserAction extends DispatchAction {
 						Map<String,Object> map_u = new HashMap<String,Object>();
 						map_u.put("userId", cUser_a.getId());
 						map_u.put("name", cUser_a.getUserName());
+						map_u.put("namePy", cUser_a.getUserNamePy());
 						map_u.put("account", cUser_a.getUserAccount());
 						map_u.put("sex", cUser_a.getUserSex());
 						map_u.put("email", cUser_a.getUserEmail());
@@ -624,7 +625,7 @@ public class UserAction extends DispatchAction {
 						if(!scFiledName.equals("")){
 							scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
 						}
-						map.put("scFiledName", scFiledName);
+						map_u.put("scFiledName", scFiledName);
 						map_u.put("exper", cUser_a.getUserExper());
 						//获取用户角色
 						List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(cUser_a.getId());
