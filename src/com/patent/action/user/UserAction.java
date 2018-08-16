@@ -235,7 +235,7 @@ public class UserAction extends DispatchAction {
 				map.put("result", "success");
 				map.put("id", appUser.getId());
 				map.put("name", appUser.getAppName());
-				map.put("type", appUser.getAppType());
+				map.put("roleName", appUser.getAppType());
 				map.put("appICard", appUser.getAppICard());
 				map.put("appAddress", appUser.getAppAddress());
 				map.put("appAccount", appUser.getAppAccount());
@@ -323,7 +323,7 @@ public class UserAction extends DispatchAction {
 				map.put("id", spUser.getId());
 				map.put("name", spUser.getUserName());
 				map.put("account", spUser.getAccount());
-				map.put("type", spUser.getUserType());
+				map.put("roleName", spUser.getUserType());
 			}else{
 				map.put("result", "noUser");//查无此人
 			}
