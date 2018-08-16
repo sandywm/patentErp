@@ -91,9 +91,8 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 				if(newUserZxNum > 0){
 					cUser.setUserZxNum(cUser.getUserZxNum() + newUserZxNum);
 				}
-				if(!userScFiledIdStr.equals("") && !userScFiledNameStr.equals("")){
+				if(!userScFiledIdStr.equals("")){
 					cUser.setUserScFiledId(userScFiledIdStr);
-					cUser.setUserScFiledName(userScFiledNameStr);
 				}
 				if(newUserExper > 0){
 					cUser.setUserExper(cUser.getUserExper() + newUserExper);

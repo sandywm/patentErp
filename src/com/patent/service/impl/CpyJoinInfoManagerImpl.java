@@ -81,10 +81,6 @@ public class CpyJoinInfoManagerImpl implements CpyJoinInfoManager{
 			cjDao = (CpyJoinInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_JOIN_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			CpyJoinInfoTb cj = cjDao.get(sess, id);
-			if(cj.getJoinStatus().equals(0)){//没处理
-				
-			}
 			cjDao.delete(sess, id);
 			tran.commit();
 			return true;
@@ -102,7 +98,17 @@ public class CpyJoinInfoManagerImpl implements CpyJoinInfoManager{
 			Integer subCpyId, Integer joinStatus, Integer applyCpyId,
 			String czDate) throws WEBException {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			cjDao = (CpyJoinInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_JOIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cjDao.findInfoByOpt(sess, parCpyId, subCpyId, joinStatus, applyCpyId, czDate);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("删除指定主键的合并申请记录（在没处理之前可以删除）时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 }

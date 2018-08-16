@@ -264,18 +264,19 @@ public class UserAction extends DispatchAction {
 				if(!this.getLoginRoleName(request).equals("管理员")){
 					//下面数据为代理机构其他用户所有
 					map.put("zxNum", cpyUser.getUserZxNum());
-					map.put("scFiled", cpyUser.getUserScFiledId());
+					String scFiledIdStr = cpyUser.getUserScFiledId();
+					map.put("scFiled", scFiledIdStr);
 					Integer cpyId = cum.getEntityById(userId).getCpyInfoTb().getId();
-					List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, cpyUser.getUserScFiledId());
-					String scFiledName = "";
-					for(Iterator<JsFiledInfoTb> it = jsList.iterator() ; it.hasNext();){
-						JsFiledInfoTb js = it.next();
-						scFiledName += js.getZyName() + ",";
-					}
-					if(!scFiledName.equals("")){
-						scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
-					}
-					map.put("scFiledName", scFiledName);
+//					List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, cpyUser.getUserScFiledId());
+//					String scFiledName = "";
+//					for(Iterator<JsFiledInfoTb> it = jsList.iterator() ; it.hasNext();){
+//						JsFiledInfoTb js = it.next();
+//						scFiledName += js.getZyName() + ",";
+//					}
+//					if(!scFiledName.equals("")){
+//						scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+//					}
+//					map.put("scFiledName", scFiledName);
 					//获取该代理机构所有的专业列表
 					List<JsFiledInfoTb> jsList_all = jsm.listInfoByOpt(cpyId, "");
 					List<Object> list_d = new ArrayList<Object>();
@@ -284,6 +285,17 @@ public class UserAction extends DispatchAction {
 						Map<String,Object> map_d = new HashMap<String,Object>();
 						map_d.put("jsId", js.getId());
 						map_d.put("zyName", js.getZyName());
+						boolean checkFlag = false;
+						if(!scFiledIdStr.equals("")){
+							String[] scFiledIdArr = scFiledIdStr.split(",");
+							for(Integer i = 0 ; i < scFiledIdArr.length ; i++){
+								if(scFiledIdArr[i].equals(String.valueOf(js.getId()))){
+									checkFlag = true;
+									break;
+								}
+							}
+						}
+						map_d.put("checkFlag", checkFlag);
 						list_d.add(map_d);
 					}
 					map.put("jsInfo", list_d);
@@ -745,6 +757,84 @@ public class UserAction extends DispatchAction {
 		}
 		Map<String,String> map = new HashMap<String,String>();
 		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 根据用户编号获取用户详情（适合代理机构查询内部员工、平台用户查询平台员工）
+	 * @description
+	 * @author wm
+	 * @date 2018-8-16 上午10:45:19
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getUserDetailData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		String loginType = this.getLoginType(request);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		SuperUserManager sum = (SuperUserManager)  AppFactory.instance(null).getApp(Constants.WEB_SUPER_USER_INFO);
+		JsFiledInfoManager jsm = (JsFiledInfoManager) AppFactory.instance(null).getApp(Constants.WEB_JS_FIELD_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
+		Integer userId = CommonTools.getFinalInteger(request.getParameter("userId"));
+		if(loginType.equals("cpyUser")){//代理机构
+			CpyUserInfo cpyUser = cum.getEntityById(userId);
+			if(cpyUser != null){
+				map.put("result", "success");
+				map.put("id", cpyUser.getId());
+				map.put("name", cpyUser.getUserName());
+				map.put("namePy", cpyUser.getUserNamePy());
+				map.put("account", cpyUser.getUserAccount());
+				map.put("sex", cpyUser.getUserSex());
+				map.put("email", cpyUser.getUserEmail());
+				map.put("tel", cpyUser.getUserTel());
+				map.put("inDate", cpyUser.getUserInDate());
+				map.put("outDate", cpyUser.getUserOutDate());
+				map.put("lzStatus", cpyUser.getUserLzStatus());
+				map.put("yxStatus", cpyUser.getUserYxStatus());
+				map.put("type", this.getLoginRoleName(request));
+				map.put("zxNum", cpyUser.getUserZxNum());
+				map.put("scFiled", cpyUser.getUserScFiledId());
+				Integer cpyId = cum.getEntityById(userId).getCpyInfoTb().getId();
+				List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, cpyUser.getUserScFiledId());
+				String scFiledName = "";
+				for(Iterator<JsFiledInfoTb> it = jsList.iterator() ; it.hasNext();){
+					JsFiledInfoTb js = it.next();
+					scFiledName += js.getZyName() + ",";
+				}
+				if(!scFiledName.equals("")){
+					scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+				}
+				map.put("scFiledName", scFiledName);
+				map.put("useExp", cpyUser.getUserExper());
+				map.put("lastLoginDate", cpyUser.getLastLoginDate());
+			}else{
+				map.put("result", "noUser");//查无此人
+			}
+		}else if(loginType.equals("spUser")){//平台用户
+			List<SuperUser> suList = sum.listInfoById(userId);
+			if(suList.size() > 0){
+				SuperUser spUser = suList.get(0);
+				map.put("result", "success");
+				map.put("id", spUser.getId());
+				map.put("name", spUser.getUserName());
+				map.put("account", spUser.getAccount());
+				map.put("type", spUser.getUserType());
+			}else{
+				map.put("result", "noUser");//查无此人
+			}
+		}else{
+			map.put("result", "fail");//session失效或者捣乱
+		}
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
         pw.write(json); 
