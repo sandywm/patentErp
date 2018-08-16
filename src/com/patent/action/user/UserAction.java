@@ -573,7 +573,11 @@ public class UserAction extends DispatchAction {
 						map_u.put("email", cUser_a.getUserEmail());
 						map_u.put("inDate", cUser_a.getUserInDate());
 						map_u.put("outDate", cUser_a.getUserOutDate());
-						map_u.put("selfFlag", cUser_a.getId() == currLoginUserId ? true : false);
+						if(cUser_a.getId().equals(currLoginUserId)){
+							map_u.put("selfFlag",true);
+						}else{
+							map_u.put("selfFlag",false);
+						}
 						Integer lzStatus = cUser_a.getUserLzStatus();
 						String lzStatusChi = "在职";
 						if(lzStatus.equals(0)){
