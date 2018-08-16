@@ -118,4 +118,11 @@ public class CpyJoinInfoDaoImpl implements CpyJoinInfoDao{
 		return CommonTools.longToInt(countObj);
 	}
 
+	@Override
+	public List<CpyJoinInfoTb> findInfoById(Session sess, Integer id) {
+		// TODO Auto-generated method stub
+		String hql = " from CpyJoinInfoTb as cj where cj.id = "+id;
+		return sess.createQuery(hql).list();
+	}
+
 }

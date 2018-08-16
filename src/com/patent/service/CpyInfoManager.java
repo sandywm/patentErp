@@ -151,4 +151,15 @@ public interface CpyInfoManager {
 	 */
 	List<CpyInfoTb> listParSubCpyInfo(String cpyIdStr,String cpyType)throws WEBException;
 	
+	/**
+	 * 根据主键获取代理公司信息列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-16 下午04:31:59
+	 * @param id
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyInfoTb> listInfoById(Integer id)throws WEBException;
+	
 }

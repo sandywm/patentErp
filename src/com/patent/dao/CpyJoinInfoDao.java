@@ -85,4 +85,15 @@ public interface CpyJoinInfoDao {
 	 * @return
 	 */
 	Integer getCountByOpt(Session sess,Integer parCpyId,Integer subCpyId,Integer joinStatus,Integer applyCpyId,String czDate);
+	
+	/**
+	 * 根据主键获取分/主公司合并信息记录列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-16 下午04:19:46
+	 * @param sess
+	 * @param id
+	 * @return
+	 */
+	List<CpyJoinInfoTb> findInfoById(Session sess,Integer id);
 }

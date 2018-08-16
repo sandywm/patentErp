@@ -139,4 +139,11 @@ public class CpyInfoDaoImpl implements CpyInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<CpyInfoTb> findInfoById(Session sess, Integer id) {
+		// TODO Auto-generated method stub
+		String hql = " from CpyInfoTb as cpy where cpy.id = "+id;
+		return sess.createQuery(hql).list();
+	}
+
 }

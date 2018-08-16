@@ -225,4 +225,20 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 		}
 	}
 
+	@Override
+	public List<CpyInfoTb> listInfoById(Integer id) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cDao.findInfoById(sess, id);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据公司主键编号获取代理机构信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

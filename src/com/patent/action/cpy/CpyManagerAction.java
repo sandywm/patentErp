@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.CpyInfoTb;
+import com.patent.module.CpyJoinInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.page.PageConst;
 import com.patent.service.ApplyInfoManager;
@@ -30,6 +31,7 @@ import com.patent.service.CpyInfoManager;
 import com.patent.service.CpyJoinInfoManager;
 import com.patent.service.CpyRoleInfoManager;
 import com.patent.service.CpyUserInfoManager;
+import com.patent.service.MailInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.CurrentTime;
 import com.patent.tools.MD5;
@@ -533,7 +535,129 @@ public class CpyManagerAction extends DispatchAction {
 	}
 	
 	/**
-	 * 添加子公司
+	 * 申请合并记录
+	 * @description
+	 * @author wm
+	 * @date 2018-8-16 下午05:21:00
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward applyJoinInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
+		CpyJoinInfoManager cjm = (CpyJoinInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_JOIN_INFO);
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		boolean abilityFlag = false;
+		Map<String,String> map = new HashMap<String,String>();
+		String msg = "";
+		boolean flag = false;
+		if(this.getLoginType(request).equals("cpyUser")){
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				//获取当前用户是否有修改权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "bindCpy");
+			}
+		}else{
+			abilityFlag = false;
+		}
+		if(abilityFlag){
+//			1:申请让代理公司B成为当前用户所在公司的子公司（发起申请时需要查看当前公司的子公司余额以及子公司没有主公司）
+			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+			Integer cpyLevel  = cpy.getCpyLevel();
+			Integer currCpyId = cpy.getId();
+			String currCpyName = cpy.getCpyName();
+			Integer selCpyId = CommonTools.getFinalInteger(request.getParameter("selCpyId"));
+			String applyOpt = request.getParameter("applyOpt");//sub(申请成为子公司),par(申请成为主公司)
+			String subCpyName = "";
+			if(applyOpt.equals("par")){
+				//获取当前公司的是否是别人的子公司
+				if(cpy.getCpyParId().equals(0)){
+					if(cpyLevel.equals(0)){
+						msg = "noApply";//免费会员不能发出让别人成为自己的子公司信息
+					}else{
+						//获取是否到期
+						String endDate = CurrentTime.dateConvertToString(cpy.getEndDate());
+						if(CurrentTime.compareDate(CurrentTime.getStringDate(), endDate) > 0){//未过期
+							//获取自己名下的子公司记录
+							String selfSubInfo = cpy.getCpySubId();
+							//获取子公司是否成为别人的子公司
+							List<CpyInfoTb> subCpyList = cm.listInfoById(selCpyId);
+							if(subCpyList.size() > 0){
+								CpyInfoTb subCpy = subCpyList.get(0);
+								subCpyName = subCpy.getCpyName();
+								if(subCpy.getCpyParId().equals(0) && subCpy.getCpySubId().equals("")){
+									msg = "error";
+								}else{
+									if(selfSubInfo.equals("")){
+										flag = true;
+									}else{
+										Integer subCpyCount = selfSubInfo.split(",").length;
+										if(cpyLevel.equals(1)){
+											flag = true;
+										}else if(cpyLevel.equals(2) && Constants.SUB_CPY_NUM_JP > subCpyCount){
+											flag = true;
+										}else if(cpyLevel.equals(3) && Constants.SUB_CPY_NUM_ZS > subCpyCount){
+											flag = true;
+										}else{
+											msg = "noNum";//子公司余额不足
+										}
+									}
+									if(flag){
+										//发送申请记录
+										Integer keyId = cjm.addCJ(currCpyId, currCpyId, selCpyId, currCpyName, subCpyName, 0, "代理机构["+currCpyName+"]发起对代理机构["+subCpyName+"]成为代理机构["+currCpyName+"]的子公司申请", CurrentTime.getStringDate());
+										if(keyId > 0){
+											//向子公司发送邮件通知
+											List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(selCpyId, "管理员");//子公司的管理员列表
+											//向申请公司管理员发送邮件通知
+											for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
+												CpyUserInfo cUser = it.next();
+												mm.addMail("joinM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", "申请通过", "代理机构["+currCpyName+"]发起对贵公司成为代理机构["+currCpyName+"]的子公司申请");
+											}
+											msg = "success";
+										}
+									}
+								}
+							}else{
+								msg = "error";
+							}
+							
+						}else{
+							msg = "outDate";//会员已过期，不能进行发送申请别公司成为自己的子公司信息
+						}
+					}
+				}else{
+					msg = "currSubCpy";//当前公司时别公司的子公司，不能再申请子公司
+				}
+			}else{//申请成为子公司
+				List<CpyInfoTb> parCpyList = cm.listInfoById(selCpyId);
+				if(parCpyList.size() > 0){
+					cpy = parCpyList.get(0);
+					cpyLevel = cpy.getCpyLevel();
+					currCpyId = cpy.getId();
+					currCpyName = cpy.getCpyName();
+					
+					//子公司信息
+					CpyInfoTb subCpyInfo = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+					Integer subCpyId = subCpyInfo.getId();
+					subCpyName = subCpyInfo.getCpyName();
+					
+					
+				}
+			}
+		}else{
+			msg = "noAbility";
+		}
+		return null;
+	}
+	
+	/**
+	 * 添加子公司（手动增加、通过申请合并记录增加）
 	 * @description
 	 * @author wm
 	 * @date 2018-8-14 上午11:34:37
@@ -551,6 +675,7 @@ public class CpyManagerAction extends DispatchAction {
 		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
 		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
 		CpyJoinInfoManager cjm = (CpyJoinInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_JOIN_INFO);
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		String msg = "";
 		boolean abilityFlag = false;
@@ -566,77 +691,126 @@ public class CpyManagerAction extends DispatchAction {
 		}
 		if(abilityFlag){
 			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+			String parCpyName = cpy.getCpyName();
 			Integer cpyParId = cpy.getId();
-			
-			//分两种情况添加（1：通过分/主公司合并信息进行添加，2：通过手动添加）
-			//option_1
-			
-			//option_2
-			String comName = Transcode.unescape(request.getParameter("name"), request);//子公司名字
-			String comAddress = "";//公司地址
-			String comProv = Transcode.unescape(request.getParameter("prov"), request);//子公司所在省份
-			String comCity = Transcode.unescape(request.getParameter("city"), request);//子公司所在城市
-			String comLxr = Transcode.unescape(request.getParameter("lxr"), request);//子公司联系人
-			String email = request.getParameter("email");//个人邮箱--用于找回密码
-			String comTel = Transcode.unescape(request.getParameter("tel"), request);//子公司联系电话
-			
-			String account = request.getParameter("account");
-			String password = request.getParameter("password");
-			boolean flag = false;
-			//检查账号不能重复(两张表中账号不能相同)
-			if(cum.listSpecInfoByAccount(account).size() > 0 || am.listInfoByAccount(account).size() > 0){
-				msg = "exist";
-			}else{
-				//获取主代理机构下目前拥有的子公司个数
-				if(cpy.getCpySubId().equals("")){//没有子公司
-					if(cpy.getCpyLevel().equals(0)){//免费会员不能增加子公司
-						msg = "lowerlevel";
-						flag = false;
-					}else{//银牌能增加1个子公司
-						flag = true;
-					}
-				}else{//存在有子公司
-					Integer subCpyLen = cpy.getCpySubId().split(",").length;
-					if(cpy.getCpyLevel().equals(1)){//银牌
-						flag = false;
-					}else if(cpy.getCpyLevel().equals(2)){//金牌
-						if(subCpyLen < Constants.SUB_CPY_NUM_JP){
-							flag = true;
-						}else{
+			Integer cpyJoinId = CommonTools.getFinalInteger(request.getParameter("cpyJoinId"));//合并信息主键编号
+			if(cpyJoinId.equals(0)){//2：通过手动添加
+				String comName = Transcode.unescape(request.getParameter("name"), request);//子公司名字
+				String comAddress = "";//公司地址
+				String comProv = Transcode.unescape(request.getParameter("prov"), request);//子公司所在省份
+				String comCity = Transcode.unescape(request.getParameter("city"), request);//子公司所在城市
+				String comLxr = Transcode.unescape(request.getParameter("lxr"), request);//子公司联系人
+				String email = request.getParameter("email");//个人邮箱--用于找回密码
+				String comTel = Transcode.unescape(request.getParameter("tel"), request);//子公司联系电话
+				
+				String account = request.getParameter("account");
+				String password = request.getParameter("password");
+				boolean flag = false;
+				//检查账号不能重复(两张表中账号不能相同)
+				if(cum.listSpecInfoByAccount(account).size() > 0 || am.listInfoByAccount(account).size() > 0){
+					msg = "exist";
+				}else{
+					//获取主代理机构下目前拥有的子公司个数
+					if(cpy.getCpySubId().equals("")){//没有子公司
+						if(cpy.getCpyLevel().equals(0)){//免费会员不能增加子公司
+							msg = "lowerlevel";
 							flag = false;
+						}else{//银牌能增加1个子公司
+							flag = true;
 						}
-					}else if(cpy.getCpyLevel().equals(3)){//钻石
-						if(subCpyLen < Constants.SUB_CPY_NUM_ZS){
-							flag = true;
-						}else{
+					}else{//存在有子公司
+						Integer subCpyLen = cpy.getCpySubId().split(",").length;
+						if(cpy.getCpyLevel().equals(1)){//银牌
 							flag = false;
+						}else if(cpy.getCpyLevel().equals(2)){//金牌
+							if(subCpyLen < Constants.SUB_CPY_NUM_JP){
+								flag = true;
+							}else{
+								flag = false;
+							}
+						}else if(cpy.getCpyLevel().equals(3)){//钻石
+							if(subCpyLen < Constants.SUB_CPY_NUM_ZS){
+								flag = true;
+							}else{
+								flag = false;
+							}
 						}
 					}
-				}
-				if(flag){
-					Integer cpyId = cm.addCpy(comName, comAddress, comProv, comCity, cpy.getCpyFr(), cpy.getCpyYyzz(), comLxr, comTel, "", 
-							"", cpyParId, cpy.getCpyUrl(), cpy.getCpyProfile(), CurrentTime.dateConvertToString(cpy.getSignDate()), cpy.getEndDate(), 
-							0, 0);
-					if(cpyId > 0){
-						//自动为每个代理机构初始一个管理员身份
-						Integer roleId = crm.addRole("管理员", "管理机构基本信息", cpyId);
-						//增加代理机构管理员
-						Integer cpyUserId = cum.addCpyUser(cpyId, "", "", account, new MD5().calcMD5(password), "m", 
-								email, "", CurrentTime.getStringDate(), "", "");
-						//增加身份绑定
-						Integer ruId = crm.addRoleUser(roleId, cpyUserId);
-						if(ruId > 0){
-							msg = "success";//成功
-							//修改主公司的子公司信息
-							cm.updateJoinInfoById(cpyParId, 0, cpyId);
+					if(flag){
+						Integer cpyId = cm.addCpy(comName, comAddress, comProv, comCity, cpy.getCpyFr(), cpy.getCpyYyzz(), comLxr, comTel, "", 
+								"", cpyParId, cpy.getCpyUrl(), cpy.getCpyProfile(), CurrentTime.dateConvertToString(cpy.getSignDate()), cpy.getEndDate(), 
+								0, 0);
+						if(cpyId > 0){
+							//自动为每个代理机构初始一个管理员身份
+							Integer roleId = crm.addRole("管理员", "管理机构基本信息", cpyId);
+							//增加代理机构管理员
+							Integer cpyUserId = cum.addCpyUser(cpyId, "", "", account, new MD5().calcMD5(password), "m", 
+									email, "", CurrentTime.getStringDate(), "", "");
+							//增加身份绑定
+							Integer ruId = crm.addRoleUser(roleId, cpyUserId);
+							if(ruId > 0){
+								msg = "success";//成功
+								//修改主公司的子公司信息
+								cm.updateJoinInfoById(cpyParId, 0, cpyId);
+							}else{
+								msg = "fail";//失败
+							}
 						}else{
 							msg = "fail";//失败
 						}
 					}else{
-						msg = "fail";//失败
+						msg = "outNum";//超过当前会员最大子公司数量
+					}
+				}
+			}else{//1：通过分/主公司合并信息进行添加
+				Integer joinStatus = CommonTools.getFinalInteger(request.getParameter("joinStatus"));//合并状态
+				//查询此编号是否在未完成的状态下，并且主公司是否是当前公司
+				List<CpyJoinInfoTb> cjList = cjm.listInfoById(cpyJoinId);
+				boolean flag = false;
+				if(cjList.size() > 0){
+					CpyJoinInfoTb cj = cjList.get(0);
+					Integer subCpyId = cj.getSubCpyId();
+					if(cj.getParCpyId().equals(cpyParId) && cj.getJoinStatus().equals(0)){//必须自己是主公司，并且还没处理
+						List<CpyInfoTb> cpyList = cm.listInfoById(subCpyId);
+						if(cpyList.size() > 0){
+							if(cpyList.get(0).getCpyParId().equals(0)){//说明当前公司还没有主公司
+								String subCpyName = cpyList.get(0).getCpyName();
+								String czContent = "";
+								List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(subCpyId, "管理员");//子公司的管理员列表
+								if(joinStatus.equals(1)){
+									czContent = "主公司["+parCpyName+"]已经同意子公司["+subCpyName+"]的申请";
+									//向申请公司管理员发送邮件通知
+									for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
+										CpyUserInfo cUser = it.next();
+										mm.addMail("joinM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", "申请通过", "您的成为["+parCpyName+"]的子公司申请已被通过");
+									}
+									flag = true;
+								}else if(joinStatus.equals(2)){
+									czContent = "主公司["+parCpyName+"]已经拒绝子公司["+subCpyName+"]的申请";
+									//向申请公司管理员发送邮件通知
+									for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
+										CpyUserInfo cUser = it.next();
+										mm.addMail("joinM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", "申请通过", "您的成为["+parCpyName+"]的子公司申请已被拒绝");
+									}
+									flag = true;
+								}else{
+									msg = "error";
+								}
+								if(flag){
+									cjm.updateCJById(cpyJoinId, joinStatus, CurrentTime.getStringDate(), czContent);
+									msg = "success";
+								}
+							}else{
+								msg = "bind";//当前子公司已成为别的代理机构的子公司
+							}
+						}else{
+							msg = "error";
+						}
+					}else{
+						msg = "error";
 					}
 				}else{
-					msg = "outNum";//超过当前会员最大子公司数量
+					msg = "noBindInfo";//无此合并申请记录
 				}
 			}
 		}else{

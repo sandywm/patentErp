@@ -68,4 +68,15 @@ public interface CpyJoinInfoManager {
 	 */
 	List<CpyJoinInfoTb> listInfoByOpt(Integer parCpyId,Integer subCpyId, Integer joinStatus, 
 			Integer applyCpyId,String czDate) throws WEBException;
+	
+	/**
+	 * 根据主键获取分/主公司合并信息记录列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-16 下午03:55:42
+	 * @param id
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyJoinInfoTb> listInfoById(Integer id) throws WEBException;
 }

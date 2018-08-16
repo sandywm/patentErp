@@ -109,4 +109,15 @@ public interface CpyInfoDao {
 	 */
 	List<CpyInfoTb> findEndDateCpyInfo(Session sess);
 	
+	/**
+	 * 根据公司主键编号获取公司信息列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-16 下午04:33:08
+	 * @param sess
+	 * @param id
+	 * @return
+	 */
+	List<CpyInfoTb> findInfoById(Session sess,Integer id);
+	
 }

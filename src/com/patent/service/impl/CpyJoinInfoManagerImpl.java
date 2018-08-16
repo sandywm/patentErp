@@ -110,4 +110,20 @@ public class CpyJoinInfoManagerImpl implements CpyJoinInfoManager{
 		}
 	}
 
+	@Override
+	public List<CpyJoinInfoTb> listInfoById(Integer id) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cjDao = (CpyJoinInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_JOIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cjDao.findInfoById(sess, id);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键获取分/主公司合并信息记录列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }
