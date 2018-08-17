@@ -35,6 +35,7 @@ public class CpyInfoTb implements java.io.Serializable {
 	private Date endDate;
 	private Integer hotStatus;
 	private Integer cpyLevel;
+	private Integer zlNum;
 	private Set<CpyRoleInfoTb> cpyRoleInfoTbs = new HashSet<CpyRoleInfoTb>();
 	private Set<JsFiledInfoTb> jsFiledInfoTbs = new HashSet<JsFiledInfoTb>();
 	private Set<ZlajFeeInfoTb> zlajFeeInfoTbs = new HashSet<ZlajFeeInfoTb>();
@@ -53,7 +54,7 @@ public class CpyInfoTb implements java.io.Serializable {
 			String cpyCity, String cpyFr, String cpyYyzz, String cpyLxr,
 			String lxrTel, String lxrEmail, String cpySubId, Integer cpyParId,
 			String cpyUrl, String cpyProfile, Date signDate, Date endDate,
-			Integer hotStatus, Integer cpyLevel) {
+			Integer hotStatus, Integer cpyLevel,Integer zlNum) {
 		this.cpyName = cpyName;
 		this.cpyNamePy = cpyNamePy;
 		this.cpyAddress = cpyAddress;
@@ -72,6 +73,7 @@ public class CpyInfoTb implements java.io.Serializable {
 		this.endDate = endDate;
 		this.hotStatus = hotStatus;
 		this.cpyLevel = cpyLevel;
+		this.zlNum = zlNum;
 	}
 
 	/** full constructor */
@@ -79,7 +81,7 @@ public class CpyInfoTb implements java.io.Serializable {
 			String cpyCity, String cpyFr, String cpyYyzz, String cpyLxr,
 			String lxrTel, String lxrEmail, String cpySubId, Integer cpyParId,
 			String cpyUrl, String cpyProfile, Date signDate, Date endDate,
-			Integer hotStatus, Integer cpyLevel) {
+			Integer hotStatus, Integer cpyLevel,Integer zlNum) {
 		this.id = id;
 		this.cpyName = cpyName;
 		this.cpyNamePy = cpyNamePy;
@@ -99,6 +101,7 @@ public class CpyInfoTb implements java.io.Serializable {
 		this.endDate = endDate;
 		this.hotStatus = hotStatus;
 		this.cpyLevel = cpyLevel;
+		this.zlNum = zlNum;
 	}
 
 	// Property accessors
@@ -301,6 +304,14 @@ public class CpyInfoTb implements java.io.Serializable {
 
 	public void setCpyJoinInfoTbs(Set<CpyJoinInfoTb> cpyJoinInfoTbs) {
 		this.cpyJoinInfoTbs = cpyJoinInfoTbs;
+	}
+
+	public Integer getZlNum() {
+		return zlNum;
+	}
+
+	public void setZlNum(Integer zlNum) {
+		this.zlNum = zlNum;
 	}
 
 

@@ -162,4 +162,16 @@ public interface CpyInfoManager {
 	 */
 	List<CpyInfoTb> listInfoById(Integer id)throws WEBException;
 	
+	/**
+	 * 根据主键修改代理机构增加的专利数（newNum为1是增加1，-1时减少1）
+	 * @description
+	 * @author wm
+	 * @date 2018-8-17 下午05:16:16
+	 * @param id
+	 * @param newNum
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateZlNumById(Integer id,Integer newNum)throws WEBException;
+	
 }

@@ -83,4 +83,12 @@ public class MailInfoDaoImpl implements MailInfoDao{
 		return CommonTools.longToInt(count_obj);
 	}
 
+	@Override
+	public List<MailInfoTb> findInfoByOpt(Session sess, Integer acceptUserId,
+			String userType, Integer mailId) {
+		// TODO Auto-generated method stub
+		String hql = " from MailInfoTb as m where m.id = "+mailId+" and  m.acceptUserId = "+acceptUserId + " and m.userType = '"+userType+"'";
+		return sess.createQuery(hql).list();
+	}
+
 }

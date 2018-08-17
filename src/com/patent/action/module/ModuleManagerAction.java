@@ -398,8 +398,9 @@ public class ModuleManagerAction extends DispatchAction {
 						arm.addBatchARole(selRoleId, selMaIdStr);
 					}
 				}
+				msg = "success";
 			}else{
-				msg = "fail";
+				msg = "error";
 			}
 		}else{
 			msg = "noAbility";
@@ -479,12 +480,21 @@ public class ModuleManagerAction extends DispatchAction {
 								map_d.put("modId", module.getId());
 								map_d.put("modName", module.getModName());
 								map_d.put("modUrl", module.getResUrl());
+								if(endFlag){//未过期
+									map_d.put("useFlag", true);
+								}else{
+									if(cpy.getCpyLevel() > 0){//铜牌以上的会员
+										map_d.put("useFlag", false);
+									}else{//铜牌的模块一直免费使用
+										map_d.put("useFlag", true);
+									}
+								}
 								list_d.add(map_d);
 								list_m.add(module);
 							}
 						}
 					}
-					map.put("result", list_d);
+					map.put("modInfo", list_d);
 				}else{
 					map.put("result", new ArrayList<Object>());
 				}

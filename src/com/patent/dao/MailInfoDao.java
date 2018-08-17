@@ -72,4 +72,17 @@ public interface MailInfoDao {
 	 */
 	Integer getCountByOpt(Session sess,Integer acceptUserId,String userType,String mailType,
 			String mailTitle,Integer readStatus);
+	
+	/**
+	 * 获取自己的邮件详情
+	 * @description
+	 * @author wm
+	 * @date 2018-8-17 上午09:52:15
+	 * @param sess
+	 * @param acceptUserId 接收人编号
+	 * @param userType 接收人类型
+	 * @param mailId 主键
+	 * @return
+	 */
+	List<MailInfoTb> findInfoByOpt(Session sess,Integer acceptUserId,String userType,Integer mailId);
 }

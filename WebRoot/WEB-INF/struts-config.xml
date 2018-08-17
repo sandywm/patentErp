@@ -42,6 +42,10 @@
     <action path="/pubZl" parameter="action" scope="request" type="com.patent.action.pubZl.PubZl.PubZlAction">
       <set-property property="cancellable" value="true" />
     </action>
+    <!-- 邮件系统管理 -->
+    <action path="/mail"  parameter="action" scope="request" type="com.patent.action.mail.MailAction">
+      <set-property property="cancellable" value="true" />
+    </action>
 
   </action-mappings>
 

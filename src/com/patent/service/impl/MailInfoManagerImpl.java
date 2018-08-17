@@ -153,4 +153,11 @@ public class MailInfoManagerImpl implements MailInfoManager{
 		}
 	}
 
+	@Override
+	public List<MailInfoTb> listInfoByOpt(Integer acceptUserId,
+			String userType, Integer mailId) throws WEBException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

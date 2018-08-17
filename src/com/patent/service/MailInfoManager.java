@@ -90,4 +90,17 @@ public interface MailInfoManager {
 	 */
 	Integer getCountByOpt(Integer acceptUserId,String userType,String mailType,
 			String mailTitle,Integer readStatus) throws WEBException;
+	
+	/**
+	 * 获取自己的邮件详情
+	 * @description
+	 * @author wm
+	 * @date 2018-8-17 上午09:50:53
+	 * @param acceptUserId 接收人编号
+	 * @param userType 接收人类型
+	 * @param mailId 主键
+	 * @return
+	 * @throws WEBException
+	 */
+	List<MailInfoTb> listInfoByOpt(Integer acceptUserId,String userType,Integer mailId) throws WEBException;
 }
