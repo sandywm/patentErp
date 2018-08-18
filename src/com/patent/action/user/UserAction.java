@@ -626,14 +626,17 @@ public class UserAction extends DispatchAction {
 						}
 						map_u.put("yxStatus", yxStatusChi);
 						map_u.put("zxNum", cUser_a.getUserZxNum());
-						List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, cUser_a.getUserScFiledId());
+						String userScField = cUser_a.getUserScFiledId();
 						String scFiledName = "";
-						for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
-							JsFiledInfoTb js = it_1.next();
-							scFiledName += js.getZyName() + ",";
-						}
-						if(!scFiledName.equals("")){
-							scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+						if(!userScField.equals("")){
+							List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField);
+							for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
+								JsFiledInfoTb js = it_1.next();
+								scFiledName += js.getZyName() + ",";
+							}
+							if(!scFiledName.equals("")){
+								scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+							}
 						}
 						map_u.put("scFiledName", scFiledName);
 						map_u.put("exper", cUser_a.getUserExper());
@@ -778,7 +781,7 @@ public class UserAction extends DispatchAction {
 			String account = request.getParameter("account");
 			String userName = Transcode.unescape(request.getParameter("userName"), request);
 			String userType = request.getParameter("userType");//cwu:财务，zjl:总经理
-			if(sum.listInfoByAccount(account).equals(0)){
+			if(sum.listInfoByAccount(account).size() == 0){
 				Integer sUserId = sum.addSUser(account, new MD5().calcMD5("123456"), userName, userType);
 				if(sUserId > 0){
 					msg = "success";
@@ -870,14 +873,17 @@ public class UserAction extends DispatchAction {
 					map.put("zxNum", cpyUser.getUserZxNum());
 					map.put("scFiled", cpyUser.getUserScFiledId());
 					Integer cpyId = cum.getEntityById(userId).getCpyInfoTb().getId();
-					List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, cpyUser.getUserScFiledId());
+					String userScFieldId = cpyUser.getUserScFiledId();
 					String scFiledName = "";
-					for(Iterator<JsFiledInfoTb> it = jsList.iterator() ; it.hasNext();){
-						JsFiledInfoTb js = it.next();
-						scFiledName += js.getZyName() + ",";
-					}
-					if(!scFiledName.equals("")){
-						scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+					if(!userScFieldId.equals("")){
+						List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScFieldId);
+						for(Iterator<JsFiledInfoTb> it = jsList.iterator() ; it.hasNext();){
+							JsFiledInfoTb js = it.next();
+							scFiledName += js.getZyName() + ",";
+						}
+						if(!scFiledName.equals("")){
+							scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+						}
 					}
 					map.put("scFiledName", scFiledName);
 					map.put("useExp", cpyUser.getUserExper());
@@ -983,7 +989,7 @@ public class UserAction extends DispatchAction {
 	*  @return
 	*  @throws Exception
 	 */
-	public ActionForward updateUserScFieldInfo(ActionMapping mapping, ActionForm form,
+	public ActionForward updateUserRoleInfo(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		String loginType = this.getLoginType(request);
@@ -1007,6 +1013,13 @@ public class UserAction extends DispatchAction {
 				Integer selUserCpyId = cum.getEntityById(selUserId).getCpyInfoTb().getId();
 				if(currLoginUserCpyId.equals(selUserCpyId)){
 					String[] roleIdArr = selRoleIdStr.split(",");
+					//先删除之前绑定的关系
+					List<CpyRoleUserInfoTb> cruList = crm.listInfoByUserId(selUserId);
+					for(Iterator<CpyRoleUserInfoTb> it = cruList.iterator() ; it.hasNext();){
+						CpyRoleUserInfoTb cru = it.next();
+						crm.delRoleUserByOpt(0, cru.getCpyUserInfo().getId());
+					}
+					//重新增加
 					for(Integer i = 0 ; i < roleIdArr.length ; i++){
 						Integer roleId = Integer.parseInt(roleIdArr[i]);
 						crm.addRoleUser(roleId, selUserId);
@@ -1021,6 +1034,39 @@ public class UserAction extends DispatchAction {
 		}
 		Map<String,String> map = new HashMap<String,String>();
 		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 检查代理机构员工存在状态
+	*  @author  Administrator
+	*  @ModifiedBy  
+	*  @date  2018-8-18 下午10:17:33
+	*  @param mapping
+	*  @param form
+	*  @param request
+	*  @param response
+	*  @return
+	*  @throws Exception
+	 */
+	public ActionForward checkExistInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
+		boolean existFlag = false;
+		String account = request.getParameter("account");
+		boolean flag_cpy_user = cum.listSpecInfoByAccount(account).size() > 0;
+		boolean flag_app_user = am.listInfoByAccount(account).size() > 0;
+		if(flag_cpy_user || flag_app_user){
+			existFlag = true;
+		}
+		Map<String,Boolean> map = new HashMap<String,Boolean>();
+		map.put("result", existFlag);
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
         pw.write(json); 

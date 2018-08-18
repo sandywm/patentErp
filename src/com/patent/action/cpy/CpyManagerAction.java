@@ -484,10 +484,10 @@ public class CpyManagerAction extends DispatchAction {
 			if(!subIdStr.equals("")){//存在子公司
 				cpyList = cm.listParSubCpyInfo(subIdStr, "sub");
 				map.put("result", "existInfo");
+				map.put("psInfo", "sub");
 			}else{
 				map.put("result", "noInfo");
 			}
-			map.put("psInfo", "sub");
 		}else{//存在主公司-说明自己是子公司
 			cpyList = cm.listParSubCpyInfo(subIdStr, "par");
 			map.put("result", "existInfo");
