@@ -22,6 +22,7 @@ import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.ApplyInfoTb;
+import com.patent.module.CpyRoleInfoTb;
 import com.patent.module.CpyRoleUserInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.JsFiledInfoTb;
@@ -500,6 +501,7 @@ public class UserAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
+		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
 		String roleName = this.getLoginRoleName(request);
 		Integer userId = this.getLoginUserId(request);
 		CpyUserInfo cUser = cum.getEntityById(userId);
@@ -522,19 +524,27 @@ public class UserAction extends DispatchAction {
 				String userTel = request.getParameter("tel");
 				String inDate = request.getParameter("inDate");
 				String userScFiledIdStr = request.getParameter("userScFiledIdStr");
-				Integer roleId = Integer.parseInt(request.getParameter("roleId"));
-				Integer cpyUserId = cum.addCpyUser(cpyId, userName, userNamePy, account, new MD5().calcMD5("123456"), userSex, 
-						userEmail, userTel, inDate, userScFiledIdStr, "");
-				if(cpyUserId > 0){
-					//绑定员工角色
-					Integer cruId = crm.addRoleUser(roleId, cpyUserId);
-					if(cruId > 0){
+				Integer roleId = 0;
+				String roleIdStr = request.getParameter("roleId");
+				boolean flag_cpy_user = cum.listSpecInfoByAccount(account).size() > 0;
+				boolean flag_app_user = am.listInfoByAccount(account).size() > 0;
+				if(flag_cpy_user || flag_app_user){
+					msg = "exist";
+				}else{
+					Integer cpyUserId = cum.addCpyUser(cpyId, userName, userNamePy, account, new MD5().calcMD5("123456"), userSex, 
+							userEmail, userTel, inDate, userScFiledIdStr, "");
+					if(cpyUserId > 0 && !roleIdStr.equals("")){
+						//绑定员工角色
+						String[] roleIdArr = roleIdStr.split(",");
+						Integer roleIdLen = roleIdArr.length;
+						for(Integer i = 0 ; i < roleIdLen ; i++){
+							roleId = Integer.parseInt(roleIdArr[i]);
+							crm.addRoleUser(roleId, cpyUserId);
+						}
 						msg = "success";
 					}else{
-						msg = "error";
+						msg = "error";	
 					}
-				}else{
-					msg = "error";	
 				}
 			}else{
 				msg = "noAbility";
@@ -768,11 +778,15 @@ public class UserAction extends DispatchAction {
 			String account = request.getParameter("account");
 			String userName = Transcode.unescape(request.getParameter("userName"), request);
 			String userType = request.getParameter("userType");//cwu:财务，zjl:总经理
-			Integer sUserId = sum.addSUser(account, new MD5().calcMD5("123456"), userName, userType);
-			if(sUserId > 0){
-				msg = "success";
+			if(sum.listInfoByAccount(account).equals(0)){
+				Integer sUserId = sum.addSUser(account, new MD5().calcMD5("123456"), userName, userType);
+				if(sUserId > 0){
+					msg = "success";
+				}else{
+					msg = "error";
+				}
 			}else{
-				msg = "error";
+				msg = "exist";
 			}
 		}else{
 			msg = "noAbility";
@@ -815,6 +829,31 @@ public class UserAction extends DispatchAction {
 				Integer specUserCpyId = cpyUser.getCpyInfoTb().getId();
 				Integer currLoginUserCpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
 				if(specUserCpyId.equals(currLoginUserCpyId)){//只能查询自己代理机构的员工
+					//获取该代理机构下所有的角色列表
+					List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(currLoginUserCpyId);
+					List<Object> list_r = new ArrayList<Object>();
+					//获取用户角色
+					List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(cpyUser.getId());
+					for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
+						CpyRoleInfoTb cr = it.next();
+						Map<String,Object> map_r = new HashMap<String,Object>();
+						map_r.put("roleId", cr.getId());
+						map_r.put("roleName", cr.getRoleName());
+						if(ruList.size() == 0){
+							map_r.put("checked", false);
+						}else{
+							for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
+								CpyRoleUserInfoTb cru = it_1.next();
+								if(cru.getCpyRoleInfoTb().getId().equals(cr.getId())){
+									map_r.put("checked", true);
+									break;
+								}else{
+									map_r.put("checked", false);
+								}
+							}
+						}
+						list_r.add(map_r);
+					}
 					map.put("result", "success");
 					map.put("id", cpyUser.getId());
 					map.put("name", cpyUser.getUserName());
@@ -827,17 +866,7 @@ public class UserAction extends DispatchAction {
 					map.put("outDate", cpyUser.getUserOutDate());
 					map.put("lzStatus", cpyUser.getUserLzStatus());
 					map.put("yxStatus", cpyUser.getUserYxStatus());
-					//获取用户角色
-					List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(cpyUser.getId());
-					String roleName = "";
-					for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
-						CpyRoleUserInfoTb ru = it_1.next();
-						roleName += ru.getCpyRoleInfoTb().getRoleName() + ",";
-					}
-					if(!roleName.equals("")){
-						roleName = roleName.substring(0, roleName.length() - 1);
-					}
-					map.put("roleName", roleName);
+					map.put("roleNameInfo", list_r);
 					map.put("zxNum", cpyUser.getUserZxNum());
 					map.put("scFiled", cpyUser.getUserScFiledId());
 					Integer cpyId = cum.getEntityById(userId).getCpyInfoTb().getId();
@@ -933,6 +962,64 @@ public class UserAction extends DispatchAction {
 		}else{
 			msg = "noAbility";
 		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	*  修改用户身份(管理员修改)
+	*  @author  Administrator
+	*  @ModifiedBy  
+	*  @date  2018-8-18 下午05:54:46
+	*  @param mapping
+	*  @param form
+	*  @param request
+	*  @param response
+	*  @return
+	*  @throws Exception
+	 */
+	public ActionForward updateUserScFieldInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		String loginType = this.getLoginType(request);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
+		Integer selUserId = CommonTools.getFinalInteger(request.getParameter("userId"));
+		String selRoleIdStr = String.valueOf(request.getParameter("selRoleId"));
+		String msg = "";
+		boolean abilityFlag = false;
+		if(selUserId.equals(0) || selRoleIdStr.equals("")){
+			msg = "error";
+		}else if(loginType.equals("cpyUser")){
+			if(this.getLoginRoleName(request).equals("管理员")){//如果是管理员直接跳过（管理员直接拥有权限）
+				abilityFlag = true;
+			}else{
+				//获取当前用户是否有修改权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upUser");
+			}
+			if(abilityFlag){
+				Integer currLoginUserCpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
+				Integer selUserCpyId = cum.getEntityById(selUserId).getCpyInfoTb().getId();
+				if(currLoginUserCpyId.equals(selUserCpyId)){
+					String[] roleIdArr = selRoleIdStr.split(",");
+					for(Integer i = 0 ; i < roleIdArr.length ; i++){
+						Integer roleId = Integer.parseInt(roleIdArr[i]);
+						crm.addRoleUser(roleId, selUserId);
+					}
+					msg = "success";
+				}else{
+					msg = "error";
+				}
+			}else{
+				msg = "noAbility";
+			}
+		}
+		Map<String,String> map = new HashMap<String,String>();
 		map.put("result", msg);
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
