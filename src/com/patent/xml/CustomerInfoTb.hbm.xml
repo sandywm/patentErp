@@ -10,6 +10,11 @@
             <column name="id" />
             <generator class="native" />
         </id>
+        <many-to-one name="cpyInfoTb" class="com.patent.module.CpyInfoTb" lazy="false">
+            <column name="cpy_id" not-null="true">
+                <comment>代理机构编号</comment>
+            </column>
+        </many-to-one>
         <property name="cusType" type="java.lang.String">
             <column name="cus_type" length="10" not-null="true">
                 <comment>客户类型(dzyx：大专院校、kydw：科研单位、gkqy：工矿企业，sydw：事业单位，gr：个人)</comment>

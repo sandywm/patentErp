@@ -16,6 +16,7 @@ public class CustomerInfoTb implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Integer id;
+	private CpyInfoTb cpyInfoTb;
 	private String cusType;
 	private String cusName;
 	private String cusICard;
@@ -31,8 +32,9 @@ public class CustomerInfoTb implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public CustomerInfoTb(String cusType, String cusName, String cusICard,
+	public CustomerInfoTb(CpyInfoTb cpyInfoTb,String cusType, String cusName, String cusICard,
 			String cusAddress, String cusZip){
+		this.cpyInfoTb = cpyInfoTb;
 		this.cusType = cusType;
 		this.cusName = cusName;
 		this.cusICard = cusICard;
@@ -41,9 +43,10 @@ public class CustomerInfoTb implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public CustomerInfoTb(Integer id,String cusType, String cusName, String cusICard,
+	public CustomerInfoTb(Integer id,CpyInfoTb cpyInfoTb,String cusType, String cusName, String cusICard,
 			String cusAddress, String cusZip) {
 		this.id = id;
+		this.cpyInfoTb = cpyInfoTb;
 		this.cusType = cusType;
 		this.cusName = cusName;
 		this.cusICard = cusICard;
@@ -115,6 +118,14 @@ public class CustomerInfoTb implements java.io.Serializable {
 
 	public void setCustomerLxrInfoTbs(Set<CustomerLxrInfoTb> customerLxrInfoTbs) {
 		this.customerLxrInfoTbs = customerLxrInfoTbs;
+	}
+
+	public CpyInfoTb getCpyInfoTb() {
+		return cpyInfoTb;
+	}
+
+	public void setCpyInfoTb(CpyInfoTb cpyInfoTb) {
+		this.cpyInfoTb = cpyInfoTb;
 	}
 
 

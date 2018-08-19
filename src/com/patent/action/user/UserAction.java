@@ -518,14 +518,14 @@ public class UserAction extends DispatchAction {
 			if(abilityFlag){
 				String userName = Transcode.unescape(request.getParameter("name"), request);
 				String userNamePy =  Convert.getFirstSpell(userName);
-				String account = request.getParameter("account");
-				String userSex = request.getParameter("sex");
-				String userEmail = request.getParameter("email");
-				String userTel = request.getParameter("tel");
-				String inDate = request.getParameter("inDate");
-				String userScFiledIdStr = request.getParameter("userScFiledIdStr");
+				String account = CommonTools.getFinalStr(request.getParameter("account"));
+				String userSex = CommonTools.getFinalStr(request.getParameter("sex"));
+				String userEmail = CommonTools.getFinalStr(request.getParameter("email"));
+				String userTel = CommonTools.getFinalStr(request.getParameter("tel"));
+				String inDate = CommonTools.getFinalStr(request.getParameter("inDate"));
+				String userScFiledIdStr =CommonTools.getFinalStr(request.getParameter("userScFiledIdStr"));
 				Integer roleId = 0;
-				String roleIdStr = request.getParameter("roleId");
+				String roleIdStr = CommonTools.getFinalStr(request.getParameter("roleId"));
 				boolean flag_cpy_user = cum.listSpecInfoByAccount(account).size() > 0;
 				boolean flag_app_user = am.listInfoByAccount(account).size() > 0;
 				if(flag_cpy_user || flag_app_user){
@@ -626,7 +626,7 @@ public class UserAction extends DispatchAction {
 						}
 						map_u.put("yxStatus", yxStatusChi);
 						map_u.put("zxNum", cUser_a.getUserZxNum());
-						String userScField = cUser_a.getUserScFiledId();
+						String userScField = cUser_a.getUserScFiledId() == null ? "" : cUser_a.getUserScFiledId();
 						String scFiledName = "";
 						if(!userScField.equals("")){
 							List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField);
@@ -996,7 +996,7 @@ public class UserAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
 		Integer selUserId = CommonTools.getFinalInteger(request.getParameter("userId"));
-		String selRoleIdStr = String.valueOf(request.getParameter("selRoleId"));
+		String selRoleIdStr = CommonTools.getFinalStr(request.getParameter("selRoleId"));
 		String msg = "";
 		boolean abilityFlag = false;
 		if(selUserId.equals(0) || selRoleIdStr.equals("")){

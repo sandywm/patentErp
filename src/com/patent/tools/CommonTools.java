@@ -31,7 +31,8 @@ public class CommonTools {
 	 * @return
 	 */
 	public static String getFinalStr(String inputStr){
-		if(inputStr == null){
+		inputStr = String.valueOf(inputStr);
+		if(inputStr == "null"){
 			return "";
 		}else{
 			return inputStr;
@@ -73,22 +74,22 @@ public class CommonTools {
 	}
 	
 	/**
-	 * 输入的数字类型转换成数据类型
+	 * 输入的字符串转换成正确的字符串
 	 * @description
 	 * @author wm
-	 * @date 2017-4-21 上午11:16:34
+	 * @date 2018-8-19 上午10:43:41
 	 * @param inputData
 	 * @return
 	 */
-	public static Double getFinalDouble(String inputData){
+	public static String getFinalString(String inputData){
 		inputData = String.valueOf(inputData);
-		if(inputData.equals("") || inputData.equals("null")){
-			return 0d;
+		if(inputData.equals("null")){
+			return "";
 		}else{
-			return Double.parseDouble(inputData);
+			return inputData;
 		}
 	}
-	
+
 	/**
      * 写入xss/sql注入攻击报告
      * @description

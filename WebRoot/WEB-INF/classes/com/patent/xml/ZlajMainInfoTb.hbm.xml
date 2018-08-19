@@ -95,6 +95,16 @@
                 <comment>案件分案信息(分案的id,没有就为0)</comment>
             </column>
         </property>
+        <property name="ajStopStatus" type="java.lang.Integer">
+            <column name="aj_stop_status" not-null="true">
+                <comment>案件终止状态[0:正常（默认），1：终止]</comment>
+            </column>
+        </property>
+        <property name="ajAddDate" type="java.lang.String">
+            <column name="aj_add_date">
+                <comment>案件录入时间</comment>
+            </column>
+        </property>
         <set name="zlajLcInfoTbs" inverse="true">
             <key>
                 <column name="aj_id" not-null="true">

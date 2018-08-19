@@ -153,5 +153,13 @@
             </key>
             <one-to-many class="com.patent.module.CpyJoinInfoTb" />
         </set>
+        <set name="customerInfoTbs" inverse="true">
+            <key>
+                <column name="cpy_id" not-null="true">
+                    <comment>代理机构编号</comment>
+                </column>
+            </key>
+            <one-to-many class="com.patent.module.CustomerInfoTb" />
+        </set>
     </class>
 </hibernate-mapping>

@@ -34,6 +34,8 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private Date ajApplyDate;
 	private String ajStatus;
 	private Integer ajFaId;
+	private Integer ajStopStatus;
+	private String ajAddDate;
 	private Set<ZlajLcInfoTb> zlajLcInfoTbs = new HashSet<ZlajLcInfoTb>();
 	private Set<ZlajFjInfoTb> zlajFjInfoTbs = new HashSet<ZlajFjInfoTb>();
 	private Set<ZlajTzsInfoTb> zlajTzsInfoTbs = new HashSet<ZlajTzsInfoTb>();
@@ -49,7 +51,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajTitle, Integer ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			Date ajApplyDate, String ajStatus, Integer ajFaId) {
+			Date ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,String ajAddDate) {
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
 		this.ajNoGf = ajNoGf;
@@ -67,6 +69,8 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajApplyDate = ajApplyDate;
 		this.ajStatus = ajStatus;
 		this.ajFaId = ajFaId;
+		this.ajStopStatus = ajStopStatus;
+		this.ajAddDate = ajAddDate;
 	}
 
 	/** full constructor */
@@ -74,7 +78,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajTitle, Integer ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			Date ajApplyDate, String ajStatus, Integer ajFaId) {
+			Date ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,String ajAddDate) {
 		this.id = id;
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
@@ -93,6 +97,8 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajApplyDate = ajApplyDate;
 		this.ajStatus = ajStatus;
 		this.ajFaId = ajFaId;
+		this.ajStopStatus = ajStopStatus;
+		this.ajAddDate = ajAddDate;
 	}
 
 	// Property accessors
@@ -263,6 +269,22 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	public void setZlajTzsInfoTbs(Set<ZlajTzsInfoTb> zlajTzsInfoTbs) {
 		this.zlajTzsInfoTbs = zlajTzsInfoTbs;
+	}
+
+	public Integer getAjStopStatus() {
+		return ajStopStatus;
+	}
+
+	public void setAjStopStatus(Integer ajStopStatus) {
+		this.ajStopStatus = ajStopStatus;
+	}
+
+	public String getAjAddDate() {
+		return ajAddDate;
+	}
+
+	public void setAjAddDate(String ajAddDate) {
+		this.ajAddDate = ajAddDate;
 	}
 
 
