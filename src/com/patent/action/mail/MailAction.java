@@ -217,10 +217,12 @@ public class MailAction extends DispatchAction {
 				}
 				list_d.add(map_d);
 			}
-			map.put("mailList", list_d);
-			map.put("result", "success");
+			map.put("data", list_d);
+			map.put("msg", "success");
+			map.put("count", count);
+			map.put("code", 0);
 		}else{
-			map.put("result", "noInfo");
+			map.put("msg", "noInfo");
 		}
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  

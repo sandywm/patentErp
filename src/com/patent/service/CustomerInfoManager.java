@@ -80,6 +80,18 @@ public interface CustomerInfoManager {
 	 */
 	Integer getCountByOpt(Integer cpyId,String cusName) throws WEBException;
 	
+	/**
+	 * 根据主键、代理机构编号获取客户信息列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-20 下午04:47:59
+	 * @param cusId 客户编号
+	 * @param cpyId 代理机构编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CustomerInfoTb> listInfoById(Integer cpyId,Integer cusId) throws WEBException;
+	
 	
 	/**
 	 * 增加指定客户的联系人信息

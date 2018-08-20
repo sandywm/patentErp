@@ -4,6 +4,13 @@
  */
 package com.patent.action.customer;
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.ActionForm;
@@ -11,7 +18,17 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 
+import com.alibaba.fastjson.JSON;
+import com.patent.action.base.Transcode;
+import com.patent.factory.AppFactory;
+import com.patent.module.CpyUserInfo;
+import com.patent.module.CustomerFmrInfoTb;
+import com.patent.module.CustomerInfoTb;
+import com.patent.module.CustomerLxrInfoTb;
+import com.patent.page.PageConst;
+import com.patent.service.CpyUserInfoManager;
 import com.patent.service.CustomerInfoManager;
+import com.patent.tools.CommonTools;
 import com.patent.util.Constants;
 import com.patent.web.Ability;
 
@@ -89,10 +106,332 @@ public class CustomerAction extends DispatchAction {
 		return mapping.findForward("cusPage");
 	}
 	
+	/**
+	 * 根据条件分页获取代理机构下客户列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-20 下午04:11:49
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCusPageInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<Object> list_d = new ArrayList<Object>();
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			String cusName = Transcode.unescape(request.getParameter("cusName"), request);
+			Integer count = cm.getCountByOpt(cpyId, cusName);
+			if(count > 0){
+				Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+				Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
+				List<CustomerInfoTb> cList = cm.listPageInfoByOpt(cpyId, cusName, pageNo, pageSize);
+				for(Iterator<CustomerInfoTb> it = cList.iterator() ; it.hasNext();){
+					CustomerInfoTb cus = it.next();
+					Map<String,Object> map_d = new HashMap<String,Object>();
+					map_d.put("id", cus.getId());
+					String cusType = cus.getCusType();
+					String cusTypeChi = "gr";
+					if(cusType.equals("dzyx")){
+						cusTypeChi = "大专院校";
+					}else if(cusType.equals("kydw")){
+						cusTypeChi = "科研单位";
+					}else if(cusType.equals("gkqy")){
+						cusTypeChi = "工矿企业";
+					}else if(cusType.equals("sydw")){
+						cusTypeChi = "事业单位";
+					}
+					map_d.put("cusType", cusTypeChi);
+					map_d.put("cusName", cus.getCusName());
+					map_d.put("cusICard", cus.getCusICard());
+					map_d.put("cusAddress", cus.getCusAddress());
+					map_d.put("cusZip", cus.getCusZip());
+					list_d.add(map_d);
+				}
+				map.put("msg", "success");
+				map.put("data", list_d);
+				map.put("count", count);
+				map.put("code", 0);
+			}else{
+				map.put("msg", "noInfo");
+			}
+		}else{
+			map.put("msg", "error");
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+        return null;
+	}
+	
+	/**
+	 * 获取联系人数据
+	 * @description
+	 * @author wm
+	 * @date 2018-8-20 下午04:25:33
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCusLxrInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<Object> list_d = new ArrayList<Object>();
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
+			List<CustomerInfoTb> cList = cm.listInfoById(cpyId, cusId);
+			if(cList.size() > 0){
+				List<CustomerLxrInfoTb> clxrList = cm.listLxrInfoByCusId(cusId);
+				if(clxrList.size() > 0){
+					for(Iterator<CustomerLxrInfoTb> it = clxrList.iterator() ; it.hasNext();){
+						CustomerLxrInfoTb lxr = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("lxrId", lxr.getId());
+						map_d.put("lxrName", lxr.getCusLxrName());
+						map_d.put("lxrTel", lxr.getCusLxrTel());
+						map_d.put("lxrEmail", lxr.getCusLxrEmail());
+						list_d.add(map_d);
+					}
+					map.put("result", "success");
+					map.put("lxrInfo", list_d);
+				}else{
+					map.put("result", "noInfo");
+				}
+			}else{
+				map.put("result", "error");
+			}
+		}else{
+			map.put("result", "error");
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 获取发明人数据
+	 * @description
+	 * @author wm
+	 * @date 2018-8-20 下午04:25:57
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCusFmrInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<Object> list_d = new ArrayList<Object>();
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
+			List<CustomerInfoTb> cList = cm.listInfoById(cpyId, cusId);
+			if(cList.size() > 0){
+				List<CustomerFmrInfoTb> cfmrList = cm.listFmrInfoByCusId(cusId);
+				if(cfmrList.size() > 0){
+					for(Iterator<CustomerFmrInfoTb> it = cfmrList.iterator() ; it.hasNext();){
+						CustomerFmrInfoTb fmr = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("fmrId", fmr.getId());
+						map_d.put("fmrName", fmr.getCusFmrName());
+						map_d.put("fmrTel", fmr.getCusFmrTel());
+						map_d.put("fmrEmail", fmr.getCusFxrEmail());
+						map_d.put("fmriCard", fmr.getCusFmrICard());
+						list_d.add(map_d);
+					}
+					map.put("result", "success");
+					map.put("lxrInfo", list_d);
+				}else{
+					map.put("result", "noInfo");
+				}
+			}else{
+				map.put("result", "error");
+			}
+		}else{
+			map.put("result", "error");
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+        return null;
+	}
+	
+	/**
+	 * 增加客户信息主信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-20 下午05:18:19
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	public ActionForward addCusData(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
-//		CustomerInfoManager cm = 
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		boolean abilityFlag = false;
+		String msg = "error";
+		if(this.getLoginRoleName(request).equals("管理员")){
+			abilityFlag = true;
+		}else{
+			//需要查看当前用户有无增加权限
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addCus");
+		}
+		if(abilityFlag){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			String cusName = Transcode.unescape(request.getParameter("cusName"), request);
+			String cusType = CommonTools.getFinalStr(request.getParameter("cusType"));
+			String cusiCard = CommonTools.getFinalStr(request.getParameter("cusiCard"));
+			String cusAddress = Transcode.unescape(request.getParameter("cusAddress"), request);
+			String cusZip = CommonTools.getFinalStr(request.getParameter("cusZip"));
+			Integer cusId = cm.addCusInfo(cusType, cusName, cusiCard, cusAddress, cusZip, cpyId);
+			if(cusId > 0){
+				msg = "success";
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	
+	/**
+	 * 增加客户联系人
+	 * @description
+	 * @author wm
+	 * @date 2018-8-20 下午05:22:29
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward addLxrData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		boolean abilityFlag = false;
+		String msg = "error";
+		if(this.getLoginRoleName(request).equals("管理员")){
+			abilityFlag = true;
+		}else{
+			//需要查看当前用户有无增加权限
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addCus");
+		}
+		if(abilityFlag){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
+			List<CustomerInfoTb> cusList = cm.listInfoById(cpyId, cusId);
+			if(cusList.size() > 0){
+				String lxrName = Transcode.unescape(request.getParameter("lxrName"), request);
+				String lxrTel = CommonTools.getFinalStr(request.getParameter("lxrTel"));
+				String lxrEmail = CommonTools.getFinalStr(request.getParameter("lxrEmail"));
+				Integer lxrId = cm.addCusLxrInfo(cusId, lxrName, lxrTel, lxrEmail);
+				if(lxrId > 0){
+					msg = "success";
+				}
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	public ActionForward addFmrData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		boolean abilityFlag = false;
+		String msg = "error";
+		if(this.getLoginRoleName(request).equals("管理员")){
+			abilityFlag = true;
+		}else{
+			//需要查看当前用户有无增加权限
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addCus");
+		}
+		if(abilityFlag){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
+			List<CustomerInfoTb> cusList = cm.listInfoById(cpyId, cusId);
+			if(cusList.size() > 0){
+				String fmrName = Transcode.unescape(request.getParameter("fmrName"), request);
+				String fmrTel = CommonTools.getFinalStr(request.getParameter("fmrTel"));
+				String fmrEmail = CommonTools.getFinalStr(request.getParameter("fmrEmail"));
+				String fmriCard = CommonTools.getFinalStr(request.getParameter("fmriCard"));
+				Integer fmrId = cm.addCusFmrInfo(cusId, fmrName, fmriCard, fmrTel, fmrEmail);
+				if(fmrId > 0){
+					msg = "success";
+				}
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
 		return null;
 	}
 }

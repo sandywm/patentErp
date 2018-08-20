@@ -334,4 +334,20 @@ public class CustomerInfoManagerImpl implements CustomerInfoManager{
 		}
 	}
 
+	@Override
+	public List<CustomerInfoTb> listInfoById(Integer cpyId,Integer cusId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cDao = (CustomerInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUSTOMER_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cDao.findInfoByOpt(sess, cpyId, cusId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定代理机构下指定客户编号的信息出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

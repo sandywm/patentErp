@@ -26,6 +26,7 @@ import com.patent.module.JsFiledInfoTb;
 import com.patent.page.PageConst;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.JsFiledInfoManager;
+import com.patent.tools.CommonTools;
 import com.patent.util.Constants;
 import com.patent.web.Ability;
 
@@ -180,9 +181,8 @@ public class JsFieldManagerAction extends DispatchAction {
 			Integer cpyId = cUser.getCpyInfoTb().getId();
 			Integer count = jsm.getCountByCpyId(cpyId);
 			if(count > 0){
-				Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("pageSize")), 10);
-				Integer pageCount = PageConst.getPageCount(count, pageSize);
-				Integer pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
+				Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+				Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
 				List<JsFiledInfoTb> jfList = jsm.listPageInfoByCpyId(cpyId, pageNo, pageSize);
 				List<Object> list_d = new ArrayList<Object>();
 				for(Iterator<JsFiledInfoTb> it = jfList.iterator() ; it.hasNext();){
@@ -194,14 +194,16 @@ public class JsFieldManagerAction extends DispatchAction {
 					list_d.add(map_d);
 				}
 				msg = "success";
-				map.put("jsInfo", list_d);
+				map.put("data", list_d);
+				map.put("count", count);
+				map.put("code", 0);
 			}else{
 				msg = "noInfo";
 			}
 		}else{
 			msg = "fail";
 		}
-		map.put("result", msg);
+		map.put("msg", msg);
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
         pw.write(json); 

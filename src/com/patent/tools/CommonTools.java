@@ -72,23 +72,6 @@ public class CommonTools {
 			return Float.parseFloat(inputData);
 		}
 	}
-	
-	/**
-	 * 输入的字符串转换成正确的字符串
-	 * @description
-	 * @author wm
-	 * @date 2018-8-19 上午10:43:41
-	 * @param inputData
-	 * @return
-	 */
-	public static String getFinalString(String inputData){
-		inputData = String.valueOf(inputData);
-		if(inputData.equals("null")){
-			return "";
-		}else{
-			return inputData;
-		}
-	}
 
 	/**
      * 写入xss/sql注入攻击报告
