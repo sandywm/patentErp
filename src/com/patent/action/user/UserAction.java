@@ -563,7 +563,7 @@ public class UserAction extends DispatchAction {
 	}
 	
 	/**
-	 * 根据条件分页获取当前代理机构的所有用户列表
+	 * 根据条件分页获取当前代理机构的所有用户列表(分页)
 	 * @author Administrator
 	 * @date 2018-8-3 下午11:09:41
 	 * @ModifiedBy
