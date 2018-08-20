@@ -653,13 +653,18 @@ public class UserAction extends DispatchAction {
 						map_u.put("roleName", roleName);
 						list_u.add(map_u);
 					}
-					map.put("result", "success");
-					map.put("uInfo", list_u);
+//					map.put("result", "success");
+//					map.put("uInfo", list_u);
+					map.put("msg", "success");
+					map.put("data", list_u);
+					map.put("count", count);
 				}else{
-					map.put("result", "noInfo");
+//					map.put("result", "noInfo");
+					map.put("msg", "noInfo");
 				}
 			}else{
-				map.put("result", "fail");
+//				map.put("result", "fail");
+				map.put("msg", "fail");
 			}
 		}
 		String json = JSON.toJSONString(map);

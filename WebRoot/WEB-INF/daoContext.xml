@@ -14,4 +14,7 @@
 	<dao id="act_role_info_Dao" class="com.patent.dao.impl.ActRoleInfoDaoImpl"/>
 	<dao id="pub_zl_info_Dao" class="com.patent.dao.impl.PubZlInfoDaoImpl"/>
 	<dao id="cpy_join_info_Dao" class="com.patent.dao.impl.CpyJoinInfoDaoImpl"/>
+	<dao id="customer_info_Dao" class="com.patent.dao.impl.CustomerInfoDaoImpl"/>
+	<dao id="customer_lxr_info_Dao" class="com.patent.dao.impl.CustomerLxrInfoDaoImpl"/>
+	<dao id="customer_fmr_info_Dao" class="com.patent.dao.impl.CustomerFmrInfoDaoImpl"/>
 </daoContext>

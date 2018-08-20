@@ -19,11 +19,11 @@ public interface CustomerInfoManager {
 	 * @param cusiCard 客户卡号（公司机构代码/个人身份证号）
 	 * @param cusAddress 客户地址
 	 * @param cusZip 客户邮编
-	 * @param cusId 代理机构编号
+	 * @param cpyId 代理机构编号
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addCusInfo(String cusType,String cusName,String cusiCard,String cusAddress,String cusZip,Integer cusId) throws WEBException;
+	Integer addCusInfo(String cusType,String cusName,String cusiCard,String cusAddress,String cusZip,Integer cpyId) throws WEBException;
 	
 	/**
 	 * 删除指定主键的客户信息
@@ -31,10 +31,11 @@ public interface CustomerInfoManager {
 	 * @author wm
 	 * @date 2018-8-19 下午05:07:43
 	 * @param id
+	 * @param cpyId 代理机构编号
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean delCusInfo(Integer id) throws WEBException;
+	boolean delCusInfo(Integer id,Integer cpyId) throws WEBException;
 	
 	/**
 	 * 修改指定编号的客户信息
