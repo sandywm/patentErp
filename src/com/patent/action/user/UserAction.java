@@ -592,8 +592,8 @@ public class UserAction extends DispatchAction {
 				String userNamePy = request.getParameter("userNamePy");
 				Integer count = cum.getCountByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy);
 				if(count > 0){
-					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);
-					Integer pageNo = CommonTools.getFinalInteger(request.getParameter("pageNo"));
+					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+					Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
 					List<CpyUserInfo> cUserList = cum.listPageInfoByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy, pageNo, pageSize);
 					List<Object> list_u = new ArrayList<Object>();
 					for(Iterator<CpyUserInfo> it = cUserList.iterator() ; it.hasNext();){
