@@ -658,6 +658,7 @@ public class UserAction extends DispatchAction {
 					map.put("msg", "success");
 					map.put("data", list_u);
 					map.put("count", count);
+					map.put("code", 0);
 				}else{
 //					map.put("result", "noInfo");
 					map.put("msg", "noInfo");
