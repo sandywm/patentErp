@@ -563,7 +563,7 @@ public class UserAction extends DispatchAction {
 	}
 	
 	/**
-	 * 根据条件分页获取当前代理机构的所有用户列表
+	 * 根据条件分页获取当前代理机构的所有用户列表(分页)
 	 * @author Administrator
 	 * @date 2018-8-3 下午11:09:41
 	 * @ModifiedBy
@@ -592,9 +592,8 @@ public class UserAction extends DispatchAction {
 				String userNamePy = request.getParameter("userNamePy");
 				Integer count = cum.getCountByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy);
 				if(count > 0){
-					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("pageSize")), 10);
-					Integer pageCount = PageConst.getPageCount(count, pageSize);
-					Integer pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
+					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);
+					Integer pageNo = CommonTools.getFinalInteger(request.getParameter("pageNo"));
 					List<CpyUserInfo> cUserList = cum.listPageInfoByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy, pageNo, pageSize);
 					List<Object> list_u = new ArrayList<Object>();
 					for(Iterator<CpyUserInfo> it = cUserList.iterator() ; it.hasNext();){
