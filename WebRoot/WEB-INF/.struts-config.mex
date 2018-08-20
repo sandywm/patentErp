@@ -7,6 +7,7 @@
   <StrutsActivity path="/modM.do" location="50,250" dimension="329,104" />
   <StrutsActivity path="/jfm.do" location="650,250" dimension="306,104" />
   <StrutsActivity path="/pubZl.do" location="50,450" dimension="287,104" />
+  <StrutsActivity path="/mail.do" location="650,1250" dimension="236,104" />
   <StrutsActivity path="/register.jsp" location="650,450" dimension="102,53" />
   <StrutsActivity path="/spUserLogin.jsp" location="950,450" dimension="130,53" />
   <StrutsActivity path="/login.jsp" location="50,650" dimension="86,53" />
@@ -19,7 +20,7 @@
   <StrutsActivity path="/Module/roleManager/jsp/roleManager.jsp" location="50,1050" dimension="286,53" />
   <StrutsActivity path="/Module/cpyDetailInfo/jsp/cpyDetailInfo.jsp" location="650,1050" dimension="286,53" />
   <StrutsActivity path="/Module/professFieldManager/jsp/profesField.jsp" location="50,1250" dimension="323,53" />
-  <StrutsActivity path="/mail.do" />
+  <StrutsActivity path="/customer.do" />
   <StrutsTransition id="/login.do,loginOut,/login.jsp,1" routingType="0">
     <AutomaticBendpoints>
       <AbsolutePoint location="50,102" />

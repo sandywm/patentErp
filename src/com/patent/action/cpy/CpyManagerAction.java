@@ -172,9 +172,8 @@ public class CpyManagerAction extends DispatchAction {
 		Integer count = cm.getCountByOpt(cpyName, cpyProv, cpyCity, cpyFr, cpyLxr, cpyLevel, yxStatus);
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(count > 0){
-			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("pageSize")), 10);
-			Integer pageCount = PageConst.getPageCount(count, pageSize);
-			Integer pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
+			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);
+			Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));
 			List<CpyInfoTb> cpyList = cm.listPageInfoByOpt(cpyName, cpyProv, cpyCity, cpyFr, cpyLxr, cpyLevel, yxStatus, pageNo, pageSize);
 			List<Object> list_d = new ArrayList<Object>();
 			for(Iterator<CpyInfoTb> it = cpyList.iterator() ; it.hasNext();){
