@@ -172,8 +172,8 @@ public class CpyManagerAction extends DispatchAction {
 		Integer count = cm.getCountByOpt(cpyName, cpyProv, cpyCity, cpyFr, cpyLxr, cpyLevel, yxStatus);
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(count > 0){
-			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);
-			Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));
+			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+			Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
 			List<CpyInfoTb> cpyList = cm.listPageInfoByOpt(cpyName, cpyProv, cpyCity, cpyFr, cpyLxr, cpyLevel, yxStatus, pageNo, pageSize);
 			List<Object> list_d = new ArrayList<Object>();
 			for(Iterator<CpyInfoTb> it = cpyList.iterator() ; it.hasNext();){
@@ -209,10 +209,12 @@ public class CpyManagerAction extends DispatchAction {
 				}
 				list_d.add(map_d);
 			}
-			map.put("result", "success");
-			map.put("cpyInfo", list_d);
+			map.put("msg", "success");
+			map.put("data", list_d);
+			map.put("count", count);
+			map.put("code", 0);
 		}else{
-			map.put("result", "noInfo");
+			map.put("msg", "noInfo");
 		}
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  

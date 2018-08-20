@@ -810,6 +810,76 @@ public class UserAction extends DispatchAction {
 	}
 	
 	/**
+	 * 获取代理机构员工角色绑定信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-20 下午03:44:41
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getUserRoleData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		String loginType = this.getLoginType(request);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
+		Integer userId = CommonTools.getFinalInteger(request.getParameter("userId"));
+		if(loginType.equals("cpyUser")){//代理机构
+			CpyUserInfo cpyUser = cum.getEntityById(userId);
+			if(cpyUser != null){
+				Integer specUserCpyId = cpyUser.getCpyInfoTb().getId();
+				Integer currLoginUserCpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
+				if(specUserCpyId.equals(currLoginUserCpyId)){//只能查看自己代理机构的员工
+					//获取该代理机构下所有的角色列表
+					List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(currLoginUserCpyId);
+					List<Object> list_r = new ArrayList<Object>();
+					//获取用户角色
+					List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(cpyUser.getId());
+					for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
+						CpyRoleInfoTb cr = it.next();
+						Map<String,Object> map_r = new HashMap<String,Object>();
+						map_r.put("roleId", cr.getId());
+						map_r.put("roleName", cr.getRoleName());
+						if(ruList.size() == 0){
+							map_r.put("checked", false);
+						}else{
+							for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
+								CpyRoleUserInfoTb cru = it_1.next();
+								if(cru.getCpyRoleInfoTb().getId().equals(cr.getId())){
+									map_r.put("checked", true);
+									break;
+								}else{
+									map_r.put("checked", false);
+								}
+							}
+						}
+						list_r.add(map_r);
+					}
+					map.put("result", "success");
+					map.put("roleNameInfo", list_r);
+				}else{
+					map.put("result", "error");
+				}
+			}else{
+				map.put("result", "error");
+			}
+		}else{
+			map.put("result", "error");
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
 	 * 根据用户编号获取用户详情（适合代理机构查询内部员工、平台用户查询平台员工）
 	 * @description
 	 * @author wm

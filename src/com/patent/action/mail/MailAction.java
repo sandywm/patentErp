@@ -192,9 +192,13 @@ public class MailAction extends DispatchAction {
 		Integer count = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), mailType, mailTitle, readStatus);
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(count > 0){
-			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("pageSize")), 10);
-			Integer pageCount = PageConst.getPageCount(count, pageSize);
-			Integer pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
+//			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("pageSize")), 10);
+//			Integer pageCount = PageConst.getPageCount(count, pageSize);
+//			Integer pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
+			
+			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+			Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
+			
 			List<MailInfoTb> mList = mm.listPageInfoByOpt(this.getLoginUserId(request), this.getLoginType(request), mailType, mailTitle, readStatus, pageNo, pageSize);
 			List<Object> list_d = new ArrayList<Object>();
 			for(Iterator<MailInfoTb> it = mList.iterator() ; it.hasNext();){
