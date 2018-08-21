@@ -717,7 +717,7 @@ public class ModuleManagerAction extends DispatchAction {
 						ModuleInfoTb module = ar.getModActInfoTb().getModuleInfoTb();
 						Map<String,Object> map_d = new HashMap<String,Object>();
 						if(module.getShowStatus().equals(0)){//只获取可见
-							if(list_d.size() == 0){//首次
+							if(list_d.size() == 0){//首次不判断
 								map_d.put("modId", module.getId());
 								map_d.put("modName", module.getModName());
 								map_d.put("modUrl", module.getResUrl());
