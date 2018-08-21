@@ -340,7 +340,7 @@ public class UserAction extends DispatchAction {
 	}
 	
 	/**
-	 * 修改个人基本信息(代理机构和申请人/公司用)
+	 * 修改个人基本信息
 	 * @description
 	 * @author wm
 	 * @date 2018-8-3 上午11:13:55
@@ -358,6 +358,7 @@ public class UserAction extends DispatchAction {
 		String loginType = this.getLoginType(request);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
+		SuperUserManager sum = (SuperUserManager)  AppFactory.instance(null).getApp(Constants.WEB_SUPER_USER_INFO);
 		boolean flag = false;
 		Map<String,Boolean> map = new HashMap<String,Boolean>();
 		if(loginType.equals("appUser")){//申请人/公司身份
@@ -379,6 +380,9 @@ public class UserAction extends DispatchAction {
 				String userScFiledIdStr = String.valueOf(request.getParameter("userScFiledIdStr"));
 				flag = cum.updateInfoById(userId, 0, userScFiledIdStr, "", 0);
 			}
+		}else if(loginType.equals("spUser")){
+			String userName = Transcode.unescape(request.getParameter("name"), request);
+			flag = sum.updateSUserById(userId, "", userName);
 		}else{
 			
 		}
