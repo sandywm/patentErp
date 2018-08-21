@@ -1,17 +1,17 @@
 @import url("../../../css/common.css");
 @import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
 /* 角色列表 */
-#roleList li{
+.lists li{
 	float:left;
 	width:160px;
 	cursor:pointer;
 	position: relative;
 	margin:0 0 20px 20px;
 }
-#roleList li:first-child{
+.roleList li:first-child{
 	cursor:default;
 }
-#roleList li .topRoleName{
+.lists li .topRoleName{
 	height:50px;
 	line-height:50px;
 	text-align:center;
@@ -48,7 +48,7 @@
 	display:none;
 	border-radius:6px;
 }
-#roleList li:hover .smFunDiv{
+.lists li:hover .smFunDiv{
 	display:block;
 }
 .smFunDiv a:first-child i{

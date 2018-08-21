@@ -139,7 +139,7 @@
 						window.location.href = "user.do?action=goPage&loginType=" + loginType;
 					}
 				}else if(list["result"] == "lock"){
-					layer.msg("该账号无效", {icon:5,anim:6,time:1000});
+					layer.msg("该账号无效,已被锁定", {icon:5,anim:6,time:1000});
 				}else if(list["result"] == "fail"){
 					layer.msg("账号密码错误", {icon:5,anim:6,time:1000});
 					common.vercode();
@@ -155,7 +155,7 @@
 				layui.use('form',function(){
 					var html = '';
 					var form = layui.form;
-					html += '<div class="layui-form">';
+					html += '<div class="layui-form" style="width:90%;margin:0 auto;">';
 					html += '<div class="layui-input-inline">';
 					for(i=0; i<list.length; i++){
 						html += '<input type="radio" name="roleSel" value="'+ list[i].roleId +'" title="'+ list[i].roleName +'">';
@@ -165,7 +165,7 @@
 					layer.open({
 						title : '系统检测到您当前账户绑有多重身份，请选择一种身份登录',
 						skin:'layui-layer-molv',
-						type : 0, 
+						type : 1, 
 						content:html, 
 						area : ['470px','200px'],
 						btn : ['进入系统','取消'],
@@ -185,7 +185,7 @@
 				var roleId =  $("#roleIdInp").val();
 				var loginType = $("#loginType").val();
 				if(roleId == ""){
-					layer.msg("请选择一个身份进入系统",{time:1000});
+					layer.msg("请选择一个身份进入系统",{icon:5,anim:6,time:1000});
 				}else{
 					window.location.href = "user.do?action=goPage&roleId="+roleId+"&loginType="+loginType;
 				}

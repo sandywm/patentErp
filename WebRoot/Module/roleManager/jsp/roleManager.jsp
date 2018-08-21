@@ -23,7 +23,7 @@
   						<a id="addRole" class="posAbs newAddBtn" opts="addBtn" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加角色</a>
   					</div>
   					<div class="layui-card-body" pad15>
-  						<div id="roleList"></div>
+  						<div id="roleList" class="lists roleList"></div>
   					</div>
   				</div>
   			</div>
@@ -73,7 +73,7 @@
     				//增加角色
     				$("#addRole").on("click",function(){
         	        	//增加角色
-        				if(addFlag){
+        				if(addFlag == "true"){
         					globalOpts = $(this).attr("opts");
         					var addEditRoleCon = '';
         					addEditRoleCon += '<div class="addEditRoleCon">';
@@ -86,7 +86,6 @@
     	        				skin: 'addEditRole', //样式类名
     	        				closeBtn: 0, //不显示关闭按钮
     	        			 	anim: 1,
-    	        			  	shadeClose: true, //开启遮罩关闭
     	        			  	content: addEditRoleCon,
     	        			  	btn : ['确定','取消'],
     	        			  	btnAlign:'c',
@@ -113,7 +112,7 @@
         				addEditRoleCon += '<div class="comRoleDiv"><span class="fl">角色名：</span><input id="inpRoleName" type="text" placeholder="请输入角色名(6字以内)" value="'+ _this.data.roleName +'" maxlength="6"></div>';
         				addEditRoleCon += '<div class="comRoleDiv"><span class="fl">角色简介：</span><input id="roleProfile" type="text" placeholder="请输入角色简介(20字以内)" value="'+ _this.data.roleProfile +'" maxlength="20"></div>';
         				addEditRoleCon += '</div>';
-    					if(upFlag){
+    					if(upFlag == "true"){
     						globalOpts = $(this).parent().attr("opts");
     						_this.data.globalIndex = layer.open({
     	        				title : '编辑角色',
@@ -136,33 +135,37 @@
     				//删除角色
        				$(".delABtn").on("click",function(){
        					var roleId = $(this).attr("roleId");
-       					layer.confirm('确认要删除该角色吗？', {
-       					  title:'提示',
-       					  skin: 'layui-layer-molv',
-       					  btn: ['确定','取消'] //按钮
-       					}, function(){
-       						$.ajax({
-       	  						type:"post",
-       					        async:false,
-       					        dataType:"json",
-       					        data:{roleId:roleId},
-       					        url:"role.do?action=delRole",
-       					        success:function (json){
-       					        	if(json["result"] == "success"){
-       					        		layer.msg("删除成功",{icon:1,time:1000},function(){
-	    				        			_this.loadRoleList();
-	    				        			_this.bindEvent_multi();
-	    				        		});
-       					        	}else if(json["result"] == "existUser"){
-       					        		layer.msg("该角色已绑定用户，不能删除", {icon:5,anim:6,time:1000});
-       					        	}else if(json["result"] == "existUser"){
-       					        		layer.msg("系统错误，请重试", {icon:5,anim:6,time:1000});
-       					        	}else if(json["result"] == "noAbility"){
-       					        		layer.msg("对不起，您暂无权限删除该角色", {icon:5,anim:6,time:1000});
-       					        	}
-       					        }
-       	  					});
-       					});
+       					if(delFlag == "true"){
+	       					layer.confirm('确认要删除该角色吗？', {
+	       					  title:'提示',
+	       					  skin: 'layui-layer-molv',
+	       					  btn: ['确定','取消'] //按钮
+	       					}, function(){
+	       						$.ajax({
+	       	  						type:"post",
+	       					        async:false,
+	       					        dataType:"json",
+	       					        data:{roleId:roleId},
+	       					        url:"role.do?action=delRole",
+	       					        success:function (json){
+	       					        	if(json["result"] == "success"){
+	       					        		layer.msg("删除成功",{icon:1,time:1000},function(){
+		    				        			_this.loadRoleList();
+		    				        			_this.bindEvent_multi();
+		    				        		});
+	       					        	}else if(json["result"] == "existUser"){
+	       					        		layer.msg("该角色已绑定用户，不能删除", {icon:5,anim:6,time:1000});
+	       					        	}else if(json["result"] == "error"){
+	       					        		layer.msg("系统错误，请重试", {icon:5,anim:6,time:1000});
+	       					        	}else if(json["result"] == "noAbility"){
+	       					        		layer.msg("对不起，您暂无权限删除该角色", {icon:5,anim:6,time:1000});
+	       					        	}
+	       					        }
+	       	  					});
+	       					});
+       					}else{
+       						layer.msg("抱歉，您没有权限删除角色！", {icon:5,anim:6,time:1000});
+       					}
        				});
     			},
     			//增加编辑角色共同方法

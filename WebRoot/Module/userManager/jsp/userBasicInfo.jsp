@@ -27,6 +27,7 @@
   	</div>
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
+  		var fieldList = [];
   		layui.use(['layer','jquery','form'],function(){
   			var layer = layui.layer,
   				$ = layui.jquery,
@@ -43,7 +44,7 @@
   						type:"post",
 				        async:false,
 				        dataType:"json",
-				        url:"jfm.do?action=getJfCount",
+				        url:"user.do?action=getUserDetail",
 				        success:function (json){
 				        	layer.closeAll("loading");	
 				        	//回填基本信息
@@ -55,24 +56,25 @@
   			//渲染form
   			function renderForm(list){
   				/*type: 个人/公司，代理机构员工（包括管理员） ，平台用户*/
+  				console.log(list)
   				var roleName = parent.roleName,
   					loginType = parent.loginType,
   					strHtml = "",
   					cnName = "申请人";
-  				if(list.type == "gr"){
-  					list.type = "个人";
-  				}else if(list.type == "dzyx"){
-  					list.type = "大专院校";
-  				}else if(list.type == "kydw"){
-  					list.type = "科研单位";
-  				}else if(list.type == "gkqy"){
-  					list.type = "工矿企业";
-  				}else if(list.type =="sydw"){
-  					list.type = "事业单位";
+  				if(list.roleName == "gr"){
+  					list.roleName = "个人";
+  				}else if(list.roleName == "dzyx"){
+  					list.roleName = "大专院校";
+  				}else if(list.roleName == "kydw"){
+  					list.roleName = "科研单位";
+  				}else if(list.roleName == "gkqy"){
+  					list.roleName = "工矿企业";
+  				}else if(list.roleName =="sydw"){
+  					list.roleName = "事业单位";
   				}
   				//账户身份
   				strHtml += '<div class="layui-form-item"><label class="layui-form-label">当前身份</label>';
-  				strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.type +'" disabled class="layui-input"></div></div>';
+  				strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.roleName +'" disabled class="layui-input"></div></div>';
   				//注册账号
   				strHtml += '<div class="layui-form-item"><label class="layui-form-label">注册账号</label>';
   				if(loginType == 'cpyUser' || loginType == 'super'){
@@ -86,7 +88,7 @@
   					strHtml += '<div class="layui-form-item"><label class="layui-form-label">个人姓名</label>';
   					strHtml += '<div class="layui-input-inline"><input type="text" name="name" value="'+ list.name +'" class="layui-input" placeholder="请输入您的真实姓名" lay-verify="judegeName" autocomplete="off" maxlength="4"></div></div>';
   				}else{
-  					if(list.type != '个人'){
+  					if(list.roleName != '个人'){
   						strHtml += '<div class="layui-form-item"><label class="layui-form-label">公司名称</label>';
   						strHtml += '<div class="layui-input-inline"><input type="text" name="name" value="'+ list.name +'" class="layui-input" lay-verify="judegeCompName" placeholder="请输入公司名称" autocomplete="off" maxlength="20"></div></div>';
   					}else{
@@ -98,7 +100,7 @@
   				//appICard 电话 邮箱
   				if(loginType == 'appUser' && roleName == '申请人/公司'){
   					//var cnName = '';
-  					if(list.type == '个人'){
+  					if(list.roleName == '个人'){
   						strHtml += '<div class="layui-form-item"><label class="layui-form-label">个人身份证号码</label>';
   						strHtml += '<div class="layui-input-inline"><input type="text" name="appiCard" value="'+ list.appICard +'" required placeholder="请输入个人身份证号码" lay-verify="identity" autocomplete="off" class="layui-input"></div></div>';
   					}else{
@@ -120,13 +122,60 @@
 					strHtml += '<div class="layui-input-inline"><input type="text" name="qq" value="'+ list.qq +'" required placeholder="请输入'+ cnName +'QQ" lay-verify="judegeQQ" autocomplete="off" class="layui-input"></div></div>';
   				}else if(loginType == 'cpyUser'){
   					cnName = '';
-  					/*if(roleName == '管理员'){}*/
+  					if(roleName != '管理员'){//表示是代理机构下的员工用户
+  						//技术领域
+  						strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'技术领域</label>';
+  						list.scFiled == 'null' ? list.scFiled = '' :  list.scFiled;
+  						strHtml += '<input type="hidden" name="userScFiledIdStr" value="'+ list.scFiled +'"/>';
+  						strHtml += '<div class="layui-input-block">';
+  						for(var i=0;i<list.jsInfo.length;i++){
+  							if(list.jsInfo[i].checkFlag){
+  								strHtml += '<input type="checkbox" class="fields" lay-filter="fieldListInp" lay-verify="checkFieldList" value="'+ list.jsInfo[i].jsId +'" checked title="'+ list.jsInfo[i].zyName +'" lay-skin="primary">';
+  								fieldList.push(list.jsInfo[i].jsId);
+  							}else{
+  								strHtml += '<input type="checkbox" class="fields" lay-filter="fieldListInp" lay-verify="checkFieldList" value="'+ list.jsInfo[i].jsId +'" title="'+ list.jsInfo[i].zyName +'" lay-skin="primary">';
+  							}
+  						}
+  						strHtml += '</div></div>';
+  						//撰写总量
+  						strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'撰写总量</label>';
+  						strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.zxNum +'" disabled class="layui-input"></div></div>';
+  						//用户经验值
+  						strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'经验值</label>';
+  						strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.useExp +'" disabled class="layui-input"></div></div>';
+  						//等级
+  						strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'等级</label>';
+  						var strLevel = '';
+  						if(list.useExp >=0 && list.useExp <=100){
+  							strLevel = '铜牌';
+  						}else if(list.useExp > 100 && list.useExp <= 1000){
+  							strLevel = '银牌';
+  						}else if(list.useExp > 1001){
+  							strLevel = '金牌';
+  						}
+  						strHtml += '<div class="layui-input-inline"><input type="text" value="'+ strLevel +'" disabled class="layui-input"/></div></div>';
+  					}
   					strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'性别</label>';
   					if(list.sex == 'm'){
   						strHtml += '<div class="layui-input-inline"><input type="radio" name="sex" value="'+ list.sex +'" title="男" checked><input type="radio" name="sex" value="f" title="女"></div></div>';
   					}else{
   						strHtml += '<div class="layui-input-inline"><input type="radio" name="sex" value="m" title="男"><input type="radio" name="sex" value="'+ list.sex +'" title="女" checked></div></div>';
   					}
+  					//入职时间
+  					strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'入职时间</label>';
+					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.inDate +'" disabled class="layui-input"></div></div>';
+  					//账号状态
+  					strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'账号状态</label>';
+  					list.yxStatus == 1 ? list.yxStatus = '有效' : list.yxStatus = '无效';	
+					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.yxStatus +'" disabled class="layui-input"></div></div>';
+					//离职状态
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'离职状态</label>';
+  					list.lzStatus == 1 ? list.lzStatus = '在职' : list.lzStatus = '离职';	
+					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.lzStatus +'" disabled class="layui-input"></div></div>';
+					//离职时间
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'离职时间</label>';
+  					list.outDate == '' ? list.outDate = '暂未离职' : list.outDate = list.outDate;	
+					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.outDate +'" disabled class="layui-input"></div></div>';
   				}
   				//联系人电话
 				strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'手机号码</label>';
@@ -162,11 +211,11 @@
 				judegeCompName : function(value){
 					var reg = /^[\u4E00-\u9FA5]+$/; 
 					if(value == ''){
-						return comName + '名称不能为空';
+						return '公司名称不能为空';
 					}else if(!reg.test(value)){
-				      return comName + '名称应为汉字';
+				      return '公司名称应为汉字';
 				    }else if(value.length < 4 || value.length > 20){
-				    	 return comName + '名称最少为4个字符最多为20个字符';
+				    	 return '公司名称最少为4个字符最多为20个字符';
 				    }
 				},
 				phoneNum : function(value){
@@ -222,8 +271,29 @@
 					      return true;  
 					    }*/
 				    }
+				},
+				checkFieldList : function(){
+					if (!$('.fields').is(':checked')) {
+						return '请选择您擅长的技术领域';
+					}
 				}
   			});
+  			//获取技术领域fieldList的列表值
+			form.on('checkbox(fieldListInp)',function(data){
+				var str = '';
+				if(data.elem.checked){
+					fieldList.push(data.value);
+				}else{
+  					for(var i=0;i<fieldList.length;i++){
+  						if(data.value == fieldList[i]){
+  							fieldList.splice(i,1);
+  						}
+  					}
+  				}
+  				str = fieldList.join(',');
+  				$('input[name=userScFiledIdStr').val(str);
+  				
+			});
   			//保存修改
   			form.on('submit(setPerInfo)',function(data){
   				var field = data.field;
@@ -234,6 +304,7 @@
 		  				field[attr] = field[attr].replace(/\s/g,"");
 		  			}
 		  		}
+  				console.log(field)
   				$.ajax({
 		    		type:"post",
 			        async:false,

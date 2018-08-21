@@ -176,7 +176,7 @@
    						renderBasicInfo(list);
    					}
   				}else if(list["result"] == "error"){
-  					$('#cpyInfo').html("<div class='noThisPeo'><i class='iconfont layui-extend-noData'></i><p>加载基本信息出错，请<a href='cpyManager.do?action=goCpyDetailPage'>刷新试下</a></p></div");
+  					$('#cpyInfo').html("<div class='noThisPeo'><i class='iconfont layui-extend-noData'></i><p>加载基本信息出错，请<a href='cpyManager.do?action=goCpyDetailPage'>刷新试下</a></p></div>");
   				}
    			}
    			form.verify({
@@ -270,7 +270,7 @@
 		    		type:"post",
 			        async:false,
 			        dataType:"json",
-			        url:"cpyManager.do?action=updateCpylInfo",
+			        url:"cpyManager.do?action=updateCpyBasicInfo",
 			        data:field,
 			        success:function (json){
 			        	layer.closeAll('loading');

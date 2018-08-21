@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/staffManager/css/staffManager.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+  	<title>添加代理机构员工</title>
+</head>
+<body style="background:#fff;">
+	<div id="addStaff" class="layui-form">
+		<div class="layui-form-item" style="margin-top:15px;">
+			<label class="layui-form-label">员工姓名</label>
+			<div class="layui-input-inline">
+				<input type="text" name="name" required lay-verify="judegeName" placeholder="请输入员工姓名" autocomplete="off" class="layui-input" maxlength="4">
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">员工账号</label>
+			<div class="layui-input-inline">
+				<input id="accountInp" type="text" name="account" required lay-verify="judgeAcc" placeholder="请输入员工账号" autocomplete="off" class="layui-input" maxlength="12">
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">初始密码</label>
+			<div class="layui-input-inline">
+				<input id="accountInp" type="text" value="123456" class="layui-input" disabled/>
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">性别</label>
+		    <div class="layui-input-block">
+		      <input type="radio" name="sex" value="m" title="男" checked/>
+		      <input type="radio" name="sex" value="f" title="女"/>
+		    </div>	
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">选择角色</label>
+			<input type="hidden" name="roleId"/>
+		    <div id="selRoleList" class="layui-input-block"></div>	
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">选择技术领域</label>
+			<input type="hidden" name="userScFiledIdStr"/>
+			<div id="selFieldList" class="layui-input-block"></div>	
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">入职时间</label>
+			<div class="layui-input-inline">
+				<input id="createInp" type="text" name="inDate" lay-verify="judgeCreateTime" class="layui-input" placeholder="请选择入职时间">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label"></label>
+			<div class="layui-input-block">
+				<button id="addRoleBtn" class="layui-btn layui-btn-normal">添加角色</button>
+				<button id="addFieldBtn" class="layui-btn layui-btn-danger" style="background:#ff774d;">添加技术领域</button>
+				<button class="layui-btn" lay-submit lay-filter="saveStaffInfo" style="width:120px;">保存员工信息</button>
+			</div>
+		</div>
+	</div>
+	<!-- 添加角色列表层  -->
+	<div class="addConLayer">
+		<!-- 添加角色 --> 
+		<div id="addRoleLayer">
+			<div class="innerAddCon">
+				<span class="fl">角色名称：</span>
+				<input type="text" id="inpRoleName" class="fl" placeholder="请输入角色名(6字以内)" autocomplete="off" maxlength="6"/>
+			</div>
+			<div class="innerAddCon">
+				<span class="fl">角色简介：</span>
+				<input type="text" id="roleProfile" class="fl" placeholder="请输入角色简介(20字以内)" autocomplete="off" maxlength="20"/>
+			</div>
+			<div class="innerAddCon" style="text-align:center;">
+				<button id="cancel_role" class="layui-btn layui-btn-primary">取消</button>
+				<button id="addBtn_role" class="layui-btn">保存角色</button>
+			</div>
+		</div>
+		<!-- 添加技术领域  -->
+		<div id="addFieldLayer">
+			<div class="innerAddCon">
+				<span class="fl">专业名：</span>
+				<input type="text" id="zyNameInp" class="fl" placeholder="请输入专业名(8字以内)" autocomplete="off" maxlength="8"/>
+			</div>
+			<div class="innerAddCon">
+				<span class="fl">专业简介：</span>
+				<input type="text" id="zyProfile" class="fl" placeholder="请输入专业简介(20字以内)" autocomplete="off" maxlength="20"/>
+			</div>
+			<div class="innerAddCon" style="text-align:center;">
+				<button id="cancel_field" class="layui-btn layui-btn-primary">取消</button>
+				<button id="addBtn_field" class="layui-btn">保存技术领域</button>
+			</div>
+		</div>
+	</div>
+	
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var roleList = [];
+		var fieldList = [];
+		layui.use(['layer','jquery','form','laydate'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form,
+				laydate = layui.laydate;
+			laydate.render({elem: '#createInp'});
+			var page = {
+				init : function(){
+					this.onLoad();
+					this.bindEvent();
+				},
+				onLoad : function(){
+					this.loadRoleList();
+					this.loadFieldList();
+				},
+				bindEvent : function(){
+					var _this = this;
+					$("input[name=account]").focus(function(){
+						layer.tips("账号由4-12个字符(字母，数字，下划线组成)", "#accountInp", {tips:[2,'#FF8000'],time:0});
+					});
+					$("input[name=account]").blur(function(){
+						layer.closeAll('tips');
+						var account = $.trim($(this).val());
+						if(!account){return;}//用户名为空不做验证
+						var flag = _this.checkExistAcc(account);
+						if(flag){
+							layer.msg("该账号已存在，请重新输入",{icon:5,anim:6,time:1000});
+							$("#accountInp").focus().addClass("layui-form-danger");
+						}
+					});
+					//添加员工弹出层
+					$("#addRoleBtn").on("click",function(){
+						_this.showAddRoleFiled("roleAdd");
+					});
+					//添加专业领域弹出层
+					$("#addFieldBtn").on("click",function(){
+						_this.showAddRoleFiled("fieldAdd");
+					});
+					//关闭添加层
+					$("#cancel_role").on("click",function(){
+						_this.hideAddRoleFiled("roleAdd");
+					});
+					$("#cancel_field").on("click",function(){
+						_this.hideAddRoleFiled("fieldAdd");
+					});
+					//保存添加的角色
+					$("#addBtn_role").on("click",function(){
+						var inpRoleName = $.trim($("#inpRoleName").val()),
+        					roleProfile = $.trim($("#roleProfile").val());
+        				if(inpRoleName == ""){
+        					layer.msg("角色名称不能为空", {icon:5,anim:6,time:1000});
+        				}else if(roleProfile == ""){
+		        			layer.msg("角色简介不能为空", {icon:5,anim:6,time:1000});
+		        		}else{
+		        			var reg = /^[\u4E00-\u9FA5]+$/;
+		        			if(!reg.test(inpRoleName)){
+		        				layer.msg("角色名应为汉字", {icon:5,anim:6,time:1000});
+		        			}else if(!reg.test(roleProfile)){
+		        				layer.msg("角色简介应为汉字", {icon:5,anim:6,time:1000});
+		        			}else{
+		        				$.ajax({
+		      						type:"post",
+		    				        async:false,
+		    				        dataType:"json",
+		    				        data :{inpRoleName : escape(inpRoleName),roleProfile : escape(roleProfile)},
+		    				        url:"/role.do?action=addRole",
+		    				        success:function (json){
+		    				        	if(json["result"] == "success"){
+		    				        		layer.msg("添加成功",{icon:1,time:1000},function(){
+		    				        			_this.hideAddRoleFiled("roleAdd");
+		    				        			_this.loadRoleList();
+		    				        		});
+		    				        	}else if(json["result"] == "exist"){
+		    				        		layer.msg("角色名称存在，请重新编辑", {icon:5,anim:6,time:1000});
+		    				        	}else if(json["result"] == "error"){
+		    				        		layer.msg("系统错误，请重试", {icon:5,anim:6,time:1000});
+		    				        	}else if(json["result"] == "noAbility"){
+		    				        		layer.msg("对不起，您暂无权限增加编辑角色", {icon:5,anim:6,time:1000});
+		    				        	}else if(json["result"] == "fail"){
+		    				        		layer.msg("添加失败，请重试", {icon:5,anim:6,time:1000});
+		    				        	}
+		    				        }
+		      					});
+		        			}
+			        	}
+					});
+					//保存专业领域
+					$("#addBtn_field").on("click",function(){
+						var zyName = $.trim($("#zyNameInp").val()),
+	        				zyProfile = $.trim($("#zyProfile").val());
+	    				if(zyName == ""){
+		        			layer.msg("专业名称不能为空", {icon:5,anim:6,time:1000});
+		        			return;
+		        		}
+	        			var reg = /^[\u4E00-\u9FA5]+$/; 
+	        			if(!reg.test(zyName)){
+	        				layer.msg("专业名应为汉字", {icon:5,anim:6,time:1000});
+	        				return;
+	        			}else if(zyProfile != ""){
+	        				if(!reg.test(zyProfile)){
+	        					layer.msg("专业简介应为汉字", {icon:5,anim:6,time:1000});
+	        					return;
+	        				}
+	        			}
+	        			$.ajax({
+	     					type:"post",
+	   				        async:false,
+	   				        dataType:"json",
+	   				        data :{zyName : escape(zyName),zyProfile : escape(zyProfile)},
+	   				        url:"/jfm.do?action=addJf",
+	   				        success:function (json){
+	   				        	if(json["result"] == "success"){
+	   				        		layer.msg("添加成功",{icon:1,time:1000},function(){
+    				        			_this.hideAddRoleFiled("fieldAdd");
+		    				        	_this.loadFieldList();
+    				        		});
+	   				        	}else if(json["result"] == "exist"){
+	   				        		layer.msg("专业名称已存在，请重新编辑", {icon:5,anim:6,time:1000});
+	   				        	}else if(json["result"] == "error"){
+	   				        		layer.msg("系统错误，请重试", {icon:5,anim:6,time:1000});
+	   				        	}else if(json["result"] == "noAbility"){
+	   				        		layer.msg("对不起，您暂无权限增加编辑", {icon:5,anim:6,time:1000});
+	   				        	}else if(json["result"] == "fail"){
+	   				        		layer.msg("添加失败，请重试", {icon:5,anim:6,time:1000});
+	   				        	}
+	   				        }
+	     				});
+					});
+				},
+				//检测员工账号是否已存在
+				checkExistAcc : function(userName){
+					var flagExist = false;
+					layer.load("1");
+					$.ajax({
+				        type:"post",
+				        async:false,
+				        dataType:"json",
+				        url:"/user.do?action=checkExistInfo",
+				        data:{account:userName},
+				        success:function (json){
+				        	layer.closeAll("loading");
+				        	if(json["result"] == true){//代表账号已经注册
+				        		flagExist = true;
+				        	}else if(json["result"] == false){
+				        		flagExist = false;
+				        	}
+				        }
+				    });
+					return flagExist;
+				},
+				//添加角色/添加技术领域方法
+				showAddRoleFiled : function(opts){
+					$(".addConLayer").find("input").val("");
+					$(".addConLayer").show().stop().animate({"top":0},function(){
+						if(opts == "roleAdd"){
+							$("#addRoleLayer").show();
+						}else{
+							$("#addFieldLayer").show();
+						}
+					});
+				},
+				//关闭添加角色/添加技术领域方法
+				hideAddRoleFiled : function(opts){
+					if(opts == "roleAdd"){
+						$("#addRoleLayer").hide();
+					}else{
+						$("#addFieldLayer").hide();
+					}
+					$(".addConLayer").stop().animate({"top":"-100%"},function(){
+						$(".addConLayer").hide();
+					});
+				},
+				//获取角色列表
+				loadRoleList : function(){
+					$.ajax({
+		 				type:"post",
+		 			   	async:true,
+		 			    dataType:"json",
+		 			    url:"/role.do?action=getRoleList",
+		 			    success:function (json){
+		 			    	var roleList = json.roleList;
+		 			    	var strHtml = '';
+		 			    	for(var i=0;i<roleList.length;i++){
+		 			    		strHtml += '<input type="checkbox" class="roleNames" required lay-filter="roleListInp" lay-verify="checkRoleList" value="'+ roleList[i].id +'" title="'+ roleList[i].roleName +'" lay-skin="primary">';
+		 			    	}
+		 			    	$('#selRoleList').html(strHtml);
+		 			    	form.render();
+		 			    }
+		  			});
+				},
+				//专业领域列表
+				loadFieldList : function(){
+					$.ajax({
+		 				type:"post",
+		 			   	async:true,
+		 			    dataType:"json",
+		 			    url:"/jfm.do?action=getJfData",
+		 			    success:function (json){
+		 			    	if(json["result"] == "success"){
+		 			    		var jsInfo = json.jsInfo;
+		 			    		var strHtml = '';
+			 			    	for(var i=0;i<jsInfo.length;i++){
+			 			    		strHtml += '<input type="checkbox" class="fields" lay-filter="fieldListInp" lay-verify="checkFieldList" value="'+ jsInfo[i].id +'" title="'+ jsInfo[i].zyName +'" lay-skin="primary">';
+			 			    	}
+			 			    	$('#selFieldList').html(strHtml);
+			 			    	form.render();
+		 			    	}else if(json["result"] == "fail"){
+		 			    		//failFieldListFlag = true;
+		 			    		$('#selFieldList').html('<a class="getFailField" href="/Module/staffManager/jsp/addStaffInfo.html"><i class="layui-icon layui-icon-face-cry"></i>获取技术领域列表失败，请刷新重试</a>');
+		 			    	}else if(json["result"] == "noInfo"){
+		 			    		//noFieldListFlag = true;
+		 			    		$('#selFieldList').html('<p class="noFieldList">暂无专业领域列表，请先添加！</p>');
+		 			    	}
+		 			    }
+		  			});
+				}
+			};
+			form.verify({
+				judegeName : function(value){
+					var reg = /^[\u4E00-\u9FA5]+$/; 
+					if(value == ''){
+						return '员工姓名不能为空';
+					}else if(!reg.test(value)){
+				      return '员工姓名应为汉字';
+				    }else if(value.length < 2 || value.length > 4){
+				    	 return '员工姓名最少应为2个字符最多为4个字符';
+				    }
+				},
+				judgeAcc : function(value){
+					var reg = /[\u4e00-\u9fa5]+/,
+						regSpec = /^[a-zA-z0-9\u4E00-\u9FA5]*$/;
+					if(value == ''){
+						return '员工账号不能为空';
+					}else if(reg.test(value)){
+						return '员工账号不能为中文';
+					}else if(!regSpec.test(value)){
+						return '员工账号不能有特殊字符、标点、或空格';
+					}else if(value.length < 4 || value.length > 16){
+						return '员工账号长度不能小于4个字符不能大于16个字符';
+					}
+				},
+				checkRoleList : function(){
+					if (!$('.roleNames').is(':checked')) {
+						return '请为员工绑定角色';
+					}
+				},
+				/*checkFieldList : function(){
+					if (!$('.fields').is(':checked')) {
+						return '请为员工绑定技术领域';
+					}
+				},*/
+				judgeCreateTime : function(value){
+					if(value == ''){
+						return '请选择入职时间！';
+					}
+				}
+			});
+			//获取roleList的角色列表值
+			form.on('checkbox(roleListInp)', function(data){
+  				var str = '';
+  				if(data.elem.checked){
+  					roleList.push(data.value);
+  				}else{
+  					for(var i=0;i<roleList.length;i++){
+  						if(data.value == roleList[i]){
+  							roleList.splice(i,1);
+  						}
+  					}
+  				}
+  				str = roleList.join(',');
+  				$('input[name=roleId]').val(str);
+			});
+			//获取技术领域fieldList的列表值
+			form.on('checkbox(fieldListInp)',function(data){
+				var str = '';
+				if(data.elem.checked){
+					fieldList.push(data.value);
+				}else{
+  					for(var i=0;i<fieldList.length;i++){
+  						if(data.value == fieldList[i]){
+  							fieldList.splice(i,1);
+  						}
+  					}
+  				}
+  				str = fieldList.join(',');
+  				$('input[name=userScFiledIdStr').val(str);
+			});
+			//表单提交
+			form.on('submit(saveStaffInfo)',function(data){
+				//表示专业列表list为空
+				//if(noFieldListFlag){layer.msg("请先添加技术领域",{icon:5,anim:6,time:1000});return;}
+				//if(failFieldListFlag){layer.msg("获取技术领域列表失败，重试",{icon:5,anim:6,time:1000});return;}
+				if(fieldList.length == 0){ //代表没有选择技术领域
+					$('input[name=userScFiledIdStr').val("");
+				}
+				var field = data.field;
+				for(var attr in field){
+		  			if(attr == "name"){
+		  				field[attr] = $.trim(escape(field[attr]));
+		  			}
+		  		}
+		  		console.log($('input[name=userScFiledIdStr]').val() + "-----value");
+				console.log(field)
+				layer.load("1");
+				$.ajax({
+		    		type:"post",
+			        async:false,
+			        dataType:"json",
+			        url:"/user.do?action=addCpyUserInfo",
+			        data:field,
+			        success:function (json){
+			        	layer.closeAll('loading');
+			        	if(json["result"] == "success"){
+			        		layer.msg("添加成功",{icon:1,time:1000},function(){
+			        			var index= parent.layer.getFrameIndex(window.name);
+			        			parent.layer.close(index);
+			        			parent.loadFlag = true;
+			        		});
+			        	}else if(json["result"] == "error"){
+			        		layer.msg("系统错误，请重试",{icon:5,anim:6,time:1000});
+			        	}else if(json["result"] == "fail"){
+			        		layer.msg("添加失败，请重试！",{icon:5,anim:6,time:1000});
+			        	}else if(json["result"] == "noAbility"){
+			        		layer.msg("抱歉，您暂无权限添加员工！",{icon:5,anim:6,time:1000});
+			        	}
+			        }
+		    	});
+			});
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>
