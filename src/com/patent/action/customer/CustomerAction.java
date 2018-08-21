@@ -393,6 +393,18 @@ public class CustomerAction extends DispatchAction {
 		return null;
 	}
 	
+	/**
+	 * 增加发明人
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 上午09:11:56
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	public ActionForward addFmrData(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
@@ -419,6 +431,167 @@ public class CustomerAction extends DispatchAction {
 				String fmrEmail = CommonTools.getFinalStr(request.getParameter("fmrEmail"));
 				String fmriCard = CommonTools.getFinalStr(request.getParameter("fmriCard"));
 				Integer fmrId = cm.addCusFmrInfo(cusId, fmrName, fmriCard, fmrTel, fmrEmail);
+				if(fmrId > 0){
+					msg = "success";
+				}
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 修改客户基本信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 上午09:12:42
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward upCusData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		boolean abilityFlag = false;
+		String msg = "error";
+		if(this.getLoginRoleName(request).equals("管理员")){
+			abilityFlag = true;
+		}else{
+			//需要查看当前用户有无增加权限
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCus");
+		}
+		if(abilityFlag){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
+			String cusName = Transcode.unescape(request.getParameter("cusName"), request);
+			String cusType = CommonTools.getFinalStr(request.getParameter("cusType"));
+			String cusiCard = CommonTools.getFinalStr(request.getParameter("cusiCard"));
+			String cusAddress = Transcode.unescape(request.getParameter("cusAddress"), request);
+			String cusZip = CommonTools.getFinalStr(request.getParameter("cusZip"));
+			boolean falg  = cm.upCusInfo(cusId, cpyId, cusType, cusName, cusiCard, cusAddress, cusZip);
+			if(falg){
+				msg = "success";
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 修改客户的联系人信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 上午09:18:54
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward upLxrData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		boolean abilityFlag = false;
+		String msg = "error";
+		if(this.getLoginRoleName(request).equals("管理员")){
+			abilityFlag = true;
+		}else{
+			//需要查看当前用户有无增加权限
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCus");
+		}
+		if(abilityFlag){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
+			List<CustomerInfoTb> cusList = cm.listInfoById(cpyId, cusId);
+			if(cusList.size() > 0){
+				Integer lxrId = CommonTools.getFinalInteger(request.getParameter("lxrId"));
+				String lxrName = Transcode.unescape(request.getParameter("lxrName"), request);
+				String lxrTel = CommonTools.getFinalStr(request.getParameter("lxrTel"));
+				String lxrEmail = CommonTools.getFinalStr(request.getParameter("lxrEmail"));
+				boolean flag = cm.upCusLxrById(lxrId, lxrName, lxrTel, lxrEmail);
+				if(flag){
+					msg = "success";
+				}
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 修改客户的发明人信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 上午09:19:04
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward upFmrData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		boolean abilityFlag = false;
+		String msg = "error";
+		if(this.getLoginRoleName(request).equals("管理员")){
+			abilityFlag = true;
+		}else{
+			//需要查看当前用户有无增加权限
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCus");
+		}
+		if(abilityFlag){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
+			List<CustomerInfoTb> cusList = cm.listInfoById(cpyId, cusId);
+			if(cusList.size() > 0){
+				Integer fmrId = CommonTools.getFinalInteger(request.getParameter("fmrId"));
+				String fmrName = Transcode.unescape(request.getParameter("fmrName"), request);
+				String fmrTel = CommonTools.getFinalStr(request.getParameter("fmrTel"));
+				String fmrEmail = CommonTools.getFinalStr(request.getParameter("fmrEmail"));
+				String fmriCard = CommonTools.getFinalStr(request.getParameter("fmriCard"));
+				boolean flag  = cm.upCusFmrById(fmrId, fmrName, fmriCard, fmrTel, fmrEmail);
 				if(fmrId > 0){
 					msg = "success";
 				}

@@ -124,8 +124,10 @@ public class ModuleManagerAction extends DispatchAction {
 		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ActRoleInfoManager arm = (ActRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ACT_ROLE_INFO);
+		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
 		String loginRoleName = this.getLoginRoleName(request);
 		List<ModuleInfoTb> mList = new ArrayList<ModuleInfoTb>();
+		Map<String,Object> map = new HashMap<String,Object>();
 		boolean endFlag = true;//未过期
 		if(loginRoleName.equals("super")){//超管获取所有模块列表
 			mList = mm.listInfoByLevel(-1);
@@ -137,8 +139,24 @@ public class ModuleManagerAction extends DispatchAction {
 				endFlag = false;//已过期
 			}
 			mList = mm.listInfoByLevel(cpy.getCpyLevel());
+			//获取该代理机构下的用户角色列表
+			List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cpy.getId());
+			List<Object> list_d = new ArrayList<Object>(); 
+			if(crList.size() > 0){
+				for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
+					CpyRoleInfoTb cr = it.next();
+					if(cr.getRoleName().equals("管理员")){
+						break;//不显示出管理员
+					}else{
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("roleId", cr.getId());
+						map_d.put("roleName", cr.getRoleName());
+						list_d.add(map_d);
+					}
+				}
+			}
+			map.put("roleInfo", list_d);
 		}
-		Map<String,Object> map = new HashMap<String,Object>();
 		List<Object> list_d = new ArrayList<Object>();
 		for(Iterator<ModuleInfoTb> it = mList.iterator() ; it.hasNext();){
 			ModuleInfoTb mod = it.next();
