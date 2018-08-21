@@ -17,4 +17,5 @@
 	<dao id="customer_info_Dao" class="com.patent.dao.impl.CustomerInfoDaoImpl"/>
 	<dao id="customer_lxr_info_Dao" class="com.patent.dao.impl.CustomerLxrInfoDaoImpl"/>
 	<dao id="customer_fmr_info_Dao" class="com.patent.dao.impl.CustomerFmrInfoDaoImpl"/>
+	<dao id="zlaj_ewyq_info_Dao" class="com.patent.dao.impl.ZlajEwyqInfoDaoImpl"/>
 </daoContext>

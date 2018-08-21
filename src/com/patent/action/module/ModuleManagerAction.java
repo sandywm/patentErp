@@ -241,7 +241,7 @@ public class ModuleManagerAction extends DispatchAction {
 		Map<String,String> map = new HashMap<String,String>();
 		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
 			String modName = Transcode.unescape(request.getParameter("modName"), request);
-			String modPic = String.valueOf(request.getParameter("modPic"));
+			String modPic = "";
 			String resUrl = request.getParameter("resUrl");
 			Integer orderNo = Integer.parseInt(request.getParameter("orderNo"));
 			Integer modLevel = Integer.parseInt(request.getParameter("modLevel"));
@@ -335,7 +335,7 @@ public class ModuleManagerAction extends DispatchAction {
 		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
 			Integer modId = CommonTools.getFinalInteger(request.getParameter("modId"));
 			String modName = Transcode.unescape(request.getParameter("modName"), request);
-			String modPic = CommonTools.getFinalStr(request.getParameter("modPic"));
+			String modPic = "";
 			String resUrl = request.getParameter("resUrl");
 			Integer orderNo = CommonTools.getFinalInteger(request.getParameter("orderNo"));
 			Integer modLevel = CommonTools.getFinalInteger(request.getParameter("modLevel"));
@@ -346,25 +346,29 @@ public class ModuleManagerAction extends DispatchAction {
 			}else{
 				boolean flag = mm.upModule(modId, modName, modPic, resUrl, orderNo, showStatus,modLevel,actNameEng);
 				if(flag){
-					List<ModActInfoTb> maList = mam.listInfoByModId(modId);
-					Integer maId_add = 0,maId_del = 0,maId_up = 0,maId_list = 0;
-					if(maList.size() > 0){
-						for(Iterator<ModActInfoTb> it = maList.iterator() ; it.hasNext();){
-							ModActInfoTb ma = it.next();
-							if(ma.getActNameEng().startsWith("add")){
-								maId_add = ma.getId();
-							}else if(ma.getActNameEng().startsWith("del")){
-								maId_del = ma.getId();
-							}else if(ma.getActNameEng().startsWith("up")){
-								maId_up = ma.getId();
-							}else if(ma.getActNameEng().startsWith("list")){
-								maId_list = ma.getId();
+					if(!mm.getEntityById(modId).getActNameEng().equals(actNameEng)){//发变化，修改子模块
+						List<ModActInfoTb> maList = mam.listInfoByModId(modId);
+						Integer maId_add = 0,maId_del = 0,maId_up = 0,maId_list = 0;
+						if(maList.size() > 0){
+							for(Iterator<ModActInfoTb> it = maList.iterator() ; it.hasNext();){
+								ModActInfoTb ma = it.next();
+								if(ma.getActNameEng().startsWith("add")){
+									maId_add = ma.getId();
+								}else if(ma.getActNameEng().startsWith("del")){
+									maId_del = ma.getId();
+								}else if(ma.getActNameEng().startsWith("up")){
+									maId_up = ma.getId();
+								}else if(ma.getActNameEng().startsWith("list")){
+									maId_list = ma.getId();
+								}
 							}
+							mam.upMActById(maId_add, "增加", "add"+actNameEng, 1);
+							mam.upMActById(maId_del, "删除", "del"+actNameEng, 2);
+							mam.upMActById(maId_up, "修改", "up"+actNameEng, 3);
+							mam.upMActById(maId_list, "查看", "list"+actNameEng, 4);
+							map.put("result", "success");
 						}
-						mam.upMActById(maId_add, "增加", "add"+actNameEng, 1);
-						mam.upMActById(maId_del, "删除", "del"+actNameEng, 2);
-						mam.upMActById(maId_up, "修改", "up"+actNameEng, 3);
-						mam.upMActById(maId_list, "查看", "list"+actNameEng, 4);
+					}else{
 						map.put("result", "success");
 					}
 				}else{
@@ -465,36 +469,36 @@ public class ModuleManagerAction extends DispatchAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public ActionForward addModAct(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// TODO Auto-generated method stub
-		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
-		Map<String,String> map = new HashMap<String,String>();
-		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
-			Integer modId = Integer.parseInt(request.getParameter("modId"));
-			String actNameChi = Transcode.unescape(request.getParameter("actNameChi"), request);
-			String actNameEng = request.getParameter("actNameEng");
-			Integer orderNo = Integer.parseInt(request.getParameter("orderNo"));
-			if(mam.listSpecInfoByOpt(modId, actNameChi, actNameEng).size() > 0){
-				map.put("result", "exist");
-			}else{
-				Integer maId = mam.addMAct(actNameChi, actNameEng, orderNo, modId);
-				if(maId > 0){
-					map.put("result", "success");
-				}else{
-					map.put("result", "error");
-				}
-			}
-		}else{
-			map.put("result", "noAbility");
-		}
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
-		return null;
-	}
+//	public ActionForward addModAct(ActionMapping mapping, ActionForm form,
+//			HttpServletRequest request, HttpServletResponse response) throws Exception {
+//		// TODO Auto-generated method stub
+//		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
+//		Map<String,String> map = new HashMap<String,String>();
+//		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
+//			Integer modId = Integer.parseInt(request.getParameter("modId"));
+//			String actNameChi = Transcode.unescape(request.getParameter("actNameChi"), request);
+//			String actNameEng = request.getParameter("actNameEng");
+//			Integer orderNo = Integer.parseInt(request.getParameter("orderNo"));
+//			if(mam.listSpecInfoByOpt(modId, actNameChi, actNameEng).size() > 0){
+//				map.put("result", "exist");
+//			}else{
+//				Integer maId = mam.addMAct(actNameChi, actNameEng, orderNo, modId);
+//				if(maId > 0){
+//					map.put("result", "success");
+//				}else{
+//					map.put("result", "error");
+//				}
+//			}
+//		}else{
+//			map.put("result", "noAbility");
+//		}
+//		String json = JSON.toJSONString(map);
+//        PrintWriter pw = response.getWriter();  
+//        pw.write(json); 
+//        pw.flush();  
+//        pw.close();
+//		return null;
+//	}
 	
 	/**
 	 * 删除模块动作(暂不使用)
@@ -508,36 +512,36 @@ public class ModuleManagerAction extends DispatchAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public ActionForward delModAct(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// TODO Auto-generated method stub
-		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
-		ActRoleInfoManager arm = (ActRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ACT_ROLE_INFO);
-		Map<String,String> map = new HashMap<String,String>();
-		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
-			Integer maId = Integer.parseInt(request.getParameter("maId"));
-			//查看有无角色绑定这个模块动作
-			if(arm.listInfoByOpt(0, maId).size() > 0){
-				map.put("result", "exist");
-			}else{
-				//删除动作
-				boolean flag = mam.delMActById(maId);
-				if(flag){
-					map.put("result", "success");
-				}else{
-					map.put("result", "error");
-				}
-			}
-		}else{
-			map.put("result", "noAbility");
-		}
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
-		return null;
-	}
+//	public ActionForward delModAct(ActionMapping mapping, ActionForm form,
+//			HttpServletRequest request, HttpServletResponse response) throws Exception {
+//		// TODO Auto-generated method stub
+//		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
+//		ActRoleInfoManager arm = (ActRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ACT_ROLE_INFO);
+//		Map<String,String> map = new HashMap<String,String>();
+//		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
+//			Integer maId = Integer.parseInt(request.getParameter("maId"));
+//			//查看有无角色绑定这个模块动作
+//			if(arm.listInfoByOpt(0, maId).size() > 0){
+//				map.put("result", "exist");
+//			}else{
+//				//删除动作
+//				boolean flag = mam.delMActById(maId);
+//				if(flag){
+//					map.put("result", "success");
+//				}else{
+//					map.put("result", "error");
+//				}
+//			}
+//		}else{
+//			map.put("result", "noAbility");
+//		}
+//		String json = JSON.toJSONString(map);
+//        PrintWriter pw = response.getWriter();  
+//        pw.write(json); 
+//        pw.flush();  
+//        pw.close();
+//		return null;
+//	}
 	
 	/**
 	 * 获取指定模块动作信息
