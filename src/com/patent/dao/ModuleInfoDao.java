@@ -46,10 +46,11 @@ public interface ModuleInfoDao {
 	 * @author wm
 	 * @date 2018-8-7 下午05:41:34
 	 * @param modLevel 模块级别 -1为全部[0(铜牌),1(银牌),2(金牌),3(钻石)]
+	 * @param showStatus 可见状态-- 0可见（默认），1不可见 (-1为全部)
 	 * @param sess
 	 * @return
 	 */
-	List<ModuleInfoTb> findInfoByLevel(Session sess,Integer modLevel);
+	List<ModuleInfoTb> findInfoByLevel(Session sess,Integer modLevel,Integer showStatus);
 	
 	/**
 	 * 根据模块名字获取模块信息列表
@@ -61,4 +62,15 @@ public interface ModuleInfoDao {
 	 * @return
 	 */
 	List<ModuleInfoTb> findInfoByName(Session sess,String modName);
+	
+	/**
+	 * 根据主键获取模块信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 下午03:56:16
+	 * @param sess
+	 * @param id
+	 * @return
+	 */
+	ModuleInfoTb getEntityById(Session sess,Integer id);
 }

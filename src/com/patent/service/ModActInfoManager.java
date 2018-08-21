@@ -55,4 +55,29 @@ public interface ModActInfoManager {
 	 * @throws WEBException
 	 */
 	boolean delMActById(Integer id) throws WEBException;
+	
+	/**
+	 * 修改指定模块的模块动作
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 上午11:41:34
+	 * @param id
+	 * @param actNameChi ""时不修改
+	 * @param actNameEng ""时不修改
+	 * @param orderNo -1时不修改
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean upMActById(Integer id,String actNameChi,String actNameEng,Integer orderNo) throws WEBException;
+	
+	/**
+	 * 根据主键获取模块动作信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 下午03:43:39
+	 * @param id
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ModActInfoTb> listSpecInfoById(Integer id) throws WEBException;
 }

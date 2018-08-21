@@ -240,6 +240,23 @@ public class CustomerInfoManagerImpl implements CustomerInfoManager{
 	}
 
 	@Override
+	public List<CustomerLxrInfoTb> listLxrInfoByCusId(Integer lxrId,
+			Integer cpyId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			clDao = (CustomerLxrInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUSTOMER_LXR_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return clDao.findInfoByCusId(sess, lxrId, cpyId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据联系人编号、代理机构编号获取联系人信息出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+	
+	@Override
 	public Integer addCusFmrInfo(Integer cusId, String fmrName,
 			String fmriCard, String fmrTel, String fmrEmail)
 			throws WEBException {
@@ -345,6 +362,23 @@ public class CustomerInfoManagerImpl implements CustomerInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("获取指定代理机构下指定客户编号的信息出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<CustomerFmrInfoTb> listFmrInfoByFmrId(Integer fmrId,
+			Integer cpyId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cfDao = (CustomerFmrInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUSTOMER_FMR_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cfDao.findInfoByOpt(sess, fmrId, cpyId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键、代理机构编号获取发明人信息出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

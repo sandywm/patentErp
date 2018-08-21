@@ -55,4 +55,11 @@ public class ModActInfoDaoImpl implements ModActInfoDao{
 		hql += " and ma.actNameChi = '"+actNameChi+"' or ma.actNameEng = '"+actNameEng+"'";
 		return sess.createQuery(hql).list();
 	}
+
+	@Override
+	public List<ModActInfoTb> findSpecInfoById(Session sess, Integer id) {
+		// TODO Auto-generated method stub
+		String hql = " from ModActInfoTb as ma where ma.id = "+id;
+		return sess.createQuery(hql).list();
+	}
 }

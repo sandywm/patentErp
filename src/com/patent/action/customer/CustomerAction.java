@@ -529,10 +529,9 @@ public class CustomerAction extends DispatchAction {
 		if(abilityFlag){
 			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
 			Integer cpyId = cUser.getCpyInfoTb().getId();
-			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
-			List<CustomerInfoTb> cusList = cm.listInfoById(cpyId, cusId);
-			if(cusList.size() > 0){
-				Integer lxrId = CommonTools.getFinalInteger(request.getParameter("lxrId"));
+			Integer lxrId = CommonTools.getFinalInteger(request.getParameter("lxrId"));
+			List<CustomerLxrInfoTb> lxrList = cm.listLxrInfoByCusId(lxrId, cpyId);
+			if(lxrList.size() > 0){
 				String lxrName = Transcode.unescape(request.getParameter("lxrName"), request);
 				String lxrTel = CommonTools.getFinalStr(request.getParameter("lxrTel"));
 				String lxrEmail = CommonTools.getFinalStr(request.getParameter("lxrEmail"));
@@ -583,16 +582,15 @@ public class CustomerAction extends DispatchAction {
 		if(abilityFlag){
 			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
 			Integer cpyId = cUser.getCpyInfoTb().getId();
-			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
-			List<CustomerInfoTb> cusList = cm.listInfoById(cpyId, cusId);
-			if(cusList.size() > 0){
-				Integer fmrId = CommonTools.getFinalInteger(request.getParameter("fmrId"));
+			Integer fmrId = CommonTools.getFinalInteger(request.getParameter("fmrId"));
+			List<CustomerFmrInfoTb> fmrList = cm.listFmrInfoByFmrId(fmrId, cpyId);
+			if(fmrList.size() > 0){
 				String fmrName = Transcode.unescape(request.getParameter("fmrName"), request);
 				String fmrTel = CommonTools.getFinalStr(request.getParameter("fmrTel"));
 				String fmrEmail = CommonTools.getFinalStr(request.getParameter("fmrEmail"));
 				String fmriCard = CommonTools.getFinalStr(request.getParameter("fmriCard"));
 				boolean flag  = cm.upCusFmrById(fmrId, fmrName, fmriCard, fmrTel, fmrEmail);
-				if(fmrId > 0){
+				if(flag){
 					msg = "success";
 				}
 			}

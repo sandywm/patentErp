@@ -79,7 +79,6 @@ public class ModActInfoManagerImpl implements ModActInfoManager{
 	public boolean delMActById(Integer id) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
-			mDao = (ModuleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MODULE_INFO);
 			maDao = (ModActInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MOD_ACT_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
@@ -90,6 +89,49 @@ public class ModActInfoManagerImpl implements ModActInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("删除指定模块动作编号的模块动作时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean upMActById(Integer id, String actNameChi, String actNameEng,
+			Integer orderNo) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			maDao = (ModActInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MOD_ACT_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ModActInfoTb ma = maDao.get(sess, id);
+			if(ma != null){
+				ma.setActNameChi(actNameChi);
+				ma.setActNameEng(actNameEng);
+				ma.setOrderNo(orderNo);
+				maDao.update(sess, ma);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改指定模块动作编号的模块动作时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<ModActInfoTb> listSpecInfoById(Integer id) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			maDao = (ModActInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MOD_ACT_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return maDao.findSpecInfoById(sess, id);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("列出指定模块动作编号下的信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

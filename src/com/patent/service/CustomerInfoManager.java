@@ -144,7 +144,19 @@ public interface CustomerInfoManager {
 	List<CustomerLxrInfoTb> listLxrInfoByCusId(Integer cusId) throws WEBException;
 	
 	/**
-	 * 
+	 * 根据联系人编号、代理机构编号获取联系人信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 上午10:44:50
+	 * @param lxrId 联系人编号
+	 * @param cpyId 代理机构编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CustomerLxrInfoTb> listLxrInfoByCusId(Integer lxrId,Integer cpyId) throws WEBException;
+	
+	/**
+	 * 增加发明人信息
 	 * @description
 	 * @author wm
 	 * @date 2018-8-19 下午05:33:59
@@ -159,7 +171,7 @@ public interface CustomerInfoManager {
 	Integer addCusFmrInfo(Integer cusId,String fmrName,String fmriCard,String fmrTel,String fmrEmail) throws WEBException;
 	
 	/**
-	 * 
+	 * 修改发明人信息
 	 * @description
 	 * @author wm
 	 * @date 2018-8-19 下午05:34:04
@@ -174,7 +186,7 @@ public interface CustomerInfoManager {
 	boolean upCusFmrById(Integer fmrId,String fmrName,String fmriCard,String fmrTel,String fmrEmail) throws WEBException;
 	
 	/**
-	 * 
+	 * 删除发明人信息
 	 * @description
 	 * @author wm
 	 * @date 2018-8-19 下午05:34:09
@@ -185,7 +197,7 @@ public interface CustomerInfoManager {
 	boolean delCusFmrById(Integer fmrId) throws WEBException;
 	
 	/**
-	 * 
+	 * 根据客户编号获取发明人信息
 	 * @description
 	 * @author wm
 	 * @date 2018-8-19 下午05:34:12
@@ -194,4 +206,16 @@ public interface CustomerInfoManager {
 	 * @throws WEBException
 	 */
 	List<CustomerFmrInfoTb> listFmrInfoByCusId(Integer cusId) throws WEBException;
+	
+	/**
+	 * 根据发明人编号、代理机构编号获取发明人信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 上午10:29:05
+	 * @param fmrId 发明人编号
+	 * @param cpyId 代理机构编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CustomerFmrInfoTb> listFmrInfoByFmrId(Integer fmrId,Integer cpyId) throws WEBException;
 }

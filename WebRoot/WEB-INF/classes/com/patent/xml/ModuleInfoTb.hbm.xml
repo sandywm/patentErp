@@ -30,6 +30,11 @@
                 <comment>排序号</comment>
             </column>
         </property>
+         <property name="showStatus" type="java.lang.Integer">
+            <column name="show_status" not-null="true">
+                <comment>可见状态--0可见（默认），1不可见</comment>
+            </column>
+        </property>
         <property name="modLevel" type="java.lang.Integer">
             <column name="mod_level" not-null="true">
                 <comment>模块级别[0(铜牌),1(银牌),2(金牌),3(钻石)]</comment>

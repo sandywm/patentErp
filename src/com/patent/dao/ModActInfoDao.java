@@ -62,4 +62,15 @@ public interface ModActInfoDao {
 	 * @return
 	 */
 	List<ModActInfoTb> findSpecInfoByOpt(Session sess,Integer modId,String actNameChi,String actNameEng);
+	
+	/**
+	 * 根据主键获取模块动作信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 下午03:44:31
+	 * @param sess
+	 * @param id
+	 * @return
+	 */
+	List<ModActInfoTb> findSpecInfoById(Session sess,Integer id);
 }

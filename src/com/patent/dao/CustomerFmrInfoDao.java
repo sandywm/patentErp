@@ -49,4 +49,16 @@ public interface CustomerFmrInfoDao {
 	 * @return
 	 */
 	List<CustomerFmrInfoTb> findInfoByCusId(Session sess,Integer cusId);
+	
+	/**
+	 * 根据主键、代理机构编号获取发明人信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 上午10:31:51
+	 * @param sess
+	 * @param fmrId 发明人编号
+	 * @param cpyId 代理机构编号
+	 * @return
+	 */
+	List<CustomerFmrInfoTb> findInfoByOpt(Session sess,Integer fmrId,Integer cpyId);
 }

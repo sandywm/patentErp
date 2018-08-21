@@ -19,13 +19,13 @@ public class ModuleInfoManagerImpl implements ModuleInfoManager{
 	Transaction tran = null;
 	@Override
 	public Integer addModule(String modName, String modPic, String resUrl,
-			Integer orderNo, Integer modLevel) throws WEBException {
+			Integer orderNo, Integer showStatus,Integer modLevel) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			mDao = (ModuleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MODULE_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			ModuleInfoTb mod = new ModuleInfoTb(modName,modPic,resUrl,orderNo,modLevel);
+			ModuleInfoTb mod = new ModuleInfoTb(modName,modPic,resUrl,orderNo,showStatus,modLevel);
 			mDao.save(sess, mod);
 			tran.commit();
 			return mod.getId();
@@ -39,13 +39,12 @@ public class ModuleInfoManagerImpl implements ModuleInfoManager{
 	}
 
 	@Override
-	public List<ModuleInfoTb> listInfoByLevel(Integer modLevel)
-			throws WEBException {
+	public List<ModuleInfoTb> listInfoByLevel(Integer modLevel,Integer showStatus)throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			mDao = (ModuleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MODULE_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return mDao.findInfoByLevel(sess, modLevel);
+			return mDao.findInfoByLevel(sess, modLevel,showStatus);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -67,6 +66,72 @@ public class ModuleInfoManagerImpl implements ModuleInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据模块名字获取模块信息列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean upModule(Integer id, String modName, String modPic,
+			String resUrl, Integer orderNo, Integer showStatus, Integer modLevel)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mDao = (ModuleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MODULE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ModuleInfoTb mod = mDao.get(sess, id);
+			if(mod != null){
+				mod.setModName(modName);
+				mod.setModPic(modPic);
+				mod.setResUrl(resUrl);
+				mod.setOrderNo(orderNo);
+				mod.setModLevel(modLevel);
+				mod.setShowStatus(showStatus);
+				mDao.update(sess, mod);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改指定模块信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean delModuleById(Integer id) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mDao = (ModuleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MODULE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			mDao.delete(sess, id);
+			tran.commit();
+			return true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("删除指定模块信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public ModuleInfoTb getEntityById(Integer id) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mDao = (ModuleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MODULE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return mDao.getEntityById(sess, id);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定模块的信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

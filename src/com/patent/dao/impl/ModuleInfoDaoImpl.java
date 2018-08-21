@@ -41,11 +41,14 @@ public class ModuleInfoDaoImpl implements ModuleInfoDao{
 	}
 
 	@Override
-	public List<ModuleInfoTb> findInfoByLevel(Session sess,Integer modLevel) {
+	public List<ModuleInfoTb> findInfoByLevel(Session sess,Integer modLevel,Integer showStatus) {
 		// TODO Auto-generated method stub
-		String hql = " from ModuleInfoTb as mi";
+		String hql = " from ModuleInfoTb as mi where 1=1";
 		if(modLevel >= 0){
-			hql += " where mi.modLevel <= "+modLevel;
+			hql += " and mi.modLevel <= "+modLevel;
+		}
+		if(showStatus >= 0){
+			hql += " and mi.showStatis = "+showStatus;
 		}
 		hql += "  order by mi.modLevel asc,mi.orderNo asc";
 		return sess.createQuery(hql).list();
@@ -56,6 +59,17 @@ public class ModuleInfoDaoImpl implements ModuleInfoDao{
 		// TODO Auto-generated method stub
 		String hql = " from ModuleInfoTb as mi where mi.modName = '"+modName+"'";
 		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public ModuleInfoTb getEntityById(Session sess, Integer id) {
+		// TODO Auto-generated method stub
+		String hql = " from ModuleInfoTb as mi where mi.id = "+id;
+		List<ModuleInfoTb> mList = sess.createQuery(hql).list();
+		if(mList.size() > 0){
+			return mList.get(0);
+		}
+		return null;
 	}
 
 }

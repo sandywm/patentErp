@@ -130,7 +130,7 @@ public class ModuleManagerAction extends DispatchAction {
 		Map<String,Object> map = new HashMap<String,Object>();
 		boolean endFlag = true;//未过期
 		if(loginRoleName.equals("super")){//超管获取所有模块列表
-			mList = mm.listInfoByLevel(-1);
+			mList = mm.listInfoByLevel(-1,-1);
 		}else if(this.getLoginType(request).equals("cpyUser")){//代理机构员工获取和代理机构级别相同的模块列表
 			//获取当前代理机构是否到期
 			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
@@ -138,7 +138,7 @@ public class ModuleManagerAction extends DispatchAction {
 			if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0){//已过期
 				endFlag = false;//已过期
 			}
-			mList = mm.listInfoByLevel(cpy.getCpyLevel());
+			mList = mm.listInfoByLevel(cpy.getCpyLevel(),0);
 			//获取该代理机构下的用户角色列表
 			List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cpy.getId());
 			List<Object> list_d = new ArrayList<Object>(); 
@@ -244,15 +244,173 @@ public class ModuleManagerAction extends DispatchAction {
 			String resUrl = request.getParameter("resUrl");
 			Integer orderNo = Integer.parseInt(request.getParameter("orderNo"));
 			Integer modLevel = Integer.parseInt(request.getParameter("modLevel"));
+			Integer showStatus = CommonTools.getFinalInteger(request.getParameter("showStatus"));
 			if(mm.listInfoByName(modName).size() > 0){
 				map.put("result", "exist");
 			}else{
-				Integer modId = mm.addModule(modName, modPic, resUrl, orderNo, modLevel);
+				Integer modId = mm.addModule(modName, modPic, resUrl, orderNo, showStatus, modLevel);
 				if(modId > 0){
 					map.put("result", "success");
 				}else{
 					map.put("result", "error");
 				}
+			}
+		}else{
+			map.put("result", "noAbility");
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 获取指定模块信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 下午03:53:05
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getSpecModule(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ModuleInfoManager mm = (ModuleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MODULE_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
+			Integer modId = CommonTools.getFinalInteger(request.getParameter("modId"));
+			ModuleInfoTb mod = mm.getEntityById(modId);
+			if(mod != null){
+				map.put("modId", mod.getId());
+				map.put("modName", mod.getModName());
+				map.put("resUrl", mod.getResUrl());
+				map.put("orderNo", mod.getOrderNo());
+				map.put("modLevel", mod.getModLevel());
+				map.put("showStatus", mod.getShowStatus());
+				map.put("result", "success");
+			}else{
+				map.put("result", "noInfo");
+			}
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 修改模块信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 上午11:33:28
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward upModule(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ModuleInfoManager mm = (ModuleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MODULE_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
+			Integer modId = CommonTools.getFinalInteger(request.getParameter("modId"));
+			String modName = Transcode.unescape(request.getParameter("modName"), request);
+			String modPic = CommonTools.getFinalStr(request.getParameter("modPic"));
+			String resUrl = request.getParameter("resUrl");
+			Integer orderNo = CommonTools.getFinalInteger(request.getParameter("orderNo"));
+			Integer modLevel = CommonTools.getFinalInteger(request.getParameter("modLevel"));
+			Integer showStatus = CommonTools.getFinalInteger(request.getParameter("showStatus"));
+			if(mm.listInfoByName(modName).size() > 0){
+				map.put("result", "exist");
+			}else{
+				boolean flag = mm.upModule(modId, modName, modPic, resUrl, orderNo, showStatus,modLevel);
+				if(flag){
+					map.put("result", "success");
+				}else{
+					map.put("result", "error");
+				}
+			}
+		}else{
+			map.put("result", "noAbility");
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**\
+	 * 删除模块
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 下午03:39:20
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward delModule(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ModuleInfoManager mm = (ModuleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MODULE_INFO);
+		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
+		ActRoleInfoManager arm = (ActRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ACT_ROLE_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
+			Integer modId = CommonTools.getFinalInteger(request.getParameter("modId"));
+			List<ModActInfoTb> mList = mam.listInfoByModId(modId);
+			boolean delFlag = false;
+			if(mList.size() > 0){
+				for(Iterator<ModActInfoTb> it = mList.iterator() ; it.hasNext();){
+					ModActInfoTb ma = it.next();
+					Integer maId = ma.getId();
+					//查看有无角色绑定这个模块动作
+					if(arm.listInfoByOpt(0, maId).size() > 0){
+						delFlag = false;
+						break;
+					}else{
+						delFlag = true;
+					}
+				}
+				if(delFlag){
+					Integer status = 1;
+					for(Iterator<ModActInfoTb> it = mList.iterator() ; it.hasNext();){
+						ModActInfoTb ma = it.next();
+						Integer maId = ma.getId();
+						delFlag = mam.delMActById(maId);
+						if(delFlag){
+							status *= 1;
+						}else{
+							status *= 0;
+						}
+					}
+					if(status.equals(1)){
+						mm.delModuleById(modId);
+						map.put("result", "success");
+					}else{
+						map.put("result", "error");
+					}
+				}else{
+					map.put("result", "exist");//子模块存在角色权限绑定信息
+				}
+			}else{
+				mm.delModuleById(modId);
+				map.put("result", "success");
 			}
 		}else{
 			map.put("result", "noAbility");
@@ -338,6 +496,97 @@ public class ModuleManagerAction extends DispatchAction {
 					map.put("result", "success");
 				}else{
 					map.put("result", "error");
+				}
+			}
+		}else{
+			map.put("result", "noAbility");
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 获取指定模块动作信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 下午04:01:58
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getSpecModAct(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
+			Integer maId = Integer.parseInt(request.getParameter("maId"));
+			List<ModActInfoTb> maList = mam.listSpecInfoById(maId);
+			if(maList.size() > 0){
+				ModActInfoTb ma = maList.get(0);
+				map.put("maId", ma.getId());
+				map.put("actNameChi", ma.getActNameChi());
+				map.put("actNameEng", ma.getActNameEng());
+				map.put("orderNo", ma.getOrderNo());
+				map.put("result", "success");
+			}else{
+				map.put("result", "noInfo");
+			}	
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 修改指定模块动作
+	 * @description
+	 * @author wm
+	 * @date 2018-8-21 下午04:05:04
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward upModAct(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
+			Integer maId = Integer.parseInt(request.getParameter("maId"));
+			//查看有无角色绑定这个模块动作
+			String actNameChi = Transcode.unescape(request.getParameter("actNameChi"), request);
+			String actNameEng = request.getParameter("actNameEng");
+			Integer orderNo = Integer.parseInt(request.getParameter("orderNo"));
+			List<ModActInfoTb> maList = mam.listSpecInfoById(maId);
+			ModActInfoTb ma = maList.get(0);
+			Integer modId = ma.getModuleInfoTb().getId();
+			String actNameChi_db = ma.getActNameChi();
+			String actNameEng_db = ma.getActNameEng();
+			if(actNameChi_db.equals(actNameChi) && actNameEng_db.equals(actNameEng)){
+				//不用判断重复
+				mam.upMActById(maId, "", "", orderNo);
+				map.put("result", "success");
+			}else{
+				//需要判断重复
+				if(mam.listSpecInfoByOpt(modId, actNameChi, actNameEng).size() > 0){
+					map.put("result", "exist");
+				}else{
+					mam.upMActById(maId, actNameChi, actNameEng, orderNo);
+					map.put("result", "success");
 				}
 			}
 		}else{
@@ -467,34 +716,8 @@ public class ModuleManagerAction extends DispatchAction {
 						ActRoleInfoTb ar = it.next();
 						ModuleInfoTb module = ar.getModActInfoTb().getModuleInfoTb();
 						Map<String,Object> map_d = new HashMap<String,Object>();
-						if(list_d.size() == 0){//首次
-							map_d.put("modId", module.getId());
-							map_d.put("modName", module.getModName());
-							map_d.put("modUrl", module.getResUrl());
-							if(endFlag){//未过期
-								map_d.put("useFlag", true);
-							}else{
-								if(cpy.getCpyLevel() > 0){//铜牌以上的会员
-									map_d.put("useFlag", false);
-								}else{//铜牌的模块一直免费使用
-									map_d.put("useFlag", true);
-								}
-							}
-							list_d.add(map_d);
-							list_m.add(module);
-						}else{
-							//判断list_m中有无相同的modId
-							Integer exist_status = 1;
-							for(Iterator<ModuleInfoTb> it_1 = list_m.iterator() ; it_1.hasNext();){
-								ModuleInfoTb mod_exist = it_1.next();
-								if(mod_exist.getId().equals(module.getId())){
-									exist_status = 0;
-									break;
-								}else{
-									exist_status = 1;//不存在
-								}
-							}
-							if(exist_status.equals(1)){//不存在
+						if(module.getShowStatus().equals(0)){//只获取可见
+							if(list_d.size() == 0){//首次
 								map_d.put("modId", module.getId());
 								map_d.put("modName", module.getModName());
 								map_d.put("modUrl", module.getResUrl());
@@ -509,8 +732,37 @@ public class ModuleManagerAction extends DispatchAction {
 								}
 								list_d.add(map_d);
 								list_m.add(module);
+							}else{
+								//判断list_m中有无相同的modId
+								Integer exist_status = 1;
+								for(Iterator<ModuleInfoTb> it_1 = list_m.iterator() ; it_1.hasNext();){
+									ModuleInfoTb mod_exist = it_1.next();
+									if(mod_exist.getId().equals(module.getId())){
+										exist_status = 0;
+										break;
+									}else{
+										exist_status = 1;//不存在
+									}
+								}
+								if(exist_status.equals(1)){//不存在
+									map_d.put("modId", module.getId());
+									map_d.put("modName", module.getModName());
+									map_d.put("modUrl", module.getResUrl());
+									if(endFlag){//未过期
+										map_d.put("useFlag", true);
+									}else{
+										if(cpy.getCpyLevel() > 0){//铜牌以上的会员
+											map_d.put("useFlag", false);
+										}else{//铜牌的模块一直免费使用
+											map_d.put("useFlag", true);
+										}
+									}
+									list_d.add(map_d);
+									list_m.add(module);
+								}
 							}
 						}
+						
 					}
 					map.put("modInfo", list_d);
 				}else{
