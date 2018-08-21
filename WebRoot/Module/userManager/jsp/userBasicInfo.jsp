@@ -56,7 +56,7 @@
   			//渲染form
   			function renderForm(list){
   				/*type: 个人/公司，代理机构员工（包括管理员） ，平台用户*/
-  				console.log(list)
+  				//console.log(list)
   				var roleName = parent.roleName,
   					loginType = parent.loginType,
   					strHtml = "",
@@ -71,19 +71,21 @@
   					list.roleName = "工矿企业";
   				}else if(list.roleName =="sydw"){
   					list.roleName = "事业单位";
+  				}else if(list.roleName == "super"){
+  					list.roleName = "超级管理员";
   				}
   				//账户身份
   				strHtml += '<div class="layui-form-item"><label class="layui-form-label">当前身份</label>';
   				strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.roleName +'" disabled class="layui-input"></div></div>';
   				//注册账号
-  				strHtml += '<div class="layui-form-item"><label class="layui-form-label">注册账号</label>';
-  				if(loginType == 'cpyUser' || loginType == 'super'){
-  					strHtml += '<div class="layui-input-inline"><input type="text" name="account" value="'+ list.account +'" disabled class="layui-input"></div></div>';
-  				}else{
-  					strHtml += '<div class="layui-input-inline"><input type="text" name="account" value="'+ list.appAccount +'" disabled class="layui-input"></div></div>';
-  				}
+	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label">注册账号</label>';
+	  			if(loginType == 'cpyUser' || loginType == 'spUser'){
+	  				strHtml += '<div class="layui-input-inline"><input type="text" name="account" value="'+ list.account +'" disabled class="layui-input"></div></div>';
+	  			}else{
+	  				strHtml += '<div class="layui-input-inline"><input type="text" name="account" value="'+ list.appAccount +'" disabled class="layui-input"></div></div>';
+	  			}
   				//申请人姓名/公司名称/管理员姓名/平台用户个人姓名
-  				if(loginType == 'cpyUser' || loginType == 'super'){
+  				if(loginType == 'cpyUser' || loginType == 'spUser'){
   					//管理员姓名
   					strHtml += '<div class="layui-form-item"><label class="layui-form-label">个人姓名</label>';
   					strHtml += '<div class="layui-input-inline"><input type="text" name="name" value="'+ list.name +'" class="layui-input" placeholder="请输入您的真实姓名" lay-verify="judegeName" autocomplete="off" maxlength="4"></div></div>';
@@ -177,12 +179,14 @@
   					list.outDate == '' ? list.outDate = '暂未离职' : list.outDate = list.outDate;	
 					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.outDate +'" disabled class="layui-input"></div></div>';
   				}
-  				//联系人电话
-				strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'手机号码</label>';
-				strHtml += '<div class="layui-input-inline"><input type="text" name="tel" value="'+ list.tel +'" required placeholder="请输入手机号码" lay-verify="phoneNum"  autocomplete="off" class="layui-input" maxlength="11"></div></div>';
-  				//联系人邮箱
-				strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'邮箱</label>';
-				strHtml += '<div class="layui-input-inline"><input type="text" name="email" value="'+ list.email +'" required lay-verify="email" placeholder="请输入'+ cnName +'邮箱" autocomplete="off" class="layui-input"></div></div>';
+  				if(loginType != 'spUser'){
+  					//联系人电话
+  					strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'手机号码</label>';
+  					strHtml += '<div class="layui-input-inline"><input type="text" name="tel" value="'+ list.tel +'" required placeholder="请输入手机号码" lay-verify="phoneNum"  autocomplete="off" class="layui-input" maxlength="11"></div></div>';
+  	  				//联系人邮箱
+  					strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'邮箱</label>';
+  					strHtml += '<div class="layui-input-inline"><input type="text" name="email" value="'+ list.email +'" required lay-verify="email" placeholder="请输入'+ cnName +'邮箱" autocomplete="off" class="layui-input"></div></div>';
+  				}
 				strHtml += '<div class="layui-form-item"><label class="layui-form-label"></label><div class="layui-input-inline"><button class="layui-btn" lay-submit lay-filter="setPerInfo">保存修改</button></div></div>';
 				
   				$('#setPerInfo').html(strHtml);
@@ -304,7 +308,7 @@
 		  				field[attr] = field[attr].replace(/\s/g,"");
 		  			}
 		  		}
-  				console.log(field)
+  				//console.log(field)
   				$.ajax({
 		    		type:"post",
 			        async:false,
@@ -313,6 +317,7 @@
 			        data:field,
 			        success:function (json){
 			        	layer.closeAll('loading');
+			        	console.log(json)
 			        	if(json["result"] == true){
 			        		layer.msg("保存成功",{icon:1,time:1000},function(){
 			        			form.render();
