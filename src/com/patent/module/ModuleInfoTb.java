@@ -22,6 +22,7 @@ public class ModuleInfoTb implements java.io.Serializable {
 	private Integer orderNo;
 	private Integer showStatus;
 	private Integer modLevel;
+	private String actNameEng;
 	private Set<ModActInfoTb> modActInfoTbs = new HashSet<ModActInfoTb>();
 
 	// Constructors
@@ -32,18 +33,19 @@ public class ModuleInfoTb implements java.io.Serializable {
 
 	/** minimal constructor */
 	public ModuleInfoTb(String modName, String modPic, String resUrl,
-			Integer orderNo, Integer showStatus,Integer modLevel) {
+			Integer orderNo, Integer showStatus,Integer modLevel, String actNameEng) {
 		this.modName = modName;
 		this.modPic = modPic;
 		this.resUrl = resUrl;
 		this.orderNo = orderNo;
 		this.modLevel = modLevel;
 		this.showStatus = showStatus;
+		this.actNameEng = actNameEng;
 	}
 
 	/** full constructor */
 	public ModuleInfoTb(Integer id,String modName, String modPic, String resUrl,
-			Integer orderNo, Integer showStatus,Integer modLevel) {
+			Integer orderNo, Integer showStatus,Integer modLevel, String actNameEng) {
 		this.id = id;
 		this.modName = modName;
 		this.modPic = modPic;
@@ -51,6 +53,7 @@ public class ModuleInfoTb implements java.io.Serializable {
 		this.orderNo = orderNo;
 		this.modLevel = modLevel;
 		this.showStatus = showStatus;
+		this.actNameEng = actNameEng;
 	}
 
 	// Property accessors
@@ -117,6 +120,14 @@ public class ModuleInfoTb implements java.io.Serializable {
 
 	public void setShowStatus(Integer showStatus) {
 		this.showStatus = showStatus;
+	}
+
+	public String getActNameEng() {
+		return actNameEng;
+	}
+
+	public void setActNameEng(String actNameEng) {
+		this.actNameEng = actNameEng;
 	}
 
 }

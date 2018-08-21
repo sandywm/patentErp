@@ -18,10 +18,11 @@ public interface ModuleInfoManager {
 	 * @param orderNo 排序号
 	 * @param showStatus 可见状态-- 0可见（默认），1不可见
 	 * @param modLevel 模块级别[0(铜牌),1(银牌),2(金牌),3(钻石)]
+	 * @param actNameEng 模块动作统称
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addModule(String modName,String modPic,String resUrl,Integer orderNo, Integer showStatus,Integer modLevel) throws WEBException;
+	Integer addModule(String modName,String modPic,String resUrl,Integer orderNo, Integer showStatus,Integer modLevel,String actNameEng) throws WEBException;
 	
 	/**
 	 * 获取指定模块级别及其以下的模块列表信息
@@ -58,10 +59,11 @@ public interface ModuleInfoManager {
 	 * @param orderNo 排序号
 	 * @param showStatus 可见状态-- 0可见（默认），1不可见
 	 * @param modLevel 模块级别[0(铜牌),1(银牌),2(金牌),3(钻石)]
+	 * @param actNameEng 模块动作统称
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean upModule(Integer id,String modName,String modPic,String resUrl,Integer orderNo,Integer showStatus,Integer modLevel) throws WEBException;
+	boolean upModule(Integer id,String modName,String modPic,String resUrl,Integer orderNo,Integer showStatus,Integer modLevel,String actNameEng) throws WEBException;
 	
 	/**
 	 * 删除指定模块

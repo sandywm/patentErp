@@ -237,6 +237,7 @@ public class ModuleManagerAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		ModuleInfoManager mm = (ModuleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MODULE_INFO);
+		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
 			String modName = Transcode.unescape(request.getParameter("modName"), request);
@@ -245,11 +246,17 @@ public class ModuleManagerAction extends DispatchAction {
 			Integer orderNo = Integer.parseInt(request.getParameter("orderNo"));
 			Integer modLevel = Integer.parseInt(request.getParameter("modLevel"));
 			Integer showStatus = CommonTools.getFinalInteger(request.getParameter("showStatus"));
+			String actNameEng = CommonTools.getFinalStr(request.getParameter("actNameEng"));
 			if(mm.listInfoByName(modName).size() > 0){
 				map.put("result", "exist");
 			}else{
-				Integer modId = mm.addModule(modName, modPic, resUrl, orderNo, showStatus, modLevel);
+				Integer modId = mm.addModule(modName, modPic, resUrl, orderNo, showStatus, modLevel,actNameEng);
 				if(modId > 0){
+					//增加子模块
+					mam.addMAct("增加", "add"+actNameEng, 1, modId);
+					mam.addMAct("删除", "del"+actNameEng, 2, modId);
+					mam.addMAct("修改", "up"+actNameEng, 3, modId);
+					mam.addMAct("查看", "list"+actNameEng, 4, modId);
 					map.put("result", "success");
 				}else{
 					map.put("result", "error");
@@ -293,6 +300,7 @@ public class ModuleManagerAction extends DispatchAction {
 				map.put("orderNo", mod.getOrderNo());
 				map.put("modLevel", mod.getModLevel());
 				map.put("showStatus", mod.getShowStatus());
+				map.put("actNameEng", mod.getActNameEng());
 				map.put("result", "success");
 			}else{
 				map.put("result", "noInfo");
@@ -322,6 +330,7 @@ public class ModuleManagerAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		ModuleInfoManager mm = (ModuleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MODULE_INFO);
+		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
 			Integer modId = CommonTools.getFinalInteger(request.getParameter("modId"));
@@ -331,12 +340,33 @@ public class ModuleManagerAction extends DispatchAction {
 			Integer orderNo = CommonTools.getFinalInteger(request.getParameter("orderNo"));
 			Integer modLevel = CommonTools.getFinalInteger(request.getParameter("modLevel"));
 			Integer showStatus = CommonTools.getFinalInteger(request.getParameter("showStatus"));
+			String actNameEng = CommonTools.getFinalStr(request.getParameter("actNameEng"));
 			if(mm.listInfoByName(modName).size() > 0){
 				map.put("result", "exist");
 			}else{
-				boolean flag = mm.upModule(modId, modName, modPic, resUrl, orderNo, showStatus,modLevel);
+				boolean flag = mm.upModule(modId, modName, modPic, resUrl, orderNo, showStatus,modLevel,actNameEng);
 				if(flag){
-					map.put("result", "success");
+					List<ModActInfoTb> maList = mam.listInfoByModId(modId);
+					Integer maId_add = 0,maId_del = 0,maId_up = 0,maId_list = 0;
+					if(maList.size() > 0){
+						for(Iterator<ModActInfoTb> it = maList.iterator() ; it.hasNext();){
+							ModActInfoTb ma = it.next();
+							if(ma.getActNameEng().startsWith("add")){
+								maId_add = ma.getId();
+							}else if(ma.getActNameEng().startsWith("del")){
+								maId_del = ma.getId();
+							}else if(ma.getActNameEng().startsWith("up")){
+								maId_up = ma.getId();
+							}else if(ma.getActNameEng().startsWith("list")){
+								maId_list = ma.getId();
+							}
+						}
+						mam.upMActById(maId_add, "增加", "add"+actNameEng, 1);
+						mam.upMActById(maId_del, "删除", "del"+actNameEng, 2);
+						mam.upMActById(maId_up, "修改", "up"+actNameEng, 3);
+						mam.upMActById(maId_list, "查看", "list"+actNameEng, 4);
+						map.put("result", "success");
+					}
 				}else{
 					map.put("result", "error");
 				}
@@ -424,7 +454,7 @@ public class ModuleManagerAction extends DispatchAction {
 	}
 	
 	/**
-	 * 增加指定模块的模块动作
+	 * 增加指定模块的模块动作(暂不使用)
 	 * @author Administrator
 	 * @date 2018-8-8 下午10:32:44
 	 * @ModifiedBy
@@ -467,7 +497,7 @@ public class ModuleManagerAction extends DispatchAction {
 	}
 	
 	/**
-	 * 删除模块动作
+	 * 删除模块动作(暂不使用)
 	 * @description
 	 * @author wm
 	 * @date 2018-8-9 上午09:52:23
@@ -570,7 +600,6 @@ public class ModuleManagerAction extends DispatchAction {
 			//查看有无角色绑定这个模块动作
 			String actNameChi = Transcode.unescape(request.getParameter("actNameChi"), request);
 			String actNameEng = request.getParameter("actNameEng");
-			Integer orderNo = Integer.parseInt(request.getParameter("orderNo"));
 			List<ModActInfoTb> maList = mam.listSpecInfoById(maId);
 			ModActInfoTb ma = maList.get(0);
 			Integer modId = ma.getModuleInfoTb().getId();
@@ -578,15 +607,19 @@ public class ModuleManagerAction extends DispatchAction {
 			String actNameEng_db = ma.getActNameEng();
 			if(actNameChi_db.equals(actNameChi) && actNameEng_db.equals(actNameEng)){
 				//不用判断重复
-				mam.upMActById(maId, "", "", orderNo);
+				mam.upMActById(maId, "", "", -1);
 				map.put("result", "success");
 			}else{
 				//需要判断重复
 				if(mam.listSpecInfoByOpt(modId, actNameChi, actNameEng).size() > 0){
 					map.put("result", "exist");
 				}else{
-					mam.upMActById(maId, actNameChi, actNameEng, orderNo);
-					map.put("result", "success");
+					if(actNameEng.startsWith("add") || actNameEng.startsWith("del") || actNameEng.startsWith("up") || actNameEng.startsWith("list")){
+						mam.upMActById(maId, "", actNameEng, -1);
+						map.put("result", "success");
+					}else{
+						map.put("result", "startError");
+					}
 				}
 			}
 		}else{

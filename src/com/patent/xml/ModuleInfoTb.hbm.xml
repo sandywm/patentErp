@@ -35,6 +35,11 @@
                 <comment>可见状态--0可见（默认），1不可见</comment>
             </column>
         </property>
+        <property name="actNameEng" type="java.lang.String">
+            <column name="act_name_eng" length="20" not-null="true">
+                <comment>英文动作简称</comment>
+            </column>
+        </property>
         <property name="modLevel" type="java.lang.Integer">
             <column name="mod_level" not-null="true">
                 <comment>模块级别[0(铜牌),1(银牌),2(金牌),3(钻石)]</comment>

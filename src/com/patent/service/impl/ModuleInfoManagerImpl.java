@@ -19,13 +19,13 @@ public class ModuleInfoManagerImpl implements ModuleInfoManager{
 	Transaction tran = null;
 	@Override
 	public Integer addModule(String modName, String modPic, String resUrl,
-			Integer orderNo, Integer showStatus,Integer modLevel) throws WEBException {
+			Integer orderNo, Integer showStatus,Integer modLevel,String actNameEng) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			mDao = (ModuleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MODULE_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			ModuleInfoTb mod = new ModuleInfoTb(modName,modPic,resUrl,orderNo,showStatus,modLevel);
+			ModuleInfoTb mod = new ModuleInfoTb(modName,modPic,resUrl,orderNo,showStatus,modLevel,actNameEng);
 			mDao.save(sess, mod);
 			tran.commit();
 			return mod.getId();
@@ -73,7 +73,7 @@ public class ModuleInfoManagerImpl implements ModuleInfoManager{
 
 	@Override
 	public boolean upModule(Integer id, String modName, String modPic,
-			String resUrl, Integer orderNo, Integer showStatus, Integer modLevel)
+			String resUrl, Integer orderNo, Integer showStatus, Integer modLevel,String actNameEng)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -88,6 +88,7 @@ public class ModuleInfoManagerImpl implements ModuleInfoManager{
 				mod.setOrderNo(orderNo);
 				mod.setModLevel(modLevel);
 				mod.setShowStatus(showStatus);
+				mod.setActNameEng(actNameEng);
 				mDao.update(sess, mod);
 				tran.commit();
 				return true;
