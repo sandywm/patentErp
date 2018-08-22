@@ -146,7 +146,7 @@ public class ModuleManagerAction extends DispatchAction {
 				for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
 					CpyRoleInfoTb cr = it.next();
 					if(cr.getRoleName().equals("管理员")){
-						break;//不显示出管理员
+						continue;//不显示出管理员
 					}else{
 						Map<String,Object> map_d = new HashMap<String,Object>();
 						map_d.put("roleId", cr.getId());
