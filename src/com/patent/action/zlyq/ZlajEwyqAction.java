@@ -6,7 +6,10 @@ package com.patent.action.zlyq;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +22,7 @@ import org.apache.struts.actions.DispatchAction;
 import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
+import com.patent.module.ZlajEwyqInfoTb;
 import com.patent.service.JsFiledInfoManager;
 import com.patent.service.ZlajEwyqInfoManager;
 import com.patent.tools.CommonTools;
@@ -33,25 +37,6 @@ import com.patent.util.Constants;
  */
 public class ZlajEwyqAction extends DispatchAction {
 	
-	/**
-	 * 获取session中的用户ID
-	 * @param request
-	 * @return
-	 */
-	private Integer getLoginUserId(HttpServletRequest request){
-        Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ID);
-        return userId;
-	}
-	
-	/**
-	 * 获取session中的用户角色编号
-	 * @param request
-	 * @return
-	 */
-	private Integer getLoginRoleId(HttpServletRequest request){
-        Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ROLE_ID);
-        return userId;
-	}
 	
 	/**
 	 * 获取session中的用户角色名称
@@ -61,19 +46,6 @@ public class ZlajEwyqAction extends DispatchAction {
 	private String getLoginRoleName(HttpServletRequest request){
         String roleName = (String)request.getSession(false).getAttribute(Constants.LOGIN_USER_ROLE_NAME);
         return roleName;
-	}
-	
-	/**
-	 * 获取session中的登录类型
-	 * @author Administrator
-	 * @date 2018-7-31 下午09:39:57
-	 * @ModifiedBy
-	 * @param request
-	 * @return
-	 */
-	private String getLoginType(HttpServletRequest request){
-        String loginType = (String)request.getSession(false).getAttribute(Constants.LOGIN_TYPE);
-        return loginType;
 	}
 	
 	/**
@@ -110,8 +82,19 @@ public class ZlajEwyqAction extends DispatchAction {
 		return mapping.findForward("yqPage");
 	}
 	
-	
-	public ActionForward getZlyqData(ActionMapping mapping, ActionForm form,
+	/**
+	 * 增加要求记录
+	 * @description
+	 * @author wm
+	 * @date 2018-8-22 上午08:53:25
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward addZlyq(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		ZlajEwyqInfoManager yqm = (ZlajEwyqInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_EWYQ_INFO);
@@ -119,17 +102,181 @@ public class ZlajEwyqAction extends DispatchAction {
 		if(this.getLoginRoleName(request).equals("super")){
 			String yqContent = Transcode.unescape(request.getParameter("yqContent"), request);
 			String yqType = CommonTools.getFinalStr(request.getParameter("yqType"));
-			Integer yqId = yqm.addYq(yqContent, yqType);
-			if(yqId > 0){
-				msg = "success";
+			if(yqm.listInfoByCnt(yqContent).size() > 0){
+				msg = "exist";
+			}else{
+				Integer yqId = yqm.addYq(yqContent, yqType);
+				if(yqId > 0){
+					msg = "success";
+				}
 			}
 		}else{
 			msg = "noAbility";
 		}
 		Map<String,String> map = new HashMap<String,String>();
-		map.put("msg", msg);
+		map.put("result", msg);
 		this.getJsonPkg(map, response);
 		return null;
 	}
 	
+	/**
+	 * 修改指定的额外要求信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-22 上午09:40:13
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward upZlyq(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajEwyqInfoManager yqm = (ZlajEwyqInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_EWYQ_INFO);
+		String msg = "error";
+		if(this.getLoginRoleName(request).equals("super")){
+			Integer yqId = CommonTools.getFinalInteger(request.getParameter("yqId"));
+			String yqContent = Transcode.unescape(request.getParameter("yqContent"), request);
+			String yqType = CommonTools.getFinalStr(request.getParameter("yqType"));
+			if(yqm.listInfoByCnt(yqContent).size() > 0){
+				msg = "exist";
+			}else{
+				boolean flag = yqm.updateYq(yqId, yqContent, yqType);
+				if(flag){
+					msg = "success";
+				}
+			}
+		}else{
+			msg = "noAbility";
+		}
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取指定主键的要求信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-22 下午04:37:38
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getSpecZlyqData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajEwyqInfoManager yqm = (ZlajEwyqInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_EWYQ_INFO);
+		String msg = "error";
+		Map<String,Object> map  = new HashMap<String,Object>();
+		List<Object> list_d = new ArrayList<Object>();
+		if(this.getLoginRoleName(request).equals("super")){
+			Integer yqId = CommonTools.getFinalInteger(request.getParameter("yqId"));
+			ZlajEwyqInfoTb yq = yqm.getEntityById(yqId);
+			if(yq != null){
+				msg = "success";
+				map.put("id", yq.getId());
+				map.put("yqContent", yq.getYqContent());
+				String yqType = yq.getYqType();
+				
+				Map<String,Object> map_d1  = new HashMap<String,Object>();
+				map_d1.put("typeNameValue", "fm");
+				map_d1.put("typeNameChi", "发明");
+				if(yqType.indexOf("fm") >= 0){
+					map_d1.put("checked", true);
+				}else{
+					map_d1.put("checked", false);
+				}
+				list_d.add(map_d1);
+				Map<String,Object> map_d2  = new HashMap<String,Object>();
+				map_d2.put("typeNameValue", "syxx");
+				map_d2.put("typeNameChi", "实用新型");
+				if(yqType.indexOf("syxx") >= 0){
+					map_d2.put("checked", true);
+				}else{
+					map_d2.put("checked", false);
+				}
+				list_d.add(map_d2);
+				Map<String,Object> map_d3  = new HashMap<String,Object>();
+				map_d3.put("typeNameValue", "wg");
+				map_d3.put("typeNameChi", "外观");
+				if(yqType.indexOf("wg") >= 0){
+					map_d3.put("checked", true);
+				}else{
+					map_d3.put("checked", false);
+				}
+				list_d.add(map_d3);
+				map.put("yqType", list_d);
+			}
+			
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取额外要求记录列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-22 上午09:43:42
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getZlyqData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajEwyqInfoManager yqm = (ZlajEwyqInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_EWYQ_INFO);
+		String msg = "noInfo";
+		Map<String,Object> map  = new HashMap<String,Object>();
+		List<Object> list_d = new ArrayList<Object>();
+		if(this.getLoginRoleName(request).equals("super")){
+			String yqType = CommonTools.getFinalStr(request.getParameter("yqType"));
+			List<ZlajEwyqInfoTb> yqList = yqm.listInfoByType(yqType);
+			if(yqList.size() > 0){
+				msg = "success";
+				for(Iterator<ZlajEwyqInfoTb> it = yqList.iterator() ; it.hasNext();){
+					ZlajEwyqInfoTb yq = it.next();
+					Map<String,Object> map_d  = new HashMap<String,Object>();
+					map_d.put("id", yq.getId());
+					map_d.put("yqContent", yq.getYqContent());
+					String yqType_db = yq.getYqType();
+					map_d.put("yqType", yqType_db);
+					String yqTypeChi = "";
+					if(yqType_db.indexOf("fm") >= 0){
+						yqTypeChi = "发明,";
+					}
+					if(yqType_db.indexOf("fm") >= 0){
+						yqTypeChi += "实用新型,";
+					}
+					if(yqType_db.indexOf("fm") >= 0){
+						yqTypeChi = "外观,";
+					}
+					if(!yqTypeChi.equals("")){
+						yqTypeChi = yqTypeChi.substring(0, yqTypeChi.length() - 1);
+					}
+					map_d.put("yqTypeChi", yqTypeChi);
+					list_d.add(map_d);
+				}
+				map.put("yqInfo", list_d);
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
 }

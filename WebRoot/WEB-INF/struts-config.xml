@@ -7,6 +7,7 @@
   <global-exceptions />
   <global-forwards />
   <action-mappings >
+   <!-- 登录前 -->
     <action path="/login"  parameter="action" scope="request" type="com.patent.action.login.LoginAction">
       <forward name="signPage" path="/register.jsp"></forward><!-- 注册界面 -->
       <forward name="forgetPassPage" path="/forgetPass.jsp"></forward><!-- 忘记密码界面 -->
@@ -36,7 +37,7 @@
     </action>
     <!-- 专业技术区域管理 -->
     <action path="/jfm" parameter="action" scope="request" type="com.patent.action.jfield.JsFieldManagerAction">
-      <forward name="jsPage" path="/Module/professFieldManager/jsp/profesField.jsp"></forward><!-- 角色管理页面 -->
+      <forward name="jsPage" path="/Module/professFieldManager/jsp/profesField.jsp"></forward>
     </action>
     <!-- 发布专利模块管理 -->
     <action path="/pubZl" parameter="action" scope="request" type="com.patent.action.pubZl.PubZl.PubZlAction">
