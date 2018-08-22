@@ -620,7 +620,7 @@ public class ModuleManagerAction extends DispatchAction {
 					map.put("result", "success");//不修改
 				}else{//英文不同
 					if(mam.listSpecInfoByOpt(modId, "", actNameEng).size() > 0){
-						map.put("result", "existEng");
+						map.put("result", "exist");
 					}else{
 						mam.upMActById(maId, "", actNameEng, -1);
 						map.put("result", "success");
