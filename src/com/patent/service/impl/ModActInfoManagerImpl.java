@@ -104,9 +104,15 @@ public class ModActInfoManagerImpl implements ModActInfoManager{
 			tran = sess.beginTransaction();
 			ModActInfoTb ma = maDao.get(sess, id);
 			if(ma != null){
-				ma.setActNameChi(actNameChi);
-				ma.setActNameEng(actNameEng);
-				ma.setOrderNo(orderNo);
+				if(!actNameChi.equals("")){
+					ma.setActNameChi(actNameChi);
+				}
+				if(!actNameEng.equals("")){
+					ma.setActNameEng(actNameEng);
+				}
+				if(!orderNo.equals(-1)){
+					ma.setOrderNo(orderNo);
+				}
 				maDao.update(sess, ma);
 				tran.commit();
 				return true;

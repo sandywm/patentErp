@@ -610,30 +610,26 @@ public class ModuleManagerAction extends DispatchAction {
 		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
 			Integer maId = Integer.parseInt(request.getParameter("maId"));
 			//查看有无角色绑定这个模块动作
-			String actNameChi = Transcode.unescape(request.getParameter("actNameChi"), request);
 			String actNameEng = request.getParameter("actNameEng");
 			List<ModActInfoTb> maList = mam.listSpecInfoById(maId);
 			ModActInfoTb ma = maList.get(0);
 			Integer modId = ma.getModuleInfoTb().getId();
-			String actNameChi_db = ma.getActNameChi();
 			String actNameEng_db = ma.getActNameEng();
-			if(actNameChi_db.equals(actNameChi) && actNameEng_db.equals(actNameEng)){
-				//不用判断重复
-				mam.upMActById(maId, "", "", -1);
-				map.put("result", "success");
-			}else{
-				//需要判断重复
-				if(mam.listSpecInfoByOpt(modId, actNameChi, actNameEng).size() > 0){
-					map.put("result", "exist");
-				}else{
-					if(actNameEng.startsWith("add") || actNameEng.startsWith("del") || actNameEng.startsWith("up") || actNameEng.startsWith("list")){
+			if(actNameEng.startsWith("add") || actNameEng.startsWith("del") || actNameEng.startsWith("up") || actNameEng.startsWith("list")){
+				if(actNameEng_db.equals(actNameEng)){//相同
+					map.put("result", "success");//不修改
+				}else{//英文不同
+					if(mam.listSpecInfoByOpt(modId, "", actNameEng).size() > 0){
+						map.put("result", "existEng");
+					}else{
 						mam.upMActById(maId, "", actNameEng, -1);
 						map.put("result", "success");
-					}else{
-						map.put("result", "startError");
 					}
 				}
+			}else{
+				map.put("result", "startError");//英文名开始必须固定
 			}
+			
 		}else{
 			map.put("result", "noAbility");
 		}

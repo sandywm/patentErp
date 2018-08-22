@@ -57,8 +57,8 @@ public interface ModActInfoDao {
 	 * @ModifiedBy
 	 * @param sess
 	 * @param modId
-	 * @param actNameChi 模块动作中文
-	 * @param actNameEng 模块动作英文
+	 * @param actNameChi 模块动作中文(""时不查询)
+	 * @param actNameEng 模块动作英文(""时不查询)
 	 * @return
 	 */
 	List<ModActInfoTb> findSpecInfoByOpt(Session sess,Integer modId,String actNameChi,String actNameEng);

@@ -38,8 +38,8 @@ public interface ModActInfoManager {
 	 * @author wm
 	 * @date 2018-8-9 上午08:54:58
 	 * @param modId 模块编号
-	 * @param actNameChi 模块动作中文
-	 * @param actNameEng 模块动作英文
+	 * @param actNameChi 模块动作中文(""时不查询)
+	 * @param actNameEng 模块动作英文(""时不查询)
 	 * @return
 	 * @throws WEBException
 	 */

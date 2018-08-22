@@ -52,7 +52,13 @@ public class ModActInfoDaoImpl implements ModActInfoDao{
 			String actNameChi, String actNameEng) {
 		// TODO Auto-generated method stub
 		String hql = " from ModActInfoTb as ma where ma.moduleInfoTb.id = "+modId;
-		hql += " and ma.actNameChi = '"+actNameChi+"' or ma.actNameEng = '"+actNameEng+"'";
+		if(!actNameChi.equals("")){
+			hql += " and ma.actNameChi = '"+actNameChi+"'";
+		}
+		if(!actNameEng.equals("")){
+			hql += " and ma.actNameEng = '"+actNameEng+"'";
+		}
+		//hql += " and ma.actNameChi = '"+actNameChi+"' or ma.actNameEng = '"+actNameEng+"'";
 		return sess.createQuery(hql).list();
 	}
 
