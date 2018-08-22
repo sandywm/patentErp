@@ -48,7 +48,7 @@ public class ModuleInfoDaoImpl implements ModuleInfoDao{
 			hql += " and mi.modLevel <= "+modLevel;
 		}
 		if(showStatus >= 0){
-			hql += " and mi.showStatis = "+showStatus;
+			hql += " and mi.showStatus = "+showStatus;
 		}
 		hql += "  order by mi.modLevel asc,mi.orderNo asc";
 		return sess.createQuery(hql).list();
