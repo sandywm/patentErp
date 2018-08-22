@@ -332,6 +332,7 @@ public class ModuleManagerAction extends DispatchAction {
 		ModuleInfoManager mm = (ModuleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MODULE_INFO);
 		ModActInfoManager mam = (ModActInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MOD_ACT_INFO);
 		Map<String,String> map = new HashMap<String,String>();
+		boolean existFlag = true;
 		if(this.getLoginRoleName(request).equals("super")){//只有超管才能增加
 			Integer modId = CommonTools.getFinalInteger(request.getParameter("modId"));
 			String modName = Transcode.unescape(request.getParameter("modName"), request);
@@ -341,9 +342,16 @@ public class ModuleManagerAction extends DispatchAction {
 			Integer modLevel = CommonTools.getFinalInteger(request.getParameter("modLevel"));
 			Integer showStatus = CommonTools.getFinalInteger(request.getParameter("showStatus"));
 			String actNameEng = CommonTools.getFinalStr(request.getParameter("actNameEng"));
-			if(mm.listInfoByName(modName).size() > 0){
-				map.put("result", "exist");
-			}else{
+			ModuleInfoTb mod = mm.getEntityById(modId);
+			if(!mod.getModName().equals(modName)){
+				//检查是否重名
+				if(mm.listInfoByName(modName).size() > 0){
+					map.put("result", "exist");
+				}else{
+					existFlag = false;
+				}
+			}
+			if(!existFlag){
 				boolean flag = mm.upModule(modId, modName, modPic, resUrl, orderNo, showStatus,modLevel,actNameEng);
 				if(flag){
 					if(!mm.getEntityById(modId).getActNameEng().equals(actNameEng)){//发变化，修改子模块
