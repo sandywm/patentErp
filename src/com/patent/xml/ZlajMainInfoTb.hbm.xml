@@ -17,7 +17,12 @@
         </many-to-one>
         <property name="ajNo" type="java.lang.String">
             <column name="aj_no" length="50" not-null="true">
-                <comment>案件编号(机构编号-年-专利类型[1,2,3]-0001)构成</comment>
+                <comment>案件编号(年专利类型[01,02,03]000x机构编号)构成(排序用)</comment>
+            </column>
+        </property>
+         <property name="ajNoQt" type="java.lang.String">
+            <column name="aj_no_qt" length="50" not-null="true">
+                <comment>案件编号(年专利类型[01,02,03]000x.机构编号)构成(前台显示用)</comment>
             </column>
         </property>
         <property name="ajNoGf" type="java.lang.String">

@@ -19,6 +19,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private Integer id;
 	private CpyInfoTb cpyInfoTb;
 	private String ajNo;
+	private String ajNoQt;
 	private String ajNoGf;
 	private String ajTitle;
 	private Integer ajType;
@@ -47,13 +48,14 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public ZlajMainInfoTb(CpyInfoTb cpyInfoTb, String ajNo, String ajNoGf,
+	public ZlajMainInfoTb(CpyInfoTb cpyInfoTb, String ajNo, String ajNoQt,String ajNoGf,
 			String ajTitle, Integer ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			Date ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,String ajAddDate) {
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
+		this.ajNoQt = ajNoQt;
 		this.ajNoGf = ajNoGf;
 		this.ajTitle = ajTitle;
 		this.ajType = ajType;
@@ -74,7 +76,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public ZlajMainInfoTb(Integer id,CpyInfoTb cpyInfoTb, String ajNo, String ajNoGf,
+	public ZlajMainInfoTb(Integer id,CpyInfoTb cpyInfoTb, String ajNo, String ajNoQt,String ajNoGf,
 			String ajTitle, Integer ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
 			String ajUpload, String ajRemark, String ajEwyqId,
@@ -82,6 +84,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.id = id;
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
+		this.ajNoQt = ajNoQt;
 		this.ajNoGf = ajNoGf;
 		this.ajTitle = ajTitle;
 		this.ajType = ajType;
@@ -285,6 +288,14 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	public void setAjAddDate(String ajAddDate) {
 		this.ajAddDate = ajAddDate;
+	}
+
+	public String getAjNoQt() {
+		return ajNoQt;
+	}
+
+	public void setAjNoQt(String ajNoQt) {
+		this.ajNoQt = ajNoQt;
 	}
 
 
