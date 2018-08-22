@@ -186,6 +186,8 @@ public class ModuleManagerAction extends DispatchAction {
 				modLevelChi = "钻石";
 			}
 			map_1.put("modLevelChi", modLevelChi);
+			map_1.put("orderNo", mod.getOrderNo());
+			map_1.put("showStatus", mod.getShowStatus());
 			//获取该模块下的模块动作列表
 			List<ModActInfoTb> maList = mam.listInfoByModId(mod.getId());
 			List<Object> list_ma = new ArrayList<Object>();
