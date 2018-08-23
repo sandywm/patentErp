@@ -345,13 +345,15 @@ public class ModuleManagerAction extends DispatchAction {
 			Integer showStatus = CommonTools.getFinalInteger(request.getParameter("showStatus"));
 			String actNameEng = CommonTools.getFinalStr(request.getParameter("actNameEng"));
 			ModuleInfoTb mod = mm.getEntityById(modId);
-			if(!mod.getModName().equals(modName)){
+			if(!mod.getModName().equals(modName)){//模块名字变动
 				//检查是否重名
 				if(mm.listInfoByName(modName).size() > 0){
 					map.put("result", "exist");
 				}else{
 					existFlag = false;
 				}
+			}else{//模块名字不变动
+				existFlag = false;
 			}
 			if(!existFlag){
 				boolean flag = mm.upModule(modId, modName, modPic, resUrl, orderNo, showStatus,modLevel,actNameEng);
@@ -370,13 +372,20 @@ public class ModuleManagerAction extends DispatchAction {
 									maId_up = ma.getId();
 								}else if(ma.getActNameEng().startsWith("list")){
 									maId_list = ma.getId();
+								}else{
+									flag = false;
+									break;
 								}
 							}
-							mam.upMActById(maId_add, "增加", "add"+actNameEng, 1);
-							mam.upMActById(maId_del, "删除", "del"+actNameEng, 2);
-							mam.upMActById(maId_up, "修改", "up"+actNameEng, 3);
-							mam.upMActById(maId_list, "查看", "list"+actNameEng, 4);
-							map.put("result", "success");
+							if(flag){
+								mam.upMActById(maId_add, "增加", "add"+actNameEng, 1);
+								mam.upMActById(maId_del, "删除", "del"+actNameEng, 2);
+								mam.upMActById(maId_up, "修改", "up"+actNameEng, 3);
+								mam.upMActById(maId_list, "查看", "list"+actNameEng, 4);
+								map.put("result", "success");
+							}else{
+								map.put("result", "startError");
+							}
 						}
 					}else{
 						map.put("result", "success");

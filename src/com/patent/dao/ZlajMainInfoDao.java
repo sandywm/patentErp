@@ -98,4 +98,15 @@ public interface ZlajMainInfoDao {
 	 * @return
 	 */
 	List<ZlajMainInfoTb> findFirstInfoByCpyId(Session sess,Integer cpyId);
+	
+	/**
+	 * 根据条件全网获取案件专利（填写优先权时使用）
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-8-23 下午09:36:47
+	 * @param sess
+	 * @param ajNoGf
+	 * @return
+	 */
+	List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess,String ajNoGf);
 }
