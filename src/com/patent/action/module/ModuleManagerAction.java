@@ -130,9 +130,11 @@ public class ModuleManagerAction extends DispatchAction {
 		Map<String,Object> map = new HashMap<String,Object>();
 		boolean endFlag = true;//未过期
 		Integer selRoleId = 0;
+		Integer allModCheckStatus = 1;//所有主模块选中状态
+		String loginType = this.getLoginType(request);
 		if(loginRoleName.equals("super")){//超管获取所有模块列表
 			mList = mm.listInfoByLevel(-1,-1);
-		}else if(this.getLoginType(request).equals("cpyUser")){//代理机构员工获取和代理机构级别相同的模块列表
+		}else if(loginType.equals("cpyUser")){//代理机构员工获取和代理机构级别相同的模块列表
 			//获取当前代理机构是否到期
 			selRoleId = CommonTools.getFinalInteger(request.getParameter("selRoleId"));
 			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
@@ -160,6 +162,7 @@ public class ModuleManagerAction extends DispatchAction {
 				}
 				map.put("roleInfo", list_d);
 			}
+			map.put("endFlag", endFlag);//代理机构增加过期状态
 		}
 		List<Object> list_d = new ArrayList<Object>();
 		for(Iterator<ModuleInfoTb> it = mList.iterator() ; it.hasNext();){
@@ -192,6 +195,7 @@ public class ModuleManagerAction extends DispatchAction {
 			map_1.put("modLevelChi", modLevelChi);
 			map_1.put("orderNo", mod.getOrderNo());
 			map_1.put("showStatus", mod.getShowStatus());
+			Integer mainModCheckStatus = 1;
 			//获取该模块下的模块动作列表
 			List<ModActInfoTb> maList = mam.listInfoByModId(mod.getId());
 			List<Object> list_ma = new ArrayList<Object>();
@@ -206,8 +210,10 @@ public class ModuleManagerAction extends DispatchAction {
 				if(selRoleId > 0){
 					if(arm.listInfoByOpt(selRoleId, ma.getId()).size() == 0){
 						map_2.put("bindFlag",false);
+						mainModCheckStatus *= 0;
 					}else{
 						map_2.put("bindFlag",true);
+						mainModCheckStatus *= 1;
 					}
 				}else{
 					map_2.put("bindFlag",false);
@@ -215,9 +221,25 @@ public class ModuleManagerAction extends DispatchAction {
 				list_ma.add(map_2);
 			}
 			map_1.put("modActInfo", list_ma);
+			if(loginType.equals("cpyUser")){
+				if(mainModCheckStatus.equals(1)){
+					map_1.put("mainBindFlag", true);
+				}else{
+					map_1.put("mainBindFlag", false);
+				}
+				allModCheckStatus *= mainModCheckStatus;
+			}
+			
 			list_d.add(map_1);
 		}
 		map.put("result", list_d);
+		if(loginType.equals("cpyUser")){
+			if(allModCheckStatus.equals(1)){
+				map.put("allBindFlag", true);
+			}else{
+				map.put("allBindFlag", false);
+			}
+		}
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
         pw.write(json); 
