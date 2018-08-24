@@ -105,7 +105,9 @@ public interface ZlajMainInfoDao {
 	 * @ModifiedBy  
 	 * @date  2018-8-23 下午09:36:47
 	 * @param sess
-	 * @param ajNoGf
+	 * @param ajNoGf 专利/申请号
+	 * @param sqAddress 申请地区
+	 * @param sqDate 申请日期
 	 * @return
 	 */
 	List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess,String ajNoGf,String sqAddress,String sqDate);

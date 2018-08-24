@@ -15,4 +15,5 @@
 	<app id="cpy_join_info_Web" class="com.patent.service.impl.CpyJoinInfoManagerImpl"/>
 	<app id="customer_info_Web" class="com.patent.service.impl.CustomerInfoManagerImpl"/>
 	<app id="zlaj_ewyq_info_Web" class="com.patent.service.impl.ZlajEwyqInfoManagerImpl"/>
+	<app id="zlaj_main_info_Web" class="com.patent.service.impl.ZlajMainInfoManagerImpl"/>
 </appContext>
