@@ -108,5 +108,6 @@ public interface ZlajMainInfoDao {
 	 * @param ajNoGf
 	 * @return
 	 */
-	List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess,String ajNoGf);
+	List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess,String ajNoGf,String sqAddress,String sqDate);
+	
 }

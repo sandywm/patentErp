@@ -132,12 +132,13 @@ public class ModuleManagerAction extends DispatchAction {
 		Integer selRoleId = 0;
 		Integer allModCheckStatus = 1;//所有主模块选中状态
 		String loginType = this.getLoginType(request);
+		CpyInfoTb cpy = null;
 		if(loginRoleName.equals("super")){//超管获取所有模块列表
 			mList = mm.listInfoByLevel(-1,-1);
 		}else if(loginType.equals("cpyUser")){//代理机构员工获取和代理机构级别相同的模块列表
 			//获取当前代理机构是否到期
 			selRoleId = CommonTools.getFinalInteger(request.getParameter("selRoleId"));
-			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+			cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
 			String cpyEndDate = CurrentTime.dateConvertToString(cpy.getEndDate());
 			if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0){//已过期
 				endFlag = false;//已过期
@@ -173,7 +174,13 @@ public class ModuleManagerAction extends DispatchAction {
 			map_1.put("modUrl", mod.getResUrl());
 			map_1.put("modLevel", mod.getModLevel());
 			if(endFlag){//未过期
-				map_1.put("useFlag", true);
+				if(loginType.equals("cpyUser") && cpy != null){
+					if(cpy.getCpyLevel() >= mod.getModLevel()){
+						map_1.put("useFlag", true);
+					}else{
+						map_1.put("useFlag", false);
+					}
+				}
 			}else{//已过期
 				if(mod.getModLevel() > 0){//铜牌以上的模块--全部不能设置
 					map_1.put("useFlag", false);
