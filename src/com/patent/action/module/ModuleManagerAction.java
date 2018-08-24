@@ -141,7 +141,7 @@ public class ModuleManagerAction extends DispatchAction {
 				endFlag = false;//已过期
 			}
 			mList = mm.listInfoByLevel(cpy.getCpyLevel(),0);
-			if(selRoleId > 0){//当获取指定角色的模块列表情况时，不用再获取角色列表了
+			if(selRoleId.equals(0)){//当获取指定角色的模块列表情况时，不用再获取角色列表了
 				//获取该代理机构下的用户角色列表
 				List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cpy.getId());
 				List<Object> list_d = new ArrayList<Object>(); 
