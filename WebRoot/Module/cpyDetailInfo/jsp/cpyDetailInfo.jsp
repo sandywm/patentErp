@@ -63,6 +63,7 @@
    			};
    			function renderBasicInfo(list){
    				$("#cpyTxtTit").html("查看代理机构基本信息");
+   				console.log(list)
    				var strHtml = "";
    				var	jiangpaiHtml = "";
    				strHtml += '<ul>';

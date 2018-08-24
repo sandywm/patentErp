@@ -317,7 +317,6 @@
 			        data:field,
 			        success:function (json){
 			        	layer.closeAll('loading');
-			        	console.log(json)
 			        	if(json["result"] == true){
 			        		layer.msg("保存成功",{icon:1,time:1000},function(){
 			        			form.render();

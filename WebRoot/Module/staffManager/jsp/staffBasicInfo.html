@@ -9,16 +9,13 @@
   <title>代理机构员工基本信息</title>
 </head>
 <body style="background:#fff;">
-	<input type="hidden" id="userId"/>
+	<!--  input type="hidden" id="userId"/-->
 	<div id="basicInfo" class="layui-form"></div>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		layui.use(['layer','jquery'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery;
-			$(function(){
-				page.init();
-			});
 			var page = {
 				init : function(){
 					this.onLoad();
@@ -30,14 +27,14 @@
 		 				type:"post",
 		 			   	async:true,
 		 			    dataType:"json",
-		 			    data : {userId : $("#userId").val()},
+		 			    data : {userId : parent.globalUserId},
 		 			    url:"/user.do?action=getUserDetailData",
 		 			    success:function (json){
 		 			    	layer.closeAll("loading");	
 		 			    	if(json.result == "success"){
 		 			    		_this.loadBasicInfo(json);
 		 			    	}else if(json.result == "noUser"){
-		 			    		console.log("查无此人");
+	   			        		$('#basicInfo').css({'text-align':'center','margin-top':20}).html("<i class='iconfont layui-extend-noData' style='font-size:80px;'></i><p>查无此人</p>");
 		 			    	}
 		 			    }
 		  			});
@@ -104,12 +101,12 @@
 					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.outDate +'" readonly class="layui-input"/></div></div>';
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label">最后登录时间</label>';
 					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.lastLoginDate +'" readonly class="layui-input"/></div></div>';
-					
-					
-					
 					$("#basicInfo").html(strHtml);
 				}
 			};
+			$(function(){
+				page.init();
+			});
 		});
 	</script>
 </body> 

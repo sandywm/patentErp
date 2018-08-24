@@ -11,7 +11,6 @@
 	<link href="/plugins/layui/css/modules/layui-icon-extend/iconfont.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
 	<script src="/plugins/pace/pace.min.js"></script>
-	
 	<script type="text/javascript">
 		var roleName = "${sessionScope.login_user_role_name}",
 			loginType = "${login_type}";
@@ -85,6 +84,7 @@
 	                    <!--  iframe id="mainIframe" src="jfm.do?action=goJfPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserDetailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
+	                    <!-- iframe id="mainIframe" src="modM.do?action=goModulePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                </div>
 	            </div>
 	        </div>
@@ -96,7 +96,7 @@
   	</div>
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
-  		
+  		//console.log(roleName + "--roleName" + loginType)
 	  	layui.use(['element','layer'], function(){
 	  		 //动态加载模块
 	        var element = layui.element,
@@ -108,24 +108,43 @@
 	        	if(loginType == 'cpyUser'){//代理机构管理员
 	        		if(roleName == '管理员'){
 	        			liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="3"><i class="iconfont layui-extend-xiugai"></i><cite>代理机构信息修改</cite></a></li>';
+		        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)"><i class="iconfont layui-extend-guanli"></i>代理机构管理</a>';
+		        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" path="user.do?action=goUserPage" tab-id="4">代理机构员工管理</a></dd>';
+		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="role.do?action=goRolePage" tab-id="5">代理机构角色管理</a></dd>';
+		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="jfm.do?action=goJfPage" tab-id="6">技术领域管理</a></dd>';
+		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="7">代理机构角色权限管理</a></dd>';
+		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" tab-id="8">代理机构主/子公司</a></dd></dl></li>';
+			        	liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="9"><i class="iconfont layui-extend-goumai"></i>会员续费/购买</a></li>';
+	        		}else{
+	        			//代理机构下除管理员外其他身份登录动态加载对应模块
+	        			$.ajax({
+	       					type:"post",
+	       			        async:false,
+	       			        dataType:"json",
+	       			        url:"modM.do?action=getSelfModule",
+	       			        success:function (json){
+	       			        	var modInfo = json.modInfo;
+	       			        	console.log(modInfo)
+	       			        	if(modInfo != undefined){
+									for(var i=0;i<modInfo.length;i++){
+										if(modInfo[i].useFlag){
+											liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="'+ modInfo[i].modUrl +'" tab-id="'+ modInfo[i].modId +'_'+ i +'"><cite>'+ modInfo[i].modName +'</cite></a></li>';
+										}
+									}	
+	       			        	}
+	       			        }
+	       				});
 	        		}
-	        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)"><i class="iconfont layui-extend-guanli"></i>代理机构管理</a>';
-	        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" path="user.do?action=goUserPage" tab-id="4">代理机构员工管理</a></dd>';
-	        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="role.do?action=goRolePage" tab-id="5">代理机构角色管理</a></dd>';
-	        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="jfm.do?action=goJfPage" tab-id="6">技术领域管理</a></dd>';
-	        		liItem += '<dd class="navLi"><a href="javascript:void(0)" tab-id="7">代理机构角色权限管理</a></dd>';
-	        		liItem += '<dd class="navLi"><a href="javascript:void(0)" tab-id="8">代理机构主/子公司</a></dd></dl></li>';
-		        	liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="9"><i class="iconfont layui-extend-goumai"></i>会员续费/购买</a></li>';
 	        	}else if(roleName == '申请人/公司' && loginType == 'appUser'){//申请人/公司
 	        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)">任务</a>';
 	        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" tab-id="3">专利任务发布</a></dd>';
 	        		liItem += '<dd class="navLi"><a href="javascript:void(0)" tab-id="4">查看任务进度</a></dd></dl></li>';
 	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="5">查看代理机构</a></li>';
 	        	}else{ //平台用户（超管 财务、总经理）
-	        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)" tab-id="3">模块权限管理</a></li>';
-	        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)" tab-id="4">查看代理机构</a></li>';
-	        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)" tab-id="5">查看专利申请(人/公司)</a></li>';
-	        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)" tab-id="6">费用列表</a></li>';
+	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="3">模块权限管理</a></li>';
+	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="4">查看代理机构</a></li>';
+	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="5">查看专利申请(人/公司)</a></li>';
+	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="6">费用列表</a></li>';
 	        	}
 	        	
 	        	$("#leftSideNav").html(liItem);
@@ -134,7 +153,7 @@
 	        $(function(){
 	        	renderModuleList();
 	        });
-	        //$(".layui-nav-child").find("dd").click(function () {
+	        
 	        $(".navLi").click(function () {
 		        var title = $(this).text();
 		        var path = $(this).children('a').attr('path');
@@ -191,8 +210,12 @@
 				  title:'提示',
 				  skin: 'layui-layer-molv',
 				  btn: ['确定','取消'] //按钮
-				}, function(){
-				  window.location.href = "login.do?action=loginOut";
+				},function(){
+					if(roleName == 'super'){
+						window.location.href = "login.do?action=spLoginPage";
+					}else{
+						window.location.href = "login.do?action=loginOut";
+					}
 				});
 			});
 	    });

@@ -100,7 +100,7 @@
 				upFlag = "${ requestScope.upFlag }",
 				addFlag = "${ requestScope.addFlag }",
 				loadFlag = false,
-				upRoleList = [],upRoleIndex = 0,upRoleListName=[];
+				upRoleList = [],upRoleIndex = 0,upRoleListName=[],globalUserId=0;
 			layui.use(['layer','jquery','table','form','laydate'],function(){
 				var layer = layui.layer,
 					$ = layui.jquery,
@@ -214,7 +214,7 @@
 							{field : 'yxStatus', title: '账号状态', width:100 , align:'center', templet: '#isAccYxTpl'},
 							{field : 'lzStatus', title: '离职状态', width:100 , align:'center',templet: '#isLzTpl'},
 							{field : 'outDate', title: '离职时间', width:120 , align:'center'},
-							{field : '', title: '操作', width:265 , fixed: 'right', align:'center',templet : function(d){
+							{field : '', title: '操作', width:290 , fixed: 'right', align:'center',templet : function(d){
 								if(d.selfFlag != true){
 									return '<a class="layui-btn layui-btn-primary layui-btn-xs viewDetailInfoBtn" lay-event="viewInfo" name="'+ d.name +'" userId="'+ d.userId +'"><i class="layui-icon layui-icon-search"></i>查看</a> <a class="layui-btn layui-btn-xs editInfoBtns" lay-event="updateInfo" name="'+ d.name +'"  userId="'+ d.userId +'"><i class="layui-icon layui-icon-edit"></i>编辑身份</a> <a class="layui-btn layui-btn-danger layui-btn-xs resetPassword" lay-event="resetPass" name="'+ d.name +'" userId="'+ d.userId +'"><i class="layui-icon layui-icon-refresh"></i>重置密码</a>';	
 								}else{
@@ -344,7 +344,8 @@
 					if(obj.event === 'viewInfo'){ //查看员工信息
 						var userId = $(this).attr("userId"),
 							name = $(this).attr("name");
-						parent.layer.open({
+						globalUserId = userId;
+						layer.open({
 							title:'员工' + name + '的基本信息',
 							type: 2,
 						  	area: ['700px', '450px'],
@@ -353,9 +354,9 @@
 						  	shadeClose :true,
 						  	content: "/Module/staffManager/jsp/staffBasicInfo.html",
 						  	success : function(layero, index){
-						  		var body = parent.layer.getChildFrame('body', index);
+						  		//var body = parent.layer.getChildFrame('body', index);
 						  		//var iframeWin = parent.window[layero.find('iframe')[0]['name']]; 
-						  		body.find("#userId").val(userId);
+						  		//body.find("#userId").val(userId);
 						  	}
 						});	
 					}else if(obj.event === 'updateInfo'){

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/modManager/css/modManager.css" rel="stylesheet" type="text/css"/>
+  	<title>编辑主模块</title>
+</head>
+<body style="background:#fff;">
+	<input id="isHasData" type="hidden" value="1"/>
+	<div id="addEditWrap" class="addEditMainModWrap layui-form"></div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','jquery','form'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form;
+			var page = {
+				init : function(){
+					this.onLoad();
+				},
+				onLoad : function(){
+					var _this = this;
+					layer.load('1');
+					$.ajax({
+	   					type:"post",
+	   			        async:false,
+	   			        dataType:"json",
+	   			        data:{modId:parent.globalModId},
+	   			        url:'/modM.do?action=getSpecModule',
+	   			        success:function (json){
+	   			        	layer.closeAll('loading');
+	   			        	if(json.result == 'success'){
+	   			        		_this.loadEditModName(json);
+	   			        	}else if(json.result == 'noInfo'){
+	   			        		$('#isHasData').val(0);
+	   			        		$('#addEditWrap').css({'text-align':'center','margin-top':20}).html("<i class='iconfont layui-extend-noData' style='font-size:80px;'></i><p>查无此人</p>");
+	   			        	}
+	   			        }
+	   				});
+				},
+				loadEditModName : function(json){
+					var strHtml = '';
+					strHtml += '<div class="comAddEditDiv"><span class="fl">模块中文名字：</span><input id="inpMainModName_cn" type="text" value="'+ json.modName +'" placeholder="请输入模块中文名字(15字以内)" maxlength="15"></div>';
+					strHtml += '<div class="comAddEditDiv"><span class="fl">模块英文名字：</span><input id="inpMainModName_eng" type="text" value="'+ json.actNameEng +'" placeholder="请输入模块英文名字"></div>';
+					strHtml += '<div class="comAddEditDiv"><span class="margLSpan_url fl">模块动作Url：</span><input id="inpMainModUrl" type="text" value="'+ json.resUrl +'" placeholder="请输入模块动作url"></div>';
+					strHtml += '<div class="comAddEditDiv"><span class="margLSpan_order fl">模块序列号：</span><input id="inpMainModOrderNo" type="text" value="'+ json.orderNo +'" placeholder="模块排列序列号(大于0的正整数)"></div>';
+					strHtml += '<div class="comAddEditDiv"><span class="margLSpan_level fl">模块权限等级：</span>';
+	        		strHtml += '<input type="hidden" id="mainModLevelInp" value="'+ json.modLevel +'"/>';
+	        		if(json.modLevel == 0){
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="0" title="铜牌" checked/>';
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="1" title="银牌"/>';
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="2" title="金牌"/>';
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="3" title="钻石"/>';
+    				}else if(json.modLevel == 1){
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="0" title="铜牌"/>';
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="1" title="银牌" checked/>';
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="2" title="金牌"/>';
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="3" title="钻石"/>';
+    				}else if(json.modLevel == 2){
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="0" title="铜牌"/>';
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="1" title="银牌"/>';
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="2" title="金牌" checked/>';
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="3" title="钻石"/>';
+    				}else if(json.modLevel == 3){
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="0" title="铜牌"/>';
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="1" title="银牌"/>';
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="2" title="金牌"/>';
+    					strHtml += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="3" title="钻石" checked/>';
+    				}
+    				strHtml += '</div>';			
+    				strHtml += '<div class="comAddEditDiv"><span class="margLSpan_show fl">是否可见：</span>';
+    				strHtml += '<input type="hidden" id="mainModShowInp" value="'+ json.showStatus +'"/>';
+    				if(json.showStatus == 0){
+    					strHtml += '<input type="radio" name="showStatus" lay-filter="modShowFilter" value="0" title="可见" checked/>';
+    					strHtml += '<input type="radio" name="showStatus" lay-filter="modShowFilter" value="1" title="不可见"/>';
+    				}else if(json.showStatus == 1){
+    					strHtml += '<input type="radio" name="showStatus" lay-filter="modShowFilter" value="0" title="可见"/>';
+    					strHtml += '<input type="radio" name="showStatus" lay-filter="modShowFilter" value="1" title="不可见" checked/>';
+    				}
+    				strHtml += '</div>';
+    				strHtml += '</div>';
+    				$('#addEditWrap').html(strHtml);
+    				form.render();
+				}
+			};
+			//监听添加主模块，选择模块等级事件
+			form.on('radio(modLevelFilter)', function(data){
+				$('#mainModLevelInp').val(data.value);
+			}); 
+			//监听添加主模块选择是否可见事件
+			form.on('radio(modShowFilter)', function(data){
+				$('#mainModShowInp').val(data.value);
+			});
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>

@@ -33,7 +33,7 @@
     </action>
     <!-- 模块管理 -->
     <action path="/modM" parameter="action" scope="request" type="com.patent.action.module.ModuleManagerAction">
-      <set-property property="cancellable" value="true" />
+      <forward name="modulePage" path="/Module/modManager/jsp/modManager.jsp"></forward><!-- 角色管理页面 -->
     </action>
     <!-- 专业技术区域管理 -->
     <action path="/jfm" parameter="action" scope="request" type="com.patent.action.jfield.JsFieldManagerAction">
