@@ -129,33 +129,37 @@ public class ModuleManagerAction extends DispatchAction {
 		List<ModuleInfoTb> mList = new ArrayList<ModuleInfoTb>();
 		Map<String,Object> map = new HashMap<String,Object>();
 		boolean endFlag = true;//未过期
+		Integer selRoleId = 0;
 		if(loginRoleName.equals("super")){//超管获取所有模块列表
 			mList = mm.listInfoByLevel(-1,-1);
 		}else if(this.getLoginType(request).equals("cpyUser")){//代理机构员工获取和代理机构级别相同的模块列表
 			//获取当前代理机构是否到期
+			selRoleId = CommonTools.getFinalInteger(request.getParameter("selRoleId"));
 			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
 			String cpyEndDate = CurrentTime.dateConvertToString(cpy.getEndDate());
 			if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0){//已过期
 				endFlag = false;//已过期
 			}
 			mList = mm.listInfoByLevel(cpy.getCpyLevel(),0);
-			//获取该代理机构下的用户角色列表
-			List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cpy.getId());
-			List<Object> list_d = new ArrayList<Object>(); 
-			if(crList.size() > 0){
-				for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
-					CpyRoleInfoTb cr = it.next();
-					if(cr.getRoleName().equals("管理员")){
-						continue;//不显示出管理员
-					}else{
-						Map<String,Object> map_d = new HashMap<String,Object>();
-						map_d.put("roleId", cr.getId());
-						map_d.put("roleName", cr.getRoleName());
-						list_d.add(map_d);
+			if(selRoleId > 0){//当获取指定角色的模块列表情况时，不用再获取角色列表了
+				//获取该代理机构下的用户角色列表
+				List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cpy.getId());
+				List<Object> list_d = new ArrayList<Object>(); 
+				if(crList.size() > 0){
+					for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
+						CpyRoleInfoTb cr = it.next();
+						if(cr.getRoleName().equals("管理员")){
+							continue;//不显示出管理员
+						}else{
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("roleId", cr.getId());
+							map_d.put("roleName", cr.getRoleName());
+							list_d.add(map_d);
+						}
 					}
 				}
+				map.put("roleInfo", list_d);
 			}
-			map.put("roleInfo", list_d);
 		}
 		List<Object> list_d = new ArrayList<Object>();
 		for(Iterator<ModuleInfoTb> it = mList.iterator() ; it.hasNext();){
@@ -191,7 +195,6 @@ public class ModuleManagerAction extends DispatchAction {
 			//获取该模块下的模块动作列表
 			List<ModActInfoTb> maList = mam.listInfoByModId(mod.getId());
 			List<Object> list_ma = new ArrayList<Object>();
-			Integer selRoleId = CommonTools.getFinalInteger(request.getParameter("selRoleId"));
 			for(Iterator<ModActInfoTb> it_1 = maList.iterator() ; it_1.hasNext();){
 				ModActInfoTb ma = it_1.next();
 				Map<String,Object> map_2 = new HashMap<String,Object>();
@@ -693,7 +696,6 @@ public class ModuleManagerAction extends DispatchAction {
 				msg = "fail";
 			}
 			if(!selMaIdStr.equals("") && flag){
-				selMaIdStr = selMaIdStr.substring(0, selMaIdStr.length() - 1);
 				//先后去指定角色存在的绑定关系
 				List<ActRoleInfoTb> arList = arm.listInfoByOpt(selRoleId, 0);
 				if(arList.size() > 0){
@@ -707,13 +709,11 @@ public class ModuleManagerAction extends DispatchAction {
 					arm.delBatchInfoById(idStr);
 					//批量增加绑定关系
 					if(!selMaIdStr.equals("")){
-						selMaIdStr = selMaIdStr.substring(0, selMaIdStr.length() - 1);
 						arm.addBatchARole(selRoleId, selMaIdStr);
 					}
 				}else{
 					//直接增加绑定关系
 					if(!selMaIdStr.equals("")){
-						selMaIdStr = selMaIdStr.substring(0, selMaIdStr.length() - 1);
 						arm.addBatchARole(selRoleId, selMaIdStr);
 					}
 				}
