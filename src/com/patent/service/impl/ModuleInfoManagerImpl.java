@@ -138,4 +138,20 @@ public class ModuleInfoManagerImpl implements ModuleInfoManager{
 		}
 	}
 
+	@Override
+	public List<ModuleInfoTb> listMaxOrderInfo() throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mDao = (ModuleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MODULE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return mDao.findMaxOrderInfo(sess);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取当前最大的排序号的模块信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

@@ -117,7 +117,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 	public List<ZlajMainInfoTb> findFirstInfoByCpyId(Session sess, Integer cpyId) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajMainInfoTb as zl where zl.cpyInfoTb.id = "+cpyId + " order by zl.ajNo desc";
-		return sess.createQuery(hql).setFirstResult(1).setMaxResults(1).list();//hql不支持limit 1;
+		return sess.createQuery(hql).setFirstResult(0).setMaxResults(1).list();//hql不支持limit 1;
 	}
 
 	@Override

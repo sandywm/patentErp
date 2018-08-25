@@ -277,13 +277,18 @@ public class ModuleManagerAction extends DispatchAction {
 			String modName = Transcode.unescape(request.getParameter("modName"), request);
 			String modPic = "";
 			String resUrl = request.getParameter("resUrl");
-			Integer orderNo = Integer.parseInt(request.getParameter("orderNo"));
+			Integer orderNo = 1;
 			Integer modLevel = Integer.parseInt(request.getParameter("modLevel"));
 			Integer showStatus = CommonTools.getFinalInteger(request.getParameter("showStatus"));
 			String actNameEng = CommonTools.getFinalStr(request.getParameter("actNameEng"));
 			if(mm.listInfoByName(modName).size() > 0){
 				map.put("result", "exist");
 			}else{
+				//自动获取最大序列号
+				List<ModuleInfoTb> mList = mm.listMaxOrderInfo();
+				if(mList.size() > 0){
+					orderNo = mList.get(0).getOrderNo() + 1;
+				}
 				Integer modId = mm.addModule(modName, modPic, resUrl, orderNo, showStatus, modLevel,actNameEng);
 				if(modId > 0){
 					//增加子模块
@@ -805,7 +810,7 @@ public class ModuleManagerAction extends DispatchAction {
 								if(endFlag){//未过期
 									map_d.put("useFlag", true);
 								}else{
-									if(cpy.getCpyLevel() > 0){//铜牌以上的会员
+									if(module.getModLevel() > 0){//铜牌以上的模块
 										map_d.put("useFlag", false);
 									}else{//铜牌的模块一直免费使用
 										map_d.put("useFlag", true);
@@ -832,7 +837,7 @@ public class ModuleManagerAction extends DispatchAction {
 									if(endFlag){//未过期
 										map_d.put("useFlag", true);
 									}else{
-										if(cpy.getCpyLevel() > 0){//铜牌以上的会员
+										if(module.getModLevel() > 0){//铜牌以上的模块
 											map_d.put("useFlag", false);
 										}else{//铜牌的模块一直免费使用
 											map_d.put("useFlag", true);

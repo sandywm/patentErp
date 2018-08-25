@@ -73,4 +73,14 @@ public interface ModuleInfoDao {
 	 * @return
 	 */
 	ModuleInfoTb getEntityById(Session sess,Integer id);
+	
+	/**
+	 * 获取最大的排序号的模块信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-25 上午09:12:40
+	 * @param sess
+	 * @return
+	 */
+	List<ModuleInfoTb> findMaxOrderInfo(Session sess);
 }

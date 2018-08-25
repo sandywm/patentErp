@@ -86,5 +86,14 @@ public interface ModuleInfoManager {
 	 * @throws WEBException
 	 */
 	ModuleInfoTb getEntityById(Integer id) throws WEBException;
-
+	
+	/**
+	 * 获取当前最大的排序号的模块信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-25 上午09:10:26
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ModuleInfoTb> listMaxOrderInfo() throws WEBException;
 }

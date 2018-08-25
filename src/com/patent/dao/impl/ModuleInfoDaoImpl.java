@@ -72,4 +72,11 @@ public class ModuleInfoDaoImpl implements ModuleInfoDao{
 		return null;
 	}
 
+	@Override
+	public List<ModuleInfoTb> findMaxOrderInfo(Session sess) {
+		// TODO Auto-generated method stub
+		String hql = " from ModuleInfoTb as mi order by mi.orderNo desc";
+		return sess.createQuery(hql).setFirstResult(0).setMaxResults(1).list();
+	}
+
 }
