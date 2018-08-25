@@ -40,6 +40,24 @@ public class CommonTools {
 	}
 	
 	/**
+	 * null转换为""
+	 * @description
+	 * @author wm
+	 * @date 2018-8-25 下午06:01:28
+	 * @param inputStr
+	 * @param request
+	 * @return
+	 */
+	public static String getFinalStr(String inputStr,HttpServletRequest request){
+		inputStr = String.valueOf(request.getParameter(inputStr));
+		if(inputStr == "null"){
+			return "";
+		}else{
+			return inputStr;
+		}
+	}
+	
+	/**
 	 * 输入的数字类型转换成数据类型
 	 * @description
 	 * @author wm

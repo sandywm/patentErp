@@ -30,7 +30,6 @@ public interface ZlajMainInfoManager {
 	 * @param ajApplyDate 申请日期
 	 * @param ajStatus 案件状态
 	 * @param cpyId 代理机构编号
-	 * @param addDate 添加日期
 	 * @return
 	 * @throws WEBException
 	 */
@@ -38,10 +37,10 @@ public interface ZlajMainInfoManager {
 			String ajTitle, Integer ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			Date ajApplyDate, String ajStatus,Integer cpyId,String addDate) throws WEBException;
+			Date ajApplyDate, String ajStatus,Integer cpyIde) throws WEBException;
 	
 	/**
-	 * 根据条件分页获取专利列表
+	 * 根据条件分页获取专利列表(ID降序)
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-8-24 下午10:20:56

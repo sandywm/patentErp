@@ -34,7 +34,7 @@ public interface ZlajMainInfoDao {
 	void update(Session sess,ZlajMainInfoTb ajInfo);
 	
 	/**
-	 * 根据条件分页获取专利基本信息表列表（按照时间先后顺序降序排列）
+	 * 根据条件分页获取专利基本信息表列表（Id降序排列）
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-8-22 下午10:10:36

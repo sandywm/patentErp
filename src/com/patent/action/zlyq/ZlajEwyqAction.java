@@ -253,7 +253,6 @@ public class ZlajEwyqAction extends DispatchAction {
 					map_d.put("id", yq.getId());
 					map_d.put("yqContent", yq.getYqContent());
 					String yqType_db = yq.getYqType();
-					map_d.put("yqType", yqType_db);
 					String yqTypeChi = "";
 					if(yqType_db.indexOf("fm") >= 0){
 						yqTypeChi = "发明,";

@@ -55,6 +55,10 @@
     <action path="/zlyq" parameter="action" scope="request" type="com.patent.action.zlyq.ZlajEwyqAction">
       <set-property property="cancellable" value="true" />
     </action>
+    <!-- 专利基本信息管理 -->
+    <action path="/zlm"  parameter="action" scope="request" type="com.patent.action.zl.ZlMainAction">
+      <set-property property="cancellable" value="true" />
+    </action>
 
   </action-mappings>
 

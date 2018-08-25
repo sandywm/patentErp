@@ -67,6 +67,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 		if(!sDate.equals("")){
 			hql += " and SUBSTR(zl.ajAddDate,1,7) >= '"+sDate+"' and SUBSTR(zl.ajAddDate,1,7) <= '"+eDate+"'";
 		}
+		hql += " order by zl.id desc";
 		return sess.createQuery(hql).setFirstResult(offset).setMaxResults(pageSize).list();
 	}
 
