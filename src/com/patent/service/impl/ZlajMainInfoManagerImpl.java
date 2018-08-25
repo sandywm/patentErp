@@ -3,6 +3,7 @@ package com.patent.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.patent.dao.CpyInfoDao;
@@ -11,6 +12,7 @@ import com.patent.exception.WEBException;
 import com.patent.factory.DaoFactory;
 import com.patent.module.ZlajMainInfoTb;
 import com.patent.service.ZlajMainInfoManager;
+import com.patent.tools.HibernateUtil;
 import com.patent.util.Constants;
 
 public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
@@ -28,6 +30,8 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

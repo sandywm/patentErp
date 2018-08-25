@@ -190,12 +190,10 @@ public class CpyManagerAction extends DispatchAction {
 				map_d.put("cpyLxr", cpy.getCpyLxr());
 				map_d.put("lxrTel", cpy.getLxrTel());
 				map_d.put("lxrEmail", cpy.getLxrEmail());
-				map_d.put("cpySubIdStr", cpy.getCpySubId());
-				map_d.put("cpyParIdStr", cpy.getCpyParId());
 				map_d.put("cpyUrl", cpy.getCpyUrl());
 				map_d.put("cpyProfile", cpy.getCpyProfile());
-				map_d.put("signDate", cpy.getSignDate());
-				map_d.put("endDate", cpy.getEndDate());
+				map_d.put("signDate", CurrentTime.dateConvertToString(cpy.getSignDate()));
+				map_d.put("endDate", CurrentTime.dateConvertToString(cpy.getEndDate()));
 				map_d.put("hotStatus", cpy.getHotStatus());
 				map_d.put("levelNum", cpy.getCpyLevel());
 				if(cpy.getCpyLevel().equals(0)){
@@ -322,6 +320,32 @@ public class CpyManagerAction extends DispatchAction {
 				map.put("signDate", CurrentTime.dateConvertToString(cpy.getSignDate()));
 				map.put("endDate", CurrentTime.dateConvertToString(cpy.getEndDate()));
 				map.put("hotStatus", cpy.getHotStatus());
+				String cpySubIdStr = cpy.getCpySubId();
+				Integer cpyParId = cpy.getCpyParId();
+				String cpySubName = "";
+				String cpyParName = "";
+				if(!cpySubIdStr.equals("")){
+					String[] cpySubIdArr = cpySubIdStr.split(",");
+					for(Integer i = 0 ; i < cpySubIdArr.length ; i++){
+						List<CpyInfoTb> subList = cm.listInfoById(Integer.parseInt(cpySubIdArr[i]));
+						if(subList.size() > 0){
+							cpySubName += subList.get(0).getCpyName() + ",";
+						}
+					}
+					if(!cpySubName.equals("")){
+						cpySubName = cpySubName.substring(0, cpySubName.length() - 1);
+					}
+				}else{
+					cpySubName = "";
+				}
+				if(cpyParId > 0){
+					List<CpyInfoTb> parList = cm.listInfoById(cpyParId);
+					if(parList.size() > 0){
+						cpyParName = parList.get(0).getCpyName();
+					}
+				}
+				map.put("cpySubInfo", cpySubName);
+				map.put("cpyParInfo", cpyParName);
 				Integer cpyLevel = cpy.getCpyLevel();
 				String cpyLevelChi = "铜牌";
 				if(cpyLevel.equals(0)){
