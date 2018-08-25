@@ -84,7 +84,7 @@
 	                    <!--  iframe id="mainIframe" src="jfm.do?action=goJfPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserDetailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
-	                    <!-- iframe id="mainIframe" src="modM.do?action=goModulePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
+	                    <!--  iframe id="mainIframe" src="modM.do?action=goModulePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->>
 	                </div>
 	            </div>
 	        </div>
@@ -124,11 +124,12 @@
 	       			        url:"modM.do?action=getSelfModule",
 	       			        success:function (json){
 	       			        	var modInfo = json.modInfo;
-	       			        	console.log(modInfo)
 	       			        	if(modInfo != undefined){
 									for(var i=0;i<modInfo.length;i++){
 										if(modInfo[i].useFlag){
 											liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="'+ modInfo[i].modUrl +'" tab-id="'+ modInfo[i].modId +'_'+ i +'"><cite>'+ modInfo[i].modName +'</cite></a></li>';
+										}else{
+											liItem += '<li class="layui-nav-item outDateLi"><a href="javascript:void(0)"><cite>'+ modInfo[i].modName +'</cite></a></li>';
 										}
 									}	
 	       			        	}
@@ -192,6 +193,15 @@
 					i--;
 				}		
 			});
+	        $('.outDateLi').on('click',function(){
+	        	layer.confirm('您所属代理机构的会员已到期，之前的高级功能将不能使用，如需使用，请联系代理机构及时续费购买！',{
+					title:'所属代理机构会员到期提醒',
+				  	skin: 'layui-layer-molv',
+				  	btn: ['确定','取消'] //按钮
+				},function(index){
+					layer.close(index);
+				});	
+	        })
 			//左侧导航栏收缩提示
 			$('#animation-left-nav').hover(function(){
 				if(i==0){
