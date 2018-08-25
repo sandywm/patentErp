@@ -286,7 +286,7 @@ public class CpyManagerAction extends DispatchAction {
 	}
 	
 	/**
-	 * 获取代理机构详细信息
+	 * 获取代理机构详细信息(超管用)
 	 * @description
 	 * @author wm
 	 * @date 2018-8-25 下午03:27:07
