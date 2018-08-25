@@ -22,23 +22,24 @@
   					<div class="layui-card-header posRel">
   						<span>模块权限管理</span>
   						<a id="addMod" class="posAbs newAddBtn" opts="addBtn" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加模块</a>
+  						<div class="roleList clearfix fr">
+  							<input id="roleIdInp" type="hidden" value="0"/>
+  							<div id="roleLists" class="fl layui-form"></div>
+  							<button class="layui-btn saveMod fl">保存</button>
+  						</div>
   					</div>
   					<div class="layui-card-body" pad15>
   						<input type="hidden" id="madIdListInp"/>
-  						<div class="roleList clearfix">
-  							<input id="roleIdInp" type="hidden" value="0"/>
-  							<button class="layui-btn saveMod fr">保存</button>
-  							<div id="roleLists" class="fr layui-form"></div>
-  						</div>
   						<div id="moduleList" class="moduleList"></div>
   					</div>
   				</div>
   			</div>
   		</div>
   	</div>
+  	<i id="outDateTip" class="iconfont layui-extend-tishi"></i>
     <script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var roleName = parent.roleName,globalOpts = "addBtn",globalModId=0,madIdArray=[],roleList=[];
+		var roleName = parent.roleName,globalOpts = "addBtn",globalModId=0,madIdArray=[],roleList=[],outDate=false;
 		layui.use(['layer','jquery','form'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
@@ -86,12 +87,12 @@
 	   			        dataType:"json",
 	   			        url:url,
 	   			        success:function (json){
-	   			        	console.log(json)
 	   			        	layer.closeAll("loading");
 	   			        	var modList = json.result,
 	   			        		allBindFlag = json.allBindFlag,
 	   			        		endFlag = json.endFlag;
 	   			        	roleList = json.roleInfo;
+	   			        	outDate = endFlag;
 	   			        	getModuleList(modList,allBindFlag,endFlag);
 	   			        }
 	   				});
@@ -112,39 +113,43 @@
 				bindEvent:function(){
 					var _this = this;
 					$('.saveMod').on('click',function(){
-						if($('#roleIdInp').val() == 0){
-							layer.msg('请选择您要绑定的角色', {icon:5,anim:6,time:1000});
-							return;
-						}
-						madIdArray.length = 0;
-						$('.sonModSelInp').each(function(i){
-							var checkStatus = $('.sonModSelInp').eq(i).prop('checked');
-							if(checkStatus){
-								madIdArray.push($('.sonModSelInp').eq(i).val());
+						if(roleName == '管理员'){
+							if($('#roleIdInp').val() == 0){
+								layer.msg('请选择您要绑定的角色', {icon:5,anim:6,time:1000});
+								return;
 							}
-						});
-						$('#madIdListInp').val(madIdArray.join(','));
-						if($('#madIdListInp').val() == ''){
-							layer.msg('请选择您要绑定的模块', {icon:5,anim:6,time:1000});
+							madIdArray.length = 0;
+							$('.sonModSelInp').each(function(i){
+								var checkStatus = $('.sonModSelInp').eq(i).prop('checked');
+								if(checkStatus){
+									madIdArray.push($('.sonModSelInp').eq(i).val());
+								}
+							});
+							$('#madIdListInp').val(madIdArray.join(','));
+							if($('#madIdListInp').val() == ''){
+								layer.msg('请选择您要绑定的模块', {icon:5,anim:6,time:1000});
+							}else{
+								layer.load('1');
+								$.ajax({
+				   					type:"post",
+				   			        async:false,
+				   			        dataType:"json",
+				   			        data:{selRoleId:$('#roleIdInp').val(),selMaIdStr:$('#madIdListInp').val()},
+				   			        url:"modM.do?action=bindMod",
+				   			        success:function (json){
+				   			        	layer.closeAll("loading");
+				   			        	if(json['result'] == 'success'){
+				   			        		layer.msg('绑定模块成功',{icon:1,time:1000},function(){
+				   			        			$('#madIdListInp').val('');
+		    				        		});
+				   			        	}else if(json['result'] == 'noAbility'){
+				   			        		layer.msg('抱歉，您暂无权限为角色绑定模块', {icon:5,anim:6,time:1000});
+				   			        	}
+				   			        }
+				   				});
+							}
 						}else{
-							layer.load('1');
-							$.ajax({
-			   					type:"post",
-			   			        async:false,
-			   			        dataType:"json",
-			   			        data:{selRoleId:$('#roleIdInp').val(),selMaIdStr:$('#madIdListInp').val()},
-			   			        url:"modM.do?action=bindMod",
-			   			        success:function (json){
-			   			        	layer.closeAll("loading");
-			   			        	if(json['result'] == 'success'){
-			   			        		layer.msg('绑定模块成功',{icon:1,time:1000},function(){
-			   			        			$('#madIdListInp').val('');
-	    				        		});
-			   			        	}else if(json['result'] == 'noAbility'){
-			   			        		layer.msg('抱歉，您暂无权限为角色绑定模块', {icon:5,anim:6,time:1000});
-			   			        	}
-			   			        }
-			   				});
+							layer.msg('抱歉，您暂无权限对模块保存操作', {icon:5,anim:6,time:1000});
 						}
 					});
 					//增加模块
@@ -156,7 +161,7 @@
         					addEditMainModCon += '<div class="comAddEditDiv"><span class="fl">模块中文名字：</span><input id="inpMainModName_cn" type="text" placeholder="请输入模块中文名字(15字以内)" maxlength="15"></div>';
         					addEditMainModCon += '<div class="comAddEditDiv"><span class="fl">模块英文名字：</span><input id="inpMainModName_eng" type="text" placeholder="请输入模块英文名字"></div>';
         					addEditMainModCon += '<div class="comAddEditDiv"><span class="margLSpan_url fl">模块动作Url：</span><input id="inpMainModUrl" type="text" placeholder="请输入模块动作url"></div>';
-        					addEditMainModCon += '<div class="comAddEditDiv"><span class="margLSpan_order fl">模块序列号：</span><input id="inpMainModOrderNo" type="text" placeholder="模块排列序列号(大于0的正整数)"></div>';
+        					//addEditMainModCon += '<div class="comAddEditDiv"><span class="margLSpan_order fl">模块序列号：</span><input id="inpMainModOrderNo" type="text" placeholder="模块排列序列号(大于0的正整数)"></div>';
         					addEditMainModCon += '<div class="comAddEditDiv"><span class="margLSpan_level fl">模块权限等级：</span>';
         					addEditMainModCon += '<input type="hidden" id="mainModLevelInp" value="0"/>';
         					addEditMainModCon += '<input type="radio" name="modLevel" lay-filter="modLevelFilter" value="0" title="铜牌" checked/>';
@@ -175,7 +180,7 @@
     	        				type: 1,
     	        				skin:'layui-layer-molv', //样式类名
     	        				closeBtn: 0, //不显示关闭按钮
-    	        				area : ['500px','390px'],
+    	        				area : ['500px','330px'],
     	        			  	content: addEditMainModCon,
     	        			  	btn : ['确定','取消'],
     	        			  	btnAlign:'c',
@@ -288,7 +293,7 @@
 						inpMainModName_cn = globalOpts == 'addBtn' ? $.trim($('#inpMainModName_cn').val()) : _this.data.inpMainModName_cn,
 						inpMainModName_eng = globalOpts == 'addBtn' ? $.trim($('#inpMainModName_eng').val()) : _this.data.inpMainModName_eng,
 						inpMainModUrl = globalOpts == 'addBtn' ? $.trim($('#inpMainModUrl').val()) : _this.data.inpMainModUrl,
-						inpMainModOrderNo = globalOpts == 'addBtn' ? $.trim($('#inpMainModOrderNo').val()) : _this.data.inpMainModOrderNo,
+						inpMainModOrderNo = globalOpts == 'addBtn' ? "" : _this.data.inpMainModOrderNo,
 						mainModLevelInp = globalOpts == 'addBtn' ? $('#mainModLevelInp').val() : _this.data.mainModLevelInp,
 						mainModShowInp = globalOpts == 'addBtn' ? $('#mainModShowInp').val() : _this.data.mainModShowInp,
 						regCN = /^[\u4E00-\u9FA5]+$/,
@@ -300,7 +305,7 @@
 						layer.msg('模块英文名字不能为空', {icon:5,anim:6,time:1000});
 					}else if(inpMainModUrl == ''){
 						layer.msg('模块动作Url不能为空', {icon:5,anim:6,time:1000});
-					}else if(inpMainModOrderNo == ''){
+					}else if(inpMainModOrderNo == ''  && globalOpts == 'editBtn'){
 						layer.msg('模块序列号不能为空', {icon:5,anim:6,time:1000});
 					}else{
 						if(!regCN.test(inpMainModName_cn)){
@@ -309,14 +314,14 @@
 							layer.msg('模块英文名字应为英语', {icon:5,anim:6,time:1000});
 						}else if(regCN.test(inpMainModUrl)){
 							layer.msg('模块动作Url不能含有汉字', {icon:5,anim:6,time:1000});
-						}else if(!regNum.test(inpMainModOrderNo)){
+						}else if(!regNum.test(inpMainModOrderNo) && globalOpts == 'editBtn'){
 							layer.msg('模块序列号应为大于0的正整数', {icon:5,anim:6,time:1000});
 						}else{
 							//执行ajax
 							var url = '';
 							if(globalOpts == 'addBtn'){//表示增加主模块
 								url = 'modM.do?action=addModule';
-								var field = {modName:inpMainModName_cn,actNameEng:inpMainModName_eng,resUrl:inpMainModUrl,orderNo:inpMainModOrderNo,modLevel:mainModLevelInp,showStatus:mainModShowInp};
+								var field = {modName:inpMainModName_cn,actNameEng:inpMainModName_eng,resUrl:inpMainModUrl,modLevel:mainModLevelInp,showStatus:mainModShowInp};
 							}else if(globalOpts == 'editBtn'){//表示编辑主模块
 								url = 'modM.do?action=upModule';
 								var field = {modId : modId,modName:inpMainModName_cn,actNameEng:inpMainModName_eng,resUrl:inpMainModUrl,orderNo:inpMainModOrderNo,modLevel:mainModLevelInp,showStatus:mainModShowInp};;
@@ -445,8 +450,6 @@
 					}else{
 						//useFlag为false时给左侧主模块增加disabled 左侧所有子模块增加disabled 给主模块父级增加灰色
 						$('.singleRowSelInp').eq(i).attr('disabled',true);
-						aInp.attr('disabled',true);
-						aInp.parent().parent().parent().addClass('disabledBg');
 					}
 
 				});
@@ -480,9 +483,10 @@
 			    				$('#selAllModInp').prop('checked',false).prev().removeClass('hasActive');
 			    			}
 			    		});
-		    		}/*else{
-		    			$('.sonModSelInp').eq(i).attr('disabled',true);
-		    		}*/
+		    		}else{
+		    			$('.sonModSelInp').eq(i).attr('disabled',true).css({'cursor':'default'});
+		    			$('.sonModSelInp').eq(i).parent().parent().parent().addClass('disabledBg');
+		    		}
 		    	});
 			}
 			//管理员身份下选择角色
@@ -502,11 +506,12 @@
 			
 			//加载模块列表list
 			function getModuleList(modList,allBindFlag,endFlag){
-				console.log(modList)
 				var strHtml = '';
 				//渲染模拟表格头部
 				if(roleName == 'super'){
 					strHtml += '<ul id="modTit" class="noSelAll modListTit clearfix">';
+					//序号
+					strHtml += '<li class="orderNumWid">序号</li>';
 				}else if(roleName = '管理员'){
 					strHtml += '<ul id="modTit" class="hasSelAll modListTit clearfix">';
 					strHtml +='<li class="selAllModWid">';
@@ -527,7 +532,17 @@
 				}
 				for(var i=0;i<modList.length;i++){
 					strHtml += '<ul class="clearfix">';
-					if(roleName == '管理员'){//当为代理机构管理员的时候增加全选功能
+					if(roleName == 'super'){//增加序号
+						if(modList[i].modLevel == 0){
+							strHtml += '<li class="orderNumWid tongpaiColor">'+ modList[i].orderNo +'</li>';
+						}else if(modList[i].modLevel == 1){
+							strHtml += '<li class="orderNumWid yinpaiColor">'+ modList[i].orderNo +'</li>';
+						}else if(modList[i].modLevel == 2){
+							strHtml += '<li class="orderNumWid jinpaiColor">'+ modList[i].orderNo +'</li>';
+						}else if(modList[i].modLevel == 3){
+							strHtml += '<li class="orderNumWid zuanshiColor">'+ modList[i].orderNo +'</li>';
+						}
+					}else if(roleName == '管理员'){//当为代理机构管理员的时候增加全选功能
 						if(modList[i].useFlag){//右侧主模块
 							if(modList[i].mainBindFlag && $('#roleIdInp').val() != 0){
 								strHtml += '<li class="selAllModWid">';
@@ -572,7 +587,11 @@
 					//子模块名
 					strHtml += '<li class="sonModWid sonModNames">';
 					for(var j=0;j<modList[i].modActInfo.length;j++){
-						strHtml += '<p>';
+						if(roleName == 'super'){
+							strHtml += '<p class="hasTxtAlign">';
+						}else{
+							strHtml += '<p>';
+						}
 						if(roleName == 'super'){//没有checkbox
 							strHtml += '<span>'+ modList[i].modActInfo[j].actNameChi+'('+modList[i].modActInfo[j].actNameEng +')</span>';
 							strHtml += '<a href="javascript:void(0)" class="seSonMod posAbs editSonModName" maId="'+ modList[i].modActInfo[j].maId +'" actNameChi="'+ modList[i].modActInfo[j].actNameChi +'" actNameEng="'+ modList[i].modActInfo[j].actNameEng +'"><i class="layui-icon layui-icon-edit"></i></a>';
@@ -597,8 +616,31 @@
 				form.render();
 				inpCheckboxSel();
 			}
+			function showOutDateTips(){
+				$('#outDateTip').click(function(){
+					layer.tips('您的会员已到期，之前的高级功能将不能使用，如需使用，请及时续费购买！','#outDateTip', {tips:[1,'#FF8000'],time:4000});
+				});
+			}
+			//过期提示
+			function memberOutDateTip(){
+				if(outDate == false){//表示过期
+					layer.confirm('您的会员已到期，之前的高级功能将不能使用，如需使用，请及时续费购买！',{
+						title:'会员到期提醒',
+					  	skin: 'layui-layer-molv',
+					  	btn: ['确定','取消'] //按钮
+					},function(index){
+						layer.close(index);
+						$('#outDateTip').show();
+						showOutDateTips();
+					}, function(){
+						$('#outDateTip').show();
+						showOutDateTips();
+					});	
+				}
+			}
 			$(function(){
 				page.init();
+				memberOutDateTip();
 			});
 		});
 	</script>
