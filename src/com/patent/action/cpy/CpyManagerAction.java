@@ -167,8 +167,8 @@ public class CpyManagerAction extends DispatchAction {
 		String cpyCity = Transcode.unescape(request.getParameter("cpyCity"), request);
 		String cpyLxr = Transcode.unescape(request.getParameter("cpyLxr"), request);
 		String cpyFr = Transcode.unescape(request.getParameter("cpyFr"), request);
-		Integer cpyLevel = Integer.parseInt(request.getParameter("cpyLevel"));
-		Integer yxStatus = Integer.parseInt(request.getParameter("yxStatus"));//有效状态--会员是否过期(-1[全部],0[已过期],1[未过期])
+		Integer cpyLevel = CommonTools.getFinalInteger(request.getParameter("cpyLevel"));
+		Integer yxStatus = CommonTools.getFinalInteger(request.getParameter("yxStatus"));//有效状态--会员是否过期(-1[全部],0[已过期],1[未过期])
 		Integer count = cm.getCountByOpt(cpyName, cpyProv, cpyCity, cpyFr, cpyLxr, cpyLevel, yxStatus);
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(count > 0){
@@ -277,6 +277,67 @@ public class CpyManagerAction extends DispatchAction {
 		}
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 获取代理机构详细信息
+	 * @description
+	 * @author wm
+	 * @date 2018-8-25 下午03:27:07
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCpyDetailData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(this.getLoginRoleName(request).equals("super")){//只有超管才能获取
+			Integer cpyId = CommonTools.getFinalInteger(request.getParameter("cpyId"));
+			List<CpyInfoTb> cpyList = cm.listInfoById(cpyId);
+			if(cpyList.size() > 0){
+				CpyInfoTb cpy = cpyList.get(0);
+				map.put("result", "success");
+				map.put("cpyId", cpy.getId());
+				map.put("cpyName", cpy.getCpyName());
+				map.put("cpyProv", cpy.getCpyProv());
+				map.put("cpyCity", cpy.getCpyCity());
+				map.put("cpyAddress", cpy.getCpyAddress());
+				map.put("cpyFr", cpy.getCpyFr());
+				map.put("cpyYyzz", cpy.getCpyYyzz());
+				map.put("cpyLxr", cpy.getCpyLxr());
+				map.put("lxrTel", cpy.getLxrTel());
+				map.put("lxrEmail", cpy.getLxrEmail());
+				map.put("cpyUrl", cpy.getCpyUrl());
+				map.put("cpyProfile", cpy.getCpyProfile());
+				map.put("signDate", CurrentTime.dateConvertToString(cpy.getSignDate()));
+				map.put("endDate", CurrentTime.dateConvertToString(cpy.getEndDate()));
+				map.put("hotStatus", cpy.getHotStatus());
+				Integer cpyLevel = cpy.getCpyLevel();
+				String cpyLevelChi = "铜牌";
+				if(cpyLevel.equals(0)){
+					cpyLevelChi = "铜牌";
+				}else if(cpyLevel.equals(1)){
+					cpyLevelChi = "银牌";
+				}else if(cpyLevel.equals(2)){
+					cpyLevelChi = "金牌";
+				}else if(cpyLevel.equals(3)){
+					cpyLevelChi = "钻石";
+				}
+				map.put("cpyLevel", cpyLevelChi);
+			}else{
+				map.put("result", "noInfo");
+			}
+		}
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
         pw.write(json); 
@@ -907,4 +968,5 @@ public class CpyManagerAction extends DispatchAction {
         pw.close();
 		return null;
 	}
+	
 }
