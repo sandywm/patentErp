@@ -56,7 +56,7 @@ public interface CustomerFmrInfoDao {
 	 * @author wm
 	 * @date 2018-8-21 上午10:31:51
 	 * @param sess
-	 * @param fmrId 发明人编号
+	 * @param fmrId 发明人编号（0时表示全部）
 	 * @param cpyId 代理机构编号
 	 * @return
 	 */

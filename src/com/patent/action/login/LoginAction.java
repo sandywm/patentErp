@@ -68,7 +68,7 @@ public class LoginAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
 		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
-		String account = request.getParameter("account");
+		String account = CommonTools.getFinalStr("account", request);
 		String password = request.getParameter("password");
 		String vCode = request.getParameter("vCode");
 		String loginType = request.getParameter("loginType");//登录类型(cpyUser:代理机构员工登录,appUser:申请人/公司账号登录)

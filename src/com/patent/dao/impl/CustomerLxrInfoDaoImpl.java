@@ -51,7 +51,10 @@ public class CustomerLxrInfoDaoImpl implements CustomerLxrInfoDao{
 	public List<CustomerLxrInfoTb> findInfoByCusId(Session sess, Integer lxrId,
 			Integer cpyId) {
 		// TODO Auto-generated method stub
-		String hql = " from CustomerLxrInfoTb as cli where cli.id = "+lxrId + " and cli.customerInfoTb.cpyInfoTb.id = "+cpyId;
+		String hql = " from CustomerLxrInfoTb as cli where cli.customerInfoTb.cpyInfoTb.id = "+cpyId;
+		if(lxrId > 0){
+			hql += " and cli.id = "+lxrId;
+		}
 		return sess.createQuery(hql).list();
 	}
 

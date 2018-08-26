@@ -34,10 +34,10 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	Integer addZL(String ajNo, String ajNoQt,String ajNoGf,
-			String ajTitle, Integer ajType, String ajFieldId, String ajSqrId,
+			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			Date ajApplyDate, String ajStatus,Integer cpyIde) throws WEBException;
+			Date ajApplyDate, String ajStatus,Integer cpyId) throws WEBException;
 	
 	/**
 	 * 根据条件分页获取专利列表(ID降序)

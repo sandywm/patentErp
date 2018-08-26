@@ -6,6 +6,11 @@ package com.patent.action.zl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,8 +22,19 @@ import org.apache.struts.actions.DispatchAction;
 import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
+import com.patent.module.CpyInfoTb;
+import com.patent.module.CustomerFmrInfoTb;
+import com.patent.module.CustomerInfoTb;
+import com.patent.module.CustomerLxrInfoTb;
+import com.patent.module.JsFiledInfoTb;
+import com.patent.module.ZlajMainInfoTb;
+import com.patent.page.PageConst;
+import com.patent.service.CpyUserInfoManager;
+import com.patent.service.CustomerInfoManager;
+import com.patent.service.JsFiledInfoManager;
 import com.patent.service.ZlajMainInfoManager;
 import com.patent.tools.CommonTools;
+import com.patent.tools.CurrentTime;
 import com.patent.util.Constants;
 import com.patent.web.Ability;
 
@@ -130,11 +146,218 @@ public class ZlMainAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
-		Integer cpyId = CommonTools.getFinalInteger(request.getParameter("cpyId"));
-		Integer stopStatus = CommonTools.getFinalInteger(request.getParameter("stopStatus"));
-		String ajNoQt = CommonTools.getFinalStr("ajNoQt");
-		String sqAddress = Transcode.unescape(request.getParameter("sqAddress"), request);
-//		Integer count = zlm.getCountByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate);
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		JsFiledInfoManager jsm = (JsFiledInfoManager) AppFactory.instance(null).getApp(Constants.WEB_JS_FIELD_INFO);
+		Integer cpyId = CommonTools.getFinalInteger("cpyId",request);
+		Integer stopStatus = CommonTools.getFinalInteger("stopStatus",request);
+		String ajNoQt = CommonTools.getFinalStr("ajNoQt",request);
+		String sqAddress = Transcode.unescape_new("sqAddress", request);
+		String zlNo = CommonTools.getFinalStr("zlNo", request);
+		String ajTitle = Transcode.unescape_new("ajTitle", request);
+		String ajType = CommonTools.getFinalStr("ajType", request);
+		String lxr = CommonTools.getFinalStr("lxr", request);
+		String sDate = CommonTools.getFinalStr("sDate", request);
+		String eDate = CommonTools.getFinalStr("eDate", request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		Integer count = zlm.getCountByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate);
+		if(count > 0){
+			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+			Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
+			List<ZlajMainInfoTb> zlList = zlm.listPageInfoByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, pageNo, pageSize);
+			List<Object> list_d = new ArrayList<Object>();
+			for(Iterator<ZlajMainInfoTb> it = zlList.iterator() ; it.hasNext();){
+				ZlajMainInfoTb zl = it.next();
+				Map<String,Object> map_d = new HashMap<String,Object>();
+				map_d.put("id", zl.getId());
+				map_d.put("ajNo", zl.getAjNoQt());
+				map_d.put("ajNoGf", zl.getAjNoGf());
+				map_d.put("ajTitle", zl.getAjTitle());
+				String ajType_db = zl.getAjType();
+				String ajType_new = "";
+				if(ajType_db.equals("fm")){
+					ajType_new = "发明";
+				}else if(ajType_db.equals("syxx")){
+					ajType_new = "实用新型";
+				}else if(ajType_db.equals("wg")){
+					ajType_new = "外观";
+				}else if(ajType_db.equals("fmxx")){
+					ajType_new = "发明+新型";
+				}
+				map_d.put("ajType", ajType_new);
+				String ajFieldIdStr = zl.getAjFieldId();
+				String ajFieldName = "";
+				if(!ajFieldIdStr.equals("")){
+					List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, ajFieldIdStr);
+					for(Iterator<JsFiledInfoTb> it_js = jsList.iterator(); it_js.hasNext();){
+						JsFiledInfoTb js = it_js.next();
+						ajFieldName += js.getZyName() + ",";
+					}
+					if(!ajFieldName.equals("")){
+						ajFieldName = ajFieldName.substring(0, ajFieldName.length() - 1);
+					}
+				}				
+				map_d.put("ajFieldName", ajFieldName);
+				String sqrId = zl.getAjSqrId();//可以是公司也可以是个人
+				String sqrName = "";
+				if(!sqrId.equals("")){
+					String[] sqrIdArr = sqrId.split(",");
+					for(Integer k = 0 ; k < sqrIdArr.length ; k++){
+						List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[k]));
+						if(cList.size() > 0){
+							sqrName += cList.get(0).getCusName() + ",";
+						}
+					}
+					if(!sqrName.equals("")){
+						sqrName = sqrName.substring(0, sqrName.length() - 1);
+					}
+				}
+				map_d.put("sqrInfo", sqrName);
+				String fmrId = zl.getAjFmrId();
+				String fmrName = "";
+				if(!fmrId.equals("")){
+					String[] fmrIdArr = fmrId.split(",");
+					for(Integer i = 0 ; i < fmrIdArr.length ; i++){
+						List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
+						if(cList.size() > 0){
+							fmrName += cList.get(0).getCusFmrName() + ",";
+						}
+					}
+					if(!fmrName.equals("")){
+						fmrName = fmrName.substring(0, fmrName.length() - 1);
+					}
+				}
+				map_d.put("fmrInfo", fmrName);
+				String lxrId = zl.getAjLxrId();
+				String lxrName = "";
+				if(!lxrId.equals("")){
+					String[] lxrIdArr = lxrId.split(",");
+					for(Integer j = 0 ; j < lxrIdArr.length ; j++){
+						List<CustomerLxrInfoTb> clList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
+						if(clList.size() > 0){
+							lxrName += clList.get(0).getCusLxrName() + ",";
+						}
+					}
+					if(!lxrName.equals("")){
+						lxrName = lxrName.substring(0, lxrName.length() - 1);
+					}
+				}
+				map_d.put("lxrInfo", lxrName);
+				map_d.put("ajAddress", zl.getAjSqAddress());
+				map_d.put("applyDate", CurrentTime.dateConvertToString(zl.getAjApplyDate()));
+				map_d.put("ajStatus", zl.getAjStatus());
+				map_d.put("ajStopStatus", zl.getAjStopStatus().equals(0) ? "正常":"终止");
+				map_d.put("ajAddDate", zl.getAjAddDate());
+				list_d.add(map_d);
+			}
+			map.put("msg", "success");
+			map.put("data", list_d);
+			map.put("count", count);
+			map.put("code", 0);
+		}else{
+			map.put("msg", "noInfo");
+		}
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取当前的案件号
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-8-26 下午10:10:49
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCurrAjNo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer cpyId = 0;
+		String currNextAjNo = "";
+		String msg = "error";
+		if(this.getLoginType(request).equals("cpyUser")){
+			cpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
+			List<ZlajMainInfoTb> zlList = zlm.listFirstInfoByCpyId(cpyId);
+			String currYear = CurrentTime.getYear();
+			String ajType = CommonTools.getFinalStr("ajType", request);
+			String varCon = "";
+			if(ajType.equals("fm")){
+				varCon = "01";
+			}else if(ajType.equals("syxx")){
+				varCon = "02";
+			}else if(ajType.equals("wg")){
+				varCon = "03";
+			}
+			msg = "success";
+			if(zlList.size() > 0){
+				String zlType = zlList.get(0).getAjType();
+				if(zlType.equals("fm")){
+					
+				}
+				String ajNo = zlList.get(0).getAjNo();//20180100011
+			}else{
+				currNextAjNo = currYear + ajType + "0001" + cpyId;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 增加专利
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-8-26 下午09:14:12
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward addZlData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		JsFiledInfoManager jsm = (JsFiledInfoManager) AppFactory.instance(null).getApp(Constants.WEB_JS_FIELD_INFO);
+		Integer cpyId = CommonTools.getFinalInteger("cpyId",request);
+		String ajType = CommonTools.getFinalStr("ajType", request);
+		String varCon = "";
+		if(ajType.equals("fm")){
+			varCon = "01";
+		}else if(ajType.equals("syxx")){
+			varCon = "02";
+		}else if(ajType.equals("wg")){
+			varCon = "03";
+		}
+		String currYear = CurrentTime.getYear();
+		String ajNoQt = currYear + varCon ;
+		String sqAddress = Transcode.unescape_new("sqAddress", request);
+		String ajNo = "";
+		String ajTitle = Transcode.unescape_new("ajTitle", request);
+		String ajFieldId = CommonTools.getFinalStr("ajFieldId", request);
+		String ajSqrId  = CommonTools.getFinalStr("ajSqrId", request);
+		String ajFmrId  = CommonTools.getFinalStr("ajFmrId", request);
+		String ajLxrId = CommonTools.getFinalStr("ajLxrId", request);
+		String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
+		String ajYxqId = CommonTools.getFinalStr("ajYxqId", request);
+		String ajUpload = CommonTools.getFinalStr("ajUpload", request);
+		String ajRemark = CommonTools.getFinalStr("ajRemark", request);
+		String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
+		String ajApplyDate = CommonTools.getFinalStr("ajApplyDate", request);
+		String ajStatus = CommonTools.getFinalStr("ajStatus", request);
+		
+		
+		String sDate = CommonTools.getFinalStr("sDate", request);
+		String eDate = CommonTools.getFinalStr("eDate", request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		zlm.addZL(ajNo, ajNoQt, "", ajTitle, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, ajSqAddress, 
+				ajYxqId, ajUpload, ajRemark, ajEwyqId, null, ajStatus, cpyId);
 		return null;
 	}
 }

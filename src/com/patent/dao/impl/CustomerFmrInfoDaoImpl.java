@@ -51,7 +51,10 @@ public class CustomerFmrInfoDaoImpl implements CustomerFmrInfoDao{
 	public List<CustomerFmrInfoTb> findInfoByOpt(Session sess, Integer fmrId,
 			Integer cpyId) {
 		// TODO Auto-generated method stub
-		String hql = " from CustomerFmrInfoTb as cf where cf.id = "+fmrId + " and cf.customerInfoTb.cpyInfoTb.id = "+ cpyId;
+		String hql = " from CustomerFmrInfoTb as cf where cf.customerInfoTb.cpyInfoTb.id = "+ cpyId;
+		if(fmrId > 0){
+			hql += " and cf.id = "+fmrId;
+		}
 		return sess.createQuery(hql).list();
 	}
 

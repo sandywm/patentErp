@@ -151,11 +151,13 @@ public class CurrentTime {
 	public static String dateConvertToString(Date date){
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");  
 		String tsStr = "";
-		try{
-	        tsStr = formatter.format(date);   
-	    } catch (Exception e) {   
-	        e.printStackTrace();   
-	    }  
+		if(date != null){
+			try{
+		        tsStr = formatter.format(date);   
+		    } catch (Exception e) {   
+		        e.printStackTrace();   
+		    }  
+		}
 	    return tsStr;
 	}
 	

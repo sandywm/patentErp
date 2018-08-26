@@ -148,7 +148,7 @@ public interface CustomerInfoManager {
 	 * @description
 	 * @author wm
 	 * @date 2018-8-21 上午10:44:50
-	 * @param lxrId 联系人编号
+	 * @param lxrId 联系人编号（0时表示全部）
 	 * @param cpyId 代理机构编号
 	 * @return
 	 * @throws WEBException
@@ -212,7 +212,7 @@ public interface CustomerInfoManager {
 	 * @description
 	 * @author wm
 	 * @date 2018-8-21 上午10:29:05
-	 * @param fmrId 发明人编号
+	 * @param fmrId 发明人编号（0时表示全部）
 	 * @param cpyId 代理机构编号
 	 * @return
 	 * @throws WEBException

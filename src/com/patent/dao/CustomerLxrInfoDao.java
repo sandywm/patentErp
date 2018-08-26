@@ -56,7 +56,7 @@ public interface CustomerLxrInfoDao {
 	 * @author wm
 	 * @date 2018-8-21 上午10:42:42
 	 * @param sess
-	 * @param lxrId 联系人编号
+	 * @param lxrId 联系人编号(0时表示全部)
 	 * @param cpyId 代理机构编号
 	 * @return
 	 */

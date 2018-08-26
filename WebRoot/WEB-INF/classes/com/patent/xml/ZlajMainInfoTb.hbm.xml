@@ -35,9 +35,9 @@
                 <comment>案件标题</comment>
             </column>
         </property>
-        <property name="ajType" type="java.lang.Integer">
+        <property name="ajType" type="java.lang.String">
             <column name="aj_type" not-null="true">
-                <comment>案件类型(1:发明、2:实用新型、3:外观、0:发明+新型)</comment>
+                <comment>案件类型(fm:发明、syxx:实用新型、wg:外观、fmxx:发明+新型)</comment>
             </column>
         </property>
         <property name="ajFieldId" type="java.lang.String">

@@ -78,6 +78,23 @@ public class CommonTools {
 	 * 输入的数字类型转换成数据类型
 	 * @description
 	 * @author wm
+	 * @date 2016-9-6 下午03:09:46
+	 * @param inputData
+	 * @return
+	 */
+	public static Integer getFinalInteger(String inputData,HttpServletRequest request){
+		inputData = String.valueOf(request.getParameter(inputData));
+		if(inputData.equals("") || inputData.equals("null")){
+			return 0;
+		}else{
+			return Integer.parseInt(inputData);
+		}
+	}
+	
+	/**
+	 * 输入的数字类型转换成数据类型
+	 * @description
+	 * @author wm
 	 * @date 2017-4-21 上午11:16:34
 	 * @param inputData
 	 * @return
@@ -91,6 +108,23 @@ public class CommonTools {
 		}
 	}
 
+	/**
+	 * 输入的数字类型转换成数据类型
+	 * @description
+	 * @author wm
+	 * @date 2017-4-21 上午11:16:34
+	 * @param inputData
+	 * @return
+	 */
+	public static Float getFinalFloat(String inputData,HttpServletRequest request){
+		inputData = String.valueOf(request.getParameter(inputData));
+		if(inputData.equals("") || inputData.equals("null")){
+			return 0f;
+		}else{
+			return Float.parseFloat(inputData);
+		}
+	}
+	
 	/**
      * 写入xss/sql注入攻击报告
      * @description
