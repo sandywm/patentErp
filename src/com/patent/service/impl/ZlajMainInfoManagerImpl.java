@@ -26,7 +26,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			Date ajApplyDate, String ajStatus, Integer cpyId)
+			String ajApplyDate, String ajStatus, Integer cpyId)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -36,7 +36,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			tran = sess.beginTransaction();
 			ZlajMainInfoTb zl = new ZlajMainInfoTb(cDao.get(sess, cpyId), ajNo, ajNoQt, ajNoGf,
 					ajTitle, ajType, ajFieldId, ajSqrId,ajFmrId, ajLxrId, ajSqAddress, ajYxqId,
-					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, 0,0,CurrentTime.getStringDate());
+					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, 0,0,"","",CurrentTime.getStringDate());
 			zlDao.save(sess, zl);
 			tran.commit();
 			return zl.getId();
@@ -108,14 +108,14 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	}
 
 	@Override
-	public List<ZlajMainInfoTb> listFirstInfoByCpyId(Integer cpyId)
+	public List<ZlajMainInfoTb> listFirstInfoByOpt(Integer cpyId,String ajType,String currYear)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
 			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return zlDao.findFirstInfoByCpyId(sess, cpyId);
+			return zlDao.findFirstInfoByOpt(sess, cpyId,ajType,currYear);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -105,6 +105,9 @@ public class ZlajEwyqAction extends DispatchAction {
 			if(yqm.listInfoByCnt(yqContent).size() > 0){
 				msg = "exist";
 			}else{
+				if(yqType.indexOf("fm") >= 0 && yqType.indexOf("syxx") >= 0){//如果同时是发明、实用新型时动态增加发明+新型
+					yqType += ",fmxx";
+				}
 				Integer yqId = yqm.addYq(yqContent, yqType);
 				if(yqId > 0){
 					msg = "success";
@@ -136,13 +139,21 @@ public class ZlajEwyqAction extends DispatchAction {
 		// TODO Auto-generated method stub
 		ZlajEwyqInfoManager yqm = (ZlajEwyqInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_EWYQ_INFO);
 		String msg = "error";
+		boolean existFlag = false;//不存在
 		if(this.getLoginRoleName(request).equals("super")){
 			Integer yqId = CommonTools.getFinalInteger(request.getParameter("yqId"));
 			String yqContent = Transcode.unescape(request.getParameter("yqContent"), request);
 			String yqType = CommonTools.getFinalStr(request.getParameter("yqType"));
-			if(yqm.listInfoByCnt(yqContent).size() > 0){
+			ZlajEwyqInfoTb yq = yqm.getEntityById(yqId);
+			if(!yq.getYqContent().equals(yqContent)){//不相同，判断重复
+				existFlag = (yqm.listInfoByCnt(yqContent).size() > 0);
+			}
+			if(existFlag){
 				msg = "exist";
 			}else{
+				if(yqType.indexOf("fm") >= 0 && yqType.indexOf("syxx") >= 0){//如果同时是发明、实用新型时动态增加发明+新型
+					yqType += ",fmxx";
+				}
 				boolean flag = yqm.updateYq(yqId, yqContent, yqType);
 				if(flag){
 					msg = "success";

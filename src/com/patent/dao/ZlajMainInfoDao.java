@@ -95,9 +95,11 @@ public interface ZlajMainInfoDao {
 	 * @date  2018-8-22 下午10:38:24
 	 * @param sess
 	 * @param cpyId 代理机构编号
+	 * @param ajType 案件类型
+	 * @param currYear 当前年份
 	 * @return
 	 */
-	List<ZlajMainInfoTb> findFirstInfoByCpyId(Session sess,Integer cpyId);
+	List<ZlajMainInfoTb> findFirstInfoByOpt(Session sess,Integer cpyId,String ajType,String currYear);
 	
 	/**
 	 * 根据条件全网获取案件专利（填写优先权时使用）

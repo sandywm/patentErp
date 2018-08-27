@@ -1,6 +1,5 @@
 package com.patent.module;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,10 +31,12 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private String ajUpload;
 	private String ajRemark;
 	private String ajEwyqId;
-	private Date ajApplyDate;
+	private String ajApplyDate;
 	private String ajStatus;
 	private Integer ajFaId;
 	private Integer ajStopStatus;
+	private String ajStopDate;
+	private String ajStopUser;
 	private String ajAddDate;
 	private Set<ZlajLcInfoTb> zlajLcInfoTbs = new HashSet<ZlajLcInfoTb>();
 	private Set<ZlajFjInfoTb> zlajFjInfoTbs = new HashSet<ZlajFjInfoTb>();
@@ -52,7 +53,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			Date ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,String ajAddDate) {
+			String ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,String ajStopDate,String ajStopUser,String ajAddDate) {
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
 		this.ajNoQt = ajNoQt;
@@ -72,6 +73,8 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajStatus = ajStatus;
 		this.ajFaId = ajFaId;
 		this.ajStopStatus = ajStopStatus;
+		this.ajStopDate = ajStopDate;
+		this.ajStopUser = ajStopUser;
 		this.ajAddDate = ajAddDate;
 	}
 
@@ -80,7 +83,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			Date ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,String ajAddDate) {
+			String ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,String ajStopDate,String ajStopUser,String ajAddDate) {
 		this.id = id;
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
@@ -101,6 +104,8 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajStatus = ajStatus;
 		this.ajFaId = ajFaId;
 		this.ajStopStatus = ajStopStatus;
+		this.ajStopDate = ajStopDate;
+		this.ajStopUser = ajStopUser;
 		this.ajAddDate = ajAddDate;
 	}
 
@@ -226,11 +231,11 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajEwyqId = ajEwyqId;
 	}
 
-	public Date getAjApplyDate() {
+	public String getAjApplyDate() {
 		return this.ajApplyDate;
 	}
 
-	public void setAjApplyDate(Date ajApplyDate) {
+	public void setAjApplyDate(String ajApplyDate) {
 		this.ajApplyDate = ajApplyDate;
 	}
 
@@ -296,6 +301,22 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	public void setAjNoQt(String ajNoQt) {
 		this.ajNoQt = ajNoQt;
+	}
+
+	public String getAjStopDate() {
+		return ajStopDate;
+	}
+
+	public void setAjStopDate(String ajStopDate) {
+		this.ajStopDate = ajStopDate;
+	}
+
+	public String getAjStopUser() {
+		return ajStopUser;
+	}
+
+	public void setAjStopUser(String ajStopUser) {
+		this.ajStopUser = ajStopUser;
 	}
 
 

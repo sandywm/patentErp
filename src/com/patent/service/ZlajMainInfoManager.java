@@ -37,7 +37,7 @@ public interface ZlajMainInfoManager {
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			Date ajApplyDate, String ajStatus,Integer cpyId) throws WEBException;
+			String ajApplyDate, String ajStatus,Integer cpyId) throws WEBException;
 	
 	/**
 	 * 根据条件分页获取专利列表(ID降序)
@@ -102,10 +102,12 @@ public interface ZlajMainInfoManager {
 	 * @ModifiedBy  
 	 * @date  2018-8-24 下午10:21:24
 	 * @param cpyId 代理机构编号
+	 * @param ajType 专利类型
+	 * @param currYear 当前年份
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajMainInfoTb> listFirstInfoByCpyId(Integer cpyId) throws WEBException;
+	List<ZlajMainInfoTb> listFirstInfoByOpt(Integer cpyId,String ajType,String currYear) throws WEBException;
 	
 	/**
 	 * 根据条件全网获取案件专利（填写优先权时使用）

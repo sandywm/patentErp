@@ -115,9 +115,9 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 	}
 
 	@Override
-	public List<ZlajMainInfoTb> findFirstInfoByCpyId(Session sess, Integer cpyId) {
+	public List<ZlajMainInfoTb> findFirstInfoByOpt(Session sess, Integer cpyId,String ajType,String currYear) {
 		// TODO Auto-generated method stub
-		String hql = " from ZlajMainInfoTb as zl where zl.cpyInfoTb.id = "+cpyId + " order by zl.ajNo desc";
+		String hql = " from ZlajMainInfoTb as zl where zl.cpyInfoTb.id = "+cpyId + " and zl.ajType = '"+ajType+"' and SUBSTR(zl.ajAddDate,1,4) = '"+currYear+"' order by zl.ajNo desc";
 		return sess.createQuery(hql).setFirstResult(0).setMaxResults(1).list();//hql不支持limit 1;
 	}
 

@@ -243,7 +243,7 @@ public class ZlMainAction extends DispatchAction {
 				}
 				map_d.put("lxrInfo", lxrName);
 				map_d.put("ajAddress", zl.getAjSqAddress());
-				map_d.put("applyDate", CurrentTime.dateConvertToString(zl.getAjApplyDate()));
+				map_d.put("applyDate", zl.getAjApplyDate());
 				map_d.put("ajStatus", zl.getAjStatus());
 				map_d.put("ajStopStatus", zl.getAjStopStatus().equals(0) ? "正常":"终止");
 				map_d.put("ajAddDate", zl.getAjAddDate());
@@ -261,7 +261,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 获取当前的案件号
+	 * 获取当前的案件号（增加时前台显示--参考，但有可能出现几个人在同时增加就会出现问题）
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-8-26 下午10:10:49
@@ -280,30 +280,46 @@ public class ZlMainAction extends DispatchAction {
 		Integer cpyId = 0;
 		String currNextAjNo = "";
 		String msg = "error";
+		String nextNumStr = "";
+		Map<String,String> map = new HashMap<String,String>();
 		if(this.getLoginType(request).equals("cpyUser")){
 			cpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
-			List<ZlajMainInfoTb> zlList = zlm.listFirstInfoByCpyId(cpyId);
 			String currYear = CurrentTime.getYear();
 			String ajType = CommonTools.getFinalStr("ajType", request);
-			String varCon = "";
-			if(ajType.equals("fm")){
-				varCon = "01";
-			}else if(ajType.equals("syxx")){
-				varCon = "02";
-			}else if(ajType.equals("wg")){
-				varCon = "03";
-			}
-			msg = "success";
-			if(zlList.size() > 0){
-				String zlType = zlList.get(0).getAjType();
-				if(zlType.equals("fm")){
-					
+			if(cpyId > 0 && !ajType.equals("")){
+				List<ZlajMainInfoTb> zlList = zlm.listFirstInfoByOpt(cpyId,ajType,currYear);
+				String varCon = "";
+				if(ajType.equals("fm")){
+					varCon = "01";
+				}else if(ajType.equals("syxx")){
+					varCon = "02";
+				}else if(ajType.equals("wg")){
+					varCon = "03";
 				}
-				String ajNo = zlList.get(0).getAjNo();//20180100011
-			}else{
-				currNextAjNo = currYear + ajType + "0001" + cpyId;
+				msg = "success";
+				if(zlList.size() > 0){
+					String ajNo = zlList.get(0).getAjNo();//20180100011--201802
+					String str1 = ajNo.substring(0,6);
+					String str2 = ajNo.substring(6, 10);
+					Integer nextNum = Integer.parseInt(str2) + 1;
+					if(nextNum > 1000){
+						nextNumStr = nextNum + "";
+					}else if(nextNum > 100){
+						nextNumStr = "0" + nextNum;
+					}else if(nextNum > 10){
+						nextNumStr = "00" + nextNum;
+					}else if(nextNum > 1){
+						nextNumStr = "000" + nextNum;
+					}
+					currNextAjNo = str1 + nextNumStr + "." + cpyId;
+				}else{
+					currNextAjNo = currYear + varCon + "0001" + "." + cpyId;
+				}
+				map.put("currNextAjNo", currNextAjNo);
 			}
 		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -323,41 +339,87 @@ public class ZlMainAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
-		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
-		JsFiledInfoManager jsm = (JsFiledInfoManager) AppFactory.instance(null).getApp(Constants.WEB_JS_FIELD_INFO);
-		Integer cpyId = CommonTools.getFinalInteger("cpyId",request);
-		String ajType = CommonTools.getFinalStr("ajType", request);
-		String varCon = "";
-		if(ajType.equals("fm")){
-			varCon = "01";
-		}else if(ajType.equals("syxx")){
-			varCon = "02";
-		}else if(ajType.equals("wg")){
-			varCon = "03";
-		}
-		String currYear = CurrentTime.getYear();
-		String ajNoQt = currYear + varCon ;
-		String sqAddress = Transcode.unescape_new("sqAddress", request);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer cpyId = 0;
+		String nextNumStr = "";
+		String ajNoQt = "";
 		String ajNo = "";
-		String ajTitle = Transcode.unescape_new("ajTitle", request);
-		String ajFieldId = CommonTools.getFinalStr("ajFieldId", request);
-		String ajSqrId  = CommonTools.getFinalStr("ajSqrId", request);
-		String ajFmrId  = CommonTools.getFinalStr("ajFmrId", request);
-		String ajLxrId = CommonTools.getFinalStr("ajLxrId", request);
-		String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
-		String ajYxqId = CommonTools.getFinalStr("ajYxqId", request);
-		String ajUpload = CommonTools.getFinalStr("ajUpload", request);
-		String ajRemark = CommonTools.getFinalStr("ajRemark", request);
-		String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
-		String ajApplyDate = CommonTools.getFinalStr("ajApplyDate", request);
-		String ajStatus = CommonTools.getFinalStr("ajStatus", request);
-		
-		
-		String sDate = CommonTools.getFinalStr("sDate", request);
-		String eDate = CommonTools.getFinalStr("eDate", request);
-		Map<String,Object> map = new HashMap<String,Object>();
-		zlm.addZL(ajNo, ajNoQt, "", ajTitle, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, ajSqAddress, 
-				ajYxqId, ajUpload, ajRemark, ajEwyqId, null, ajStatus, cpyId);
+		String msg = "error";
+		Map<String,String> map = new HashMap<String,String>();
+		if(this.getLoginType(request).equals("cpyUser")){
+			//判断权限
+			//获取当前用户是否有修改权限
+			boolean abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");
+			if(abilityFlag){
+				cpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
+				//获取当前的案例号--实时
+				String currYear = CurrentTime.getYear();
+				String ajType = CommonTools.getFinalStr("ajType", request);
+				String varCon = "";
+				if(!ajType.equals("")){
+					if(ajType.equals("fmxx")){
+						ajType = "fm,syxx";
+					}
+					String[] ajTypeArr = ajType.split(",");
+					for(Integer i = 0 ; i < ajTypeArr.length ; i++){
+						ajType = ajTypeArr[i];
+						if(cpyId > 0 && !ajType.equals("")){
+							if(ajType.equals("fm")){
+								varCon = "01";
+							}else if(ajType.equals("syxx")){
+								varCon = "02";
+							}else if(ajType.equals("wg")){
+								varCon = "03";
+							}
+							List<ZlajMainInfoTb> zlList = zlm.listFirstInfoByOpt(cpyId,ajType,currYear);
+							if(zlList.size() > 0){
+								String ajNo_prev = zlList.get(0).getAjNo();//20180100011--201802
+								String str1 = ajNo_prev.substring(0,6);
+								String str2 = ajNo_prev.substring(6, 10);
+								Integer nextNum = Integer.parseInt(str2) + 1;
+								if(nextNum > 1000){
+									nextNumStr = nextNum + "";
+								}else if(nextNum > 100){
+									nextNumStr = "0" + nextNum;
+								}else if(nextNum > 10){
+									nextNumStr = "00" + nextNum;
+								}else if(nextNum > 1){
+									nextNumStr = "000" + nextNum;
+								}
+								ajNoQt = str1 + nextNumStr + "." + cpyId;
+								ajNo =  str1 + nextNumStr + cpyId;
+							}else{
+								ajNoQt = currYear + varCon + "0001" + "." + cpyId;
+								ajNo = currYear + varCon + "0001" + cpyId;
+							}
+							
+							String zlNoGf = "";
+							String ajTitle = Transcode.unescape_new("ajTitle", request);
+							String ajFieldId = CommonTools.getFinalStr("ajFieldId", request);
+							String ajSqrId  = CommonTools.getFinalStr("ajSqrId", request);
+							String ajFmrId  = CommonTools.getFinalStr("ajFmrId", request);
+							String ajLxrId = CommonTools.getFinalStr("ajLxrId", request);
+							String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
+							String ajYxqId = CommonTools.getFinalStr("ajYxqId", request);
+							String ajUpload = CommonTools.getFinalStr("ajUpload", request);
+							String ajRemark = CommonTools.getFinalStr("ajRemark", request);
+							String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
+							String ajApplyDate = "";
+							String ajStatus = CommonTools.getFinalStr("ajStatus", request);
+							Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, ajSqAddress, 
+									ajYxqId, ajUpload, ajRemark, ajEwyqId, ajApplyDate, ajStatus, cpyId);
+							if(zlId > 0){
+								msg = "success";
+							}
+						}
+					}
+				}
+			}else{
+				msg = "noAbility";
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 }

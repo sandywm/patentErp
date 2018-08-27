@@ -85,8 +85,8 @@
                 <comment>案卷额外要求(没有为0，多个逗号隔开)</comment>
             </column>
         </property>
-        <property name="ajApplyDate" type="java.util.Date">
-            <column name="aj_apply_date" length="10" not-null="true">
+        <property name="ajApplyDate" type="java.lang.String">
+            <column name="aj_apply_date" length="20">
                 <comment>案卷申请日期</comment>
             </column>
         </property>
@@ -103,6 +103,16 @@
         <property name="ajStopStatus" type="java.lang.Integer">
             <column name="aj_stop_status" not-null="true">
                 <comment>案件终止状态[0:正常（默认），1：终止]</comment>
+            </column>
+        </property>
+        <property name="ajStopDate" type="java.lang.String">
+            <column name="aj_stop_date" length="20">
+                <comment>案件终止时间</comment>
+            </column>
+        </property>
+        <property name="ajStopUser" type="java.lang.String">
+            <column name="aj_stop_user" length="50">
+                <comment>案件终止人（可能是机构员工也可能是发布人）</comment>
             </column>
         </property>
         <property name="ajAddDate" type="java.lang.String">
