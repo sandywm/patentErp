@@ -434,9 +434,17 @@ public class CpyManagerAction extends DispatchAction {
 			map.put("cpyUrl", cpy.getCpyUrl());
 			map.put("cpyProfile", cpy.getCpyProfile());
 			map.put("signDate", CurrentTime.dateConvertToString(cpy.getSignDate()));
-			map.put("endDate", CurrentTime.dateConvertToString(cpy.getEndDate()));
 			map.put("hotStatus", cpy.getHotStatus());
 			Integer cpyLevel = cpy.getCpyLevel();
+			if(cpyLevel > 0){//收费会员
+				String endDate = CurrentTime.dateConvertToString(cpy.getEndDate());
+				if(CurrentTime.compareDate(CurrentTime.getStringDate(), endDate) > 0){
+					map.put("endFlag", false);//未到期
+				}else{
+					map.put("endFlag", true);
+				}
+				map.put("endDate", endDate);
+			}
 			String cpyLevelChi = "铜牌";
 			if(cpyLevel.equals(0)){
 				cpyLevelChi = "铜牌";
