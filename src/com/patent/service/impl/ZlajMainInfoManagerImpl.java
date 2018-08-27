@@ -1,6 +1,5 @@
 package com.patent.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -36,7 +35,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			tran = sess.beginTransaction();
 			ZlajMainInfoTb zl = new ZlajMainInfoTb(cDao.get(sess, cpyId), ajNo, ajNoQt, ajNoGf,
 					ajTitle, ajType, ajFieldId, ajSqrId,ajFmrId, ajLxrId, ajSqAddress, ajYxqId,
-					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, 0,0,"","",CurrentTime.getStringDate());
+					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, 0,0,"","","",CurrentTime.getStringDate());
 			zlDao.save(sess, zl);
 			tran.commit();
 			return zl.getId();
@@ -57,7 +56,6 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
-			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
 			Session sess = HibernateUtil.currentSession();
 			return zlDao.findPageInfoByOpt(sess, cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, pageNo, pageSize);
 		} catch (Exception e) {
@@ -77,7 +75,6 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
-			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
 			Session sess = HibernateUtil.currentSession();
 			return zlDao.getCountByOpt(sess, cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate);
 		} catch (Exception e) {
@@ -95,7 +92,6 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
-			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
 			Session sess = HibernateUtil.currentSession();
 			return zlDao.findSpecInfoById(sess, id, cpyId);
 		} catch (Exception e) {
@@ -113,7 +109,6 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
-			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
 			Session sess = HibernateUtil.currentSession();
 			return zlDao.findFirstInfoByOpt(sess, cpyId,ajType,currYear);
 		} catch (Exception e) {
@@ -131,13 +126,45 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
-			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
 			Session sess = HibernateUtil.currentSession();
 			return zlDao.findSpecInfoByOpt(sess, ajNoGf, sqAddress, sqDate);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据条件全网获取案件专利（填写优先权时使用）时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateStopStatusById(Integer zlId, Integer stopStatus,
+			String stopDate, String stopUser, String userType)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajMainInfoTb zl = zlDao.get(sess, zlId);
+			if(zl != null){
+				if(stopStatus.equals(0) || stopStatus.equals(1)){//正常/终止
+					zl.setAjStopStatus(stopStatus);
+					zl.setAjStopDate(stopDate);
+					zl.setAjStopUser(stopUser);
+					zl.setAjStopUserType(userType);
+					zlDao.update(sess, zl);
+					tran.commit();
+					return true;
+				}else{
+					return false;
+				}
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键修改案件终止状态信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

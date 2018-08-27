@@ -23,7 +23,6 @@ import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.ZlajEwyqInfoTb;
-import com.patent.service.JsFiledInfoManager;
 import com.patent.service.ZlajEwyqInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.util.Constants;

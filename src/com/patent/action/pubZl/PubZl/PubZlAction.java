@@ -25,11 +25,13 @@ import com.patent.factory.AppFactory;
 import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.PubZlInfoTb;
+import com.patent.module.ZlajMainInfoTb;
 import com.patent.page.PageConst;
 import com.patent.service.CpyInfoManager;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.MailInfoManager;
 import com.patent.service.PubZlInfoManager;
+import com.patent.service.ZlajMainInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.CurrentTime;
 import com.patent.util.Constants;
@@ -119,6 +121,7 @@ public class PubZlAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		Map<String,Object> map = new HashMap<String,Object>();
 		String zlTitle = Transcode.unescape(request.getParameter("zlTitle"), request);
 		String zlNo = request.getParameter("zlNo");
@@ -165,7 +168,23 @@ public class PubZlAction extends DispatchAction {
 					map_d.put("lqDate", "");
 				}
 				map_d.put("pubInfo", pz.getApplyInfoTb().getAppName());
-//				map_d.put("ajIdStr", pz.getAjIdStr());
+				String ajIdStr = pz.getAjIdStr();
+				String ajNoQt = "";
+				map_d.put("ajIdStr", ajIdStr);
+				if(!ajIdStr.equals("")){
+					String[] ajIdStrArr = ajIdStr.split(",");
+					List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(Integer.parseInt(ajIdStrArr[0]), 0);
+					if(zlList.size() > 0){
+						ajNoQt = zlList.get(0).getAjNoQt();
+					}
+					if(ajIdStrArr.length == 2){
+						List<ZlajMainInfoTb> zlList_1 = zlm.listSpecInfoById(Integer.parseInt(ajIdStrArr[1]), 0);
+						if(zlList_1.size() > 0){
+							ajNoQt += "," + zlList_1.get(0).getAjNoQt();
+						}
+					}
+					map_d.put("ajNoQt", ajNoQt);
+				}
 				list_d.add(map_d);
 			}
 			map.put("data", list_d);
@@ -288,6 +307,7 @@ public class PubZlAction extends DispatchAction {
 		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		String msg = "";
@@ -385,6 +405,7 @@ public class PubZlAction extends DispatchAction {
 						//减少领取公司的领取数量
 						cm.updateZlNumById(lqCpyId, -1);
 						//需要修改对应的案件终止状态--------------------------------------------
+//						zlm.updateStopStatusById(zlId, 1, CurrentTime.getCurrentTime(), stopUser, this.getLoginType(request));
 					}else if(this.getLoginType(request).equals("cpyUser")){//代理公司领取/撤销领取状态
 						PubZlInfoTb pz = pzm.listSpecInfoByOpt(pubId, 0).get(0);
 						lqCpyId = pz.getLqCpyId();

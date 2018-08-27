@@ -554,9 +554,10 @@ public class CpyManagerAction extends DispatchAction {
 	 */
 	public ActionForward goSubParCpyPage(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		String[] myAbility = Ability.getAbilityInfo("bindCpy,unBindCpy", this.getLoginType(request), this.getLoginRoleName(request), this.getLoginRoleId(request)).split(",");
-		request.setAttribute("bindFlag", myAbility[0]);
-		request.setAttribute("unBindFlag", myAbility[1]);
+		String[] myAbility = Ability.getAbilityInfo("addCpy,upCpy,delCpy", this.getLoginType(request), this.getLoginRoleName(request), this.getLoginRoleId(request)).split(",");
+		request.setAttribute("delFlag", myAbility[0]);
+		request.setAttribute("upFlag", myAbility[1]);
+		request.setAttribute("addFlag", myAbility[2]);
 		return mapping.findForward("subCpyPage");
 	}
 	
@@ -786,7 +787,7 @@ public class CpyManagerAction extends DispatchAction {
 				abilityFlag = true;
 			}else{
 				//获取当前用户是否有修改权限
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "bindCpy");
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addCpy");
 			}
 		}else{
 			abilityFlag = false;

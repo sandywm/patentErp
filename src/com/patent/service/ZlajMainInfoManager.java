@@ -121,4 +121,19 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajMainInfoTb> listSpecInfoByOpt(String ajNoGf,String sqAddress, String sqDate) throws WEBException;
+	
+	/**
+	 * 根据主键修改案件终止状态信息
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-8-27 下午09:34:06
+	 * @param zlId 主键
+	 * @param stopStatus 终止状态
+	 * @param stopDate 终止时间
+	 * @param stopUser 终止人员
+	 * @param userType 人员类型
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateStopStatusById(Integer zlId,Integer stopStatus,String stopDate,String stopUser,String userType) throws WEBException;
 }

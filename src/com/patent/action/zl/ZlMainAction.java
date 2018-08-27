@@ -422,4 +422,55 @@ public class ZlMainAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
+	
+	/**
+	 * 修改指定专利的终止状态信息
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-8-27 下午09:49:04
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward updateStopStatusInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		String msg = "error";
+		Map<String,String> map = new HashMap<String,String>();
+		if(this.getLoginType(request).equals("cpyUser")){
+			//判断权限
+			//获取当前用户是否有修改权限
+			boolean abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");
+			if(abilityFlag){
+				String zlIdStr = CommonTools.getFinalStr("zlId", request);//可能是发明+新型（发布人可同时取消）
+				if(!zlIdStr.equals("")){
+					String[] zlIdStrArr = zlIdStr.split(",");
+					Integer stopStatus = CommonTools.getFinalInteger("stopStatus", request);
+					String stopUser = "";
+					String stopDate = "";
+					String stopUserType = "";
+					if(stopStatus.equals(1)){
+						stopUser = CommonTools.getFinalStr("stopUser", request);
+						stopDate = CurrentTime.getCurrentTime();
+						stopUserType = this.getLoginType(request);
+					}
+					zlm.updateStopStatusById(Integer.parseInt(zlIdStrArr[0]), stopStatus, stopDate, stopUser, stopUserType);
+					if(zlIdStrArr.length == 2){
+						zlm.updateStopStatusById(Integer.parseInt(zlIdStrArr[1]), stopStatus, stopDate, stopUser, stopUserType);
+					}
+					msg = "success";
+				}
+			}else{
+				msg = "noAbility";
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
 }
