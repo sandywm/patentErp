@@ -73,7 +73,7 @@
 									{{#  if(d.selfFlag != true){ }}
 										<input type="hidden" value="{{ d.userId }}"/>
 										<input type="checkbox" name="yxStatus" value="{{d.yxStatus}}" lay-skin="switch" lay-text="有效|无效" lay-filter="isAccYxSwitch" {{ d.yxStatus == '有效' ? 'checked' : '' }}/>
-									{{#  } }} 
+									{{#  } }}
 								</script>
 								<!-- 设置离职状态  -->
 								<script type="text/html" id="isLzTpl">
@@ -87,7 +87,7 @@
   									{{#  } else { }}
     									{{ d.sex = "男" }}
   									{{#  } }}
-	</script>
+								</script>
 	  						</div>
 	  					</div>
 	  				</div>
@@ -352,12 +352,7 @@
 						  	fixed: false, //不固定
 						  	maxmin: true,
 						  	shadeClose :true,
-						  	content: "/Module/staffManager/jsp/staffBasicInfo.html",
-						  	success : function(layero, index){
-						  		//var body = parent.layer.getChildFrame('body', index);
-						  		//var iframeWin = parent.window[layero.find('iframe')[0]['name']]; 
-						  		//body.find("#userId").val(userId);
-						  	}
+						  	content: "/Module/staffManager/jsp/staffBasicInfo.html"
 						});	
 					}else if(obj.event === 'updateInfo'){
 						var userId = $(this).attr("userId"),

@@ -84,7 +84,8 @@
 	                    <!--  iframe id="mainIframe" src="jfm.do?action=goJfPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserDetailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
-	                    <!--  iframe id="mainIframe" src="modM.do?action=goModulePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->>
+	                    <!--  iframe id="mainIframe" src="modM.do?action=goModulePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
+	                    <!-- iframe id="mainIframe" src="cpyManager.do?action=goCpyPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe -->
 	                </div>
 	            </div>
 	        </div>
@@ -116,6 +117,7 @@
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" tab-id="8">代理机构主/子公司</a></dd></dl></li>';
 			        	liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="9"><i class="iconfont layui-extend-goumai"></i>会员续费/购买</a></li>';
 	        		}else{
+	        			liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="3"></i><cite>我的代理机构</cite></a></li>';
 	        			//代理机构下除管理员外其他身份登录动态加载对应模块
 	        			$.ajax({
 	       					type:"post",
@@ -142,10 +144,10 @@
 	        		liItem += '<dd class="navLi"><a href="javascript:void(0)" tab-id="4">查看任务进度</a></dd></dl></li>';
 	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="5">查看代理机构</a></li>';
 	        	}else{ //平台用户（超管 财务、总经理）
-	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="3">模块权限管理</a></li>';
-	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="4">查看代理机构</a></li>';
-	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="5">查看专利申请(人/公司)</a></li>';
-	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="6">费用列表</a></li>';
+	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="3"><i class="iconfont layui-extend-mokuai"></i>模块权限管理</a></li>';
+	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyPage" tab-id="4"><i class="iconfont layui-extend-jigou"></i>代理机构管理</a></li>';
+	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="5"><i class="iconfont layui-extend-chakan"></i>查看专利申请(人/公司)</a></li>';
+	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="6"><i class="iconfont layui-extend-feiyong"></i>费用列表</a></li>';
 	        	}
 	        	
 	        	$("#leftSideNav").html(liItem);

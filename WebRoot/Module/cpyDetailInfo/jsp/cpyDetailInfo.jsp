@@ -80,10 +80,16 @@
 				}else if(list.cpyLevel == '钻石'){
 					jiangpaiHtml += '<svg class="icon-svg specSvg" aria-hidden="true"><use xlink:href="#icon-svg-zuanshi"></use></svg>';
 				}
-   				strHtml += '<div class="innerPar"><p>会员等级</p><p>'+ jiangpaiHtml +'铜牌</p></div></li>';
+   				strHtml += '<div class="innerPar"><p>会员等级</p><p>'+ jiangpaiHtml +' '+ list.cpyLevel +'</p></div></li>';
    				strHtml += '<li><div class="innerPar"><p>公司组织机构代码</p><p>'+ list.cpyYyzz +'</p></div>';
    				if(list.cpyLevel != '铜牌'){
-   					strHtml += '<div class="innerPar"><p>会员到期时间</p><p>'+ list.endDate +'</p></div></li>';
+   					if(list.endFlag){
+   						strHtml += '<div class="innerPar"><p>会员到期时间</p><p>'+ list.endDate +' (<span class="endDateColor">会员已到期</span>)</p></div></li>';
+   					}else{
+   						strHtml += '<div class="innerPar"><p>会员到期时间</p><p>'+ list.endDate +'</p></div></li>';
+   					}
+   				}else{
+   					strHtml += '<div class="innerPar"><p>会员到期时间</p><p>永久有效</p></div></li>';
    				}
 				strHtml += '<li><div class="innerPar"><p>公司联系人</p><p>'+ list.cpyLxr +'</p></div>';
    				strHtml += '<div class="innerPar"><p>联系人电话</p><p>'+ list.lxrTel +'</p></div></li>';
@@ -104,9 +110,8 @@
 				strHtml += '<div class="layui-input-inline"><input type="text" name="signDate" value="'+ list.signDate +'" disabled class="layui-input"></div></div>';
 				//试用到期时间
 				if(list.cpyLevel != '铜牌'){
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">会员试用到期时间</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" name="endDate" value="'+ list.endDate +'" disabled class="layui-input"></div>';
-					strHtml += '<div class="layui-form-mid layui-word-aux">试用时间为15天</div></div>';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">会员到期时间</label>';
+					strHtml += '<div class="layui-input-inline"><input type="text" name="endDate" value="'+ list.endDate +'" disabled class="layui-input"></div></div>';
 				}
 				//公司名字
   				strHtml += '<div class="layui-form-item"><label class="layui-form-label">公司名字</label>';
@@ -129,7 +134,7 @@
   				strHtml += '<div class="layui-input-inline"><input type="text" name="cpyFr" value="'+ list.cpyFr +'" placeholder="请输入公司法人姓名" lay-verify="judegeName" class="layui-input" autocomplete="off"  maxlength="4"></div></div>';
   				//公司组织机构代码
   				strHtml += '<div class="layui-form-item"><label class="layui-form-label">公司组织机构代码</label>';
-  				strHtml += '<div class="layui-input-inline"><input type="text" name="cpyYyzz" value="'+ list.cpyYyzz +'" required placeholder="请输入公司组织机构代码" lay-verify="judegeOrgCode" autocomplete="off" class="layui-input"></div></div>';
+  				strHtml += '<div class="layui-input-inline"><input type="text" name="cpyYyzz" value="'+ list.cpyYyzz +'" required placeholder="请输入公司组织机构代码" autocomplete="off" class="layui-input" maxlength="30"></div></div>';
   				//公司联系人
   				strHtml += '<div class="layui-form-item"><label class="layui-form-label">公司联系人</label>';
 				strHtml += '<div class="layui-input-inline"><input type="text" name="cpyLxr" value="'+ list.cpyLxr +'" required placeholder="请输入联系人姓名" lay-verify="judegeName" autocomplete="off" class="layui-input" maxlength="4"></div></div>';
@@ -237,27 +242,6 @@
 							return '网址格式错误，请输入以http://或https://开头的完整url';
 						}
 					}
-				},
-				judegeOrgCode : function(code){
-					var ws = [3, 7, 9, 10, 5, 8, 4, 2];  
-				    var str = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';  
-				    var reg = /^([0-9A-Z]){8}-[0-9|X]$/;// /^[A-Za-z0-9]{8}-[A-Za-z0-9]{1}$/  
-				    var sum = 0;  
-				    for (var i = 0; i < 8; i++){  
-				        sum += str.indexOf(code.charAt(i)) * ws[i];  
-				    }  
-				    var c9 = 11 - (sum % 11);  
-				    c9 = c9 == 10 ? 'X' : c9;  
-				    //alert(c9 +" -- "+ code.charAt(9));  
-				    if(code == ''){
-				    	return '公司组织机构代码不能为空';
-				    }else{
-				    	if (!reg.test(code) || c9 == code.charAt(9)) {  
-					        // alert("不是有效的组织机构代码！");
-					        return '不是有效的公司组织机构代码';
-					        return false;  
-					    }
-				    }
 				}
    			});
    			form.on('submit(setCpyInfo)',function(data){

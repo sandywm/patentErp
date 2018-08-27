@@ -39,6 +39,7 @@
 	text-align:center;
 	border-right:1px solid #eaf4ff;
 	background:rgba(0, 132, 255, 0.03);
+	color:#666;
 }
 #basicInfoDiv li div.innerPar p:last-child{
 	text-indent:10px;
@@ -47,7 +48,7 @@
 	height:100px;
 }
 .specSvg{
-	margin:8px 0 0 5px;
+	margin:8px 0 0 5px !important;
 }
 .layui-extend-wenhao{
 	font-size:18px;
@@ -58,4 +59,4 @@
 	font-weight:600;
 	cursor:pointer;
 }
-
+.endDateColor{color:#f00;}

@@ -261,3 +261,6 @@ body{
 	display:none;
 	z-index:100;
 }
+.oddBg{
+	background:#f2f2f2;
+}

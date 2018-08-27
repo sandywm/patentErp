@@ -1,0 +1,61 @@
+@import url("../../../css/common.css");
+@import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
+body{
+	background:#f2f2f2;
+	color:#666;
+}
+.searchForm .itemDiv{
+	width:145px;
+	margin-left:12px;
+}
+.searchForm .itemDiv:first-child{
+	margin-left:0px;
+}
+.layui-layer-molv .layui-layer-btn .layui-layer-btn1{
+	background:#fff !important;
+}
+#queryBtn{
+	margin-left:12px;
+}
+.noData{
+	display:none;
+	position:absolute;
+	left:50%;
+	margin-left:-50px;
+	top:200px;
+}
+.layui-table-page>div{
+	text-align:right;
+}
+.icon-svg{
+   width: 1em; height: 1em;
+   vertical-align: -0.15em;
+   fill: currentColor;
+   overflow: hidden;
+   font-size:22px;
+   float:left;
+   margin-top:5px;
+}
+.comEditInfo{
+	width:400px;
+	height:35px;
+	line-height:35px;
+	margin:0 auto 15px;
+	position:relative;
+}
+.margTop{
+	margin-top:50px;
+}
+.comEditInfo span{
+	float:left;
+}
+.comEditInfo input{
+	float:left;
+}
+.comEditInfo .layui-form-radio{
+	margin:0 10px 0 0;
+}
+.comEditInfo input[type="text"]{
+	width:200px;
+	position:relative;
+}

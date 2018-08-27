@@ -615,6 +615,7 @@
 				$('#moduleList').html(strHtml);
 				form.render();
 				inpCheckboxSel();
+				if(roleName == 'super'){$('#listModCon').find('ul:odd').addClass('oddBg');}
 			}
 			function showOutDateTips(){
 				$('#outDateTip').click(function(){

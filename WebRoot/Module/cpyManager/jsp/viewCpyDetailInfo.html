@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/cpyDetailInfo/css/cpyBasicInfo.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/layui/css/modules/layui-icon-extend/iconfont.css" rel="stylesheet" type="text/css"/>
+ 	<script src="http://at.alicdn.com/t/font_787377_fddbgkpmuto.js"></script>
+  	<title>查看代理机构基本信息</title>
+  	<style>
+  		.icon-svg{
+		   width: 1em; height: 1em;
+		   vertical-align: -0.15em;
+		   fill: currentColor;
+		   overflow: hidden;
+		   font-size:28px;
+		   float:left;
+		   margin-top:5px;
+		}
+  	</style>
+</head>
+<body style="background:#fff;">
+	<div id="basicInfoDiv" class="viewCpyInfo layui-form" style="margin-top:15px;width:95%;"></div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','jquery'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery;
+			var page = {
+				init : function(){
+					this.onLoad();
+				},
+				onLoad : function(){
+					layer.load('1');
+					$.ajax({
+  						type:"post",
+				        async:false,
+				        dataType:"json",
+				        data : {cpyId:parent.sonUseObj.globalCpyId},
+				        url:'/cpyManager.do?action=getCpyDetailData',
+				        success:function (json){
+				        	layer.closeAll('loading');	
+				        	if(json.result == 'success'){
+				        		renderBasicInfo(json);
+				        	}else if(json.result == 'noInfo'){
+				        		console.log('暂无此人');
+				        	}
+				        }
+  					});
+				}
+			};
+			function renderBasicInfo(list){
+   				console.log(list)
+   				var strHtml = '';
+   				var	jiangpaiHtml = '';
+   				strHtml += '<ul>';
+   				strHtml += '<li class="cpy_Name">'+ list.cpyName +'</li>';
+   				strHtml += '<li><div class="innerPar"><p>公司法人</p><p>'+ list.cpyFr +'</p></div>';
+   				strHtml += '<div class="innerPar"><p><span>公司热度</span><i class="iconfont layui-extend-wenhao" onclick="showHotStatusNote()"></i></p><p style="color:#f00;font-weight:600;">'+ list.hotStatus +'</p></div></li>';
+   				strHtml += '<li><div class="innerPar"><p>账号注册时间</p><p>'+ list.signDate +'</p></div>';
+   				if(list.cpyLevel == '铜牌'){
+					jiangpaiHtml += '<svg class="icon-svg specSvg" aria-hidden="true"><use xlink:href="#icon-svg-tongpai-N"></use></svg>';
+				}else if(list.cpyLevel == '银牌'){
+					jiangpaiHtml += '<svg class="icon-svg specSvg" aria-hidden="true"><use xlink:href="#icon-svg-yinpai-N"></use></svg>';
+				}else if(list.cpyLevel == '金牌'){
+					jiangpaiHtml += '<svg class="icon-svg specSvg" aria-hidden="true"><use xlink:href="#icon-svg-jinpai-N"></use></svg>';
+				}else if(list.cpyLevel == '钻石'){
+					jiangpaiHtml += '<svg class="icon-svg specSvg" aria-hidden="true"><use xlink:href="#icon-svg-zuanshi"></use></svg>';
+				}
+   				strHtml += '<div class="innerPar"><p>会员等级</p><p>'+ jiangpaiHtml +' '+ list.cpyLevel +'</p></div></li>';
+   				strHtml += '<li><div class="innerPar"><p>公司组织机构代码</p><p>'+ list.cpyYyzz +'</p></div>';
+   				if(list.cpyLevel != '铜牌'){
+   					if(list.endFlag){
+   						strHtml += '<div class="innerPar"><p>会员到期时间</p><p>'+ list.endDate +' (<span class="endDateColor">该机构会员已到期</span>)</p></div></li>';
+   					}else{
+   						strHtml += '<div class="innerPar"><p>会员到期时间</p><p>'+ list.endDate +'</p></div></li>';
+   					}
+   				}else{
+   					strHtml += '<div class="innerPar"><p>会员到期时间</p><p>永久有效</p></div></li>';
+   				}
+   				strHtml += '<li><div class="innerPar"><p>主公司</p><p>'+ list.cpyParInfo +'</p></div>';
+   				strHtml += '<div class="innerPar"><p>子公司</p><p>'+ list.cpySubInfo +'</p></div></li>';
+				strHtml += '<li><div class="innerPar"><p>公司联系人</p><p>'+ list.cpyLxr +'</p></div>';
+   				strHtml += '<div class="innerPar"><p>联系人电话</p><p>'+ list.lxrTel +'</p></div></li>';
+   				strHtml += '<li><div class="innerPar"><p>联系人邮箱</p><p>'+ list.lxrEmail +'</p></div>';
+   				strHtml += '<div class="innerPar"><p>所在地区</p><p>'+ list.cpyProv +' '+ list.cpyCity +'</p></div></li>';
+   				strHtml += '<li><div class="innerPar"><p>联系地址</p><p>'+ list.cpyAddress +'</p></div>';
+   				strHtml += '<div class="innerPar"><p>公司网址</p><p>'+ list.cpyUrl +'</p></div></li>';
+   				strHtml += '<li class="specHeiLi"><div class="innerPar" style="width:100%;"><p>公司简介</p><p>'+ list.cpyProfile +'</p></div></li>';
+   				strHtml += '</ul>';
+   				$('#basicInfoDiv').html(strHtml);
+   			}
+
+			$(function(){
+				page.init();
+			});
+		});
+	   	function showHotStatusNote(){
+			layer.tips('公司热度意思是公司完成的专利数，公司每次为客户撰写一个专利，热度加0.1，依次可作为专利公司热度搜索排名', '.layui-extend-wenhao', {
+			  tips: [2, '#3595CC'],
+			  time: 6000
+			});	
+		}
+	</script>
+</body> 
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/cpyManager/css/cpyManager.css" rel="stylesheet" type="text/css"/>
+  	<title>编辑代理机构</title>
+</head>
+<body style="background:#fff;">
+	<div id="editCpyInfo" class="layui-form"></div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','jquery','form','laydate'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form,
+				laydate = layui.laydate;
+			var page = {
+				init : function(){
+					this.onLoad();
+				},
+				onLoad : function(){
+					this.renderCpyHtml();
+				},
+				renderCpyHtml : function(){
+					var editCpyInfo = '';
+					editCpyInfo += '<input type="hidden" id="cpyIdInp" value="'+ parent.sonUseObj.cpyId +'"/>';
+					editCpyInfo += '<div class="comEditInfo margTop"><span>会员等级：</span>';
+					editCpyInfo += '<input type="hidden" id="levelInp" value="'+ parent.sonUseObj.cpyLevel +'"/>';
+					if(parent.sonUseObj.cpyLevel == 0){
+						editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="0" title="铜牌" checked/>';
+						editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="1" title="银牌"/>';
+						editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="2" title="金牌"/>';
+						editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="3" title="钻石"/>';
+	  				}else if(parent.sonUseObj.cpyLevel == 1){
+	   					editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="0" title="铜牌"/>';
+	   					editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="1" title="银牌" checked/>';
+	   					editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="2" title="金牌"/>';
+	   					editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="3" title="钻石"/>';
+	   				}else if(parent.sonUseObj.cpyLevel == 2){
+	   					editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="0" title="铜牌"/>';
+	   					editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="1" title="银牌"/>';
+	   					editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="2" title="金牌" checked/>';
+	   					editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="3" title="钻石"/>';
+	   				}else if(parent.sonUseObj.cpyLevel == 3){
+	   					editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="0" title="铜牌"/>';
+	   					editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="1" title="银牌"/>';
+	   					editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="2" title="金牌"/>';
+	   					editCpyInfo += '<input type="radio" name="cpyLevel" lay-filter="modLevelFilter" value="3" title="钻石" checked/>';
+	   				}
+	 				editCpyInfo += '</div>';
+	   				editCpyInfo += '<div class="comEditInfo"><span>会员到期时间：</span>';
+	   				editCpyInfo += '<input type="text" class="layui-input" id="endDateInp" value="'+ parent.sonUseObj.cpyEndDate +'" placeholder="请选择会员到期时间">';
+	   				editCpyInfo += '</div>';
+	   				$('#editCpyInfo').html(editCpyInfo);
+	   				form.render();
+	   				laydate.render({elem : '#endDateInp',position: 'fixed'});
+				}
+			};
+			//监听编辑会员等级事件
+			form.on('radio(modLevelFilter)', function(data){
+				$('#levelInp').val(data.value);
+			}); 
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>
