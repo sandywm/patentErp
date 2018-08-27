@@ -351,7 +351,7 @@ public class CpyManagerAction extends DispatchAction {
 					if(CurrentTime.compareDate(CurrentTime.getStringDate(), endDate) > 0){
 						map.put("endFlag", false);//未到期
 					}else{
-						map.put("endFlag", true);
+						map.put("endFlag", true);//已到期
 					}
 					map.put("endDate", endDate);
 				}
