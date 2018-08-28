@@ -124,9 +124,9 @@ public class CpyInfoDaoImpl implements CpyInfoDao{
 		String hql = " from CpyInfoTb as cpy where";
 		if(!subCpyIdStr.equals("")){
 			if(subCpyIdStr.split(",").length == 1){
-				hql += " and cpy.id = "+Integer.parseInt(subCpyIdStr);
+				hql += "  cpy.id = "+Integer.parseInt(subCpyIdStr);
 			}else{
-				hql += " and cpy.id in ("+subCpyIdStr+")";
+				hql += "  cpy.id in ("+subCpyIdStr+")";
 			}
 		}
 		return sess.createQuery(hql).list();
