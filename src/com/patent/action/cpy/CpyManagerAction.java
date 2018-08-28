@@ -638,6 +638,79 @@ public class CpyManagerAction extends DispatchAction {
 	}
 	
 	/**
+	 * 获取子公司详情
+	 * @description
+	 * @author wm
+	 * @date 2018-8-28 上午11:01:43
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getSubCpyDetail(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
+		CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+		Integer parId = cpy.getCpyParId();
+		String msg = "error";
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(parId.equals(0)){
+			Integer cpySubId = CommonTools.getFinalInteger("cpySubId", request);
+			List<CpyInfoTb> cpyList = cm.listInfoById(cpySubId);
+			if(cpyList.size() > 0){
+				CpyInfoTb cpy_sub = cpyList.get(0);
+				if(cpy_sub.getCpyParId().equals(parId)){
+					msg = "success";
+					map.put("cpyId", cpy_sub.getId());
+					map.put("cpyName", cpy_sub.getCpyName());
+					map.put("cpyProv", cpy_sub.getCpyProv());
+					map.put("cpyCity", cpy_sub.getCpyCity());
+					map.put("cpyAddress", cpy_sub.getCpyAddress());
+					map.put("cpyFr", cpy_sub.getCpyFr());
+					map.put("cpyYyzz", cpy_sub.getCpyYyzz());
+					map.put("cpyLxr", cpy_sub.getCpyLxr());
+					map.put("lxrTel", cpy_sub.getLxrTel());
+					map.put("lxrEmail", cpy_sub.getLxrEmail());
+					map.put("cpyUrl", cpy_sub.getCpyUrl());
+					map.put("cpyProfile", cpy_sub.getCpyProfile());
+					map.put("signDate", CurrentTime.dateConvertToString(cpy_sub.getSignDate()));
+					map.put("hotStatus", cpy_sub.getHotStatus());
+					Integer cpyLevel = cpy_sub.getCpyLevel();
+					if(cpyLevel > 0){
+						map.put("endDate", CurrentTime.dateConvertToString(cpy_sub.getEndDate()));
+					}else{
+						map.put("endDate", "");
+					}
+					String cpyLevelChi = "铜牌";
+					if(cpyLevel.equals(0)){
+						cpyLevelChi = "铜牌";
+					}else if(cpyLevel.equals(1)){
+						cpyLevelChi = "银牌";
+					}else if(cpyLevel.equals(2)){
+						cpyLevelChi = "金牌";
+					}else if(cpyLevel.equals(3)){
+						cpyLevelChi = "钻石";
+					}
+					map.put("cpyLevel", cpyLevelChi);
+				}
+			}else{
+				msg = "noInfo";
+			}
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	
+	/**
 	 * 申请合并记录（暂时取消该功能）
 	 * @description
 	 * @author wm
@@ -954,7 +1027,7 @@ public class CpyManagerAction extends DispatchAction {
 				abilityFlag = true;
 			}else{
 				//获取当前用户是否有修改权限
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "unBindCpy");
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "delCpy");//解除子公司
 			}
 		}else{
 			abilityFlag = false;
