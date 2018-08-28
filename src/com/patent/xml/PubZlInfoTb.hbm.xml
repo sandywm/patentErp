@@ -32,7 +32,7 @@
         </property>
         <property name="zlType" type="java.lang.String">
             <column name="zl_type" length="20" not-null="true">
-                <comment>专利类型fm,syxx,wg,fmxx（发明、实用新型、外观、发明+新型）</comment>
+                <comment>专利类型fm,syxx,wg（发明、实用新型、外观）</comment>
             </column>
         </property>
         <property name="zlUpCl" type="java.lang.String">
@@ -40,8 +40,8 @@
                 <comment>原始材料（发布专利的原始材料）</comment>
             </column>
         </property>
-        <property name="zlNewDate" type="java.util.Date">
-            <column name="zl_new_date" length="10" not-null="true">
+        <property name="zlNewDate" type="java.lang.String">
+            <column name="zl_new_date" length="30">
                 <comment>发布时间</comment>
             </column>
         </property>
@@ -51,33 +51,33 @@
             </column>
         </property>
         <property name="lqUserId" type="java.lang.Integer">
-            <column name="lq_user_id" not-null="true">
+            <column name="lq_user_id">
                 <comment>领取人</comment>
             </column>
         </property>
         <property name="lqUserName" type="java.lang.String">
-            <column name="lq_user_name" length="20" not-null="true">
+            <column name="lq_user_name" length="20">
                 <comment>领取人姓名</comment>
             </column>
         </property>
         <property name="lqCpyId" type="java.lang.Integer">
-            <column name="lq_cpy_id" not-null="true">
+            <column name="lq_cpy_id">
                 <comment>领取人所属公司</comment>
             </column>
         </property>
         <property name="lqCpyName" type="java.lang.String">
-            <column name="lq_cpy_name" length="50" not-null="true">
+            <column name="lq_cpy_name" length="50">
                 <comment>领取人所属公司名称</comment>
             </column>
         </property>
-        <property name="lqDate" type="java.util.Date">
-            <column name="lq_date" length="10" not-null="true">
+        <property name="lqDate" type="java.lang.String">
+            <column name="lq_date" length="30">
                 <comment>领取时间</comment>
             </column>
         </property>
-        <property name="ajIdStr" type="java.lang.String">
-            <column name="aj_id_str">
-                <comment>案件编号组合(当发布的是新型+发明时)</comment>
+        <property name="ajId" type="java.lang.Integer">
+            <column name="aj_id">
+                <comment>案件编号</comment>
             </column>
         </property>
     </class>

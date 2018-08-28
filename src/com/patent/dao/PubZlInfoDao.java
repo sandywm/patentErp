@@ -82,10 +82,10 @@ public interface PubZlInfoDao {
 	 * @ModifiedBy
 	 * @param sess
 	 * @param lqCpyId 领取公司编号
-	 * @param ajIdStr 案件编号
+	 * @param ajIdS 案件编号
 	 * @return
 	 */
-	List<PubZlInfoTb> findSpecInfoByOpt(Session sess,Integer lqCpyId,String ajIdStr);
+	List<PubZlInfoTb> findSpecInfoByOpt_1(Session sess,Integer lqCpyId,Integer ajId);
 	
 	/**
 	 * 获取指定主键、指定发布人编号的专利发布信息
@@ -98,4 +98,16 @@ public interface PubZlInfoDao {
 	 * @return
 	 */
 	List<PubZlInfoTb> findSpecInfoByOpt(Session sess,Integer id,Integer pubId);
+	
+	/**
+	 * 根据条件获取领取人所属公司的领取记录列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-28 下午05:10:35
+	 * @param sess
+	 * @param addFlag 增加标记(1：已增加，0：未增加)
+	 * @param lqCpyId 申请公司
+	 * @return
+	 */
+	List<PubZlInfoTb> findSpecInfoByOpt_2(Session sess, Integer lqCpyId,Integer addStatus);
 }

@@ -34,6 +34,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private String ajApplyDate;
 	private String ajStatus;
 	private Integer ajFaId;
+	private Integer pubZlId;
 	private Integer ajStopStatus;
 	private String ajStopDate;
 	private String ajStopUser;
@@ -54,7 +55,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			String ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,String ajStopDate,
+			String ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
 			String ajStopUserType,String ajStopUser,String ajAddDate) {
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
@@ -74,6 +75,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajApplyDate = ajApplyDate;
 		this.ajStatus = ajStatus;
 		this.ajFaId = ajFaId;
+		this.pubZlId = pubZlId;
 		this.ajStopStatus = ajStopStatus;
 		this.ajStopDate = ajStopDate;
 		this.ajStopUser = ajStopUser;
@@ -86,7 +88,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			String ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,String ajStopDate,
+			String ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
 			String ajStopUserType,String ajStopUser,String ajAddDate) {
 		this.id = id;
 		this.cpyInfoTb = cpyInfoTb;
@@ -107,6 +109,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajApplyDate = ajApplyDate;
 		this.ajStatus = ajStatus;
 		this.ajFaId = ajFaId;
+		this.pubZlId = pubZlId;
 		this.ajStopStatus = ajStopStatus;
 		this.ajStopDate = ajStopDate;
 		this.ajStopUser = ajStopUser;
@@ -330,6 +333,14 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	public void setAjStopUserType(String ajStopUserType) {
 		this.ajStopUserType = ajStopUserType;
+	}
+
+	public Integer getPubZlId() {
+		return pubZlId;
+	}
+
+	public void setPubZlId(Integer pubZlId) {
+		this.pubZlId = pubZlId;
 	}
 
 

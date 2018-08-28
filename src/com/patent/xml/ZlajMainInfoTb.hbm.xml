@@ -100,6 +100,11 @@
                 <comment>案件分案信息(分案的id,没有就为0)</comment>
             </column>
         </property>
+        <property name="pubZlId" type="java.lang.Integer">
+            <column name="pub_zl_id" not-null="true">
+                <comment>发布案件的编号（不是接任务的就是0）</comment>
+            </column>
+        </property>
         <property name="ajStopStatus" type="java.lang.Integer">
             <column name="aj_stop_status" not-null="true">
                 <comment>案件终止状态[0:正常（默认），1：终止]</comment>

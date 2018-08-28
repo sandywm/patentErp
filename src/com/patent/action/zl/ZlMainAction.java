@@ -404,10 +404,11 @@ public class ZlMainAction extends DispatchAction {
 							String ajUpload = CommonTools.getFinalStr("ajUpload", request);
 							String ajRemark = CommonTools.getFinalStr("ajRemark", request);
 							String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
+							Integer pubZlId = CommonTools.getFinalInteger("pubZlId", request);//发布专利的编号
 							String ajApplyDate = "";
 							String ajStatus = CommonTools.getFinalStr("ajStatus", request);
 							Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, ajSqAddress, 
-									ajYxqId, ajUpload, ajRemark, ajEwyqId, ajApplyDate, ajStatus, cpyId);
+									ajYxqId, ajUpload, ajRemark, ajEwyqId, ajApplyDate, ajStatus, pubZlId,cpyId);
 							if(zlId > 0){
 								msg = "success";
 							}

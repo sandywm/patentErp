@@ -1,6 +1,5 @@
 package com.patent.service;
 
-import java.util.Date;
 import java.util.List;
 import com.patent.exception.WEBException;
 import com.patent.module.PubZlInfoTb;
@@ -22,7 +21,7 @@ public interface PubZlInfoManager {
 	 * @throws WEBException
 	 */
 	Integer addPubZl(Integer pubUserId,String zlTitle, String zlContent,String zlType,String zlUpCl, 
-			Date zlNewDate) throws WEBException; 
+			String zlNewDate) throws WEBException; 
 
 	/**
 	 * 根据主键修改发布的专利的基本信息
@@ -52,13 +51,13 @@ public interface PubZlInfoManager {
 	 * @param lqCpyId 领取人所在公司
 	 * @param lqCpyName 领取人所在公司
 	 * @param lqDate 领取时间
-	 * @param ajIdStr 对应的案件编号
+	 * @param ajId 对应的案件编号
 	 * @return
 	 * @throws WEBException
 	 */
 	boolean updatePubZlById(Integer id,Integer zlStatus, Integer lqUserId,
-			String lqUserName, Integer lqCpyId, String lqCpyName, Date lqDate,
-			String ajIdStr) throws WEBException; 
+			String lqUserName, Integer lqCpyId, String lqCpyName, String lqDate,
+			Integer ajId) throws WEBException; 
 	
 	/**
 	 * 删除指定的发布专利任务
@@ -113,10 +112,10 @@ public interface PubZlInfoManager {
 	 * @date 2018-8-12 下午09:17:45
 	 * @ModifiedBy
 	 * @param lqCpyId 领取公司编号
-	 * @param ajIdStr 案件编号
+	 * @param ajId 案件编号
 	 * @return
 	 */
-	List<PubZlInfoTb> listSpecInfoByOpt(Integer lqCpyId,String ajIdStr)throws WEBException ;
+	List<PubZlInfoTb> listSpecInfoByOpt_1(Integer lqCpyId,Integer ajId)throws WEBException ;
 	
 	/**
 	 * 获取指定主键、指定发布人编号的专利发布信息
@@ -129,4 +128,28 @@ public interface PubZlInfoManager {
 	 * @throws WEBException
 	 */
 	List<PubZlInfoTb> listSpecInfoByOpt(Integer id,Integer pubId)throws WEBException ;
+	
+	/**
+	 * 修改指定发布编号的案件编号
+	 * @description
+	 * @author wm
+	 * @date 2018-8-28 下午05:07:19
+	 * @param id 主键
+	 * @param ajId 案件编号
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateAjIdById(Integer id,Integer ajId)throws WEBException ;
+	
+	/**
+	 * 根据条件获取领取人所属公司的领取记录列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-28 下午05:31:31
+	 * @param addStatus 增加标记(1：已增加，0：未增加)
+	 * @param lqCpyId 申请公司
+	 * @return
+	 * @throws WEBException
+	 */
+	List<PubZlInfoTb> listSpecInfoByOpt_2(Integer lqCpyId,Integer addStatus)throws WEBException ;
 }

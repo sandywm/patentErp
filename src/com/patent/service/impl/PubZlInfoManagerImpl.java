@@ -1,6 +1,5 @@
 package com.patent.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -22,7 +21,7 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 	Transaction tran = null;
 	@Override
 	public Integer addPubZl(Integer pubUserId, String zlTitle,
-			String zlContent, String zlType, String zlUpCl, Date zlNewDate)
+			String zlContent, String zlType, String zlUpCl, String zlNewDate)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -31,7 +30,7 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
 			PubZlInfoTb pz = new PubZlInfoTb(aDao.get(sess, pubUserId), zlTitle, zlContent,"",zlType,
-					zlUpCl, zlNewDate, 0, 0,"", 0, "", null,"");
+					zlUpCl, zlNewDate, 0, 0,"", 0, "", "",0);
 			pzDao.save(sess, pz);
 			tran.commit();
 			return pz.getId();
@@ -75,7 +74,7 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 	@Override
 	public boolean updatePubZlById(Integer id, Integer zlStatus,
 			Integer lqUserId, String lqUserName, Integer lqCpyId,
-			String lqCpyName, Date lqDate, String ajIdStr) throws WEBException {
+			String lqCpyName, String lqDate, Integer ajId) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
@@ -90,14 +89,14 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 					pz.setLqCpyId(0);
 					pz.setLqCpyName("");
 					pz.setLqDate(null);
-					pz.setAjIdStr("");
+					pz.setAjId(0);
 				}else if(zlStatus.equals(1)){//设置成已领取
 					pz.setLqUserId(lqUserId);
 					pz.setLqUserName(lqUserName);
 					pz.setLqCpyId(lqCpyId);
 					pz.setLqCpyName(lqCpyName);
 					pz.setLqDate(lqDate);
-					pz.setAjIdStr(ajIdStr);
+					pz.setAjId(0);
 				}
 				pzDao.update(sess, pz);
 				tran.commit();
@@ -169,12 +168,12 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 	}
 
 	@Override
-	public List<PubZlInfoTb> listSpecInfoByOpt(Integer lqCpyId, String ajIdStr) throws WEBException {
+	public List<PubZlInfoTb> listSpecInfoByOpt_1(Integer lqCpyId, Integer ajId) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return pzDao.findSpecInfoByOpt(sess, lqCpyId, ajIdStr);
+			return pzDao.findSpecInfoByOpt_1(sess, lqCpyId, ajId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -196,6 +195,49 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("获取指定主键、指定发布人编号的专利发布信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateAjIdById(Integer id, Integer ajId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			PubZlInfoTb pz = pzDao.get(sess, id);
+			if(pz != null){
+				if(ajId > 0){
+					pz.setAjId(ajId);
+					pzDao.update(sess, pz);
+					tran.commit();
+					return true;
+				}
+				return false;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据指定发布编号的案件编号时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<PubZlInfoTb> listSpecInfoByOpt_2(Integer lqCpyId,Integer addStatus)throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return pzDao.findSpecInfoByOpt_2(sess, lqCpyId, addStatus);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据条件获取领取人所属公司的领取记录列表信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

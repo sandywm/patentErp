@@ -100,15 +100,11 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 	}
 
 	@Override
-	public List<PubZlInfoTb> findSpecInfoByOpt(Session sess, Integer lqCpyId,
-			String ajIdStr) {
+	public List<PubZlInfoTb> findSpecInfoByOpt_1(Session sess,Integer lqCpyId,Integer ajId){
 		// TODO Auto-generated method stub
 		String hql = " from PubZlInfoTb as pz where pz.lqCpyId = "+lqCpyId;
-		if(ajIdStr.indexOf(",") >= 0){
-			//两个案件编号的组合
-			hql += " and pz.ajIdStr in ("+ajIdStr+")"; 
-		}else{//单个案件
-			hql += " and pz.ajIdStr = "+Integer.parseInt(ajIdStr);
+		if(ajId > 0){
+			hql += " and pz.ajIdStr = "+ajId;
 		}
 		return sess.createQuery(hql).list();
 	}
@@ -120,6 +116,18 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 		String hql = " from PubZlInfoTb as pz where pz.id = "+id;
 		if(pubId > 0){
 			hql += " and pz.applyInfoTb.id = "+pubId;
+		}
+		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public List<PubZlInfoTb> findSpecInfoByOpt_2(Session sess, Integer lqCpyId,Integer addStatus) {
+		// TODO Auto-generated method stub
+		String hql = " from PubZlInfoTb as pz where pz.lqCpyId = "+lqCpyId;
+		if(addStatus.equals(1)){
+			hql += " and pz.ajId > 0";
+		}else if(addStatus.equals(0)){
+			hql += " and pz.ajId = 0";
 		}
 		return sess.createQuery(hql).list();
 	}

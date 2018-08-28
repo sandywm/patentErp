@@ -4,6 +4,7 @@
  */
 package com.patent.action.pubZl.PubZl;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +28,7 @@ import com.patent.module.CpyUserInfo;
 import com.patent.module.PubZlInfoTb;
 import com.patent.module.ZlajMainInfoTb;
 import com.patent.page.PageConst;
+import com.patent.service.ApplyInfoManager;
 import com.patent.service.CpyInfoManager;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.MailInfoManager;
@@ -86,6 +88,23 @@ public class PubZlAction extends DispatchAction {
 	private String getLoginType(HttpServletRequest request){
         String loginType = (String)request.getSession(false).getAttribute(Constants.LOGIN_TYPE);
         return loginType;
+	}
+	
+	/**
+	 * 封装json
+	*  @author  Administrator
+	*  @ModifiedBy  
+	*  @date  2018-8-21 下午10:17:05
+	*  @param obj
+	*  @param response
+	*  @throws IOException
+	 */
+	private void getJsonPkg(Object obj,HttpServletResponse response) throws IOException{
+		String json = JSON.toJSONString(obj);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
 	}
 	
 	/**
@@ -159,32 +178,25 @@ public class PubZlAction extends DispatchAction {
 				}else{
 					map_d.put("clFlag", true);
 				}
-				map_d.put("pubDate", CurrentTime.dateConvertToString(pz.getZlNewDate()));
+				map_d.put("pubDate", pz.getZlNewDate());
 				map_d.put("lqrName", pz.getLqUserName());
 				map_d.put("lqrCpyName", pz.getLqCpyName());
 				if(pz.getLqUserId() > 0){
-					map_d.put("lqDate", CurrentTime.dateConvertToString(pz.getLqDate()));
+					map_d.put("lqDate", pz.getLqDate());
 				}else{
 					map_d.put("lqDate", "");
 				}
 				map_d.put("pubInfo", pz.getApplyInfoTb().getAppName());
-				String ajIdStr = pz.getAjIdStr();
+				Integer ajId = pz.getAjId();
 				String ajNoQt = "";
-				map_d.put("ajIdStr", ajIdStr);
-				if(!ajIdStr.equals("")){
-					String[] ajIdStrArr = ajIdStr.split(",");
-					List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(Integer.parseInt(ajIdStrArr[0]), 0);
+				map_d.put("ajId", ajId);
+				if(ajId > 0){
+					List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(ajId, 0);
 					if(zlList.size() > 0){
 						ajNoQt = zlList.get(0).getAjNoQt();
 					}
-					if(ajIdStrArr.length == 2){
-						List<ZlajMainInfoTb> zlList_1 = zlm.listSpecInfoById(Integer.parseInt(ajIdStrArr[1]), 0);
-						if(zlList_1.size() > 0){
-							ajNoQt += "," + zlList_1.get(0).getAjNoQt();
-						}
-					}
-					map_d.put("ajNoQt", ajNoQt);
 				}
+				map_d.put("ajNoQt", ajNoQt);
 				list_d.add(map_d);
 			}
 			map.put("data", list_d);
@@ -193,11 +205,7 @@ public class PubZlAction extends DispatchAction {
 		}else{
 			map.put("msg", "noInfo");
 		}
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -229,11 +237,7 @@ public class PubZlAction extends DispatchAction {
 		}
 		Integer count = pzm.getCountByOpt(currUserId, zlTitle, zlNo, zlType, pubDate, zlStatus);
 		map.put("result", count);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -281,11 +285,7 @@ public class PubZlAction extends DispatchAction {
 			msg = "noAbility";
 		}
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -309,6 +309,7 @@ public class PubZlAction extends DispatchAction {
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO);
+		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		String msg = "";
 		Integer pubId = CommonTools.getFinalInteger(request.getParameter("pubId"));
@@ -317,8 +318,8 @@ public class PubZlAction extends DispatchAction {
 		String lqUserName = "";
 		Integer lqCpyId = 0;
 		String lqCpyName = "";
-		Date lqDate = null;
-		String ajIdStr = "";
+		String lqDate = "";
+		Integer ajId = 0;
 		boolean flag = false;
 		List<PubZlInfoTb> pzList = new ArrayList<PubZlInfoTb>();
 		if(pubId > 0){
@@ -336,8 +337,8 @@ public class PubZlAction extends DispatchAction {
 				lqUserName = cUser.getUserName();
 				lqCpyId = cUser.getCpyInfoTb().getId();
 				lqCpyName = cUser.getCpyInfoTb().getCpyName();
-				lqDate = CurrentTime.stringToDate_1(CurrentTime.getStringDate());
-				ajIdStr = request.getParameter("ajIdStr");
+				lqDate = CurrentTime.getCurrentTime();
+				ajId = CommonTools.getFinalInteger("ajId", request);
 				
 				pzList = pzm.listSpecInfoByOpt(pubId, 0);
 				if(pzList.size() > 0){//存在信息&& pzList.get(0).getZlStatus().equals(zlStatus)
@@ -382,77 +383,158 @@ public class PubZlAction extends DispatchAction {
 				}
 			}
 			if(flag){
-				flag = pzm.updatePubZlById(pubId, zlStatus, lqUserId, lqUserName, lqCpyId, lqCpyName, lqDate, ajIdStr);
-				if(flag){
-					msg = "success";
-					String mailTitle = "";
-					String mailCon = "";
-					if(this.getLoginType(request).equals("appUser")){//申请人/公司撤销领取状态
-						PubZlInfoTb pz = pzm.listSpecInfoByOpt(pubId, this.getLoginUserId(request)).get(0);
+				msg = "success";
+				String mailTitle = "";
+				String mailCon = "";
+				if(this.getLoginType(request).equals("appUser")){//申请人/公司撤销领取状态
+					PubZlInfoTb pz = pzm.listSpecInfoByOpt(pubId, this.getLoginUserId(request)).get(0);
+					mailTitle = "专利任务撤回通知";
+					String zlTitle = pz.getZlTitle();
+					//给发布人发送邮件
+					mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, lqUserId, "appType", mailTitle, "您已主动撤回专利["+zlTitle+"],之前的代理机构["+pz.getLqCpyName()+"]将不能再进行操作!");
+					lqCpyId = pz.getLqCpyId();
+					
+					//给代理机构管理员发送邮件
+					List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(lqCpyId, "管理员");
+					mailCon = "由于专利发布人员主动撤回专利["+zlTitle+"]。您无法再对该任务进行编辑，如有疑问，请联系专利发布人员["+pz.getApplyInfoTb().getAppName()+"]!";
+					for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
+						CpyUserInfo cUser = it.next();
+						mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, mailCon);
+					}
+					//减少领取公司的领取数量
+					cm.updateZlNumById(lqCpyId, -1);
+					//需要修改对应的案件终止状态--------------------------------------------
+					zlm.updateStopStatusById(ajId, 1, CurrentTime.getCurrentTime(), am.getEntityById(this.getLoginUserId(request)).getAppName(), this.getLoginType(request));
+				}else if(this.getLoginType(request).equals("cpyUser")){//代理公司领取/撤销领取状态
+					PubZlInfoTb pz = pzm.listSpecInfoByOpt(pubId, 0).get(0);
+					lqCpyId = pz.getLqCpyId();
+					if(zlStatus.equals(0)){//被代理机构员工撤销
 						mailTitle = "专利任务撤回通知";
-						String zlTitle = pz.getZlTitle();
-						//给发布人发送邮件
-						mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, lqUserId, "appType", mailTitle, "您已主动撤回专利["+zlTitle+"],之前的代理机构["+pz.getLqCpyName()+"]将不能再进行操作!");
-						lqCpyId = pz.getLqCpyId();
-						
-						//给代理机构管理员发送邮件
+						mailCon = "由于代理机构人员["+pz.getLqUserName()+"]主动撤回。您无法再对该任务进行编辑!";
+						//给发布人/公司发送邮件
+						mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appType", mailTitle, "待机机构["+pz.getLqCpyName()+"]下的员工["+pz.getLqUserName()+"]主动撤回对您发布的专利任务["+pz.getZlTitle()+"]");
+						//给代理机构所有管理员发送邮件
 						List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(lqCpyId, "管理员");
-						mailCon = "由于专利发布人员主动撤回专利["+zlTitle+"]。您无法再对该任务进行编辑，如有疑问，请联系专利发布人员["+pz.getApplyInfoTb().getAppName()+"]!";
 						for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
 							CpyUserInfo cUser = it.next();
 							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, mailCon);
 						}
 						//减少领取公司的领取数量
 						cm.updateZlNumById(lqCpyId, -1);
-						//需要修改对应的案件终止状态--------------------------------------------
-//						zlm.updateStopStatusById(zlId, 1, CurrentTime.getCurrentTime(), stopUser, this.getLoginType(request));
-					}else if(this.getLoginType(request).equals("cpyUser")){//代理公司领取/撤销领取状态
-						PubZlInfoTb pz = pzm.listSpecInfoByOpt(pubId, 0).get(0);
-						lqCpyId = pz.getLqCpyId();
-						if(zlStatus.equals(0)){//被代理机构员工撤销
-							mailTitle = "专利任务撤回通知";
-							mailCon = "由于代理机构人员["+pz.getLqUserName()+"]主动撤回。您无法再对该任务进行编辑!";
-							//给发布人/公司发送邮件
-							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appType", mailTitle, "待机机构["+pz.getLqCpyName()+"]下的员工["+pz.getLqUserName()+"]主动撤回对您发布的专利任务["+pz.getZlTitle()+"]");
-							//给代理机构所有管理员发送邮件
-							List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(lqCpyId, "管理员");
-							for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
-								CpyUserInfo cUser = it.next();
-								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, mailCon);
-							}
-							//减少领取公司的领取数量
-							cm.updateZlNumById(lqCpyId, -1);
-							//需要修改对应的案件终止状态---------------------------------------------
-						}else{//被代理机构员工领取
-							mailTitle = "专利任务领取通知";
-							mailCon = "您发布的专利["+pz.getZlTitle()+"]已被代理机构["+lqCpyName+"]下员工["+lqUserName+"]领取!";
-							//给发布人/公司发送邮件
-							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appType", mailTitle, mailCon);
-							//给代理机构所有管理员发送邮件
-							List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(lqCpyId, "管理员");
-							for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
-								CpyUserInfo cUser = it.next();
-								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, "员工["+pz.getLqUserName()+"]已成功领取["+pz.getZlTitle()+"]专利任务!");
-							}
-							//增加领取公司的领取数量
-							cm.updateZlNumById(lqCpyId, 1);
+						//需要修改对应的案件终止状态---------------------------------------------
+						zlm.updateStopStatusById(ajId, 1, "", "", "");
+					}else{//被代理机构员工领取
+						mailTitle = "专利任务领取通知";
+						mailCon = "您发布的专利["+pz.getZlTitle()+"]已被代理机构["+lqCpyName+"]下员工["+lqUserName+"]领取!";
+						//给发布人/公司发送邮件
+						mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appType", mailTitle, mailCon);
+						//给代理机构所有管理员发送邮件
+						List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(lqCpyId, "管理员");
+						for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
+							CpyUserInfo cUser = it.next();
+							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, "员工["+pz.getLqUserName()+"]已成功领取["+pz.getZlTitle()+"]专利任务!");
 						}
+						//增加领取公司的领取数量
+						cm.updateZlNumById(lqCpyId, 1);
+						//需要修改对应的案件终止状态---------------------------------------------
+						zlm.updateStopStatusById(ajId, 0, CurrentTime.getCurrentTime(), lqUserName, this.getLoginType(request));
 					}
-					
-				}else{
-					msg = "error";
 				}
+				//修改领取状态
+				pzm.updatePubZlById(pubId, zlStatus, lqUserId, lqUserName, lqCpyId, lqCpyName, lqDate, 0);
 			}else{
 				msg = "lowLevel";//会员等级不够或者会员已到期
 			}
 		}
 
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 发布专利
+	 * @description
+	 * @author wm
+	 * @date 2018-8-28 下午04:09:57
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward addPzInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		String msg = "error";
+		if(this.getLoginType(request).equals("appUser")){//只有发布个人、公司用户才能使用
+			String zlTitle = Transcode.unescape_new("zlTitle", request);
+			String zlContent = Transcode.unescape_new("zlContent", request);
+			String zlType = CommonTools.getFinalStr("zlType", request);
+			String zlUpCl = CommonTools.getFinalStr("zlUpCl", request);
+			if(zlType.equals("fm") || zlType.equals("syxx") || zlType.equals("wg")){
+				pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, zlType, zlUpCl, CurrentTime.getCurrentTime());
+				msg = "success";
+			}else if(zlType.equals("fmxx")){//发明+新型
+				pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, "fm", zlUpCl, CurrentTime.getCurrentTime());
+				pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, "syxx", zlUpCl, CurrentTime.getCurrentTime());
+				msg = "success";
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取当前代理机构已领取的发布专利任务列表
+	 * @description
+	 * @author wm
+	 * @date 2018-8-28 下午05:34:01
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getLqPzListData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		String msg = "error";
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
+			if(cUser != null){
+				Integer cpyId = cUser.getCpyInfoTb().getId();
+				Integer addStatus = CommonTools.getFinalInteger("addStatus", request);
+				String purpose = CommonTools.getFinalStr("purpose", request);
+				List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, addStatus);
+				if(purpose.equals("simpleInfo")){//用于增加专利时显示用
+					
+				}else if(purpose.equals("allInfo")){//用于浏览单位全部领取记录用
+					
+				}
+				for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
+					PubZlInfoTb pz = it.next();
+					Map<String,Object> map_d = new HashMap<String,Object>();
+					map_d.put("pzId", pz.getId());
+					map_d.put("pzTitle", pz.getZlTitle());
+					map_d.put("pzType", pz.getZlType());
+					map_d.put("", pz);
+					map_d.put("", pz);
+					map_d.put("", pz);
+					map_d.put("", pz);
+				}
+			}
+		}
 		return null;
 	}
 }
