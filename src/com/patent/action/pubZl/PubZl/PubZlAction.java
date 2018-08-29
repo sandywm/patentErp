@@ -518,21 +518,31 @@ public class PubZlAction extends DispatchAction {
 				String purpose = CommonTools.getFinalStr("purpose", request);
 				List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, addStatus);
 				if(purpose.equals("simpleInfo")){//用于增加专利时显示用
-					
+					for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
+						PubZlInfoTb pz = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("pzId", pz.getId());
+						map_d.put("pzTitle", pz.getZlTitle());
+						map_d.put("pzType", pz.getZlType());
+						map_d.put("", pz);
+						map_d.put("", pz);
+						map_d.put("", pz);
+						map_d.put("", pz);
+					}
 				}else if(purpose.equals("allInfo")){//用于浏览单位全部领取记录用
-					
+					for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
+						PubZlInfoTb pz = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("pzId", pz.getId());
+						map_d.put("pzTitle", pz.getZlTitle());
+						map_d.put("pzType", pz.getZlType());
+						map_d.put("", pz);
+						map_d.put("", pz);
+						map_d.put("", pz);
+						map_d.put("", pz);
+					}
 				}
-				for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
-					PubZlInfoTb pz = it.next();
-					Map<String,Object> map_d = new HashMap<String,Object>();
-					map_d.put("pzId", pz.getId());
-					map_d.put("pzTitle", pz.getZlTitle());
-					map_d.put("pzType", pz.getZlType());
-					map_d.put("", pz);
-					map_d.put("", pz);
-					map_d.put("", pz);
-					map_d.put("", pz);
-				}
+				
 			}
 		}
 		return null;

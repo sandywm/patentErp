@@ -658,7 +658,7 @@ public class CpyManagerAction extends DispatchAction {
 			List<CpyInfoTb> cpyList = cm.listInfoById(cpySubId);
 			if(cpyList.size() > 0){
 				CpyInfoTb cpy_sub = cpyList.get(0);
-				if(cpy_sub.getCpyParId().equals(parId)){
+				if(cpy_sub.getCpyParId().equals(cpy.getId())){
 					msg = "success";
 					map.put("cpyId", cpy_sub.getId());
 					map.put("cpyName", cpy_sub.getCpyName());
