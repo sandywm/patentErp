@@ -112,20 +112,19 @@ public class MailAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
-		String opt = CommonTools.getFinalStr("opt", request);
 		Map<String,Object> map = new HashMap<String,Object>();
-		Integer noReadCount = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), "", "", 0);
+		Integer userId = this.getLoginUserId(request);
+		String loginType = this.getLoginType(request);
+		Integer noReadCount = mm.getCountByOpt(userId, loginType, "", "", 0);
 		map.put("result", noReadCount);
-		if(opt.equals("touch")){
-			
-			Integer noReadCount_t = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), "TaskM", "", 0);
+		Integer noReadCount_t = mm.getCountByOpt(userId, loginType, "TaskM", "", 0);
+		if(loginType.equals("cpyUser")){
 			Integer noReadCount_e = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), "endM", "", 0);
 			Integer noReadCount_b = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), "buyM", "", 0);
-			
-			map.put("result_t", noReadCount_t);
 			map.put("result_e", noReadCount_e);
 			map.put("result_b", noReadCount_b);
 		}
+		map.put("result_t", noReadCount_t);
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
         pw.write(json); 
