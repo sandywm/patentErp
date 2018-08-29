@@ -578,7 +578,7 @@ public class CpyManagerAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
 		CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
-		Integer parId = cpy.getCpyParId();
+		String parId = cpy.getCpyParId()+"";
 		String subIdStr = cpy.getCpySubId();
 		List<CpyInfoTb> cpyList = new ArrayList<CpyInfoTb>();
 		Map<String,Object> map = new HashMap<String,Object>();
@@ -592,7 +592,7 @@ public class CpyManagerAction extends DispatchAction {
 				map.put("result", "noInfo");
 			}
 		}else{//存在主公司-说明自己是子公司
-			cpyList = cm.listParSubCpyInfo(subIdStr, "par");
+			cpyList = cm.listParSubCpyInfo(parId, "par");
 			map.put("result", "existInfo");
 			map.put("psInfo", "par");
 		}
