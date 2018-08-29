@@ -63,7 +63,6 @@
    			};
    			function renderBasicInfo(list){
    				$("#cpyTxtTit").html("查看代理机构基本信息");
-   				console.log(list)
    				var strHtml = "";
    				var	jiangpaiHtml = "";
    				strHtml += '<ul>';
@@ -111,7 +110,12 @@
 				//试用到期时间
 				if(list.cpyLevel != '铜牌'){
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label">会员到期时间</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" name="endDate" value="'+ list.endDate +'" disabled class="layui-input"></div></div>';
+					if(list.endFlag){
+   						strHtml += '<div class="layui-input-inline"><input type="text" name="endDate" value="'+ list.endDate +'" disabled class="layui-input"></div>';
+   						strHtml += '<div class="layui-form-mid layui-word-aux"><span class="endDateColor">会员已到期</span></div></div>';
+					}else{
+   						strHtml += '<div class="layui-input-inline"><input type="text" name="endDate" value="'+ list.endDate +'" disabled class="layui-input"></div></div>';
+   					}
 				}
 				//公司名字
   				strHtml += '<div class="layui-form-item"><label class="layui-form-label">公司名字</label>';

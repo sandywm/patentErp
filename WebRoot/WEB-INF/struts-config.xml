@@ -31,6 +31,7 @@
     <action path="/cpyManager" parameter="action" scope="request"  type="com.patent.action.cpy.CpyManagerAction">
       <forward name="cpyDetailPage" path="/Module/cpyDetailInfo/jsp/cpyDetailInfo.jsp"></forward><!-- 导向代理机构信息修改页面(代理机构管理员修改 员工查看) -->
       <forward name="cpyPage" path="/Module/cpyManager/jsp/cpyManager.jsp"></forward><!-- 导向代理机构管理页面(平台用户使用) -->
+      <forward name="subCpyPage" path="/Module/subParCpyManager/jsp/subParCpyManager.jsp"></forward><!-- 导向代理机构主/子公司页面(代理机构管理员使用) -->
     </action>
     <!-- 模块管理 -->
     <action path="/modM" parameter="action" scope="request" type="com.patent.action.module.ModuleManagerAction">
@@ -46,7 +47,7 @@
     </action>
     <!-- 邮件系统管理 -->
     <action path="/mail"  parameter="action" scope="request" type="com.patent.action.mail.MailAction">
-      <set-property property="cancellable" value="true" />
+      <forward name="mailPage" path="/Module/mailManager/jsp/mailManager.jsp"></forward><!-- 角色管理页面 -->
     </action>
     <!-- 客户信息管理 -->
     <action path="/customer" parameter="action" scope="request" type="com.patent.action.customer.CustomerAction">

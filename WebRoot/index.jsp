@@ -86,6 +86,8 @@
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserDetailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!--  iframe id="mainIframe" src="modM.do?action=goModulePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="cpyManager.do?action=goCpyPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe -->
+	                	<!--  iframe id="mainIframe" src="cpyManager.do?action=goSubParCpyPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
+	                	<!--  iframe id="mainIframe" src="mail.do?action=goMailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                </div>
 	            </div>
 	        </div>
@@ -114,7 +116,7 @@
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="role.do?action=goRolePage" tab-id="5">代理机构角色管理</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="jfm.do?action=goJfPage" tab-id="6">技术领域管理</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="7">代理机构角色权限管理</a></dd>';
-		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" tab-id="8">代理机构主/子公司</a></dd></dl></li>';
+		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goSubParCpyPage" tab-id="8">代理机构主/子公司</a></dd></dl></li>';
 			        	liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="9"><i class="iconfont layui-extend-goumai"></i>会员续费/购买</a></li>';
 	        		}else{
 	        			liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="3"></i><cite>我的代理机构</cite></a></li>';

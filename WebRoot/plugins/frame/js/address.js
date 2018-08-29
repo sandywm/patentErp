@@ -6,7 +6,7 @@ layui.define(["form","jquery"],function(exports){
     Address.prototype.provinces = function() {
         //加载省数据
         var proHtml = '',that = this;
-        $.get("plugins/frame/json/address.json", function (data) {
+        $.get("/plugins/frame/json/address.json", function (data) {
             for (var i = 0; i < data.length; i++) {
             	proHtml += '<option value="' + data[i].code + '">' + data[i].name + '</option>';
             }

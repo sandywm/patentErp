@@ -79,17 +79,16 @@
 	  						</div>
 	  						<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search
  "></i></button>
-	  						</div>
-	  						<div id="cpyList">
-	  							<div class='noData'></div>
-	  							<table id="cpyListTable" class="layui-table" lay-filter="cpyListTable"></table>
-	  						</div>
 	  					</div>
-  					</div>
+  						<div id="cpyList">
+  							<div class='noData'></div>
+  							<table id="cpyListTable" class="layui-table" lay-filter="cpyListTable"></table>
+  						</div>
+	  				</div>
   				</div>
   			</div>
   		</div>
-	</div>  	
+  	</div>	
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
   		var sonUseObj = {

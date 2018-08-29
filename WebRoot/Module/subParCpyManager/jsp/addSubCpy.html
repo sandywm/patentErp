@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/subParCpyManager/css/subParCpyManager.css" rel="stylesheet" type="text/css"/>
+  	<title>添加子公司</title>
+</head>
+<body style="background:#fff;">
+	<div id="addSubCpy" class="layui-form">
+		<div class="layui-form-item" style="margin-top:15px;">
+			<label class="layui-form-label">子公司名字</label>
+			<div class="layui-input-inline">
+				<input type="text" name="name" required lay-verify="judegeCompName" placeholder="请输入子公司名字" autocomplete="off" class="layui-input" maxlength="25">
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">子公司账号</label>
+			<div class="layui-input-inline">
+				<input type="text" name="account" required lay-verify="judegeAcc" placeholder="请输入子公司账号" autocomplete="off" class="layui-input" maxlength="12">
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">子公司密码</label>
+			<div class="layui-input-inline">
+				<input type="password" name="password" required lay-verify="judgePass" placeholder="请输入子公司密码" autocomplete="off" class="layui-input" maxlength="16">
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">所在地区</label>
+			<div class="layui-input-inline">
+				<input id="provInp" name="prov" type="hidden" value=""/>
+				 <select id="cpyProvSel" name="cpyProvSel" lay-verify="judgeProv" lay-filter="province">
+				 	<option value="">请选择省</option>
+				 </select> 
+			</div>
+			<div class="layui-input-inline">
+				<input id="cityInp" name="city" type="hidden" value=""/>
+				<select id="cpyCitySel" name="cpyCitySel" lay-verify="judgeCity" lay-filter="city" disabled>
+					<option value="">请选择市</option>
+				</select> 
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">联系人姓名</label>
+			<div class="layui-input-inline">
+				<input type="text" name="lxr" required lay-verify="judgeName" placeholder="请输入联系人姓名" autocomplete="off" class="layui-input" maxlength="4">
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">联系人电话</label>
+			<div class="layui-input-inline">
+				<input type="text" name="tel" required lay-verify="judgePhone" placeholder="请输入联系人手机号码" autocomplete="off" class="layui-input" maxlength="11"/>
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">联系人邮箱</label>
+			<div class="layui-input-inline">
+				<input type="email" name="email" required lay-verify="email" placeholder="请输入联系人邮箱" autocomplete="off" class="layui-input"/>
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label"></label>
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit lay-filter="saveSubCpyInfo">保存子公司信息</button>
+			</div>
+		</div>
+	</div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.config({
+			base : '/plugins/frame/js/'
+		}).use(['layer','jquery','form','address'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form,
+				address = layui.address();
+			var page = {
+				init : function(){
+					this.onLoad();
+				},
+				onLoad : function(){
+					form.render();
+				}
+			};
+			form.verify({
+				judegeCompName : function(value){
+					var reg = /^[\u4E00-\u9FA5]+$/; 
+					if(value == ''){
+						return '子公司名字不能为空';
+					}else if(!reg.test(value)){
+				      return '子公司名字应为汉字';
+				    }else if(value.length < 4 || value.length > 20){
+				    	 return '子公司名字最少为4个字符最多为20个字符';
+				    }
+				},
+				judegeAcc : function(value){
+					var reg = /[\u4e00-\u9fa5]+/,
+						regSpec = /^[a-zA-z0-9\u4E00-\u9FA5]*$/;
+					if(value == ''){
+						return '子公司账号不能为空';
+					}else if(reg.test(value)){
+						return '子公司账号不能为中文';
+					}else if(!regSpec.test(value)){
+						return '子公司账号不能有特殊字符、标点、或空格';
+					}else if(value.length < 4 || value.length > 16){
+						return '子公司账号长度不能小于4个字符不能大于16个字符';
+					}
+				},
+				judgePass : function(value){
+					if(value == ''){
+						return '密码不能为空';
+					}else{
+						if(value.length < 6){
+							return '密码的长度不能小于6位';
+						}else if(value.length > 16){
+							return '密码的长度不大于小于16位';
+						}
+					}
+				},
+				judgeProv : function(value){
+					var value = $("#provInp").val();
+					if(value == ''){
+						return '请选择省';
+					}
+				},
+				judgeCity : function(){
+					var value = $("#cityInp").val();
+					if(value == ''){
+						return '请选择市';
+					}
+				},
+				judgeName : function(value){
+					var reg = /^[\u4E00-\u9FA5]+$/; 
+					if(value == ''){
+						return '联系人姓名不能为空';
+					}else if(!reg.test(value)){
+				      return '联系人应为汉字';
+				    }else if(value.length < 2 || value.length > 4){
+				    	 return '联系人姓名最少应为2个字符最多为4个字符';
+				    }
+				},
+				judgePhone : function(value){
+					var v= value.replace(/ /g,"");
+					if(v!='' && v.length == 11){
+						var reg = /^1[3|4|5|7|8][0-9]\d{4,8}$/;
+						if(!reg.test(value)){
+							return '手机号码格式不对,请从新输入';
+						}
+					}else{
+						return '手机号码格式不对,请从新输入';
+					}
+				}
+			});
+			form.on('submit(saveSubCpyInfo)',function(data){
+				var field = data.field;
+				for(var attr in field){
+		  			if(attr == 'name' || attr == 'lxr' || attr == 'prov' || attr == 'city'){
+		  				field[attr] = $.trim(escape(field[attr]));
+		  			}
+		  		}
+		  		layer.load('1');
+		  		$.ajax({
+		    		type:"post",
+			        async:false,
+			        dataType:"json",
+			        url:"/cpyManager.do?action=addSubCpyInfo",
+			        data:field,
+			        success:function (json){
+			        	layer.closeAll('loading');
+			        	if(json["result"] == "success"){
+			        		layer.msg("添加成功",{icon:1,time:1000},function(){
+			        			var index= parent.layer.getFrameIndex(window.name);
+			        			parent.layer.close(index);
+			        			parent.loadFlag = true;
+			        		});
+			        	}else if(json["result"] == "exist"){
+			        		layer.msg("当前子公司账号已存在，请重新输入",{icon:5,anim:6,time:1000});
+			        	}else if(json["result"] == "lowerlevel"){
+			        		layer.msg("抱歉，免费(铜牌)会员不能增加子公司",{icon:5,anim:6,time:1000});
+			        	}else if(json["result"] == "fail"){
+			        		layer.msg("添加失败，请重试",{icon:5,anim:6,time:1000});
+			        	}else if(json["result"] == "outNum"){
+			        		layer.msg("抱歉，您当前添加子公司的数量已超过当前会员最大子公司数量",{icon:5,anim:6,time:1000});
+			        	}else if(json["result"] == "noAbility"){
+			        		layer.msg("抱歉，您暂无权限添加子公司！",{icon:5,anim:6,time:1000});
+			        	}else if(json["result"] == "outDate"){
+			        		layer.msg("抱歉，您的会员已到期，暂不能添加子公司",{icon:5,anim:6,time:1000});
+			        	}
+			        }
+		    	});
+			});
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>
