@@ -96,8 +96,46 @@ public class MailAction extends DispatchAction {
 		return mapping.findForward("mailPage");
 	}
 	
+	/**\
+	 * 获取是否有未读邮件
+	 * @description
+	 * @author wm
+	 * @date 2018-8-29 下午05:46:32
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception 
+	 */
+	public ActionForward getNoReadInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		String opt = CommonTools.getFinalStr("opt", request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		Integer noReadCount = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), "", "", 0);
+		map.put("result", noReadCount);
+		if(opt.equals("touch")){
+			
+			Integer noReadCount_t = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), "TaskM", "", 0);
+			Integer noReadCount_e = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), "endM", "", 0);
+			Integer noReadCount_b = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), "buyM", "", 0);
+			
+			map.put("result_t", noReadCount_t);
+			map.put("result_e", noReadCount_e);
+			map.put("result_b", noReadCount_b);
+		}
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
 	/**
-	 * 修改邮件读取状态
+	 * 批量修改邮件读取状态
 	 * @description
 	 * @author wm
 	 * @date 2018-8-17 上午08:30:13
@@ -112,16 +150,11 @@ public class MailAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
-		Integer mailId = CommonTools.getFinalInteger(request.getParameter("mailId"));
+		String mailIdStr = CommonTools.getFinalStr("mailId",request);
 		Map<String,String> map = new HashMap<String,String>();
-		if(mailId > 0){
-			List<MailInfoTb> mList = mm.listInfoByOpt(this.getLoginUserId(request), this.getLoginType(request), mailId);
-			if(mList.size() > 0){
-				mm.updateReadStatusById(mailId, 1);
-				map.put("result", "success");
-			}else{
-				map.put("result", "error");
-			}
+		if(!mailIdStr.equals("")){
+			mm.updateBatchStatusByIdStr(mailIdStr, 1);
+			map.put("result", "success");
 		}else{
 			map.put("result", "error");
 		}
@@ -149,16 +182,11 @@ public class MailAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
-		Integer mailId = CommonTools.getFinalInteger(request.getParameter("mailId"));
+		String mailIdStr = CommonTools.getFinalStr("mailId",request);
 		Map<String,String> map = new HashMap<String,String>();
-		if(mailId > 0){
-			List<MailInfoTb> mList = mm.listInfoByOpt(this.getLoginUserId(request), this.getLoginType(request), mailId);
-			if(mList.size() > 0){
-				mm.delMailById(mailId);
-				map.put("result", "success");
-			}else{
-				map.put("result", "error");
-			}
+		if(!mailIdStr.equals("")){
+			mm.delBatchSelfMail(this.getLoginUserId(request), mailIdStr);
+			map.put("result", "success");
 		}else{
 			map.put("result", "error");
 		}
@@ -192,13 +220,10 @@ public class MailAction extends DispatchAction {
 		Integer count = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), mailType, mailTitle, readStatus);
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(count > 0){
-//			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("pageSize")), 10);
-//			Integer pageCount = PageConst.getPageCount(count, pageSize);
-//			Integer pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
-			
-			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
-			Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
-			
+			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("pageSize")), 10);
+			Integer pageCount = PageConst.getPageCount(count, pageSize);
+			Integer pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
+
 			List<MailInfoTb> mList = mm.listPageInfoByOpt(this.getLoginUserId(request), this.getLoginType(request), mailType, mailTitle, readStatus, pageNo, pageSize);
 			List<Object> list_d = new ArrayList<Object>();
 			for(Iterator<MailInfoTb> it = mList.iterator() ; it.hasNext();){
@@ -219,8 +244,6 @@ public class MailAction extends DispatchAction {
 			}
 			map.put("data", list_d);
 			map.put("msg", "success");
-			map.put("count", count);
-			map.put("code", 0);
 		}else{
 			map.put("msg", "noInfo");
 		}

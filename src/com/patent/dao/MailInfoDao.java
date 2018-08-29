@@ -80,9 +80,8 @@ public interface MailInfoDao {
 	 * @date 2018-8-17 上午09:52:15
 	 * @param sess
 	 * @param acceptUserId 接收人编号
-	 * @param userType 接收人类型
 	 * @param mailId 主键
 	 * @return
 	 */
-	List<MailInfoTb> findInfoByOpt(Session sess,Integer acceptUserId,String userType,Integer mailId);
+	List<MailInfoTb> findInfoByOpt(Session sess,Integer acceptUserId,Integer mailId);
 }

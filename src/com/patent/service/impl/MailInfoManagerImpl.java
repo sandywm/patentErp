@@ -97,7 +97,9 @@ public class MailInfoManagerImpl implements MailInfoManager{
 			Integer mailIdLen = mailIdArr.length;
 			if(mailIdLen >= 1){
 				for(Integer i = 0 ; i < mailIdLen ; i++){
-					mDao.delete(sess, Integer.parseInt(mailIdArr[i]));
+					if(mDao.findInfoByOpt(sess, acceptUserId, Integer.parseInt(mailIdArr[i])).size() > 0){
+						mDao.delete(sess, Integer.parseInt(mailIdArr[i]));
+					}
 					if(i % 10 == 0){
 						sess.flush();
 						sess.clear();
@@ -160,4 +162,38 @@ public class MailInfoManagerImpl implements MailInfoManager{
 		return null;
 	}
 
+	@Override
+	public void updateBatchStatusByIdStr(String mailIdStr, Integer readStatus)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mDao = (MailInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MAIL_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			String[] mailIdArr = mailIdStr.split(",");
+			Integer mailIdLen = mailIdArr.length;
+			if(mailIdLen >= 1){
+				for(Integer i = 0 ; i < mailIdLen ; i++){
+					MailInfoTb mail = mDao.get(sess, Integer.parseInt(mailIdArr[i]));
+					if(mail != null){
+						mail.setReadStatus(readStatus);
+						mDao.update(sess, mail);
+					}
+					if(i % 10 == 0){
+						sess.flush();
+						sess.clear();
+						tran.commit();
+						tran = sess.beginTransaction();
+					}
+				}
+				tran.commit();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("批量修改指定邮件状态时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
 }

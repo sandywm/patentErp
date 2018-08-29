@@ -142,14 +142,27 @@ public interface PubZlInfoManager {
 	boolean updateAjIdById(Integer id,Integer ajId)throws WEBException ;
 	
 	/**
-	 * 根据条件获取领取人所属公司的领取记录列表
+	 * 根据条件获取领取人所属公司的领取记录列表（可分页）
 	 * @description
 	 * @author wm
 	 * @date 2018-8-28 下午05:31:31
 	 * @param addStatus 增加标记(1：已增加，0：未增加)
 	 * @param lqCpyId 申请公司
+	 * @param pageFlag 是否分页（true：分页,false：不分页）
 	 * @return
 	 * @throws WEBException
 	 */
-	List<PubZlInfoTb> listSpecInfoByOpt_2(Integer lqCpyId,Integer addStatus)throws WEBException ;
+	List<PubZlInfoTb> listSpecInfoByOpt_2(Integer lqCpyId,Integer addStatus,boolean pageFlag, Integer pageNo, Integer pageSize)throws WEBException ;
+	
+	/**
+	 * 根据条件获取领取人所属公司的领取记录条数
+	 * @description
+	 * @author wm
+	 * @date 2018-8-29 下午05:08:56
+	 * @param addStatus 增加标记(1：已增加，0：未增加)
+	 * @param lqCpyId 申请公司
+	 * @return
+	 * @throws WEBException
+	 */
+	Integer getCountByOpt_2(Integer lqCpyId,Integer addStatus)throws WEBException ;
 }

@@ -509,6 +509,7 @@ public class PubZlAction extends DispatchAction {
 		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		Map<String,String> map = new HashMap<String,String>();
+		List<Object> list_d = new ArrayList<Object>();
 		String msg = "error";
 		if(this.getLoginType(request).equals("cpyUser")){
 			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
@@ -516,30 +517,58 @@ public class PubZlAction extends DispatchAction {
 				Integer cpyId = cUser.getCpyInfoTb().getId();
 				Integer addStatus = CommonTools.getFinalInteger("addStatus", request);
 				String purpose = CommonTools.getFinalStr("purpose", request);
-				List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, addStatus);
-				if(purpose.equals("simpleInfo")){//用于增加专利时显示用
-					for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
-						PubZlInfoTb pz = it.next();
-						Map<String,Object> map_d = new HashMap<String,Object>();
-						map_d.put("pzId", pz.getId());
-						map_d.put("pzTitle", pz.getZlTitle());
-						map_d.put("pzType", pz.getZlType());
-						map_d.put("", pz);
-						map_d.put("", pz);
-						map_d.put("", pz);
-						map_d.put("", pz);
+				boolean pageFlag = false;
+				Integer pageNo = 0,pageSize = 0;
+				Integer count = pzm.getCountByOpt_2(cpyId, addStatus);
+				if(purpose.equals("allInfo")){//用于浏览单位全部领取记录用
+					pageFlag = true;
+					if(count > 0){
+						pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("pageSize")), 10);
+						Integer pageCount = PageConst.getPageCount(count, pageSize);
+						pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
+						List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, addStatus, pageFlag, pageNo, pageSize);
+						msg = "success";
+						for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
+							PubZlInfoTb pz = it.next();
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("pzId", pz.getId());
+							map_d.put("pzTitle", pz.getZlTitle());
+							map_d.put("pzContent", pz.getZlContent());
+							map_d.put("pzType", pz.getZlType());
+							String zlType = pz.getZlType();
+							String zlTypeChi = "";
+							if(zlType.equals("fm")){
+								zlTypeChi = "发明";
+							}else if(zlType.equals("syxx")){
+								zlTypeChi = "实用新型";
+							}else if(zlType.equals("wg")){
+								zlTypeChi = "外观";
+							}
+							map_d.put("zlTypeChi", zlTypeChi);
+							map_d.put("upCl", pz.getZlUpCl());
+							map_d.put("addDate", pz.getZlNewDate());
+							map_d.put("lqr", pz.getLqUserName());
+							map_d.put("lqDate", pz.getLqDate());
+							map_d.put("", pz);
+							list_d.add(map_d);
+						}
+					}else{
+						msg = "noInfo";
 					}
-				}else if(purpose.equals("allInfo")){//用于浏览单位全部领取记录用
-					for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
-						PubZlInfoTb pz = it.next();
-						Map<String,Object> map_d = new HashMap<String,Object>();
-						map_d.put("pzId", pz.getId());
-						map_d.put("pzTitle", pz.getZlTitle());
-						map_d.put("pzType", pz.getZlType());
-						map_d.put("", pz);
-						map_d.put("", pz);
-						map_d.put("", pz);
-						map_d.put("", pz);
+				}else if(purpose.equals("simpleInfo")){//用于增加专利时显示用
+					List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, addStatus, pageFlag, pageNo, pageSize);
+					if(pzList.size() > 0){
+						msg = "success";
+						for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
+							PubZlInfoTb pz = it.next();
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("pzId", pz.getId());
+							map_d.put("pzTitle", pz.getZlTitle());
+							map_d.put("pzType", pz.getZlType());
+							list_d.add(map_d);
+						}
+					}else{
+						msg = "noInfo";
 					}
 				}
 				

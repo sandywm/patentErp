@@ -36,6 +36,18 @@ public interface MailInfoManager {
 	boolean updateReadStatusById(Integer mailId,Integer readStatus) throws WEBException;
 	
 	/**
+	 * 批量修改指定邮件的已读状态
+	 * @description
+	 * @author wm
+	 * @date 2018-8-29 下午05:24:34
+	 * @param mailIdStr
+	 * @param readStatus
+	 * @return
+	 * @throws WEBException
+	 */
+	void updateBatchStatusByIdStr(String mailIdStr,Integer readStatus) throws WEBException;
+	
+	/**
 	 * 删除指定邮件
 	 * @description
 	 * @author wm

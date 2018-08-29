@@ -100,14 +100,27 @@ public interface PubZlInfoDao {
 	List<PubZlInfoTb> findSpecInfoByOpt(Session sess,Integer id,Integer pubId);
 	
 	/**
-	 * 根据条件获取领取人所属公司的领取记录列表
+	 * 根据条件获取领取人所属公司的领取记录列表（可分页）
 	 * @description
 	 * @author wm
 	 * @date 2018-8-28 下午05:10:35
 	 * @param sess
-	 * @param addFlag 增加标记(1：已增加，0：未增加)
+	 * @param addStatus 增加标记(1：已增加，0：未增加)
+	 * @param lqCpyId 申请公司
+	 * @param pageFlag 是否分页（true：分页,false：不分页）
+	 * @return
+	 */
+	List<PubZlInfoTb> findSpecInfoByOpt_2(Session sess, Integer lqCpyId,Integer addStatus,boolean pageFlag,Integer pageNo,Integer pageSize);
+	
+	/**
+	 * 根据条件获取领取人所属公司的领取记录条数
+	 * @description
+	 * @author wm
+	 * @date 2018-8-29 上午11:37:59
+	 * @param sess
+	 * @param addStatus 增加标记(1：已增加，0：未增加)
 	 * @param lqCpyId 申请公司
 	 * @return
 	 */
-	List<PubZlInfoTb> findSpecInfoByOpt_2(Session sess, Integer lqCpyId,Integer addStatus);
+	Integer getCountByOpt_2(Session sess, Integer lqCpyId,Integer addStatus);
 }

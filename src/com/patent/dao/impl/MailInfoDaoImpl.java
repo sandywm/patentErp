@@ -84,10 +84,9 @@ public class MailInfoDaoImpl implements MailInfoDao{
 	}
 
 	@Override
-	public List<MailInfoTb> findInfoByOpt(Session sess, Integer acceptUserId,
-			String userType, Integer mailId) {
+	public List<MailInfoTb> findInfoByOpt(Session sess, Integer acceptUserId, Integer mailId) {
 		// TODO Auto-generated method stub
-		String hql = " from MailInfoTb as m where m.id = "+mailId+" and  m.acceptUserId = "+acceptUserId + " and m.userType = '"+userType+"'";
+		String hql = " from MailInfoTb as m where m.id = "+mailId+" and  m.acceptUserId = "+acceptUserId;
 		return sess.createQuery(hql).list();
 	}
 
