@@ -508,9 +508,11 @@ public class PubZlAction extends DispatchAction {
 		// TODO Auto-generated method stub
 		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
-		Map<String,String> map = new HashMap<String,String>();
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
 		List<Object> list_d = new ArrayList<Object>();
 		String msg = "error";
+		String zlNo = "";
 		if(this.getLoginType(request).equals("cpyUser")){
 			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
 			if(cUser != null){
@@ -549,9 +551,14 @@ public class PubZlAction extends DispatchAction {
 							map_d.put("addDate", pz.getZlNewDate());
 							map_d.put("lqr", pz.getLqUserName());
 							map_d.put("lqDate", pz.getLqDate());
-							map_d.put("", pz);
+							List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(pz.getAjId(), cpyId);
+							if(zlList.size() > 0){
+								zlNo = zlList.get(0).getAjNoQt();
+							}
+							map_d.put("zlNo", zlNo);
 							list_d.add(map_d);
 						}
+						map.put("pzInfo", list_d);
 					}else{
 						msg = "noInfo";
 					}
@@ -567,13 +574,47 @@ public class PubZlAction extends DispatchAction {
 							map_d.put("pzType", pz.getZlType());
 							list_d.add(map_d);
 						}
+						map.put("pzInfo", list_d);
 					}else{
 						msg = "noInfo";
 					}
 				}
-				
 			}
 		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取当前代理机构已领取的发布专利任务列表
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-8-29 下午09:11:56
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getLqPzCount(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Map<String,Integer> map = new HashMap<String,Integer>();
+		Integer count = 0;
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
+			if(cUser != null){
+				Integer cpyId = cUser.getCpyInfoTb().getId();
+				Integer addStatus = CommonTools.getFinalInteger("addStatus", request);
+				count = pzm.getCountByOpt_2(cpyId, addStatus);
+			}
+		}
+		map.put("result", count);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 }

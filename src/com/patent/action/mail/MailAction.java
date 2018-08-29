@@ -117,7 +117,7 @@ public class MailAction extends DispatchAction {
 		String loginType = this.getLoginType(request);
 		Integer noReadCount = mm.getCountByOpt(userId, loginType, "", "", 0);
 		map.put("result", noReadCount);
-		Integer noReadCount_t = mm.getCountByOpt(userId, loginType, "TaskM", "", 0);
+		Integer noReadCount_t = mm.getCountByOpt(userId, loginType, "taskM", "", 0);
 		if(loginType.equals("cpyUser")){
 			Integer noReadCount_e = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), "endM", "", 0);
 			Integer noReadCount_b = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), "buyM", "", 0);

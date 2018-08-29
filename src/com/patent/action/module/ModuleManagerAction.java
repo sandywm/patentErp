@@ -140,8 +140,8 @@ public class ModuleManagerAction extends DispatchAction {
 			selRoleId = CommonTools.getFinalInteger(request.getParameter("selRoleId"));
 			cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
 			String cpyEndDate = cpy.getEndDate();
-			if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0){//已过期
-				endFlag = false;//已过期
+			if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0 && cpy.getCpyLevel() > 0){//已过期
+				endFlag = false;//已过期(免费会员不存在过期)
 			}
 			mList = mm.listInfoByLevel(cpy.getCpyLevel(),0);
 			if(selRoleId.equals(0)){//当获取指定角色的模块列表情况时，不用再获取角色列表了
