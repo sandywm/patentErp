@@ -1,6 +1,5 @@
 package com.patent.module;
 
-import java.util.Date;
 
 /**
  * ZlajFjInfoTb entity. @author MyEclipse Persistence Tools
@@ -22,7 +21,7 @@ public class ZlajFjInfoTb implements java.io.Serializable {
 	private String fjType;
 	private String fjGs;
 	private String fjDx;
-	private Date fjUpDate;
+	private String fjUpDate;
 
 	// Constructors
 
@@ -33,7 +32,7 @@ public class ZlajFjInfoTb implements java.io.Serializable {
 	/** minimal constructor */
 	public ZlajFjInfoTb(CpyUserInfo cpyUserInfo, ZlajMainInfoTb zlajMainInfoTb,
 			String fjName, String fjVersion, String fjType, String fjGs,
-			String fjDx, Date fjUpDate) {
+			String fjDx, String fjUpDate) {
 		this.cpyUserInfo = cpyUserInfo;
 		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.fjName = fjName;
@@ -47,7 +46,7 @@ public class ZlajFjInfoTb implements java.io.Serializable {
 	/** full constructor */
 	public ZlajFjInfoTb(Integer id,CpyUserInfo cpyUserInfo, ZlajMainInfoTb zlajMainInfoTb,
 			String fjName, String fjVersion, String fjType, String fjGs,
-			String fjDx, Date fjUpDate) {
+			String fjDx, String fjUpDate) {
 		this.id = id;
 		this.cpyUserInfo = cpyUserInfo;
 		this.zlajMainInfoTb = zlajMainInfoTb;
@@ -125,11 +124,11 @@ public class ZlajFjInfoTb implements java.io.Serializable {
 		this.fjDx = fjDx;
 	}
 
-	public Date getFjUpDate() {
+	public String getFjUpDate() {
 		return this.fjUpDate;
 	}
 
-	public void setFjUpDate(Date fjUpDate) {
+	public void setFjUpDate(String fjUpDate) {
 		this.fjUpDate = fjUpDate;
 	}
 

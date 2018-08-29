@@ -35,23 +35,23 @@
                 <comment>流程数字</comment>
             </column>
         </property>
-        <property name="lcSDate" type="java.util.Date">
-            <column name="lc_s_date" length="10" not-null="true">
+        <property name="lcSDate" type="java.lang.String">
+            <column name="lc_s_date" length="30" not-null="true">
                 <comment>流程开始时间</comment>
             </column>
         </property>
-        <property name="lcCpyDate" type="java.util.Date">
-            <column name="lc_cpy_date" length="10" not-null="true">
+        <property name="lcCpyDate" type="java.lang.String">
+            <column name="lc_cpy_date" length="20" not-null="true">
                 <comment>流程最后期限-机构</comment>
             </column>
         </property>
-        <property name="lcEDate" type="java.util.Date">
-            <column name="lc_e_date" length="10">
+        <property name="lcEDate" type="java.lang.String">
+            <column name="lc_e_date" length="30">
                 <comment>流程完成时间</comment>
             </column>
         </property>
-        <property name="lcGfDate" type="java.util.Date">
-            <column name="lc_gf_date" length="10" not-null="true">
+        <property name="lcGfDate" type="java.lang.String">
+            <column name="lc_gf_date" length="20" not-null="true">
                 <comment>流程官方绝限</comment>
             </column>
         </property>

@@ -86,7 +86,7 @@
             </column>
         </property>
         <property name="ajApplyDate" type="java.lang.String">
-            <column name="aj_apply_date" length="20">
+            <column name="aj_apply_date" length="30">
                 <comment>案卷申请日期</comment>
             </column>
         </property>
@@ -111,7 +111,7 @@
             </column>
         </property>
         <property name="ajStopDate" type="java.lang.String">
-            <column name="aj_stop_date" length="20">
+            <column name="aj_stop_date" length="30">
                 <comment>案件终止时间</comment>
             </column>
         </property>
@@ -121,7 +121,7 @@
             </column>
         </property>
         <property name="ajAddDate" type="java.lang.String">
-            <column name="aj_add_date">
+            <column name="aj_add_date" length="30">
                 <comment>案件录入时间</comment>
             </column>
         </property>

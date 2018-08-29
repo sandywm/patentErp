@@ -20,13 +20,13 @@
                 <comment>通知书名称</comment>
             </column>
         </property>
-        <property name="tzsFwr" type="java.util.Date">
-            <column name="tzs_fwr" length="10" not-null="true">
+        <property name="tzsFwr" type="java.lang.String">
+            <column name="tzs_fwr" length="30" not-null="true">
                 <comment>通知书发文日</comment>
             </column>
         </property>
-        <property name="tzsGfr" type="java.util.Date">
-            <column name="tzs_gfr" length="10">
+        <property name="tzsGfr" type="java.lang.String">
+            <column name="tzs_gfr" length="30">
                 <comment>通知书官方绝限</comment>
             </column>
         </property>

@@ -1,7 +1,5 @@
 package com.patent.module;
 
-import java.sql.Timestamp;
-
 /**
  * SendEmailInfo entity. @author MyEclipse Persistence Tools
  */
@@ -17,7 +15,7 @@ public class SendEmailCodeInfo implements java.io.Serializable {
 	private Integer id;
 	private String userEmail;
 	private String code;
-	private Timestamp sendTime;
+	private String sendTime;
 	private Integer useStatus;
 
 	// Constructors
@@ -27,7 +25,7 @@ public class SendEmailCodeInfo implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public SendEmailCodeInfo(String userEmail, String code, Timestamp sendTime,
+	public SendEmailCodeInfo(String userEmail, String code, String sendTime,
 			Integer useStatus) {
 		this.userEmail = userEmail;
 		this.code = code;
@@ -61,11 +59,11 @@ public class SendEmailCodeInfo implements java.io.Serializable {
 		this.code = code;
 	}
 
-	public Timestamp getSendTime() {
+	public String getSendTime() {
 		return this.sendTime;
 	}
 
-	public void setSendTime(Timestamp sendTime) {
+	public void setSendTime(String sendTime) {
 		this.sendTime = sendTime;
 	}
 

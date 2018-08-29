@@ -1,6 +1,5 @@
 package com.patent.service;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 import com.patent.exception.WEBException;
@@ -19,7 +18,7 @@ public interface SendEmailCodeInfoManager {
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addSEC(String userEmail,String code,Timestamp sendTime) throws WEBException;
+	Integer addSEC(String userEmail,String code,String sendTime) throws WEBException;
 	
 	/**
 	 * 根据主键修改验证码、发送时间、使用状态
@@ -33,7 +32,7 @@ public interface SendEmailCodeInfoManager {
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateInfoById(Integer id,String code,Timestamp sendTime,Integer useStatus) throws WEBException;
+	boolean updateInfoById(Integer id,String code,String sendTime,Integer useStatus) throws WEBException;
 	
 	/**
 	 * 根据条件获取发送邮箱验证码信息列表

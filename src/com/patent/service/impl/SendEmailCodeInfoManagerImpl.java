@@ -1,6 +1,5 @@
 package com.patent.service.impl;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -19,7 +18,7 @@ public class SendEmailCodeInfoManagerImpl implements SendEmailCodeInfoManager{
 	SendEmailCodeInfoDao secDao = null;
 	Transaction tran = null;
 	@Override
-	public Integer addSEC(String userEmail, String code, Timestamp sendTime)
+	public Integer addSEC(String userEmail, String code, String sendTime)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -40,7 +39,7 @@ public class SendEmailCodeInfoManagerImpl implements SendEmailCodeInfoManager{
 	}
 
 	@Override
-	public boolean updateInfoById(Integer id, String code, Timestamp sendTime,
+	public boolean updateInfoById(Integer id, String code, String sendTime,
 			Integer useStatus) throws WEBException {
 		// TODO Auto-generated method stub
 		try {

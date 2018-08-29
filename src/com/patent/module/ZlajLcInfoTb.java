@@ -1,7 +1,5 @@
 package com.patent.module;
 
-import java.util.Date;
-
 /**
  * ZlajLcInfoTb entity. @author MyEclipse Persistence Tools
  */
@@ -20,10 +18,10 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 	private String lcMz;
 	private String lcDetail;
 	private Double lcMzNo;
-	private Date lcSDate;
-	private Date lcCpyDate;
-	private Date lcEDate;
-	private Date lcGfDate;
+	private String lcSDate;
+	private String lcCpyDate;
+	private String lcEDate;
+	private String lcGfDate;
 	private String lcUpInfo;
 	private Integer lcComStatus;
 	private Integer lcPj;
@@ -37,8 +35,8 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 
 	/** minimal constructor */
 	public ZlajLcInfoTb(CpyUserInfo cpyUserInfo, ZlajMainInfoTb zlajMainInfoTb,
-			String lcMz, String lcDetail, Double lcMzNo, Date lcSDate,
-			Date lcCpyDate, Date lcEDate, Date lcGfDate, String lcUpInfo,
+			String lcMz, String lcDetail, Double lcMzNo, String lcSDate,
+			String lcCpyDate, String lcEDate, String lcGfDate, String lcUpInfo,
 			Integer lcComStatus, Integer lcPj, String lcRemark) {
 		this.cpyUserInfo = cpyUserInfo;
 		this.zlajMainInfoTb = zlajMainInfoTb;
@@ -57,8 +55,8 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 
 	/** full constructor */
 	public ZlajLcInfoTb(Integer id,CpyUserInfo cpyUserInfo, ZlajMainInfoTb zlajMainInfoTb,
-			String lcMz, String lcDetail, Double lcMzNo, Date lcSDate,
-			Date lcCpyDate, Date lcEDate, Date lcGfDate, String lcUpInfo,
+			String lcMz, String lcDetail, Double lcMzNo, String lcSDate,
+			String lcCpyDate, String lcEDate, String lcGfDate, String lcUpInfo,
 			Integer lcComStatus, Integer lcPj, String lcRemark) {
 		this.id = id;
 		this.cpyUserInfo = cpyUserInfo;
@@ -126,35 +124,35 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 		this.lcMzNo = lcMzNo;
 	}
 
-	public Date getLcSDate() {
+	public String getLcSDate() {
 		return this.lcSDate;
 	}
 
-	public void setLcSDate(Date lcSDate) {
+	public void setLcSDate(String lcSDate) {
 		this.lcSDate = lcSDate;
 	}
 
-	public Date getLcCpyDate() {
+	public String getLcCpyDate() {
 		return this.lcCpyDate;
 	}
 
-	public void setLcCpyDate(Date lcCpyDate) {
+	public void setLcCpyDate(String lcCpyDate) {
 		this.lcCpyDate = lcCpyDate;
 	}
 
-	public Date getLcEDate() {
+	public String getLcEDate() {
 		return this.lcEDate;
 	}
 
-	public void setLcEDate(Date lcEDate) {
+	public void setLcEDate(String lcEDate) {
 		this.lcEDate = lcEDate;
 	}
 
-	public Date getLcGfDate() {
+	public String getLcGfDate() {
 		return this.lcGfDate;
 	}
 
-	public void setLcGfDate(Date lcGfDate) {
+	public void setLcGfDate(String lcGfDate) {
 		this.lcGfDate = lcGfDate;
 	}
 

@@ -30,13 +30,13 @@
                 <comment>费用金额</comment>
             </column>
         </property>
-        <property name="feeEndDateJj" type="java.util.Date">
-            <column name="fee_endDate_jj" length="10" not-null="true">
+        <property name="feeEndDateJj" type="java.lang.String">
+            <column name="fee_endDate_jj" length="30" not-null="true">
                 <comment>费用期限(机构)</comment>
             </column>
         </property>
-        <property name="feeEndDateGf" type="java.util.Date">
-            <column name="fee_endDate_gf" length="10" not-null="true">
+        <property name="feeEndDateGf" type="java.lang.String">
+            <column name="fee_endDate_gf" length="30" not-null="true">
                 <comment>官方期限</comment>
             </column>
         </property>
@@ -55,8 +55,8 @@
                 <comment>是否代缴[默认0(自缴)，1(代缴)]</comment>
             </column>
         </property>
-        <property name="feeJnDate" type="java.util.Date">
-            <column name="fee_jn_date" length="10">
+        <property name="feeJnDate" type="java.lang.String">
+            <column name="fee_jn_date" length="30">
                 <comment>缴费时间</comment>
             </column>
         </property>

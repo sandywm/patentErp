@@ -45,8 +45,8 @@
                 <comment>附件大小</comment>
             </column>
         </property>
-        <property name="fjUpDate" type="java.util.Date">
-            <column name="fj_up_date" length="10">
+        <property name="fjUpDate" type="java.lang.String">
+            <column name="fj_up_date" length="30">
                 <comment>上传时间</comment>
             </column>
         </property>

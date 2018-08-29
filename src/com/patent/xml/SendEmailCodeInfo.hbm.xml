@@ -20,8 +20,8 @@
                 <comment>验证码</comment>
             </column>
         </property>
-        <property name="sendTime" type="java.sql.Timestamp">
-            <column name="sendTime" length="19" not-null="true">
+        <property name="sendTime" type="java.lang.String">
+            <column name="sendTime" length="30" not-null="true">
                 <comment>发送时间</comment>
             </column>
         </property>

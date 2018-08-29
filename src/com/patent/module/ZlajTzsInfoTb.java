@@ -1,6 +1,5 @@
 package com.patent.module;
 
-import java.util.Date;
 
 /**
  * ZlajTzsInfoTb entity. @author MyEclipse Persistence Tools
@@ -17,8 +16,8 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 	private Integer id;
 	private ZlajMainInfoTb zlajMainInfoTb;
 	private String tzdName;
-	private Date tzsFwr;
-	private Date tzsGfr;
+	private String tzsFwr;
+	private String tzsGfr;
 
 	// Constructors
 
@@ -28,7 +27,7 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 
 	/** minimal constructor */
 	public ZlajTzsInfoTb(ZlajMainInfoTb zlajMainInfoTb, String tzdName,
-			Date tzsFwr, Date tzsGfr) {
+			String tzsFwr, String tzsGfr) {
 		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.tzdName = tzdName;
 		this.tzsFwr = tzsFwr;
@@ -37,7 +36,7 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 
 	/** full constructor */
 	public ZlajTzsInfoTb(Integer id,ZlajMainInfoTb zlajMainInfoTb, String tzdName,
-			Date tzsFwr, Date tzsGfr) {
+			String tzsFwr, String tzsGfr) {
 		this.id = id;
 		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.tzdName = tzdName;
@@ -71,19 +70,19 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 		this.tzdName = tzdName;
 	}
 
-	public Date getTzsFwr() {
+	public String getTzsFwr() {
 		return this.tzsFwr;
 	}
 
-	public void setTzsFwr(Date tzsFwr) {
+	public void setTzsFwr(String tzsFwr) {
 		this.tzsFwr = tzsFwr;
 	}
 
-	public Date getTzsGfr() {
+	public String getTzsGfr() {
 		return this.tzsGfr;
 	}
 
-	public void setTzsGfr(Date tzsGfr) {
+	public void setTzsGfr(String tzsGfr) {
 		this.tzsGfr = tzsGfr;
 	}
 

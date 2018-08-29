@@ -589,7 +589,7 @@ public class LoginAction extends DispatchAction {
 				List<SendEmailCodeInfo> secList = secm.listSpecInfoByOpt(toUserEmail, "");
 				if(secList.size() > 0){
 					SendEmailCodeInfo sec = secList.get(0);
-					String sendTime_base = CurrentTime.convertTimestampToString(sec.getSendTime());
+					String sendTime_base = sec.getSendTime();
 					long diffMills = CurrentTime.compareDateTime(CurrentTime.getCurrentTime(),sendTime_base);//当前时间减去发送时间
 					if(diffMills < 60000){//毫秒（1分钟以内）
 						msg = "noSend";//一分钟内只能发送一次
@@ -607,7 +607,7 @@ public class LoginAction extends DispatchAction {
 					      mailInfo.setContent("你的验证码是："+code + " 该验证码30分钟内有效，请尽快使用!");      
 					      flag = SimpleMailSender.sendTextMail(mailInfo);
 					      if(flag){
-					    	  secm.updateInfoById(sec.getId(), code, CurrentTime.getCurrentTime1(), 0);
+					    	  secm.updateInfoById(sec.getId(), code, CurrentTime.getCurrentTime(), 0);
 					    	  msg = "success";
 					      }else{
 					    	  msg = "sendFail";//发送失败
@@ -627,7 +627,7 @@ public class LoginAction extends DispatchAction {
 				      mailInfo.setContent("你的验证码是："+code + " 该验证码30分钟内有效，请尽快使用!");    
 				      flag = SimpleMailSender.sendTextMail(mailInfo);
 				      if(flag){
-				    	  secm.addSEC(toUserEmail, code, CurrentTime.getCurrentTime1());
+				    	  secm.addSEC(toUserEmail, code, CurrentTime.getCurrentTime());
 				    	  msg = "success";
 				      }else{
 				    	  msg = "sendFail";//发送失败
@@ -675,7 +675,7 @@ public class LoginAction extends DispatchAction {
 			if(secList.size() > 0){
 				Integer useStatus = secList.get(0).getUseStatus();
 				if(useStatus.equals(0)){
-					String sendTime = CurrentTime.convertTimestampToString(secList.get(0).getSendTime());
+					String sendTime = secList.get(0).getSendTime();
 					long diffMills = CurrentTime.compareDateTime(CurrentTime.getCurrentTime(),sendTime);//当前时间减去发送时间
 					if(diffMills < 60000 * 30){//毫秒（30分钟以内）
 						if(userId > 0){

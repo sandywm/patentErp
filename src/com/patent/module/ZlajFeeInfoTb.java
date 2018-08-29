@@ -1,7 +1,5 @@
 package com.patent.module;
 
-import java.util.Date;
-
 /**
  * ZlajFeeInfoTb entity. @author MyEclipse Persistence Tools
  */
@@ -19,12 +17,12 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	private CpyUserInfo cpyUserInfo;
 	private CpyInfoTb cpyInfoTb;
 	private Double feePrice;
-	private Date feeEndDateJj;
-	private Date feeEndDateGf;
+	private String feeEndDateJj;
+	private String feeEndDateGf;
 	private String feeRemark;
 	private Integer feeStatus;
 	private Integer djStatus;
-	private Date feeJnDate;
+	private String feeJnDate;
 	private String feeUpZd;
 
 	// Constructors
@@ -35,9 +33,9 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	/** minimal constructor */
 	public ZlajFeeInfoTb(FeeTypeInfoTb feeTypeInfoTb, CpyUserInfo cpyUserInfo,
-			CpyInfoTb cpyInfoTb, Double feePrice, Date feeEndDateJj,
-			Date feeEndDateGf, String feeRemark, Integer feeStatus,
-			Integer djStatus, Date feeJnDate, String feeUpZd) {
+			CpyInfoTb cpyInfoTb, Double feePrice, String feeEndDateJj,
+			String feeEndDateGf, String feeRemark, Integer feeStatus,
+			Integer djStatus, String feeJnDate, String feeUpZd) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -53,9 +51,9 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	/** full constructor */
 	public ZlajFeeInfoTb(Integer id,FeeTypeInfoTb feeTypeInfoTb, CpyUserInfo cpyUserInfo,
-			CpyInfoTb cpyInfoTb, Double feePrice, Date feeEndDateJj,
-			Date feeEndDateGf, String feeRemark, Integer feeStatus,
-			Integer djStatus, Date feeJnDate, String feeUpZd) {
+			CpyInfoTb cpyInfoTb, Double feePrice, String feeEndDateJj,
+			String feeEndDateGf, String feeRemark, Integer feeStatus,
+			Integer djStatus, String feeJnDate, String feeUpZd) {
 		this.id = id;
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
@@ -112,19 +110,19 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.feePrice = feePrice;
 	}
 
-	public Date getFeeEndDateJj() {
+	public String getFeeEndDateJj() {
 		return this.feeEndDateJj;
 	}
 
-	public void setFeeEndDateJj(Date feeEndDateJj) {
+	public void setFeeEndDateJj(String feeEndDateJj) {
 		this.feeEndDateJj = feeEndDateJj;
 	}
 
-	public Date getFeeEndDateGf() {
+	public String getFeeEndDateGf() {
 		return this.feeEndDateGf;
 	}
 
-	public void setFeeEndDateGf(Date feeEndDateGf) {
+	public void setFeeEndDateGf(String feeEndDateGf) {
 		this.feeEndDateGf = feeEndDateGf;
 	}
 
@@ -152,11 +150,11 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.djStatus = djStatus;
 	}
 
-	public Date getFeeJnDate() {
+	public String getFeeJnDate() {
 		return this.feeJnDate;
 	}
 
-	public void setFeeJnDate(Date feeJnDate) {
+	public void setFeeJnDate(String feeJnDate) {
 		this.feeJnDate = feeJnDate;
 	}
 
