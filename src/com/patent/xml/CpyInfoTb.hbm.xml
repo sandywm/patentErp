@@ -80,13 +80,13 @@
                 <comment>公司简介</comment>
             </column>
         </property>
-        <property name="signDate" type="java.util.Date">
-            <column name="sign_date" length="10" not-null="true">
+        <property name="signDate" type="java.lang.String">
+            <column name="sign_date" length="20" not-null="true">
                 <comment>注册时间</comment>
             </column>
         </property>
-        <property name="endDate" type="java.util.Date">
-            <column name="end_date" length="10" not-null="true">
+        <property name="endDate" type="java.lang.String">
+            <column name="end_date" length="20" not-null="true">
                 <comment>到期时间</comment>
             </column>
         </property>

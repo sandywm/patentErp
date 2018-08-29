@@ -343,7 +343,7 @@ public class PubZlAction extends DispatchAction {
 				pzList = pzm.listSpecInfoByOpt(pubId, 0);
 				if(pzList.size() > 0){//存在信息&& pzList.get(0).getZlStatus().equals(zlStatus)
 					if(pzList.get(0).getZlStatus().equals(0)){//未领取，设置为成领取
-						Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), CurrentTime.dateConvertToString(cpy.getEndDate()));
+						Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpy.getEndDate());
 						if(cpyLevel > 0 &&  diffDays > 0){
 							//获取当前代理机构已增加的专利个数
 							Integer totalNum = cpy.getZlNum();

@@ -57,7 +57,7 @@ public class SendEndDateMsg {
 	    				  CpyUserInfo cUser = it_1.next();
 	    				  String userEmail_manager = cUser.getUserEmail();
 	    				  if(!userEmail_manager.equals("")){
-	    					  Integer days_diff = CurrentTime.compareDate(CurrentTime.getStringDate(), CurrentTime.dateConvertToString(cpy.getEndDate()));
+	    					  Integer days_diff = CurrentTime.compareDate(CurrentTime.getStringDate(), cpy.getEndDate());
 	    					  MailSendInfo mailInfo = new MailSendInfo();    
 	    				      mailInfo.setMailServerHost(Constants.MAIL_SERVER_HOST);    
 	    				      mailInfo.setMailServerPort(Constants.MAIL_SERVER_PORT);    
@@ -73,7 +73,7 @@ public class SendEndDateMsg {
 	    				      }else{
 	    				    	  endChi = "已于";
 	    				      }
-	    				      endChi += CurrentTime.dateConvertToString(cpy.getEndDate())+"到期,为了不影响您的使用，请及时续订";;
+	    				      endChi += cpy.getEndDate()+"到期,为了不影响您的使用，请及时续订";;
 	    				      mailInfo.setContent("尊敬的"+cpyLevelChi+"用户,您的会员"+endChi);  
 	    				      //发送系统平台邮件
 	    				      mm.addMail("endM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", "代理机构会员到期提醒", "尊敬的"+cpyLevelChi+"用户,您的会员"+endChi);

@@ -139,7 +139,7 @@ public class ModuleManagerAction extends DispatchAction {
 			//获取当前代理机构是否到期
 			selRoleId = CommonTools.getFinalInteger(request.getParameter("selRoleId"));
 			cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
-			String cpyEndDate = CurrentTime.dateConvertToString(cpy.getEndDate());
+			String cpyEndDate = cpy.getEndDate();
 			if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0){//已过期
 				endFlag = false;//已过期
 			}
@@ -794,7 +794,7 @@ public class ModuleManagerAction extends DispatchAction {
 					List<Object> list_d = new ArrayList<Object>();
 					List<ModuleInfoTb> list_m = new ArrayList<ModuleInfoTb>();
 					CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
-					String cpyEndDate = CurrentTime.dateConvertToString(cpy.getEndDate());
+					String cpyEndDate = cpy.getEndDate();
 					if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0){//已过期
 						endFlag = false;//已过期
 					}

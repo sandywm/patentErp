@@ -431,7 +431,7 @@ public class LoginAction extends DispatchAction {
 					msg = "exist";
 				}else{
 					Integer cpyId = cm.addCpy(comName, comAddress, comProv, comCity, cpyFr, "", comLxr, comTel, "", 
-							"", 0, "", "", CurrentTime.getStringDate(), CurrentTime.stringToDate_1(CurrentTime.getFinalDate(Constants.freeDays)), 0, 0);
+							"", 0, "", "", CurrentTime.getStringDate(), CurrentTime.getFinalDate(Constants.freeDays), 0, 0);
 					if(cpyId > 0){
 						//自动为每个代理机构初始一个管理员身份
 						Integer roleId = crm.addRole("管理员", "管理机构基本信息", cpyId);

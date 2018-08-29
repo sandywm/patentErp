@@ -192,8 +192,8 @@ public class CpyManagerAction extends DispatchAction {
 				map_d.put("lxrEmail", cpy.getLxrEmail());
 				map_d.put("cpyUrl", cpy.getCpyUrl());
 				map_d.put("cpyProfile", cpy.getCpyProfile());
-				map_d.put("signDate", CurrentTime.dateConvertToString(cpy.getSignDate()));
-				map_d.put("endDate", CurrentTime.dateConvertToString(cpy.getEndDate()));
+				map_d.put("signDate", cpy.getSignDate());
+				map_d.put("endDate", cpy.getEndDate());
 				map_d.put("hotStatus", cpy.getHotStatus());
 				map_d.put("levelNum", cpy.getCpyLevel());
 				if(cpy.getCpyLevel().equals(0)){
@@ -239,12 +239,8 @@ public class CpyManagerAction extends DispatchAction {
 		// TODO Auto-generated method stub
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO);
 //		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
-		Date endDate = null;
 		String msg = "";
-		String endDateStr = request.getParameter("enDate");
-		if(!endDateStr.equals("")){
-			endDate = CurrentTime.stringToDate_1(endDateStr);
-		}
+		String endDate = CommonTools.getFinalStr("enDate", request);
 		Integer hotStatus = CommonTools.getFinalInteger(request.getParameter("hotStatus"));
 		Integer cpyLevel = Integer.parseInt(request.getParameter("cpyLevel"));
 		Integer cpyId = 0;
@@ -317,7 +313,7 @@ public class CpyManagerAction extends DispatchAction {
 				map.put("lxrEmail", cpy.getLxrEmail());
 				map.put("cpyUrl", cpy.getCpyUrl());
 				map.put("cpyProfile", cpy.getCpyProfile());
-				map.put("signDate", CurrentTime.dateConvertToString(cpy.getSignDate()));
+				map.put("signDate", cpy.getSignDate());
 				map.put("hotStatus", cpy.getHotStatus());
 				String cpySubIdStr = cpy.getCpySubId();
 				Integer cpyParId = cpy.getCpyParId();
@@ -347,7 +343,7 @@ public class CpyManagerAction extends DispatchAction {
 				map.put("cpyParInfo", cpyParName);
 				Integer cpyLevel = cpy.getCpyLevel();
 				if(cpyLevel > 0){//收费会员
-					String endDate = CurrentTime.dateConvertToString(cpy.getEndDate());
+					String endDate = cpy.getEndDate();
 					if(CurrentTime.compareDate(CurrentTime.getStringDate(), endDate) > 0){
 						map.put("endFlag", false);//未到期
 					}else{
@@ -441,11 +437,11 @@ public class CpyManagerAction extends DispatchAction {
 			map.put("lxrEmail", cpy.getLxrEmail());
 			map.put("cpyUrl", cpy.getCpyUrl());
 			map.put("cpyProfile", cpy.getCpyProfile());
-			map.put("signDate", CurrentTime.dateConvertToString(cpy.getSignDate()));
+			map.put("signDate", cpy.getSignDate());
 			map.put("hotStatus", cpy.getHotStatus());
 			Integer cpyLevel = cpy.getCpyLevel();
 			if(cpyLevel > 0){//收费会员
-				String endDate = CurrentTime.dateConvertToString(cpy.getEndDate());
+				String endDate = cpy.getEndDate();
 				if(CurrentTime.compareDate(CurrentTime.getStringDate(), endDate) > 0){
 					map.put("endFlag", false);//未到期
 				}else{
@@ -578,7 +574,7 @@ public class CpyManagerAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
 		CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
-		String parId = cpy.getCpyParId()+"";
+		Integer parId = cpy.getCpyParId();
 		String subIdStr = cpy.getCpySubId();
 		List<CpyInfoTb> cpyList = new ArrayList<CpyInfoTb>();
 		Map<String,Object> map = new HashMap<String,Object>();
@@ -592,7 +588,7 @@ public class CpyManagerAction extends DispatchAction {
 				map.put("result", "noInfo");
 			}
 		}else{//存在主公司-说明自己是子公司
-			cpyList = cm.listParSubCpyInfo(parId, "par");
+			cpyList = cm.listParSubCpyInfo(parId+"", "par");
 			map.put("result", "existInfo");
 			map.put("psInfo", "par");
 		}
@@ -611,8 +607,8 @@ public class CpyManagerAction extends DispatchAction {
 			map_d.put("lxrEmail", cpy_t.getLxrEmail());
 			map_d.put("cpyUrl", cpy_t.getCpyUrl());
 			map_d.put("cpyProfile", cpy_t.getCpyProfile());
-			map_d.put("signDate", CurrentTime.dateConvertToString(cpy_t.getSignDate()));
-			map_d.put("endDate", CurrentTime.dateConvertToString(cpy_t.getEndDate()));
+			map_d.put("signDate", cpy_t.getSignDate());
+			map_d.put("endDate", cpy_t.getEndDate());
 			map_d.put("hotStatus", cpy_t.getHotStatus());
 			Integer cpyLevel = cpy_t.getCpyLevel();
 			String cpyLevelChi = "铜牌";
@@ -676,11 +672,11 @@ public class CpyManagerAction extends DispatchAction {
 					map.put("lxrEmail", cpy_sub.getLxrEmail());
 					map.put("cpyUrl", cpy_sub.getCpyUrl());
 					map.put("cpyProfile", cpy_sub.getCpyProfile());
-					map.put("signDate", CurrentTime.dateConvertToString(cpy_sub.getSignDate()));
+					map.put("signDate", cpy_sub.getSignDate());
 					map.put("hotStatus", cpy_sub.getHotStatus());
 					Integer cpyLevel = cpy_sub.getCpyLevel();
 					if(cpyLevel > 0){
-						map.put("endDate", CurrentTime.dateConvertToString(cpy_sub.getEndDate()));
+						map.put("endDate", cpy_sub.getEndDate());
 					}else{
 						map.put("endDate", "");
 					}
@@ -758,7 +754,7 @@ public class CpyManagerAction extends DispatchAction {
 						msg = "noApply";//免费会员不能发出让别人成为自己的子公司信息
 					}else{
 						//获取是否到期
-						String endDate = CurrentTime.dateConvertToString(cpy.getEndDate());
+						String endDate = cpy.getEndDate();
 						if(CurrentTime.compareDate(CurrentTime.getStringDate(), endDate) > 0){//未过期
 							//获取自己名下的子公司记录
 							String selfSubInfo = cpy.getCpySubId();
@@ -882,6 +878,13 @@ public class CpyManagerAction extends DispatchAction {
 				String account = request.getParameter("account");
 				String password = request.getParameter("password");
 				boolean flag = false;
+				//先检查主公司是否是高级会员
+				if(cpy.getCpyLevel() > 0){
+					Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpy.getEndDate());
+//					if(){//判断是否到期
+//						
+//					}
+				}
 				//检查账号不能重复(两张表中账号不能相同)
 				if(cum.listSpecInfoByAccount(account).size() > 0 || am.listInfoByAccount(account).size() > 0){
 					msg = "exist";
@@ -914,7 +917,7 @@ public class CpyManagerAction extends DispatchAction {
 					}
 					if(flag){
 						Integer cpyId = cm.addCpy(comName, comAddress, comProv, comCity, cpy.getCpyFr(), cpy.getCpyYyzz(), comLxr, comTel, "", 
-								"", cpyParId, cpy.getCpyUrl(), cpy.getCpyProfile(), CurrentTime.dateConvertToString(cpy.getSignDate()), cpy.getEndDate(), 
+								"", cpyParId, cpy.getCpyUrl(), cpy.getCpyProfile(), cpy.getSignDate(), cpy.getEndDate(), 
 								0, 0);
 						if(cpyId > 0){
 							//自动为每个代理机构初始一个管理员身份
@@ -1060,7 +1063,7 @@ public class CpyManagerAction extends DispatchAction {
 		if(this.getLoginType(request).equals("cpyUser")){
 			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
 			Integer cpyLevel = cpy.getCpyLevel();
-			String cpyEndDate = CurrentTime.dateConvertToString(cpy.getEndDate());
+			String cpyEndDate = cpy.getEndDate();
 			Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate);
 			map.put("cpyLevel", cpyLevel);
 			if(cpyLevel.equals(0)){

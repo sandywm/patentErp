@@ -1,6 +1,5 @@
 package com.patent.service;
 
-import java.util.Date;
 import java.util.List;
 
 import com.patent.exception.WEBException;
@@ -36,7 +35,7 @@ public interface CpyInfoManager {
 	Integer addCpy(String cpyName, String cpyAddress, String cpyProv,
 			String cpyCity, String cpyFr, String cpyYyzz, String cpyLxr,
 			String lxrTel, String lxrEmail, String cpySubId, Integer cpyParId,
-			String cpyUrl, String cpyProfile, String signDate, Date endDate,
+			String cpyUrl, String cpyProfile, String signDate, String endDate,
 			Integer hotStatus, Integer cpyLevel) throws WEBException;
 	
 	/**
@@ -89,7 +88,7 @@ public interface CpyInfoManager {
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateCpyInfoById(Integer id,Date endDate,Integer hotStatus,Integer cpyLevel)throws WEBException;
+	boolean updateCpyInfoById(Integer id,String endDate,Integer hotStatus,Integer cpyLevel)throws WEBException;
 	
 	/**
 	 * 分页获取代理公司信息列表

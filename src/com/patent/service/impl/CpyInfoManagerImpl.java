@@ -1,6 +1,5 @@
 package com.patent.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -25,7 +24,7 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 	public Integer addCpy(String cpyName, String cpyAddress, String cpyProv,
 			String cpyCity, String cpyFr, String cpyYyzz, String cpyLxr, String lxrTel,
 			String lxrEmail,String cpySubId,Integer cpyParId,String cpyUrl, String cpyProfile, 
-			String signDate, Date endDate,Integer hotStatus, Integer cpyLevel)
+			String signDate, String endDate,Integer hotStatus, Integer cpyLevel)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		
@@ -34,7 +33,7 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
 			CpyInfoTb cpy = new CpyInfoTb(cpyName, Convert.getFirstSpell(cpyName),cpyAddress, cpyProv,cpyCity, cpyFr, cpyYyzz, cpyLxr,
-					lxrTel, lxrEmail, cpySubId, cpyParId, cpyUrl,cpyProfile,CurrentTime.stringToDate_1(signDate),
+					lxrTel, lxrEmail, cpySubId, cpyParId, cpyUrl,cpyProfile,signDate,
 					endDate, hotStatus, cpyLevel,0);	
 			cDao.save(sess, cpy);
 			tran.commit();
@@ -119,7 +118,7 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 	}
 
 	@Override
-	public boolean updateCpyInfoById(Integer id, Date endDate,
+	public boolean updateCpyInfoById(Integer id, String endDate,
 			Integer hotStatus, Integer cpyLevel) throws WEBException {
 		// TODO Auto-generated method stub
 		try {

@@ -31,8 +31,8 @@ public class CpyInfoTb implements java.io.Serializable {
 	private Integer cpyParId;
 	private String cpyUrl;
 	private String cpyProfile;
-	private Date signDate;
-	private Date endDate;
+	private String signDate;
+	private String endDate;
 	private Integer hotStatus;
 	private Integer cpyLevel;
 	private Integer zlNum;
@@ -54,7 +54,7 @@ public class CpyInfoTb implements java.io.Serializable {
 	public CpyInfoTb(String cpyName, String cpyNamePy,String cpyAddress, String cpyProv,
 			String cpyCity, String cpyFr, String cpyYyzz, String cpyLxr,
 			String lxrTel, String lxrEmail, String cpySubId, Integer cpyParId,
-			String cpyUrl, String cpyProfile, Date signDate, Date endDate,
+			String cpyUrl, String cpyProfile, String signDate, String endDate,
 			Integer hotStatus, Integer cpyLevel,Integer zlNum) {
 		this.cpyName = cpyName;
 		this.cpyNamePy = cpyNamePy;
@@ -81,7 +81,7 @@ public class CpyInfoTb implements java.io.Serializable {
 	public CpyInfoTb(Integer id,String cpyName, String cpyNamePy,String cpyAddress, String cpyProv,
 			String cpyCity, String cpyFr, String cpyYyzz, String cpyLxr,
 			String lxrTel, String lxrEmail, String cpySubId, Integer cpyParId,
-			String cpyUrl, String cpyProfile, Date signDate, Date endDate,
+			String cpyUrl, String cpyProfile, String signDate, String endDate,
 			Integer hotStatus, Integer cpyLevel,Integer zlNum) {
 		this.id = id;
 		this.cpyName = cpyName;
@@ -219,19 +219,19 @@ public class CpyInfoTb implements java.io.Serializable {
 		this.cpyProfile = cpyProfile;
 	}
 
-	public Date getSignDate() {
+	public String getSignDate() {
 		return this.signDate;
 	}
 
-	public void setSignDate(Date signDate) {
+	public void setSignDate(String signDate) {
 		this.signDate = signDate;
 	}
 
-	public Date getEndDate() {
+	public String getEndDate() {
 		return this.endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
 
