@@ -35,6 +35,7 @@ import com.patent.service.ModuleInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.CurrentTime;
 import com.patent.util.Constants;
+import com.patent.web.Ability;
 
 /** 
  * MyEclipse Struts
@@ -133,37 +134,48 @@ public class ModuleManagerAction extends DispatchAction {
 		Integer allModCheckStatus = 1;//所有主模块选中状态
 		String loginType = this.getLoginType(request);
 		CpyInfoTb cpy = null;
+		boolean abilityFlag = false;
 		if(loginRoleName.equals("super")){//超管获取所有模块列表
 			mList = mm.listInfoByLevel(-1,-1);
 		}else if(loginType.equals("cpyUser")){//代理机构员工获取和代理机构级别相同的模块列表
-			//获取当前代理机构是否到期
-			selRoleId = CommonTools.getFinalInteger(request.getParameter("selRoleId"));
-			cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
-			String cpyEndDate = cpy.getEndDate();
-			if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0 && cpy.getCpyLevel() > 0){//已过期
-				endFlag = false;//已过期(免费会员不存在过期)
+			//先判断用户是否具有权限
+			if(loginRoleName.equals("管理员")){//管理员固有权限
+				abilityFlag = true;
+			}else{//其他身份需要判断是否具有该权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listMa");
 			}
-			mList = mm.listInfoByLevel(cpy.getCpyLevel(),0);
-			if(selRoleId.equals(0)){//当获取指定角色的模块列表情况时，不用再获取角色列表了
-				//获取该代理机构下的用户角色列表
-				List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cpy.getId());
-				List<Object> list_d = new ArrayList<Object>(); 
-				if(crList.size() > 0){
-					for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
-						CpyRoleInfoTb cr = it.next();
-						if(cr.getRoleName().equals("管理员")){
-							continue;//不显示出管理员
-						}else{
-							Map<String,Object> map_d = new HashMap<String,Object>();
-							map_d.put("roleId", cr.getId());
-							map_d.put("roleName", cr.getRoleName());
-							list_d.add(map_d);
-						}
+			if(abilityFlag){
+				//获取当前代理机构是否到期
+				selRoleId = CommonTools.getFinalInteger(request.getParameter("selRoleId"));
+				cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+				String cpyEndDate = cpy.getEndDate();
+				if(cpy.getCpyLevel() > 0){
+					if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0){
+						endFlag = false;//已过期(免费会员不存在过期)
 					}
 				}
-				map.put("roleInfo", list_d);
+				mList = mm.listInfoByLevel(cpy.getCpyLevel(),0);
+				if(selRoleId.equals(0)){//当获取指定角色的模块列表情况时，不用再获取角色列表了
+					//获取该代理机构下的用户角色列表
+					List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cpy.getId());
+					List<Object> list_d = new ArrayList<Object>(); 
+					if(crList.size() > 0){
+						for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
+							CpyRoleInfoTb cr = it.next();
+							if(cr.getRoleName().equals("管理员")){
+								continue;//不显示出管理员
+							}else{
+								Map<String,Object> map_d = new HashMap<String,Object>();
+								map_d.put("roleId", cr.getId());
+								map_d.put("roleName", cr.getRoleName());
+								list_d.add(map_d);
+							}
+						}
+					}
+					map.put("roleInfo", list_d);
+				}
+				map.put("endFlag", endFlag);//代理机构增加过期状态
 			}
-			map.put("endFlag", endFlag);//代理机构增加过期状态
 		}
 		List<Object> list_d = new ArrayList<Object>();
 		for(Iterator<ModuleInfoTb> it = mList.iterator() ; it.hasNext();){
@@ -690,7 +702,7 @@ public class ModuleManagerAction extends DispatchAction {
 	}
 	
 	/**
-	 * 代理机构管理员为机构角色绑定模块动作
+	 * 代理机构管理员为机构角色绑定模块动作(绑定归类到修改里面)
 	 * @description
 	 * @author wm
 	 * @date 2018-8-9 下午04:37:39
@@ -710,8 +722,15 @@ public class ModuleManagerAction extends DispatchAction {
 		String loginRoleName = this.getLoginRoleName(request);
 		Map<String,String> map = new HashMap<String,String>();
 		String msg = "";
-		boolean flag = false;
-		if(loginRoleName.equals("管理员")){//只有代理机构才有绑定的权限
+		boolean flag = false,abilityFlag = false;
+		if(this.getLoginType(request).equals("cpyUser")){//只有代理机构才有绑定的权限
+			if(loginRoleName.equals("管理员")){//管理员固有的权限
+				abilityFlag = true;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upMa");
+			}
+		}
+		if(abilityFlag){
 			Integer selRoleId = Integer.parseInt(request.getParameter("selRoleId"));
 			String selMaIdStr = request.getParameter("selMaIdStr");
 			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
