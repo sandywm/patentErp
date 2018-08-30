@@ -39,7 +39,7 @@
   	<i id="outDateTip" class="iconfont layui-extend-tishi"></i>
     <script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var roleName = parent.roleName,globalOpts = "addBtn",globalModId=0,madIdArray=[],roleList=[],outDate=false;
+		var roleName = parent.roleName,loginType = parent.loginType,globalOpts = "addBtn",globalModId=0,madIdArray=[],roleList=[];
 		layui.use(['layer','jquery','form'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
@@ -64,9 +64,9 @@
 				},
 				loadModuleList : function(){
 					this.loadMainModuleList();
-					if(roleName == "super"){
+					if(loginType == "spUser"){
 						$("#addMod").show();
-					}else if(roleName == "管理员"){
+					}else if(loginType == "cpyUser"){
 						$(".roleList").show();
 						this.loadRoleList(roleList);
 					}
@@ -75,9 +75,9 @@
 				loadMainModuleList : function(){
 					var url = "",_this = this,
 					selRoleId = $("#roleIdInp").val();
-					if(roleName == "super"){
+					if(loginType == "spUser"){
 						url = "modM.do?action=getModuleDetail";
-					}else if(roleName == "管理员"){
+					}else if(loginType == "cpyUser"){
 						url = "modM.do?action=getModuleDetail&selRoleId=" + selRoleId;
 					}
 					layer.load('1');
@@ -92,7 +92,6 @@
 	   			        		allBindFlag = json.allBindFlag,
 	   			        		endFlag = json.endFlag;
 	   			        	roleList = json.roleInfo;
-	   			        	outDate = endFlag;
 	   			        	getModuleList(modList,allBindFlag,endFlag);
 	   			        }
 	   				});
@@ -113,7 +112,7 @@
 				bindEvent:function(){
 					var _this = this;
 					$('.saveMod').on('click',function(){
-						if(roleName == '管理员'){
+						if(loginType == 'cpyUser'){
 							if($('#roleIdInp').val() == 0){
 								layer.msg('请选择您要绑定的角色', {icon:5,anim:6,time:1000});
 								return;
@@ -154,7 +153,7 @@
 					});
 					//增加模块
 					$('#addMod').on('click',function(){
-						if(roleName == 'super'){
+						if(loginType == 'spUser'){
 							globalOpts = $(this).attr("opts");
         					var addEditMainModCon = '';
         					addEditMainModCon += '<div class="addEditMainModWrap layui-form">';
@@ -508,11 +507,11 @@
 			function getModuleList(modList,allBindFlag,endFlag){
 				var strHtml = '';
 				//渲染模拟表格头部
-				if(roleName == 'super'){
+				if(loginType == 'spUser'){
 					strHtml += '<ul id="modTit" class="noSelAll modListTit clearfix">';
 					//序号
 					strHtml += '<li class="orderNumWid">序号</li>';
-				}else if(roleName = '管理员'){
+				}else if(loginType = 'cpyUser'){
 					strHtml += '<ul id="modTit" class="hasSelAll modListTit clearfix">';
 					strHtml +='<li class="selAllModWid">';
 					if(allBindFlag && $('#roleIdInp').val() != 0 && endFlag){//表示当前选择的某个身份下的所有子模块全部选中后全选呈现的状态
@@ -525,14 +524,14 @@
 				}
 				strHtml += '<li class="mainModWid">主模块名</li><li class="modLevelWid">模块级别</li><li class="sonModWid">子模块名</li></ul>';
 				//模拟表格内容
-				if(roleName == 'super'){
+				if(loginType == 'spUser'){
 					strHtml += '<div id="listModCon" class="noSelAll">';
-				}else if(roleName = '管理员'){
+				}else if(loginType = 'cpyUser'){
 					strHtml += '<div id="listModCon" class="hasSelAll">';
 				}
 				for(var i=0;i<modList.length;i++){
 					strHtml += '<ul class="clearfix">';
-					if(roleName == 'super'){//增加序号
+					if(loginType == 'spUser'){//增加序号
 						if(modList[i].modLevel == 0){
 							strHtml += '<li class="orderNumWid tongpaiColor">'+ modList[i].orderNo +'</li>';
 						}else if(modList[i].modLevel == 1){
@@ -542,7 +541,7 @@
 						}else if(modList[i].modLevel == 3){
 							strHtml += '<li class="orderNumWid zuanshiColor">'+ modList[i].orderNo +'</li>';
 						}
-					}else if(roleName == '管理员'){//当为代理机构管理员的时候增加全选功能
+					}else if(loginType == 'cpyUser'){//当为代理机构管理员的时候增加全选功能
 						if(modList[i].useFlag){//右侧主模块
 							if(modList[i].mainBindFlag && $('#roleIdInp').val() != 0){
 								strHtml += '<li class="selAllModWid">';
@@ -567,7 +566,7 @@
 					}
 					//主模块名字
 					strHtml += '<li class="mainModWid posRel hasAlign"><span class="modMainNameSpan ellip">'+ modList[i].modName +'</span>';
-					if(roleName == 'super'){//当为平台用户的时候进行编辑和删除
+					if(loginType == 'spUser'){//当为平台用户的时候进行编辑和删除
 						strHtml += '<div class="setMainMod posAbs"><i class="layui-icon layui-icon-edit editMainModName" opts="editBtn" modId="'+ modList[i].modId +'"></i>';
 						strHtml += '<i class="layui-icon layui-icon-delete delMainModName" modId="'+ modList[i].modId +'"></i></div>';
 					}
@@ -587,15 +586,15 @@
 					//子模块名
 					strHtml += '<li class="sonModWid sonModNames">';
 					for(var j=0;j<modList[i].modActInfo.length;j++){
-						if(roleName == 'super'){
+						if(loginType == 'spUser'){
 							strHtml += '<p class="hasTxtAlign">';
 						}else{
 							strHtml += '<p>';
 						}
-						if(roleName == 'super'){//没有checkbox
+						if(loginType == 'spUser'){//没有checkbox
 							strHtml += '<span>'+ modList[i].modActInfo[j].actNameChi+'('+modList[i].modActInfo[j].actNameEng +')</span>';
 							strHtml += '<a href="javascript:void(0)" class="seSonMod posAbs editSonModName" maId="'+ modList[i].modActInfo[j].maId +'" actNameChi="'+ modList[i].modActInfo[j].actNameChi +'" actNameEng="'+ modList[i].modActInfo[j].actNameEng +'"><i class="layui-icon layui-icon-edit"></i></a>';
-						}else if(roleName == '管理员'){//存在checkbox 左侧子模块
+						}else if(loginType == 'cpyUser'){//存在checkbox 左侧子模块
 							if(modList[i].modActInfo[j].bindFlag){
 								strHtml += '<span class="likeCheckSpan hasActive"><b class="layui-icon layui-icon-ok"></b></span>';
 								strHtml += '<input type="checkbox" name="sonInpCheck_'+ modList[i].useFlag +'" canUseFlag="'+ modList[i].useFlag +'" class="sonModSelInp inpRadCheck comModInp" value="'+ modList[i].modActInfo[j].maId +'" checked/>';
@@ -615,16 +614,31 @@
 				$('#moduleList').html(strHtml);
 				form.render();
 				inpCheckboxSel();
-				if(roleName == 'super'){$('#listModCon').find('ul:odd').addClass('oddBg');}
+				if(loginType == 'spUser'){$('#listModCon').find('ul:odd').addClass('oddBg');}
 			}
 			function showOutDateTips(){
 				$('#outDateTip').click(function(){
 					layer.tips('您的会员已到期，之前的高级功能将不能使用，如需使用，请及时续费购买！','#outDateTip', {tips:[1,'#FF8000'],time:4000});
 				});
 			}
+			//获取当前代理机构会员是否已到期状态
+			function getCpyHyStatus(){
+				var hyEndFlag = false;
+				$.ajax({
+   					type:"post",
+   			        async:false,
+   			        dataType:"json",
+   			        url:'cpyManager.do?action=getCpyHyInfo',
+   			        success:function (json){
+   			        	hyEndFlag = json.hyEndFlag;
+   			        }
+   				});
+				return hyEndFlag;
+			}
 			//过期提示
 			function memberOutDateTip(){
-				if(outDate == false){//表示过期
+				var hyEndFlag = getCpyHyStatus();
+				if(hyEndFlag){//表示过期
 					layer.confirm('您的会员已到期，之前的高级功能将不能使用，如需使用，请及时续费购买！',{
 						title:'会员到期提醒',
 					  	skin: 'layui-layer-molv',
@@ -641,7 +655,9 @@
 			}
 			$(function(){
 				page.init();
-				memberOutDateTip();
+				if(loginType == 'cpyUser'){
+					memberOutDateTip();
+				}
 			});
 		});
 	</script>
