@@ -571,7 +571,17 @@ public class PubZlAction extends DispatchAction {
 							Map<String,Object> map_d = new HashMap<String,Object>();
 							map_d.put("pzId", pz.getId());
 							map_d.put("pzTitle", pz.getZlTitle());
+							String zlType = pz.getZlType();
 							map_d.put("pzType", pz.getZlType());
+							String zlTypeChi = "";
+							if(zlType.equals("fm")){
+								zlTypeChi = "发明";
+							}else if(zlType.equals("syxx")){
+								zlTypeChi = "实用新型";
+							}else if(zlType.equals("wg")){
+								zlTypeChi = "外观";
+							}
+							map_d.put("zlTypeChi", zlTypeChi);
 							list_d.add(map_d);
 						}
 						map.put("pzInfo", list_d);

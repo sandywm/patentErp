@@ -65,9 +65,9 @@
                 <comment>案件申请地区</comment>
             </column>
         </property>
-        <property name="ajYxqId" type="java.lang.String">
-            <column name="aj_yxq_id" length="50" not-null="true">
-                <comment>案卷优先权(没有为0,多个逗号隔开(案卷的ID))</comment>
+         <property name="ajYxqDetail" type="java.lang.String">
+            <column name="aj_yxq_detail" length="200">
+                <comment>案卷优先权(没有为"",多个冒号隔开申请专利号,申请地区,申请日期:申请专利号,申请地区,申请日期)</comment>
             </column>
         </property>
         <property name="ajUpload" type="java.lang.String">

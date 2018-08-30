@@ -117,12 +117,15 @@ public class MailAction extends DispatchAction {
 		String loginType = this.getLoginType(request);
 		Integer noReadCount = mm.getCountByOpt(userId, loginType, "", "", 0);
 		map.put("result", noReadCount);
-		Integer noReadCount_t = mm.getCountByOpt(userId, loginType, "taskM", "", 0);
+		Integer noReadCount_t = 0;
 		if(loginType.equals("cpyUser")){
+			noReadCount_t = mm.getCountByOpt(userId, loginType, "taskM", "", 0);
 			Integer noReadCount_e = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), "endM", "", 0);
 			Integer noReadCount_b = mm.getCountByOpt(this.getLoginUserId(request), this.getLoginType(request), "buyM", "", 0);
 			map.put("result_e", noReadCount_e);
 			map.put("result_b", noReadCount_b);
+		}else if(loginType.equals("appUser")){
+			noReadCount_t = noReadCount;
 		}
 		map.put("result_t", noReadCount_t);
 		String json = JSON.toJSONString(map);
