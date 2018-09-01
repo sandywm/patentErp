@@ -41,10 +41,11 @@
 					    });
 					    tpwidget("show");</script>
   				</li>
-  				<li class="layui-nav-item topHeadNav">
-  			 		<a href="javascript:;">
+  				<li class="layui-nav-item topHeadNav navLi">
+  			 		<a href="javascript:void(0);" path="mail.do?action=goMailPage" tab-id="18">
+  			 			<span style="display:none;">邮件管理</span>
 	            		<i class="iconfont layui-extend-youxiang headsmIcon"></i>
-	            		<span class="layui-badge-dot emailDot"></span>
+	            		<span id="hasNoReadNum" class="layui-badge-dot emailDot"></span>
 	            	</a>
   			 	</li>
 	            <li class="layui-nav-item">
@@ -80,14 +81,14 @@
 	            <div class="layui-tab-content">
 	                <div class="layui-tab-item layui-show">
 	                	<!--  iframe id="mainIframe" src="cpyManager.do?action=goCpyDetailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
-	                    <!--  iframe id="mainIframe" src="user.do?action=goWelcomePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
+	                    <iframe id="mainIframe" src="user.do?action=goWelcomePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
 	                    <!--  iframe id="mainIframe" src="jfm.do?action=goJfPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserDetailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!--  iframe id="mainIframe" src="modM.do?action=goModulePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="cpyManager.do?action=goCpyPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe -->
 	                	<!--  iframe id="mainIframe" src="cpyManager.do?action=goSubParCpyPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
-	                	<iframe id="mainIframe" src="mail.do?action=goMailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
+	                	<!--  iframe id="mainIframe" src="mail.do?action=goMailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                </div>
 	            </div>
 	        </div>
@@ -155,8 +156,24 @@
 	        	$("#leftSideNav").html(liItem);
 	        	element.init(); 
 	        }
+	        function getNoReadStatusNum(){
+				$.ajax({
+					type:'post',
+			        async:false,
+			        dataType:'json',
+			        url:'mail.do?action=getNoReadInfo',
+			        success:function (json){
+			        	if(json['result'] > 0){
+			        		$('#hasNoReadNum').show();
+			        	}else{
+			        		$('#hasNoReadNum').hide();
+			        	}
+			        }
+				});
+			}
 	        $(function(){
 	        	renderModuleList();
+	        	getNoReadStatusNum();
 	        });
 	        
 	        $(".navLi").click(function () {

@@ -52,3 +52,6 @@
 .layui-layer-molv .layui-layer-btn .layui-layer-btn1{
 	background:#fff !important;
 }
+#hasNoReadNum{
+	display:none;
+}
