@@ -159,7 +159,17 @@ public class MailInfoManagerImpl implements MailInfoManager{
 	public List<MailInfoTb> listInfoByOpt(Integer acceptUserId,
 			String userType, Integer mailId) throws WEBException {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			mDao = (MailInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_MAIL_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return mDao.findInfoByOpt(sess, acceptUserId, mailId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据条件获取指定邮件详情时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 	@Override
