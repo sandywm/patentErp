@@ -303,7 +303,7 @@ public class MailAction extends DispatchAction {
 		Integer mailId = CommonTools.getFinalInteger(request.getParameter("mailId"));
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(mailId > 0){
-			List<MailInfoTb> mList = mm.listInfoByOpt(this.getLoginUserId(request), this.getLoginType(request), mailId);
+			List<MailInfoTb> mList = mm.listInfoByOpt(this.getLoginUserId(request), "", mailId);
 			if(mList.size() > 0){
 				MailInfoTb mail = mList.get(0);
 				map.put("id", mail.getId());
