@@ -23,7 +23,7 @@ public interface ZlajMainInfoManager {
 	 * @param ajFmrId 发明人
 	 * @param ajLxrId 联系人
 	 * @param ajSqAddress 申请地区
-	 * @param ajYxqId 优先权
+	 * @param ajYxqDetail 优先权
 	 * @param ajUpload 案件上传底稿
 	 * @param ajRemark 案件备注
 	 * @param ajEwyqId 额外要求
@@ -36,7 +36,7 @@ public interface ZlajMainInfoManager {
 	 */
 	Integer addZL(String ajNo, String ajNoQt,String ajNoGf,
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
-			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
+			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,Integer pubZlId,Integer cpyId) throws WEBException;
 	

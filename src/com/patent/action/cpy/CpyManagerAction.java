@@ -718,115 +718,115 @@ public class CpyManagerAction extends DispatchAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public ActionForward applyJoinInfo(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
-		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
-		CpyJoinInfoManager cjm = (CpyJoinInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_JOIN_INFO);
-		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
-		boolean abilityFlag = false;
-		Map<String,String> map = new HashMap<String,String>();
-		String msg = "";
-		boolean flag = false;
-		if(this.getLoginType(request).equals("cpyUser")){
-			if(this.getLoginRoleName(request).equals("管理员")){
-				abilityFlag = true;
-			}else{
-				//获取当前用户是否有修改权限
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "bindCpy");
-			}
-		}else{
-			abilityFlag = false;
-		}
-		if(abilityFlag){
-//			1:申请让代理公司B成为当前用户所在公司的子公司（发起申请时需要查看当前公司的子公司余额以及子公司没有主公司）
-			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
-			Integer cpyLevel  = cpy.getCpyLevel();
-			Integer currCpyId = cpy.getId();
-			String currCpyName = cpy.getCpyName();
-			Integer selCpyId = CommonTools.getFinalInteger(request.getParameter("selCpyId"));
-			String applyOpt = request.getParameter("applyOpt");//sub(申请成为子公司),par(申请成为主公司)
-			String subCpyName = "";
-			if(applyOpt.equals("par")){
-				//获取当前公司的是否是别人的子公司
-				if(cpy.getCpyParId().equals(0)){
-					if(cpyLevel.equals(0)){
-						msg = "noApply";//免费会员不能发出让别人成为自己的子公司信息
-					}else{
-						//获取是否到期
-						String endDate = cpy.getEndDate();
-						if(CurrentTime.compareDate(CurrentTime.getStringDate(), endDate) > 0){//未过期
-							//获取自己名下的子公司记录
-							String selfSubInfo = cpy.getCpySubId();
-							//获取子公司是否成为别人的子公司
-							List<CpyInfoTb> subCpyList = cm.listInfoById(selCpyId);
-							if(subCpyList.size() > 0){
-								CpyInfoTb subCpy = subCpyList.get(0);
-								subCpyName = subCpy.getCpyName();
-								if(subCpy.getCpyParId().equals(0) && subCpy.getCpySubId().equals("")){
-									msg = "error";
-								}else{
-									if(selfSubInfo.equals("")){
-										flag = true;
-									}else{
-										Integer subCpyCount = selfSubInfo.split(",").length;
-										if(cpyLevel.equals(1)){
-											flag = true;
-										}else if(cpyLevel.equals(2) && Constants.SUB_CPY_NUM_JP > subCpyCount){
-											flag = true;
-										}else if(cpyLevel.equals(3) && Constants.SUB_CPY_NUM_ZS > subCpyCount){
-											flag = true;
-										}else{
-											msg = "noNum";//子公司余额不足
-										}
-									}
-									if(flag){
-										//发送申请记录
-										Integer keyId = cjm.addCJ(currCpyId, currCpyId, selCpyId, currCpyName, subCpyName, 0, "代理机构["+currCpyName+"]发起对代理机构["+subCpyName+"]成为代理机构["+currCpyName+"]的子公司申请", CurrentTime.getStringDate());
-										if(keyId > 0){
-											//向子公司发送邮件通知
-											List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(selCpyId, "管理员");//子公司的管理员列表
-											//向申请公司管理员发送邮件通知
-											for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
-												CpyUserInfo cUser = it.next();
-												mm.addMail("joinM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", "申请通过", "代理机构["+currCpyName+"]发起对贵公司成为代理机构["+currCpyName+"]的子公司申请");
-											}
-											msg = "success";
-										}
-									}
-								}
-							}else{
-								msg = "error";
-							}
-							
-						}else{
-							msg = "outDate";//会员已过期，不能进行发送申请别公司成为自己的子公司信息
-						}
-					}
-				}else{
-					msg = "currSubCpy";//当前公司时别公司的子公司，不能再申请子公司
-				}
-			}else{//申请成为子公司
-				List<CpyInfoTb> parCpyList = cm.listInfoById(selCpyId);
-				if(parCpyList.size() > 0){
-					cpy = parCpyList.get(0);
-					cpyLevel = cpy.getCpyLevel();
-					currCpyId = cpy.getId();
-					currCpyName = cpy.getCpyName();
-					
-					//子公司信息
-					CpyInfoTb subCpyInfo = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
-					Integer subCpyId = subCpyInfo.getId();
-					subCpyName = subCpyInfo.getCpyName();
-					
-					
-				}
-			}
-		}else{
-			msg = "noAbility";
-		}
-		return null;
-	}
+//	public ActionForward applyJoinInfo(ActionMapping mapping, ActionForm form,
+//			HttpServletRequest request, HttpServletResponse response) throws Exception {
+//		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+//		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
+//		CpyJoinInfoManager cjm = (CpyJoinInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_JOIN_INFO);
+//		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+//		boolean abilityFlag = false;
+//		Map<String,String> map = new HashMap<String,String>();
+//		String msg = "";
+//		boolean flag = false;
+//		if(this.getLoginType(request).equals("cpyUser")){
+//			if(this.getLoginRoleName(request).equals("管理员")){
+//				abilityFlag = true;
+//			}else{
+//				//获取当前用户是否有修改权限
+//				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "bindCpy");
+//			}
+//		}else{
+//			abilityFlag = false;
+//		}
+//		if(abilityFlag){
+////			1:申请让代理公司B成为当前用户所在公司的子公司（发起申请时需要查看当前公司的子公司余额以及子公司没有主公司）
+//			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+//			Integer cpyLevel  = cpy.getCpyLevel();
+//			Integer currCpyId = cpy.getId();
+//			String currCpyName = cpy.getCpyName();
+//			Integer selCpyId = CommonTools.getFinalInteger(request.getParameter("selCpyId"));
+//			String applyOpt = request.getParameter("applyOpt");//sub(申请成为子公司),par(申请成为主公司)
+//			String subCpyName = "";
+//			if(applyOpt.equals("par")){
+//				//获取当前公司的是否是别人的子公司
+//				if(cpy.getCpyParId().equals(0)){
+//					if(cpyLevel.equals(0)){
+//						msg = "noApply";//免费会员不能发出让别人成为自己的子公司信息
+//					}else{
+//						//获取是否到期
+//						String endDate = cpy.getEndDate();
+//						if(CurrentTime.compareDate(CurrentTime.getStringDate(), endDate) > 0){//未过期
+//							//获取自己名下的子公司记录
+//							String selfSubInfo = cpy.getCpySubId();
+//							//获取子公司是否成为别人的子公司
+//							List<CpyInfoTb> subCpyList = cm.listInfoById(selCpyId);
+//							if(subCpyList.size() > 0){
+//								CpyInfoTb subCpy = subCpyList.get(0);
+//								subCpyName = subCpy.getCpyName();
+//								if(subCpy.getCpyParId().equals(0) && subCpy.getCpySubId().equals("")){
+//									msg = "error";
+//								}else{
+//									if(selfSubInfo.equals("")){
+//										flag = true;
+//									}else{
+//										Integer subCpyCount = selfSubInfo.split(",").length;
+//										if(cpyLevel.equals(1)){
+//											flag = true;
+//										}else if(cpyLevel.equals(2) && Constants.SUB_CPY_NUM_JP > subCpyCount){
+//											flag = true;
+//										}else if(cpyLevel.equals(3) && Constants.SUB_CPY_NUM_ZS > subCpyCount){
+//											flag = true;
+//										}else{
+//											msg = "noNum";//子公司余额不足
+//										}
+//									}
+//									if(flag){
+//										//发送申请记录
+//										Integer keyId = cjm.addCJ(currCpyId, currCpyId, selCpyId, currCpyName, subCpyName, 0, "代理机构["+currCpyName+"]发起对代理机构["+subCpyName+"]成为代理机构["+currCpyName+"]的子公司申请", CurrentTime.getStringDate());
+//										if(keyId > 0){
+//											//向子公司发送邮件通知
+//											List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(selCpyId, "管理员");//子公司的管理员列表
+//											//向申请公司管理员发送邮件通知
+//											for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
+//												CpyUserInfo cUser = it.next();
+//												mm.addMail("joinM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", "申请通过", "代理机构["+currCpyName+"]发起对贵公司成为代理机构["+currCpyName+"]的子公司申请");
+//											}
+//											msg = "success";
+//										}
+//									}
+//								}
+//							}else{
+//								msg = "error";
+//							}
+//							
+//						}else{
+//							msg = "outDate";//会员已过期，不能进行发送申请别公司成为自己的子公司信息
+//						}
+//					}
+//				}else{
+//					msg = "currSubCpy";//当前公司时别公司的子公司，不能再申请子公司
+//				}
+//			}else{//申请成为子公司
+//				List<CpyInfoTb> parCpyList = cm.listInfoById(selCpyId);
+//				if(parCpyList.size() > 0){
+//					cpy = parCpyList.get(0);
+//					cpyLevel = cpy.getCpyLevel();
+//					currCpyId = cpy.getId();
+//					currCpyName = cpy.getCpyName();
+//					
+//					//子公司信息
+//					CpyInfoTb subCpyInfo = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+//					Integer subCpyId = subCpyInfo.getId();
+//					subCpyName = subCpyInfo.getCpyName();
+//					
+//					
+//				}
+//			}
+//		}else{
+//			msg = "noAbility";
+//		}
+//		return null;
+//	}
 	
 	/**
 	 * 添加子公司（手动增加、通过申请合并记录增加）
@@ -1012,32 +1012,32 @@ public class CpyManagerAction extends DispatchAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public ActionForward unBindCpyInfo(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
-		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
-		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
-		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
-		Map<String,String> map = new HashMap<String,String>();
-		String msg = "";
-		boolean abilityFlag = false;
-		if(this.getLoginType(request).equals("cpyUser")){
-			if(this.getLoginRoleName(request).equals("管理员")){
-				abilityFlag = true;
-			}else{
-				//获取当前用户是否有修改权限
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "delCpy");//解除子公司
-			}
-		}else{
-			abilityFlag = false;
-		}
-		if(abilityFlag){
-			
-		}else{
-			msg = "noAbility";
-		}
-		return null;
-	}
+//	public ActionForward unBindCpyInfo(ActionMapping mapping, ActionForm form,
+//			HttpServletRequest request, HttpServletResponse response) throws Exception {
+//		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+//		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
+//		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
+//		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
+//		Map<String,String> map = new HashMap<String,String>();
+//		String msg = "";
+//		boolean abilityFlag = false;
+//		if(this.getLoginType(request).equals("cpyUser")){
+//			if(this.getLoginRoleName(request).equals("管理员")){
+//				abilityFlag = true;
+//			}else{
+//				//获取当前用户是否有修改权限
+//				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "delCpy");//解除子公司
+//			}
+//		}else{
+//			abilityFlag = false;
+//		}
+//		if(abilityFlag){
+//			
+//		}else{
+//			msg = "noAbility";
+//		}
+//		return null;
+//	}
 	
 	/**
 	 * 获取当前用户所在代理机构的会员状态
@@ -1059,12 +1059,12 @@ public class CpyManagerAction extends DispatchAction {
 		if(this.getLoginType(request).equals("cpyUser")){
 			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
 			Integer cpyLevel = cpy.getCpyLevel();
-			String cpyEndDate = cpy.getEndDate();
-			Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate);
 			map.put("cpyLevel", cpyLevel);
 			if(cpyLevel.equals(0)){
 				hyEndFlag = true;
 			}else{
+				String cpyEndDate = cpy.getEndDate();
+				Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate);
 				if(diffDays > 0){
 					hyEndFlag = false;
 				}

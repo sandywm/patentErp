@@ -27,7 +27,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private String ajFmrId;
 	private String ajLxrId;
 	private String ajSqAddress;
-	private String ajYxqId;
+	private String ajYxqDetail;
 	private String ajUpload;
 	private String ajRemark;
 	private String ajEwyqId;
@@ -53,7 +53,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	/** minimal constructor */
 	public ZlajMainInfoTb(CpyInfoTb cpyInfoTb, String ajNo, String ajNoQt,String ajNoGf,
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
-			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
+			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
 			String ajStopUserType,String ajStopUser,String ajAddDate) {
@@ -68,7 +68,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajFmrId = ajFmrId;
 		this.ajLxrId = ajLxrId;
 		this.ajSqAddress = ajSqAddress;
-		this.ajYxqId = ajYxqId;
+		this.ajYxqDetail = ajYxqDetail;
 		this.ajUpload = ajUpload;
 		this.ajRemark = ajRemark;
 		this.ajEwyqId = ajEwyqId;
@@ -86,7 +86,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	/** full constructor */
 	public ZlajMainInfoTb(Integer id,CpyInfoTb cpyInfoTb, String ajNo, String ajNoQt,String ajNoGf,
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
-			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqId,
+			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
 			String ajStopUserType,String ajStopUser,String ajAddDate) {
@@ -102,7 +102,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajFmrId = ajFmrId;
 		this.ajLxrId = ajLxrId;
 		this.ajSqAddress = ajSqAddress;
-		this.ajYxqId = ajYxqId;
+		this.ajYxqDetail = ajYxqDetail;
 		this.ajUpload = ajUpload;
 		this.ajRemark = ajRemark;
 		this.ajEwyqId = ajEwyqId;
@@ -207,12 +207,12 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajSqAddress = ajSqAddress;
 	}
 
-	public String getAjYxqId() {
-		return this.ajYxqId;
+	public String getAjYxqDetail() {
+		return this.ajYxqDetail;
 	}
 
-	public void setAjYxqId(String ajYxqId) {
-		this.ajYxqId = ajYxqId;
+	public void setAjYxqDetail(String ajYxqDetail) {
+		this.ajYxqDetail = ajYxqDetail;
 	}
 
 	public String getAjUpload() {
