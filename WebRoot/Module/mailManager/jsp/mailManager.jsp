@@ -77,7 +77,7 @@
   		</div>
   	</div>
   	<script src="/plugins/layui/layui.js"></script>
-  	<script type="text/javascript"">
+  	<script type="text/javascript">
   		var loginType = parent.loginType,currPage = 1,mailIdArray=[];
   		layui.use(['layer','jquery','element','laypage','form'],function(){
   			var layer = layui.layer,

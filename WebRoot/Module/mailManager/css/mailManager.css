@@ -1,0 +1,187 @@
+@import url("../../../css/common.css");
+@import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
+body{
+	background:#f2f2f2;
+	color:#666;
+}
+.layui-tab-content{
+	padding:0px;
+}
+/* 查询 */
+.queryWrap{
+	right:0px;
+	top:3px;
+	z-index:10;
+}
+.itemDivSel{
+	width:150px;
+	margin-right:15px;
+}
+.itemDivInp{
+	margin-right:15px;
+}
+#hasFunWrap{
+	height:40px;
+	margin:10px 0;
+}
+.sellAll{
+	width:5%;
+	height:40px;
+	position:relative;
+	float:left
+}
+.sellAll span.likeCheckSpan{
+	width:16px;
+	height:16px;
+	line-height:16px;
+	border:1px solid #d2d2d2;
+	border-radius:2px;
+	background:#fff;
+	-webkit-transition:.1s linear;
+	transition:.1s linear;
+	display:block;
+	position:absolute;
+	left:50%;
+	margin-left:-7px;
+	top:10px;
+}
+.sellAll span.likeCheckSpan b{
+	color:#fff;
+	font-size:12px;
+}
+.sellAll span.hasActive{
+	border-color:#5FB878;
+	background:#5FB878
+}
+#hasFunWrap a{
+	float:left;
+	height:100%;
+	display:block;
+	height:30px;
+	line-height:30px;
+	padding:0 10px;
+	margin-top:5px;
+	border-radius:4px;
+}
+#hasFunWrap a.noSelA{
+	background:#f2f2f2;
+	color:#999;
+	cursor:default;
+}
+#hasFunWrap a#hasReadBtn.hasSelA{
+	background:#1E9FFF;
+	color:#fff;
+	cursor:pointer;
+}
+#hasFunWrap a#delBtn{
+	margin-left:10px;
+}
+#hasFunWrap a#delBtn.hasSelA{
+	background:#FF5722;
+	color:#fff;
+	cursor:pointer;
+}
+#hasFunWrap a#hasReadBtn.hasSelA:hover,
+#hasFunWrap a#delBtn.hasSelA:hover{
+	opacity:.8;
+	color:#fff;
+}
+/* listTitle */
+.listTitle{
+	width:100%;
+	height:40px;
+	line-height:40px;
+	background:#f2f2f2;
+}
+.listTitle li{
+	float:left;
+	height:40px;
+	text-align:center;
+	font-weight:600;
+}
+.checkLiWid,
+.readStatusWid{
+	width:5%;
+}
+.eamilTitWid{
+	width:20%;
+}
+.emaiConWid{
+	width:30%;
+}
+.sendTimeWid,
+.sendEmailWid{
+	width:15%;
+}
+.eamilSetWid{
+	width:10%;
+}
+#tabContent li{
+	height:40px;
+	line-height:40px;
+	border-bottom:1px solid #e6e6e6;
+}
+#tabContent li p{
+	float:left;
+	height:40px;
+	text-align:center;
+	max-width:100%;
+}
+.icon-svg{
+   width: 1em; height: 1em;
+   vertical-align: -0.15em;
+   fill: currentColor;
+   overflow: hidden;
+   font-size:25px;
+   float:left;
+   margin-top:5px;
+   position:absolute;
+   left:50%;
+   margin-left:-.5em;
+   top:1px;
+}
+.emailDot{
+	position:absolute;
+	left:50%;
+	margin-left:6px;
+	top:8px;
+}
+.comLayPage{
+	text-align:center;
+}
+/* 查看邮件详情 */
+.emDetailTop{
+	background:#F5F5F5;
+	border-bottom:1px solid #C8CFDA;
+	padding:10px 15px;
+}
+.emDetailTop strong{
+	font-size:16px;
+}
+.emDetailTop p{
+	color:#7f7f7f;
+	line-height:26px;
+	margin-top:5px;
+}
+.emDetailTop p:first-child{
+	margin-top:0px;
+}
+.emDetailCon{
+	padding:10px 15px;
+}
+.emDetailCon p{
+	line-height:26px;
+}
+.viewEmailDetail{
+	cursor:pointer;
+}
+.viewEmailDetail:hover{
+	color:#FF5722;
+}
+.isHasNoReadNumWrap{
+	display:inline-block;
+}
+.navDot{
+	left:2px !important;
+	top:-1px !important;
+}
