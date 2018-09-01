@@ -166,7 +166,7 @@ public class MailInfoManagerImpl implements MailInfoManager{
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new WEBException("根据条件获取指定邮件详情时出现异常1");
+			throw new WEBException("根据条件获取指定邮件详情时出现异常");
 		} finally{
 			HibernateUtil.closeSession();
 		}
