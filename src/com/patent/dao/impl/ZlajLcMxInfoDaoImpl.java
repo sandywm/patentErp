@@ -37,7 +37,7 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 	@Override
 	public List<ZlajLcMxInfoTb> findDetailInfoByLcId(Session sess, Integer lcId) {
 		// TODO Auto-generated method stub
-		String hql = " from ZlajLcMxInfoTb as lcmx where lcmx.zlajLcInfoTb.id = "+lcId;
+		String hql = " from ZlajLcMxInfoTb as lcmx where lcmx.zlajLcInfoTb.id = "+lcId + " order by lcmx.id desc";
 		return sess.createQuery(hql).list();
 	}
 

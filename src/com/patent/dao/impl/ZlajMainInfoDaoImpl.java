@@ -122,10 +122,9 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 	}
 
 	@Override
-	public List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess, String ajNoGf,
-			String sqAddress, String sqDate) {
+	public List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess, String ajNoGf) {
 		// TODO Auto-generated method stub
-		String hql = " from ZlajMainInfoTb as zl where zl.ajNoGf = '"+ajNoGf+"' and zl.sqAddress = '"+sqAddress+"' and zl.sqDate = '"+sqDate+"'";
+		String hql = " from ZlajMainInfoTb as zl where zl.ajNoGf = '"+ajNoGf+"'";
 		return sess.createQuery(hql).list();
 	}
 

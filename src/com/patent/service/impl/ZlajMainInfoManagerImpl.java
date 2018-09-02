@@ -121,17 +121,16 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	}
 
 	@Override
-	public List<ZlajMainInfoTb> listSpecInfoByOpt(String ajNoGf,
-			String sqAddress, String sqDate) throws WEBException {
+	public List<ZlajMainInfoTb> listSpecInfoByZlNo(String ajNoGf) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return zlDao.findSpecInfoByOpt(sess, ajNoGf, sqAddress, sqDate);
+			return zlDao.findSpecInfoByOpt(sess, ajNoGf);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new WEBException("根据条件全网获取案件专利（填写优先权时使用）时出现异常!");
+			throw new WEBException("根据专利号全网获取案件专利（填写优先权时使用）时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

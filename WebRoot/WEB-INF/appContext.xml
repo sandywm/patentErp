@@ -17,4 +17,5 @@
 	<app id="zlaj_ewyq_info_Web" class="com.patent.service.impl.ZlajEwyqInfoManagerImpl"/>
 	<app id="zlaj_main_info_Web" class="com.patent.service.impl.ZlajMainInfoManagerImpl"/>
 	<app id="zlaj_lc_info_Web" class="com.patent.service.impl.ZlajLcInfoManagerImpl"/>
+	<app id="zlaj_lc_mx_info_Web" class="com.patent.service.impl.ZlajLcMxInfoManagerImpl"/>
 </appContext>

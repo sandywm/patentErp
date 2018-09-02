@@ -1,4 +1,7 @@
-package com.patent.action.user;
+/**
+ * 
+ */
+package com.patent.tools.upload;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,32 +19,38 @@ import javax.servlet.http.Part;
 import com.patent.tools.CheckImage;
 import com.patent.util.WebUrl;
 
-@WebServlet(name = "UploadImgServlet", urlPatterns = { "/uploadImg" })
-@MultipartConfig(fileSizeThreshold = 1024)
-public class UploadImgServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
+/**  
+ *  @author  你的名字  
+ *  @ClassName  : UploadFileServlet  
+ *  @Version  版本   
+ *  @ModifiedBy 修改人  
+ *  @Copyright  公司名称  
+ *  @date  2018-9-2 下午10:33:59 
+ */
+
+@WebServlet(name = "UploadFileServlet", urlPatterns = { "/uploadFile" })
+@MultipartConfig(fileSizeThreshold = 1024)
+public class UploadFileServlet extends HttpServlet {
+	
 	private static final long serialVersionUID = 1L;
 
 
 	/**
 	 * Constructor of the object.
 	 */
-	public UploadImgServlet() {
+	public UploadFileServlet() {
 		super();
 	}
-
-
+	
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	throws ServletException, IOException {
 
 		request.setCharacterEncoding("utf-8");
 		// 获取文件部件part
 		Part part = request.getPart("fileToUpload"); // request.getParts();
 		//自定义目录
-		String ipthum=WebUrl.DATA_URL_YYZZ_UPLOAD;
+		String ipthum=WebUrl.DATA_URL_JS_FILE_UPLOAD;
 		// 获取文件服务器头部信息
 		String root = request.getServletContext().getRealPath(ipthum);
 		File file = new File(root);
@@ -70,6 +79,6 @@ public class UploadImgServlet extends HttpServlet {
 		}else{
 			System.out.println("请上传图片!");
 		}
-	}
-
+}
+	
 }

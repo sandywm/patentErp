@@ -1,6 +1,5 @@
 package com.patent.service;
 
-import java.util.Date;
 import java.util.List;
 
 import com.patent.exception.WEBException;
@@ -117,12 +116,10 @@ public interface ZlajMainInfoManager {
 	 * @ModifiedBy  
 	 * @date  2018-8-24 下午10:21:30
 	 * @param ajNoGf 专利/申请号
-	 * @param sqAddress 申请地区
-	 * @param sqDate 申请日期
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajMainInfoTb> listSpecInfoByOpt(String ajNoGf,String sqAddress, String sqDate) throws WEBException;
+	List<ZlajMainInfoTb> listSpecInfoByZlNo(String ajNoGf) throws WEBException;
 	
 	/**
 	 * 根据主键修改案件终止状态信息

@@ -49,6 +49,7 @@ public class Constants {
 	public static final String WEB_ZLAJ_EWYQ_INFO = "zlaj_ewyq_info_Web";
 	public static final String WEB_ZLAJ_MAIN_INFO = "zlaj_main_info_Web";
 	public static final String WEB_ZLAJ_LC_INFO = "zlaj_lc_info_Web";
+	public static final String WEB_ZLAJ_LC_MX_INFO = "zlaj_lc_mx_info_Web";
 	
 	//-------------------DAO-------------------------//
 	public static final String DAO_CPY_USER_INFO = "cpy_user_info_Dao";
@@ -71,4 +72,5 @@ public class Constants {
 	public static final String DAO_ZLAJ_EWYQ_INFO = "zlaj_ewyq_info_Dao";
 	public static final String DAO_ZLAJ_MAIN_INFO = "zlaj_main_info_Dao";
 	public static final String DAO_ZLAJ_LC_INFO = "zlaj_lc_info_Dao";
+	public static final String DAO_ZLAJ_LC_MX_INFO = "zlaj_lc_mx_info_Dao";
 }
