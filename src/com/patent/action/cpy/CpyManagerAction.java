@@ -280,7 +280,7 @@ public class CpyManagerAction extends DispatchAction {
 	}
 	
 	/**
-	 * 获取代理机构详细信息(超管用)
+	 * 获取代理机构详细信息(超管、申请人/公司用)
 	 * @description
 	 * @author wm
 	 * @date 2018-8-25 下午03:27:07
@@ -295,7 +295,7 @@ public class CpyManagerAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO); 
 		Map<String,Object> map = new HashMap<String,Object>();
-		if(this.getLoginRoleName(request).equals("super")){//只有超管才能获取
+		if(this.getLoginRoleName(request).equals("super") || this.getLoginType(request).equals("appUser")){//只有超管和申请人/公司才能获取
 			Integer cpyId = CommonTools.getFinalInteger(request.getParameter("cpyId"));
 			List<CpyInfoTb> cpyList = cm.listInfoById(cpyId);
 			if(cpyList.size() > 0){
