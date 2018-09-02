@@ -40,7 +40,7 @@
 	  								 </select> 
 	  							</div>
 	  						</div>
-	  						<div class="itemDiv fl" style="width:135px;">
+	  						<div id="accYxWrap" class="itemDiv fl" style="width:135px;">
 	  							<div class="layui-input-inline">
 	  								<input id="accStatusInp" type="hidden" value="-1"/>
 	  								<select id="accStatusSel" lay-filter="accStatusSel">
@@ -67,12 +67,12 @@
 	  								<input type="text" id="agencyPyInp" placeholder="代理机构拼音首字母" autocomplete="off" class="layui-input">
 	  							</div>
 	  						</div>
-	  						<div class="itemDiv fl" style="width:120px;">
+	  						<div id="frNameWrap" class="itemDiv fl" style="width:120px;">
 	  							<div class="layui-input-inline">
 	  								<input type="text" id="cpyFrInp" placeholder="请输入法人姓名" autocomplete="off" class="layui-input">
 	  							</div>
 	  						</div>
-	  						<div class="itemDiv fl" style="width:130px;">
+	  						<div id="lxrNameWrap" class="itemDiv fl" style="width:130px;">
 	  							<div class="layui-input-inline">
 	  								<input type="text" id="cpyLxrInp" placeholder="请输入联系人姓名" autocomplete="off" class="layui-input">
 	  							</div>
@@ -91,6 +91,8 @@
   	</div>	
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
+  		var loginType = parent.loginType;
+  		//alert(loginType)
   		var sonUseObj = {
   			globalCpyId : 0,
   			cpyId : 0,
@@ -110,18 +112,27 @@
   			$('#queryBtn').on('click',function(){
   				loadQueryCpyList('queryLoad');
 			});
+  			if(loginType == 'spUser'){
+  				$('#accYxWrap').show();
+  				$('#frNameWrap').show();
+  				$('#lxrNameWrap').show();
+  			}
 			//加载代理机构列表
   			function loadQueryCpyList(opts){
   				if(opts == 'loadListData'){//初始化加载
-  					var field = {cpyName:'',cpyProv:'',cpyCity:'',cpyLxr:'',cpyFr:'',cpyLevel:-1,yxStatus:-1};
-  				}else{
+  					if(loginType == 'spUser'){
+  						var field = {cpyName:'',cpyProv:'',cpyCity:'',cpyLxr:'',cpyFr:'',cpyLevel:-1,yxStatus:-1};
+  					}else if(loginType == 'appUser'){
+  						var field = {cpyName:'',cpyProv:'',cpyCity:'',cpyLxr:'',cpyFr:'',cpyLevel:-1,yxStatus:0};
+  					}
+  				}else{//通过查询
   					var provInp = $('#provInp').val() == '请选择省' ? '' : $('#provInp').val(),
   						cityInp = $('#cityInp').val() == '请选择市' ? '' : $('#cityInp').val(),
-  						accStatusInp = $('#accStatusInp').val(),
+  						accStatusInp = loginType == 'spUser' ? $('#accStatusInp').val() : 0,
   						levelSelInp = $('#levelSelInp').val(),
   						agencyPyInp = $.trim($('#agencyPyInp').val()),
-  						cpyFrInp = escape($.trim($('#cpyFrInp').val())),
-  						cpyLxrInp = escape($.trim($('#cpyLxrInp').val()));
+  						cpyFrInp = loginType == 'spUser' ? escape($.trim($('#cpyFrInp').val())) : '',
+  						cpyLxrInp = loginType == 'spUser' ? escape($.trim($('#cpyLxrInp').val())) : '';
   					var field = {cpyName:agencyPyInp,cpyProv:provInp,cpyCity:cityInp,cpyLxr:cpyLxrInp,cpyFr:cpyFrInp,cpyLevel:levelSelInp,yxStatus:accStatusInp};
   				}
   				layer.load('1');
@@ -160,7 +171,11 @@
 						{field : 'cpyUrl', title: '网址', width:180 , align:'center'},
 						{field : 'signDate', title: '注册日期', width:110 , align:'center'},
 						{field : '', title: '操作', width:150 , fixed: 'right', align:'center',templet : function(d){
-							return '<input type="hidden" id="signDateInp_'+ d.id +'" value="'+ d.signDate +'"/><input type="hidden" id="endDateInpPar_'+ d.id +'" value="'+ d.endDate +'"/><input type="hidden" id="levelNumInp_'+ d.id +'" value="'+ d.levelNum +'"/><a class="layui-btn layui-btn-primary layui-btn-xs viewDetailInfoBtn" lay-event="viewInfo" cpyId="'+ d.id +'" cpyName="'+ d.cpyName +'"><i class="layui-icon layui-icon-search"></i>查看</a> <a id="update_'+ d.id +'" class="layui-btn layui-btn-xs editInfoBtns" lay-event="updateInfo" cpyId="'+ d.id +'" cpyName="'+ d.cpyName +'"><i class="layui-icon layui-icon-edit"></i>编辑</a>';	
+							if(loginType == 'spUser'){
+								return '<input type="hidden" id="signDateInp_'+ d.id +'" value="'+ d.signDate +'"/><input type="hidden" id="endDateInpPar_'+ d.id +'" value="'+ d.endDate +'"/><input type="hidden" id="levelNumInp_'+ d.id +'" value="'+ d.levelNum +'"/><a class="layui-btn layui-btn-primary layui-btn-xs viewDetailInfoBtn" lay-event="viewInfo" cpyId="'+ d.id +'" cpyName="'+ d.cpyName +'"><i class="layui-icon layui-icon-search"></i>查看</a> <a id="update_'+ d.id +'" class="layui-btn layui-btn-xs editInfoBtns" lay-event="updateInfo" cpyId="'+ d.id +'" cpyName="'+ d.cpyName +'"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
+							}else if(loginType == 'appUser'){
+								return '<a class="layui-btn layui-btn-primary layui-btn-xs viewDetailInfoBtn" lay-event="viewInfo" cpyId="'+ d.id +'" cpyName="'+ d.cpyName +'"><i class="layui-icon layui-icon-search"></i>查看</a>';
+							}
 						}},
 					]],
 					done : function(res,curr,count){

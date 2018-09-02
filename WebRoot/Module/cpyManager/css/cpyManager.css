@@ -4,6 +4,11 @@ body{
 	background:#f2f2f2;
 	color:#666;
 }
+#accYxWrap,
+#frNameWrap,
+#lxrNameWrap{
+	display:none;
+}
 .searchForm .itemDiv{
 	width:145px;
 	margin-left:12px;
