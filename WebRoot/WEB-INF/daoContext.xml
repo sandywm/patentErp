@@ -19,4 +19,5 @@
 	<dao id="customer_fmr_info_Dao" class="com.patent.dao.impl.CustomerFmrInfoDaoImpl"/>
 	<dao id="zlaj_ewyq_info_Dao" class="com.patent.dao.impl.ZlajEwyqInfoDaoImpl"/>
 	<dao id="zlaj_main_info_Dao" class="com.patent.dao.impl.ZlajMainInfoDaoImpl"/>
+	<dao id="zlaj_lc_info_Dao" class="com.patent.dao.impl.ZlajLcInfoDaoImpl"/>
 </daoContext>

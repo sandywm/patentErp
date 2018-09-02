@@ -29,12 +29,14 @@ import com.patent.module.CustomerInfoTb;
 import com.patent.module.CustomerLxrInfoTb;
 import com.patent.module.JsFiledInfoTb;
 import com.patent.module.ZlajEwyqInfoTb;
+import com.patent.module.ZlajLcInfoTb;
 import com.patent.module.ZlajMainInfoTb;
 import com.patent.page.PageConst;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.CustomerInfoManager;
 import com.patent.service.JsFiledInfoManager;
 import com.patent.service.ZlajEwyqInfoManager;
+import com.patent.service.ZlajLcInfoManager;
 import com.patent.service.ZlajMainInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.CurrentTime;
@@ -199,7 +201,6 @@ public class ZlMainAction extends DispatchAction {
 					}else if(ajType_db.equals("fmxx")){
 						ajType_new = "发明+新型";
 					}
-					map_d.put("ajType", ajType_new);11
 					String ajFieldIdStr = zl.getAjFieldId();
 					String ajFieldName = "";
 					if(!ajFieldIdStr.equals("")){
@@ -307,8 +308,9 @@ public class ZlMainAction extends DispatchAction {
 		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
 		JsFiledInfoManager jsm = (JsFiledInfoManager) AppFactory.instance(null).getApp(Constants.WEB_JS_FIELD_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO); 
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
-		String opt = CommonTools.getFinalStr("opt", request);//a(基本信息),b(流程),c(通知书),d(附件),e(费用)-后续有的再加
+		String opt = CommonTools.getFinalStr("opt", request);//basic(基本信息),lc(流程),tzs(通知书),fj(附件),fy(费用)-后续有的再加
 		String msg = "error";
 		boolean abilityFlag = false;
 		Integer cpyId = 0;
@@ -322,8 +324,9 @@ public class ZlMainAction extends DispatchAction {
 				}
 				List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
 				if(zlList.size() > 0){
+					msg = "success";
 					ZlajMainInfoTb zl = zlList.get(0);
-					if(opt.equals("a")){//基本信息
+					if(opt.equals("basic")){//基本信息
 						map.put("ajId", zlId);
 						map.put("ajTitle", zl.getAjTitle());
 						map.put("ajNo", zl.getAjNoQt());
@@ -379,7 +382,7 @@ public class ZlMainAction extends DispatchAction {
 						//获取当前专利类型的额外要求
 						String yqIdStr = zl.getAjEwyqId();
 						String[] yqIdArr = yqIdStr.split(",");
-						List<ZlajEwyqInfoTb> yqList = yqm.listInfoByType(zl.getAjType());11
+						List<ZlajEwyqInfoTb> yqList = yqm.listInfoByType(zl.getAjType());
 						List<Object> list_d = new ArrayList<Object>();
 						if(yqList.size() > 0){
 							for(Iterator<ZlajEwyqInfoTb> it = yqList.iterator() ; it.hasNext();){
@@ -403,14 +406,51 @@ public class ZlMainAction extends DispatchAction {
 							}
 						}
 						map.put("yqInfo", list_d);
-						map.put("", zl);
-						map.put("", zl);
-						map.put("", zl);
-						map.put("", zl);
-						map.put("", zl);
-						map.put("", zl);
-						map.put("", zl);
-						map.put("", zl);
+						map.put("upFile", zl.getAjUpload());//附件
+						map.put("stopStatus", zl.getAjStopStatus());//案件在终止状态下基本信息不能被修改
+						String selJsFieldStr = zl.getAjFieldId();
+						String[] selJsFieldArr = selJsFieldStr.split(",");
+						List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, "");
+						List<Object> list_j = new ArrayList<Object>();
+						for(Iterator<JsFiledInfoTb> it = jsList.iterator() ; it.hasNext();){
+							JsFiledInfoTb js = it.next();
+							Map<String,Object> map_j = new HashMap<String,Object>();
+							map_j.put("jsId", js.getId());
+							map_j.put("jsName", js.getZyName());
+							if(selJsFieldStr.equals("")){
+								map_j.put("checked", false);
+							}else{
+								for(Integer i = 0 ; i < selJsFieldArr.length ; i++){
+									if(String.valueOf(js.getId()).equals(selJsFieldArr[i])){
+										map_j.put("checked", true);
+										break;
+									}else{
+										map_j.put("checked", true);
+									}
+								}
+							}
+							list_j.add(map_j);
+						}
+						map.put("jsFieldInfo", list_j);
+					}else if(opt.equals("lc")){//流程
+						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zlId);
+						List<Object> list_lc = new ArrayList<Object>();
+						if(lcList.size() > 0){
+							msg = "success";
+							for(Iterator<ZlajLcInfoTb> it = lcList.iterator() ; it.hasNext();){
+								ZlajLcInfoTb lc = it.next();
+								Map<String,Object> map_d = new HashMap<String,Object>();
+								map_d.put("lcId", lc.getId());
+								map_d.put("lcName", lc.getLcMz());
+								map_d.put("lcDetail", lc.getLcDetail());
+								map_d.put("sDate", lc.getLcSDate());
+								map_d.put("comDate", lc.getLcEDate());
+								list_lc.add(map_d);
+							}
+							map.put("lcInfo", list_lc);
+						}else{
+							msg = "noInfo";
+						}
 					}
 				}else{
 					msg = "noInfo";
@@ -572,8 +612,9 @@ public class ZlMainAction extends DispatchAction {
 							Integer pubZlId = CommonTools.getFinalInteger("pubZlId", request);//发布专利的编号
 							String ajApplyDate = "";
 							String ajStatus = CommonTools.getFinalStr("ajStatus", request);
+							Integer checkUserId = CommonTools.getFinalInteger("checkUserId", request);//审查人员编号
 							Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, ajSqAddress, 
-									ajYxqId, ajUpload, ajRemark, ajEwyqId, ajApplyDate, ajStatus, pubZlId,cpyId);
+									ajYxqId, ajUpload, ajRemark, ajEwyqId, ajApplyDate, ajStatus, pubZlId,cpyId,checkUserId);
 							if(zlId > 0){
 								msg = "success";
 							}

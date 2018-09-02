@@ -34,6 +34,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private String ajApplyDate;
 	private String ajStatus;
 	private Integer ajFaId;
+	private Integer checkUserId;
 	private Integer pubZlId;
 	private Integer ajStopStatus;
 	private String ajStopDate;
@@ -56,7 +57,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
-			String ajStopUserType,String ajStopUser,String ajAddDate) {
+			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId) {
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
 		this.ajNoQt = ajNoQt;
@@ -81,6 +82,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajStopUser = ajStopUser;
 		this.ajStopUserType = ajStopUserType;
 		this.ajAddDate = ajAddDate;
+		this.checkUserId = checkUserId;
 	}
 
 	/** full constructor */
@@ -89,7 +91,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
-			String ajStopUserType,String ajStopUser,String ajAddDate) {
+			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId) {
 		this.id = id;
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
@@ -115,6 +117,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajStopUser = ajStopUser;
 		this.ajStopUserType = ajStopUserType;
 		this.ajAddDate = ajAddDate;
+		this.checkUserId = checkUserId;
 	}
 
 	// Property accessors
@@ -341,6 +344,14 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	public void setPubZlId(Integer pubZlId) {
 		this.pubZlId = pubZlId;
+	}
+
+	public Integer getCheckUserId() {
+		return checkUserId;
+	}
+
+	public void setCheckUserId(Integer checkUserId) {
+		this.checkUserId = checkUserId;
 	}
 
 

@@ -25,7 +25,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			String ajApplyDate, String ajStatus,Integer pubZlId, Integer cpyId)
+			String ajApplyDate, String ajStatus,Integer pubZlId, Integer checkUserId,Integer cpyId)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -35,7 +35,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			tran = sess.beginTransaction();
 			ZlajMainInfoTb zl = new ZlajMainInfoTb(cDao.get(sess, cpyId), ajNo, ajNoQt, ajNoGf,
 					ajTitle, ajType, ajFieldId, ajSqrId,ajFmrId, ajLxrId, ajSqAddress, ajYxqDetail,
-					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, 0,0,pubZlId,"","","",CurrentTime.getStringDate());
+					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, 0,0,pubZlId,"","","",CurrentTime.getStringDate(),checkUserId);
 			zlDao.save(sess, zl);
 			tran.commit();
 			return zl.getId();

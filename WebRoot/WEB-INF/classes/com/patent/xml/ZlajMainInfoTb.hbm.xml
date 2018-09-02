@@ -100,6 +100,11 @@
                 <comment>案件分案信息(分案的id,没有就为0)</comment>
             </column>
         </property>
+        <property name="checkUserId" type="java.lang.Integer">
+            <column name="check_user_id">
+                <comment>审查人员编号（没有就为0）</comment>
+            </column>
+        </property>
         <property name="pubZlId" type="java.lang.Integer">
             <column name="pub_zl_id" not-null="true">
                 <comment>发布案件的编号（不是接任务的就是0）</comment>

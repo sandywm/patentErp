@@ -124,13 +124,13 @@
             </key>
             <one-to-many class="com.patent.module.ZlajFeeInfoTb" />
         </set>
-        <set name="zlajLcInfoTbs" inverse="true">
+        <set name="zlajLcMxInfoTbs" inverse="true">
             <key>
-                <column name="lc_cpy_user_id" not-null="true">
-                    <comment>流程负责人</comment>
-                </column>
+                <column name="lc_fz_user_id" not-null="true">
+	                 <comment>流程负责人(等同于(承办人))</comment>
+	            </column>
             </key>
-            <one-to-many class="com.patent.module.ZlajLcInfoTb" />
+            <one-to-many class="com.patent.module.ZlajLcMxInfoTb" />
         </set>
     </class>
 </hibernate-mapping>

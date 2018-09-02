@@ -37,7 +37,7 @@ public class CpyUserInfo implements java.io.Serializable {
 	private Set<CpyRoleUserInfoTb> cpyRoleUserInfoTbs = new HashSet<CpyRoleUserInfoTb>();
 	private Set<ZlajFjInfoTb> zlajFjInfoTbs = new HashSet<ZlajFjInfoTb>();
 	private Set<ZlajFeeInfoTb> zlajFeeInfoTbs = new HashSet<ZlajFeeInfoTb>();
-	private Set<ZlajLcInfoTb> zlajLcInfoTbs = new HashSet<ZlajLcInfoTb>();
+	private Set<ZlajLcMxInfoTb> zlajLcMxInfoTbs = new HashSet<ZlajLcMxInfoTb>();
 
 	// Constructors
 
@@ -262,14 +262,6 @@ public class CpyUserInfo implements java.io.Serializable {
 		this.zlajFeeInfoTbs = zlajFeeInfoTbs;
 	}
 
-	public Set<ZlajLcInfoTb> getZlajLcInfoTbs() {
-		return zlajLcInfoTbs;
-	}
-
-	public void setZlajLcInfoTbs(Set<ZlajLcInfoTb> zlajLcInfoTbs) {
-		this.zlajLcInfoTbs = zlajLcInfoTbs;
-	}
-
 	public String getUserNamePy() {
 		return userNamePy;
 	}
@@ -284,6 +276,14 @@ public class CpyUserInfo implements java.io.Serializable {
 
 	public void setUserLoginTimes(Integer userLoginTimes) {
 		this.userLoginTimes = userLoginTimes;
+	}
+
+	public Set<ZlajLcMxInfoTb> getZlajLcMxInfoTbs() {
+		return zlajLcMxInfoTbs;
+	}
+
+	public void setZlajLcMxInfoTbs(Set<ZlajLcMxInfoTb> zlajLcMxInfoTbs) {
+		this.zlajLcMxInfoTbs = zlajLcMxInfoTbs;
 	}
 
 
