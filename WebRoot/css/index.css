@@ -55,3 +55,6 @@
 #hasNoReadNum{
 	display:none;
 }
+#mailNavLi{
+	visibility:hidden;
+}

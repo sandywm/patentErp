@@ -41,7 +41,7 @@
 					    });
 					    tpwidget("show");</script>
   				</li>
-  				<li class="layui-nav-item topHeadNav navLi">
+  				<li id="mailNavLi" class="layui-nav-item topHeadNav navLi">
   			 		<a href="javascript:void(0);" path="mail.do?action=goMailPage" tab-id="18">
   			 			<span style="display:none;">邮件管理</span>
 	            		<i class="iconfont layui-extend-youxiang headsmIcon"></i>
@@ -173,7 +173,12 @@
 			}
 	        $(function(){
 	        	renderModuleList();
-	        	getNoReadStatusNum();
+	        	if(loginType == 'appUser' || loginType == 'cpyUser'){
+	        		$('#mailNavLi').css('visibility','visible');
+	        		getNoReadStatusNum();
+	        	}else{
+	        		$('#mailNavLi').remove();
+	        	}
 	        });
 	        
 	        $(".navLi").click(function () {
