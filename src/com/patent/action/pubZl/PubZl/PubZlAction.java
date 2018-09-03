@@ -492,6 +492,23 @@ public class PubZlAction extends DispatchAction {
 	}
 	
 	/**
+	 * 专利列表管理界面
+	 * @description
+	 * @author wm
+	 * @date 2018-8-13 上午09:00:29
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	public ActionForward goLqZlPage(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) {
+		// TODO Auto-generated method stub
+		return mapping.findForward("lqzlPage");
+	}
+	
+	/**
 	 * 获取当前代理机构已领取的发布专利任务列表
 	 * @description
 	 * @author wm

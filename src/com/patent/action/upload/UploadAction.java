@@ -5,9 +5,14 @@
 package com.patent.action.upload;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,11 +21,13 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 
+import com.alibaba.fastjson.JSON;
 import com.patent.tools.CheckImage;
 import com.patent.util.WebUrl;
 
@@ -32,9 +39,23 @@ import com.patent.util.WebUrl;
  * @struts.action validate="true"
  */
 public class UploadAction extends DispatchAction {
-	/*
-	 * Generated Methods
+	
+	/**
+	 * 封装json
+	*  @author  Administrator
+	*  @ModifiedBy  
+	*  @date  2018-8-21 下午10:17:05
+	*  @param obj
+	*  @param response
+	*  @throws IOException
 	 */
+	private void getJsonPkg(Object obj,HttpServletResponse response) throws IOException{
+		String json = JSON.toJSONString(obj);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+	}
 
 	/** 
 	 * Method execute
@@ -47,45 +68,56 @@ public class UploadAction extends DispatchAction {
 	public ActionForward uploadImg(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) {
 		// TODO Auto-generated method stub
-//		String folder = "";
-//		if (ServletFileUpload.isMultipartContent(request)){// 判断是否是上传文件
-//			DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();// 创建工厂对象
-//			ServletFileUpload fileUpload = new ServletFileUpload(diskFileItemFactory); // 创建上传对象
-//			try {
-//				List<FileItem> filelist = fileUpload.parseRequest(request);
-//				ListIterator<FileItem> iterator = filelist.listIterator();
-//				while (iterator.hasNext()) {
-//					String userPath = WebUrl.DATA_URL_JS_FILE_UPLOAD;// 指定上传技术文件的位置
-//					FileItem fileItem = iterator.next();// 获取文件对象
-//					if (fileItem.isFormField())// 处理普通的文本提交(传递的参数)
-//					{
-//						folder = String.valueOf(fileItem.getString("utf-8"));// 获取值--用户编号
-//					} else {//处理文件提交
-//						if(folder.equals("") || folder.equals("null")){
-//							
-//						}else{
-//							// 处理文件上传
-//							String filename = fileItem.getName();// 获取名字
-//							Integer lastIndex = filename.lastIndexOf(".");
-//							String suffix = filename.substring(lastIndex);
-//							CheckImage ci = new CheckImage();
-//							if(!ci.checkImageStuffix(suffix)){
-//								
-//							}else{//支持jpg,bmp,png,gif图片
-//								byte[] data = fileItem.get();// 获取数据
-//								userPath += "/" + folder;
-//								//没有该文件夹先创建文件夹
-//					    		File file = new File(userPath);
-//					    		if(!file.exists()){
-//					    			file.mkdirs();
-//					    		}
-//					    		FileOutputStream fileOutputStream = new FileOutputStream(userPath + "/" + filename);// 创建我呢见
-//								fileOutputStream.write(data);// 写入文件
-//								fileOutputStream.close();// 关闭文件流
-//			}catch (FileUploadException e) {
-//				e.printStackTrace();
-//			}
-//		}
+		String msg = "";
+		Map<String,String> map = new HashMap<String,String>();
+		if (ServletFileUpload.isMultipartContent(request)){// 判断是否是上传文件
+			DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();// 创建工厂对象
+			ServletFileUpload fileUpload = new ServletFileUpload(diskFileItemFactory); // 创建上传对象
+			try {
+				List<FileItem> filelist = fileUpload.parseRequest(request);
+				ListIterator<FileItem> iterator = filelist.listIterator();
+				while (iterator.hasNext()) {
+					String userPath = WebUrl.DATA_URL_JS_FILE_UPLOAD;// 指定上传技术文件的位置
+					FileItem fileItem = iterator.next();// 获取文件对象
+					Integer imgSize = (int) fileItem.getSize();
+					// 处理文件上传
+					String filename = fileItem.getName();// 获取名字
+					Integer lastIndex = filename.lastIndexOf(".");
+					String suffix = filename.substring(lastIndex);
+					CheckImage ci = new CheckImage();
+					if(!ci.checkImageStuffix(suffix)){
+						
+					}else{//支持jpg,bmp,png,gif图片
+						if(imgSize > 1024 * 1024 * 5){//上传图片不能大于5M
+							msg = "outSize";
+							map.put("result", msg);
+							this.getJsonPkg(map, response);
+							return null;
+						}else{
+							byte[] data = fileItem.get();// 获取数据
+							//userPath += "/" + folder;
+							//没有该文件夹先创建文件夹
+				    		File file = new File(userPath);
+				    		if(!file.exists()){
+				    			file.mkdirs();
+				    		}
+				    		FileOutputStream fileOutputStream;
+				    		fileOutputStream = new FileOutputStream(userPath + "/" + filename);
+							fileOutputStream.write(data);// 写入文件
+							fileOutputStream.close();// 关闭文件流
+							
+						}
+						
+					}
+				}
+			}catch (FileUploadException e) {
+				e.printStackTrace();
+			}catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
 }
