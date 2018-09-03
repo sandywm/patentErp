@@ -4,8 +4,16 @@
  */
 package com.patent.action.zl;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,6 +28,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 
 import com.alibaba.fastjson.JSON;
+import com.patent.util.WebUrl;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.CpyInfoTb;
@@ -29,15 +38,21 @@ import com.patent.module.CustomerInfoTb;
 import com.patent.module.CustomerLxrInfoTb;
 import com.patent.module.JsFiledInfoTb;
 import com.patent.module.ZlajEwyqInfoTb;
+import com.patent.module.ZlajFjInfoTb;
 import com.patent.module.ZlajLcInfoTb;
+import com.patent.module.ZlajLcMxInfoTb;
 import com.patent.module.ZlajMainInfoTb;
+import com.patent.module.ZlajTzsInfoTb;
 import com.patent.page.PageConst;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.CustomerInfoManager;
 import com.patent.service.JsFiledInfoManager;
 import com.patent.service.ZlajEwyqInfoManager;
+import com.patent.service.ZlajFjInfoManager;
 import com.patent.service.ZlajLcInfoManager;
+import com.patent.service.ZlajLcMxInfoManager;
 import com.patent.service.ZlajMainInfoManager;
+import com.patent.service.ZlajTzsInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.CurrentTime;
 import com.patent.util.Constants;
@@ -201,6 +216,7 @@ public class ZlMainAction extends DispatchAction {
 					}else if(ajType_db.equals("fmxx")){
 						ajType_new = "发明+新型";
 					}
+					map_d.put("ajType", ajType_new);
 					String ajFieldIdStr = zl.getAjFieldId();
 					String ajFieldName = "";
 					if(!ajFieldIdStr.equals("")){
@@ -309,6 +325,9 @@ public class ZlMainAction extends DispatchAction {
 		JsFiledInfoManager jsm = (JsFiledInfoManager) AppFactory.instance(null).getApp(Constants.WEB_JS_FIELD_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO); 
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
+		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		String opt = CommonTools.getFinalStr("opt", request);//basic(基本信息),lc(流程),tzs(通知书),fj(附件),fy(费用)-后续有的再加
 		String msg = "error";
@@ -435,6 +454,7 @@ public class ZlMainAction extends DispatchAction {
 					}else if(opt.equals("lc")){//流程
 						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zlId);
 						List<Object> list_lc = new ArrayList<Object>();
+						List<Object> list_mx = new ArrayList<Object>();
 						if(lcList.size() > 0){
 							msg = "success";
 							for(Iterator<ZlajLcInfoTb> it = lcList.iterator() ; it.hasNext();){
@@ -442,16 +462,84 @@ public class ZlMainAction extends DispatchAction {
 								Map<String,Object> map_d = new HashMap<String,Object>();
 								map_d.put("lcId", lc.getId());
 								map_d.put("lcName", lc.getLcMz());
-								map_d.put("lcDetail", lc.getLcDetail());
+								map_d.put("cpyDate", lc.getLcCpyDate());
 								map_d.put("sDate", lc.getLcSDate());
 								map_d.put("comDate", lc.getLcEDate());
+								map_d.put("gfDate", lc.getLcGfDate());
 								list_lc.add(map_d);
 							}
 							map.put("lcInfo", list_lc);
+							//默认获取最后一个流程的流程明细
+							Integer lastLcId = lcList.get(0).getId();
+							List<ZlajLcMxInfoTb> mxList = mxm.listDetailInfoByLcId(lastLcId);
+							if(mxList.size() > 0){
+								for(Iterator<ZlajLcMxInfoTb> it = mxList.iterator() ; it.hasNext();){
+									ZlajLcMxInfoTb mx = it.next();
+									Map<String,Object> map_d = new HashMap<String,Object>();
+									map_d.put("mxId", mx.getId());
+									map_d.put("mxName", mx.getLcMxName());
+									map_d.put("fzUserName", mx.getCpyUserInfo().getUserName());
+									map_d.put("mxSDate", mx.getLcMxSDate());
+									map_d.put("mxEDate", mx.getLcMxEDate());
+									String upFile = mx.getLcMxUpFile();
+									String upFileName = "";
+									if(!upFile.equals("")){
+										upFileName = upFile.substring(upFile.lastIndexOf("/")+1,upFile.length());
+									}
+									map_d.put("upFile", upFile);
+									map_d.put("upFileName", upFileName);
+									map_d.put("mxRemark", mx.getLcMxRemark());
+									list_mx.add(map_d);
+								}
+							}
+							map.put("mxInfo", list_mx);
 						}else{
 							msg = "noInfo";
 						}
+					}else if(opt.equals("tzs")){//通知书
+						List<ZlajTzsInfoTb> tzsList = tzsm.listInfoByZlId(zlId);
+						if(tzsList.size() > 0){
+							msg = "success";
+							List<Object> list_tzs = new ArrayList<Object>();
+							for(Iterator<ZlajTzsInfoTb> it = tzsList.iterator() ; it.hasNext();){
+								ZlajTzsInfoTb tzs = it.next();
+								Map<String,Object> map_d = new HashMap<String,Object>();
+								map_d.put("tzsId", tzs.getId());
+								map_d.put("tzsName", tzs.getTzsName());
+								map_d.put("fwrDate", tzs.getTzsFwr());
+								map_d.put("gfrDate", tzs.getTzsGfr());
+								list_tzs.add(map_d);
+							}
+							map.put("tzsInfo", list_tzs);
+						}else{
+							msg = "noInfo";
+						}
+					}else if(opt.equals("fj")){//附件
+						List<ZlajFjInfoTb> fjList = fjm.listInfoByAjId(zlId);
+						if(fjList.size() > 0){
+							msg = "success";
+							List<Object> list_fj = new ArrayList<Object>();
+							for(Iterator<ZlajFjInfoTb> it = fjList.iterator() ; it.hasNext();){
+								ZlajFjInfoTb fj = it.next();
+								Map<String,Object> map_d = new HashMap<String,Object>();
+								map_d.put("fjId", fj.getId());
+								map_d.put("fjName", fj.getFjName());
+								map_d.put("fjType", fj.getFjType());
+								map_d.put("fjVersion", fj.getFjVersion());
+								map_d.put("fjGs", fj.getFjGs());
+								map_d.put("fjDx", fj.getFjDx());
+								map_d.put("upUserName", fj.getCpyUserInfo().getUserName());
+								map_d.put("upDate", fj.getFjUpDate());
+								list_fj.add(map_d);
+							}
+							map.put("fjInfo", list_fj);
+						}else{
+							msg = "noInfo";
+						}
+					}else if(opt.equals("fy")){//费用
+						
 					}
+					
 				}else{
 					msg = "noInfo";
 				}
@@ -680,4 +768,59 @@ public class ZlMainAction extends DispatchAction {
 		return null;
 	}
 	
+	/**
+	 * 下载文件
+	 * @description
+	 * @author wm
+	 * @date 2018-9-3 上午10:05:26
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward downFile(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		String fileUrl = CommonTools.getFinalStr("fileUrl", request);
+		String absoFilePath = "";//绝对地址
+		String fileName = "";
+		if(!fileUrl.equals("")){
+			fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1,fileUrl.length());
+			absoFilePath = WebUrl.DATA_URL_PRO + fileUrl;
+			try  {  
+		        //第七步 下载文件到客户端
+		        OutputStream fos = null;
+		        BufferedOutputStream bos = null;
+		        InputStream fis = null;
+		        BufferedInputStream bis = null;
+		        fis = new FileInputStream(new File(absoFilePath));
+				bis = new BufferedInputStream(fis);
+				fos = response.getOutputStream();
+				bos = new BufferedOutputStream(fos);
+				fileName = URLEncoder.encode(fileName,"UTF-8");
+				//这个就就是弹出下载对话框的关键代码
+				response.setHeader("Pragma", "No-cache");
+				response.setHeader("Cache-Control", "No-cache");
+				response.setDateHeader("Expires", 0); 
+		        response.setHeader("Content-disposition","attachment;filename=" +fileName);
+		        response.setContentType("application/x-download");
+		        int bytesRead = 0;
+		        byte[] buffer = new byte[8192];
+		        while ((bytesRead = bis.read(buffer,0,8192)) != -1) {
+		        	fos.write(buffer, 0, bytesRead);
+		        }
+		        fos.flush();
+		        fis.close();
+		        bis.close();
+		        fos.close();
+		        bos.close();
+		    }  
+		    catch (IOException e){  
+		        e.printStackTrace();  
+		    }
+		}
+		return null;
+	}
 }

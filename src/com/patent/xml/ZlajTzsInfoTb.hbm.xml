@@ -15,8 +15,8 @@
                 <comment>案卷编号</comment>
             </column>
         </many-to-one>
-        <property name="tzdName" type="java.lang.String">
-            <column name="tzd_name" length="50" not-null="true">
+        <property name="tzsName" type="java.lang.String">
+            <column name="tzs_name" length="50" not-null="true">
                 <comment>通知书名称</comment>
             </column>
         </property>

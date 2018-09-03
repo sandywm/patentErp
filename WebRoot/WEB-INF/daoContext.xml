@@ -21,4 +21,6 @@
 	<dao id="zlaj_main_info_Dao" class="com.patent.dao.impl.ZlajMainInfoDaoImpl"/>
 	<dao id="zlaj_lc_info_Dao" class="com.patent.dao.impl.ZlajLcInfoDaoImpl"/>
 	<dao id="zlaj_lc_mx_info_Dao" class="com.patent.dao.impl.ZlajLcMxInfoDaoImpl"/>
+	<dao id="zlaj_tzs_info_Dao" class="com.patent.dao.impl.ZlajTzsInfoDaoImpl"/>
+	<dao id="zlaj_fj_info_Dao" class="com.patent.dao.impl.ZlajFjInfoDaoImpl"/>
 </daoContext>

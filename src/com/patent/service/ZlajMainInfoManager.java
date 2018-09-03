@@ -135,4 +135,42 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateStopStatusById(Integer zlId,Integer stopStatus,String stopDate,String stopUser,String userType) throws WEBException;
+	
+	/**
+	 * 根据主键修改案件基本信息
+	 * @description
+	 * @author wm
+	 * @date 2018-9-3 上午08:18:28
+	 * @param zlId 主键
+	 * @param zlTitle 案件标题（""不修改）
+	 * @param sqAddress 案件地区（""不修改）
+	 * @param zlType 案件类型（""不修改）
+	 * @param checkUserId 审核人员编号（0不修改）
+	 * @param ajFieldId 案件技术领域（""不修改）
+	 * @param sqrId 申请人（""不修改）
+	 * @param fmrId 发明人（""不修改）
+	 * @param lxrId 联系人（""不修改）
+	 * @param yxqDetail 优先权明细（""不修改）
+	 * @param upFile 技术底稿（""不修改）
+	 * @param remark 备注（""不修改）
+	 * @param ewyq 额外要求（""不修改）
+	 * @param applyDate 申请日期（""不修改）
+	 * @param faId 分案编号（0不修改）
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateBasicInfoById(Integer zlId,String zlTitle,String sqAddress,String zlType,Integer checkUserId,String ajFieldId,
+			String sqrId,String fmrId,String lxrId,String yxqDetail,String upFile,String remark,String ewyq,String applyDate,Integer faId) throws WEBException;
+	
+	/**
+	 * 更新专利申请/专利号
+	 * @description
+	 * @author wm
+	 * @date 2018-9-3 上午08:20:25
+	 * @param zlId
+	 * @param ajNoGf
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateAjNoGfById(Integer zlId,String ajNoGf) throws WEBException;
 }

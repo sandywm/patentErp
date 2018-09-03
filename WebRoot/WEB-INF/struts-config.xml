@@ -61,6 +61,10 @@
     <action path="/zlm"  parameter="action" scope="request" type="com.patent.action.zl.ZlMainAction">
       <set-property property="cancellable" value="true" />
     </action>
+    <!-- 上传动作 -->
+    <action path="/upload" parameter="action" scope="request"  type="com.patent.action.upload.UploadAction">
+      <set-property property="cancellable" value="true" />
+    </action>
 
   </action-mappings>
 

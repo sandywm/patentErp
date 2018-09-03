@@ -169,4 +169,70 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 		}
 	}
 
+	@Override
+	public boolean updateBasicInfoById(Integer zlId, String zlTitle,
+			String sqAddress, String zlType, Integer checkUserId,
+			String ajFieldId, String sqrId, String fmrId, String lxrId,
+			String yxqDetail, String upFile, String remark, String ewyq,
+			String applyDate, Integer faId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajMainInfoTb zl = zlDao.get(sess, zlId);
+			if(zl != null){
+				zl.setAjTitle(zlTitle);
+				zl.setAjSqAddress(sqAddress);
+				zl.setAjType(zlType);
+				zl.setCheckUserId(checkUserId);
+				zl.setAjFieldId(ajFieldId);
+				zl.setAjSqrId(sqrId);
+				zl.setAjFmrId(fmrId);
+				zl.setAjLxrId(lxrId);
+				zl.setAjYxqDetail(yxqDetail);
+				zl.setAjUpload(upFile);
+				zl.setAjRemark(remark);
+				zl.setAjEwyqId(ewyq);
+				zl.setAjApplyDate(applyDate);
+				zl.setAjFaId(faId);
+				zlDao.update(sess, zl);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键修改案件基本信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateAjNoGfById(Integer zlId, String ajNoGf)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajMainInfoTb zl = zlDao.get(sess, zlId);
+			if(zl != null){
+				zl.setAjNoGf(ajNoGf);
+				zlDao.update(sess, zl);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键修改案件专利号时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

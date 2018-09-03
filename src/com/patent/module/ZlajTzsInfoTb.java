@@ -15,7 +15,7 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private Integer id;
 	private ZlajMainInfoTb zlajMainInfoTb;
-	private String tzdName;
+	private String tzsName;
 	private String tzsFwr;
 	private String tzsGfr;
 
@@ -26,20 +26,20 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public ZlajTzsInfoTb(ZlajMainInfoTb zlajMainInfoTb, String tzdName,
+	public ZlajTzsInfoTb(ZlajMainInfoTb zlajMainInfoTb, String tzsName,
 			String tzsFwr, String tzsGfr) {
 		this.zlajMainInfoTb = zlajMainInfoTb;
-		this.tzdName = tzdName;
+		this.tzsName = tzsName;
 		this.tzsFwr = tzsFwr;
 		this.tzsGfr = tzsGfr;
 	}
 
 	/** full constructor */
-	public ZlajTzsInfoTb(Integer id,ZlajMainInfoTb zlajMainInfoTb, String tzdName,
+	public ZlajTzsInfoTb(Integer id,ZlajMainInfoTb zlajMainInfoTb, String tzsName,
 			String tzsFwr, String tzsGfr) {
 		this.id = id;
 		this.zlajMainInfoTb = zlajMainInfoTb;
-		this.tzdName = tzdName;
+		this.tzsName = tzsName;
 		this.tzsFwr = tzsFwr;
 		this.tzsGfr = tzsGfr;
 	}
@@ -62,12 +62,12 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 		this.zlajMainInfoTb = zlajMainInfoTb;
 	}
 
-	public String getTzdName() {
-		return this.tzdName;
+	public String getTzsName() {
+		return this.tzsName;
 	}
 
-	public void setTzdName(String tzdName) {
-		this.tzdName = tzdName;
+	public void setTzsName(String tzsName) {
+		this.tzsName = tzsName;
 	}
 
 	public String getTzsFwr() {
