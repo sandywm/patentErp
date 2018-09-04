@@ -316,4 +316,21 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 			HibernateUtil.closeSession();
 		}
 	}
+
+	@Override
+	public List<CpyUserInfo> listValidInfoByOpt(Integer cpyId, Integer roleId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cUserDao.findValidInfoByOpt(sess, cpyId, roleId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("获取指定代理机构下未到期、未离职且指定身份(可为0)的员工时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
 }

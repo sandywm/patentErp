@@ -187,4 +187,16 @@ public interface CpyUserInfoManager {
 	 * @throws WEBException
 	 */
 	List<CpyUserInfo> listInfoByOpt(Integer cpyId,Integer scFieldId) throws WEBException;
+	
+	/**
+	 * 获取指定代理机构下未到期、未离职且指定身份(可为0)的员工
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-4 下午11:18:13
+	 * @param cpyId 代理机构编号
+	 * @param roleId 角色编号（0表示全部）
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyUserInfo> listValidInfoByOpt(Integer cpyId,Integer roleId) throws WEBException;
 }

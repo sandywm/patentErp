@@ -119,4 +119,16 @@ public interface CpyUserInfoDao {
 	 * @return
 	 */
 	List<CpyUserInfo> findInfoByOpt(Session sess,Integer scFieldId,Integer cpyId);
+	
+	/**
+	 * 获取指定代理机构下未到期、未离职且指定身份(可为0)的员工
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-4 下午11:07:05
+	 * @param sess
+	 * @param cpyId 代理机构编号
+	 * @param roleId 角色编号（0表示全部）
+	 * @return
+	 */
+	List<CpyUserInfo> findValidInfoByOpt(Session sess,Integer cpyId,Integer roleId);
 }
