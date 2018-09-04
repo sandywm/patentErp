@@ -21,7 +21,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -29,6 +28,7 @@ import org.apache.struts.actions.DispatchAction;
 
 import com.alibaba.fastjson.JSON;
 import com.patent.tools.CheckImage;
+import com.patent.tools.CommonTools;
 import com.patent.util.WebUrl;
 
 /** 
@@ -65,10 +65,14 @@ public class UploadAction extends DispatchAction {
 	 * @param response
 	 * @return ActionForward
 	 */
-	public ActionForward uploadImg(ActionMapping mapping, ActionForm form,
+	public ActionForward uploadFile(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) {
 		// TODO Auto-generated method stub
 		String msg = "";
+		boolean upFlag = false;
+		String fileUrl = "";
+		Integer ajId = CommonTools.getFinalInteger("ajId", request);
+		String fileType = CommonTools.getFinalStr("fileType", request);//tzs,fj
 		Map<String,String> map = new HashMap<String,String>();
 		if (ServletFileUpload.isMultipartContent(request)){// 判断是否是上传文件
 			DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();// 创建工厂对象
@@ -76,40 +80,53 @@ public class UploadAction extends DispatchAction {
 			try {
 				List<FileItem> filelist = fileUpload.parseRequest(request);
 				ListIterator<FileItem> iterator = filelist.listIterator();
+				String userPath = WebUrl.DATA_URL_UP_FILE_UPLOAD;
+				if(fileType.equals("tzs")){
+					userPath += "/" + ajId + "/tzs";
+				}else if(fileType.equals("fj")){
+					userPath += "/" + ajId + "/fj";
+				}else{//申请个人/公司提交的技术底稿
+					//之前放在外层，等待专利之家后，剪切到ajId下
+				}
 				while (iterator.hasNext()) {
-					String userPath = WebUrl.DATA_URL_JS_FILE_UPLOAD;// 指定上传技术文件的位置
 					FileItem fileItem = iterator.next();// 获取文件对象
-					Integer imgSize = (int) fileItem.getSize();
 					// 处理文件上传
 					String filename = fileItem.getName();// 获取名字
 					Integer lastIndex = filename.lastIndexOf(".");
 					String suffix = filename.substring(lastIndex);
 					CheckImage ci = new CheckImage();
-					if(!ci.checkImageStuffix(suffix)){
-						
-					}else{//支持jpg,bmp,png,gif图片
-						if(imgSize > 1024 * 1024 * 5){//上传图片不能大于5M
+					//doc,docx,wps,xls,xlsx,txt,pdf,pptx,ppt,zip,rar,dwg,eml,jpg,png,bmp,gif,vsd,vsdx如果文件格式不在上述范围内请压缩成zip格式后上传
+					String checkFileSuffixInfo = ci.getUpFileStuffix(suffix);
+					if(checkFileSuffixInfo.equals("img")){//图片限制5M
+						upFlag = ci.checkItemSize(fileItem, 5 * 1024 * 1024);
+						if(!upFlag){
 							msg = "outSize";
-							map.put("result", msg);
-							this.getJsonPkg(map, response);
-							return null;
-						}else{
-							byte[] data = fileItem.get();// 获取数据
-							//userPath += "/" + folder;
-							//没有该文件夹先创建文件夹
-				    		File file = new File(userPath);
-				    		if(!file.exists()){
-				    			file.mkdirs();
-				    		}
-				    		FileOutputStream fileOutputStream;
-				    		fileOutputStream = new FileOutputStream(userPath + "/" + filename);
-							fileOutputStream.write(data);// 写入文件
-							fileOutputStream.close();// 关闭文件流
-							
 						}
-						
+					}else if(checkFileSuffixInfo.equals("file")){//文件限制10M
+						upFlag = ci.checkItemSize(fileItem, 10 * 1024 * 1024);
+						if(!upFlag){
+							msg = "outSize";
+						}
+					}else{
+						msg = "suffixError";
+					}
+					if(upFlag){
+						byte[] data = fileItem.get();// 获取数据
+						//没有该文件夹先创建文件夹
+			    		File file = new File(userPath);
+			    		if(!file.exists()){
+			    			file.mkdirs();
+			    		}
+			    		FileOutputStream fileOutputStream = new FileOutputStream(userPath + "/" + filename);
+						fileOutputStream.write(data);// 写入文件
+						fileOutputStream.close();// 关闭文件流
+						msg = "success";
+						fileUrl = userPath + "/" + filename;
+						map.put("upFileUrl", fileUrl);
 					}
 				}
+				map.put("result", msg);
+				this.getJsonPkg(map, response);
 			}catch (FileUploadException e) {
 				e.printStackTrace();
 			}catch (FileNotFoundException e) {

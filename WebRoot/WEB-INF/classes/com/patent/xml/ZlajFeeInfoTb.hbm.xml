@@ -25,6 +25,11 @@
                 <comment>所属公司</comment>
             </column>
         </many-to-one>
+         <many-to-one name="zlajMainInfoTb" class="com.patent.module.ZlajMainInfoTb" lazy="false">
+            <column name="zl_id" not-null="true">
+                <comment>专利编号</comment>
+            </column>
+        </many-to-one>
         <property name="feePrice" type="java.lang.Double">
             <column name="fee_price" precision="10" not-null="true">
                 <comment>费用金额</comment>

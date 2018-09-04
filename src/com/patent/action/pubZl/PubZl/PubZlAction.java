@@ -242,6 +242,103 @@ public class PubZlAction extends DispatchAction {
 	}
 	
 	/**
+	 * 获取专利任务详情（只有收费会员和平台可以查看详情，发布人可以查看自己的发布任务详情）
+	 * @description
+	 * @author wm
+	 * @date 2018-9-4 上午11:19:13
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getDetailInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO);
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
+		Integer pubId = CommonTools.getFinalInteger("pubId", request);
+		Integer userId = 0;
+		String msg = "error";
+		String loginType = this.getLoginType(request);
+		if(loginType.equals("appuser")){
+			userId = this.getLoginUserId(request);
+			msg = "success";
+		}else{
+			if(loginType.equals("cpyUser")){
+				//需要判断当前用户所在的代理机构是否是收费会员
+				CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
+				if(user != null){
+					Integer cpyId = user.getCpyInfoTb().getId();
+					List<CpyInfoTb> cpyList = cm.listInfoById(cpyId);
+					if(cpyList.size() > 0){
+						CpyInfoTb cpy = cpyList.get(0);
+						if(cpy.getCpyLevel() > 0){//收费会员
+							Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpy.getEndDate());
+							if(diffDays > 0){
+								msg = "success";
+							}else{
+								msg = "outDate";//过期会员不能使用
+							}
+						}else{
+							msg = "lowLevel";//免费会员不能使用
+						}
+					}
+				}
+			}else{
+				msg = "success";
+			}
+		}
+		if(msg.equals("success")){
+			List<PubZlInfoTb> pbZlList = pzm.listSpecInfoByOpt(pubId, userId);
+			if(pbZlList.size() > 0){
+				PubZlInfoTb pz = pbZlList.get(0);
+				map.put("zlId", pz.getId());
+				map.put("zlTitle", pz.getZlTitle());
+				map.put("zlContent", pz.getZlContent());
+				String zlType = pz.getZlType();
+				if(zlType.equals("fm")){
+					map.put("typeChi", "发明");
+				}else if(zlType.equals("syxx")){
+					map.put("typeChi", "实用新型");
+				}else if(zlType.equals("wg")){
+					map.put("typeChi", "外观");
+				}
+				map.put("zlType", zlType);
+				map.put("zlUpCl", pz.getZlUpCl());
+				map.put("zlStatus", pz.getZlStatus());
+				map.put("zlStatusChi", pz.getZlStatus().equals(0) ? "待领取" : "已领取");
+				map.put("pubDate", pz.getZlNewDate());
+				map.put("lqrName", pz.getLqUserName());
+				map.put("lqrCpyName", pz.getLqCpyName());
+				if(pz.getLqUserId() > 0){
+					map.put("lqDate", pz.getLqDate());
+				}else{
+					map.put("lqDate", "");
+				}
+				map.put("pubInfo", pz.getApplyInfoTb().getAppName());
+				Integer ajId = pz.getAjId();
+				String ajNoQt = "";
+				map.put("ajId", ajId);
+				if(ajId > 0){
+					List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(ajId, 0);
+					if(zlList.size() > 0){
+						ajNoQt = zlList.get(0).getAjNoQt();
+					}
+				}
+				map.put("ajNoQt", ajNoQt);
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
 	 * 修改自己发布的专利(只有在没领取的时候才能修改)
 	 * @description
 	 * @author wm

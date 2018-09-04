@@ -159,5 +159,13 @@
             </key>
             <one-to-many class="com.patent.module.ZlajTzsInfoTb" />
         </set>
+        <set name="zlajFeeInfoTbs" inverse="true">
+            <key>
+                <column name="zl_id" not-null="true">
+                    <comment>专利编号</comment>
+                </column>
+            </key>
+            <one-to-many class="com.patent.module.ZlajFeeInfoTb" />
+        </set>
     </class>
 </hibernate-mapping>

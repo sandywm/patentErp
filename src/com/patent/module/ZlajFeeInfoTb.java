@@ -16,6 +16,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	private FeeTypeInfoTb feeTypeInfoTb;
 	private CpyUserInfo cpyUserInfo;
 	private CpyInfoTb cpyInfoTb;
+	private ZlajMainInfoTb zlajMainInfoTb;
 	private Double feePrice;
 	private String feeEndDateJj;
 	private String feeEndDateGf;
@@ -33,12 +34,13 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	/** minimal constructor */
 	public ZlajFeeInfoTb(FeeTypeInfoTb feeTypeInfoTb, CpyUserInfo cpyUserInfo,
-			CpyInfoTb cpyInfoTb, Double feePrice, String feeEndDateJj,
+			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
 			Integer djStatus, String feeJnDate, String feeUpZd) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
+		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.feePrice = feePrice;
 		this.feeEndDateJj = feeEndDateJj;
 		this.feeEndDateGf = feeEndDateGf;
@@ -51,13 +53,14 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	/** full constructor */
 	public ZlajFeeInfoTb(Integer id,FeeTypeInfoTb feeTypeInfoTb, CpyUserInfo cpyUserInfo,
-			CpyInfoTb cpyInfoTb, Double feePrice, String feeEndDateJj,
+			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
 			Integer djStatus, String feeJnDate, String feeUpZd) {
 		this.id = id;
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
+		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.feePrice = feePrice;
 		this.feeEndDateJj = feeEndDateJj;
 		this.feeEndDateGf = feeEndDateGf;
@@ -164,6 +167,14 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	public void setFeeUpZd(String feeUpZd) {
 		this.feeUpZd = feeUpZd;
+	}
+
+	public ZlajMainInfoTb getZlajMainInfoTb() {
+		return zlajMainInfoTb;
+	}
+
+	public void setZlajMainInfoTb(ZlajMainInfoTb zlajMainInfoTb) {
+		this.zlajMainInfoTb = zlajMainInfoTb;
 	}
 
 }

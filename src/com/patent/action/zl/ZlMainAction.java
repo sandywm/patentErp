@@ -38,6 +38,7 @@ import com.patent.module.CustomerInfoTb;
 import com.patent.module.CustomerLxrInfoTb;
 import com.patent.module.JsFiledInfoTb;
 import com.patent.module.ZlajEwyqInfoTb;
+import com.patent.module.ZlajFeeInfoTb;
 import com.patent.module.ZlajFjInfoTb;
 import com.patent.module.ZlajLcInfoTb;
 import com.patent.module.ZlajLcMxInfoTb;
@@ -48,12 +49,14 @@ import com.patent.service.CpyUserInfoManager;
 import com.patent.service.CustomerInfoManager;
 import com.patent.service.JsFiledInfoManager;
 import com.patent.service.ZlajEwyqInfoManager;
+import com.patent.service.ZlajFeeInfoManager;
 import com.patent.service.ZlajFjInfoManager;
 import com.patent.service.ZlajLcInfoManager;
 import com.patent.service.ZlajLcMxInfoManager;
 import com.patent.service.ZlajMainInfoManager;
 import com.patent.service.ZlajTzsInfoManager;
 import com.patent.tools.CommonTools;
+import com.patent.tools.Convert;
 import com.patent.tools.CurrentTime;
 import com.patent.util.Constants;
 import com.patent.web.Ability;
@@ -328,6 +331,7 @@ public class ZlMainAction extends DispatchAction {
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
 		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
+		ZlajFeeInfoManager zfm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		String opt = CommonTools.getFinalStr("opt", request);//basic(基本信息),lc(流程),tzs(通知书),fj(附件),fy(费用)-后续有的再加
 		String msg = "error";
@@ -537,13 +541,105 @@ public class ZlMainAction extends DispatchAction {
 							msg = "noInfo";
 						}
 					}else if(opt.equals("fy")){//费用
+						List<ZlajFeeInfoTb> zfList_gf = zfm.listInfoByOpt(zlId, "gf");//官费
+						List<ZlajFeeInfoTb> zfList_dlf = zfm.listInfoByOpt(zlId, "dlf");//代理费
+						List<ZlajFeeInfoTb> zfList_nf = zfm.listInfoByOpt(zlId, "nf");//年费
+						List<ZlajFeeInfoTb> zfList_jlj = zfm.listInfoByOpt(zlId, "jlj");//奖励金
+						List<Object> list_gf = new ArrayList<Object>();
+						List<Object> list_dlf = new ArrayList<Object>();
+						List<Object> list_nf = new ArrayList<Object>();
+						List<Object> list_jlj = new ArrayList<Object>();
+						Double gfTotal = 0.00,dlfTotal = 0.00,nfTotal = 0.00,jljTotal = 0.00;
+						for(Iterator<ZlajFeeInfoTb> it = zfList_gf.iterator() ; it.hasNext();){
+							ZlajFeeInfoTb gf = it.next();
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("feeName", gf.getFeeTypeInfoTb().getFeeName());
+							map_d.put("applyUserName", gf.getCpyUserInfo().getUserName());
+							map_d.put("feePrice", gf.getFeePrice());
+							map_d.put("jnDate", gf.getFeeJnDate());
+							map_d.put("jnStatus", gf.getFeeStatus().equals(0) ? "未交" : "已交");
+							map_d.put("djStatus", gf.getDjStatus().equals(0) ? "自交" : "代交");
+							map_d.put("gfDate", gf.getFeeEndDateGf());
+							map_d.put("cpyDate", gf.getFeeEndDateJj());
+							map_d.put("feeZd", gf.getFeeUpZd());
+							map_d.put("feeRemark", gf.getFeeRemark());
+							list_gf.add(map_d);
+							gfTotal += gf.getFeePrice();
+						}
+						if(gfTotal > 0){
+							gfTotal = Convert.convertInputNumber_2(gfTotal);
+						}
+						map.put("gfInfo", list_gf);
+						map.put("gfTotal", gfTotal);
 						
+						for(Iterator<ZlajFeeInfoTb> it = zfList_dlf.iterator() ; it.hasNext();){
+							ZlajFeeInfoTb gf = it.next();
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("feeName", gf.getFeeTypeInfoTb().getFeeName());
+							map_d.put("applyUserName", gf.getCpyUserInfo().getUserName());
+							map_d.put("feePrice", gf.getFeePrice());
+							map_d.put("jnDate", gf.getFeeJnDate());
+							map_d.put("jnStatus", gf.getFeeStatus().equals(0) ? "未交" : "已交");
+							map_d.put("djStatus", gf.getDjStatus().equals(0) ? "自交" : "代交");
+							map_d.put("gfDate", gf.getFeeEndDateGf());
+							map_d.put("cpyDate", gf.getFeeEndDateJj());
+							map_d.put("feeZd", gf.getFeeUpZd());
+							map_d.put("feeRemark", gf.getFeeRemark());
+							list_gf.add(map_d);
+							dlfTotal += gf.getFeePrice();
+						}
+						if(dlfTotal > 0){
+							dlfTotal = Convert.convertInputNumber_2(dlfTotal);
+						}
+						map.put("dlfInfo", list_dlf);
+						map.put("dlfTotal", dlfTotal);
+						
+						for(Iterator<ZlajFeeInfoTb> it = zfList_nf.iterator() ; it.hasNext();){
+							ZlajFeeInfoTb gf = it.next();
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("feeName", gf.getFeeTypeInfoTb().getFeeName());
+							map_d.put("applyUserName", gf.getCpyUserInfo().getUserName());
+							map_d.put("feePrice", gf.getFeePrice());
+							map_d.put("jnDate", gf.getFeeJnDate());
+							map_d.put("jnStatus", gf.getFeeStatus().equals(0) ? "未交" : "已交");
+							map_d.put("djStatus", gf.getDjStatus().equals(0) ? "自交" : "代交");
+							map_d.put("gfDate", gf.getFeeEndDateGf());
+							map_d.put("cpyDate", gf.getFeeEndDateJj());
+							map_d.put("feeZd", gf.getFeeUpZd());
+							map_d.put("feeRemark", gf.getFeeRemark());
+							list_gf.add(map_d);
+							nfTotal += gf.getFeePrice();;
+						}
+						if(nfTotal > 0){
+							nfTotal = Convert.convertInputNumber_2(nfTotal);
+						}
+						map.put("nfInfo", list_nf);
+						map.put("nfTotal", nfTotal);
+
+						for(Iterator<ZlajFeeInfoTb> it = zfList_jlj.iterator() ; it.hasNext();){
+							ZlajFeeInfoTb gf = it.next();
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("feeName", gf.getFeeTypeInfoTb().getFeeName());
+							map_d.put("applyUserName", gf.getCpyUserInfo().getUserName());
+							map_d.put("feePrice", gf.getFeePrice());
+							map_d.put("jnDate", "");
+							map_d.put("jnStatus", "");
+							map_d.put("djStatus", "");
+							map_d.put("gfDate", gf.getFeeEndDateGf());
+							map_d.put("cpyDate", "");
+							map_d.put("feeZd", "");
+							map_d.put("feeRemark", gf.getFeeRemark());
+							list_gf.add(map_d);
+							jljTotal += gf.getFeePrice();;
+						}
+						if(jljTotal > 0){
+							jljTotal = Convert.convertInputNumber_2(jljTotal);
+						}
+						map.put("jljInfo", list_jlj);
+						map.put("jljTotal", jljTotal);
 					}
 					
-				}else{
-					msg = "noInfo";
 				}
-				
 			}else{
 				msg = "noAbility";
 			}

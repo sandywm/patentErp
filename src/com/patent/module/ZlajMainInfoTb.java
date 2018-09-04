@@ -44,6 +44,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private Set<ZlajLcInfoTb> zlajLcInfoTbs = new HashSet<ZlajLcInfoTb>();
 	private Set<ZlajFjInfoTb> zlajFjInfoTbs = new HashSet<ZlajFjInfoTb>();
 	private Set<ZlajTzsInfoTb> zlajTzsInfoTbs = new HashSet<ZlajTzsInfoTb>();
+	private Set<ZlajFeeInfoTb> zlajFeeInfoTbs = new HashSet<ZlajFeeInfoTb>();
 
 	// Constructors
 
@@ -352,6 +353,14 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	public void setCheckUserId(Integer checkUserId) {
 		this.checkUserId = checkUserId;
+	}
+
+	public Set<ZlajFeeInfoTb> getZlajFeeInfoTbs() {
+		return zlajFeeInfoTbs;
+	}
+
+	public void setZlajFeeInfoTbs(Set<ZlajFeeInfoTb> zlajFeeInfoTbs) {
+		this.zlajFeeInfoTbs = zlajFeeInfoTbs;
 	}
 
 

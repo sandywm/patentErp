@@ -18,6 +18,7 @@
 	<app id="zlaj_main_info_Web" class="com.patent.service.impl.ZlajMainInfoManagerImpl"/>
 	<app id="zlaj_lc_info_Web" class="com.patent.service.impl.ZlajLcInfoManagerImpl"/>
 	<app id="zlaj_lc_mx_info_Web" class="com.patent.service.impl.ZlajLcMxInfoManagerImpl"/>
-	<app id="zlaj_lc_tzs_info_Web" class="com.patent.service.impl.ZlajTzsInfoManagerImpl"/>
-	<app id="zlaj_lc_fj_info_Web" class="com.patent.service.impl.ZlajFjInfoManagerImpl"/>
+	<app id="zlaj_tzs_info_Web" class="com.patent.service.impl.ZlajTzsInfoManagerImpl"/>
+	<app id="zlaj_fj_info_Web" class="com.patent.service.impl.ZlajFjInfoManagerImpl"/>
+	<app id="zlaj_fee_info_Web" class="com.patent.service.impl.ZlajFeeInfoManagerImpl"/>
 </appContext>

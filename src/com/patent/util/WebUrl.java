@@ -17,10 +17,8 @@ public class WebUrl {
     //到期提醒日志留存地
     public static String LOG_URL;
     
-    //上传技术文件留存地
-    public static String DATA_URL_JS_FILE_UPLOAD;
+    //上传文件留存地
+    public static String DATA_URL_UP_FILE_UPLOAD;
     
-    //上传通知书留存地
-    public static String DATA_URL_TZS_FILE_UPLOAD;
     
 }
