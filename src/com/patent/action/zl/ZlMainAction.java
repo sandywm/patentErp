@@ -831,11 +831,20 @@ public class ZlMainAction extends DispatchAction {
 							String ajRemark = CommonTools.getFinalStr("ajRemark", request);
 							String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
 							Integer pubZlId = CommonTools.getFinalInteger("pubZlId", request);//发布专利的编号
+							Integer zxUserId = CommonTools.getFinalInteger("zxUserId", request);
+							Integer tjUserId = CommonTools.getFinalInteger("tjUserId", request);
+							Integer tzsUserId = CommonTools.getFinalInteger("tzsUserId", request);
+							Integer feeUserId = CommonTools.getFinalInteger("feeUserId", request);
+							Integer bzUserId = CommonTools.getFinalInteger("bzUserId", request);
+							Integer bzshUserId = CommonTools.getFinalInteger("bzshUserId", request);
+							Integer bhUserId = CommonTools.getFinalInteger("bhUserId", request);
+							
 							String ajApplyDate = "";
 							String ajStatus = CommonTools.getFinalStr("ajStatus", request);
 							Integer checkUserId = CommonTools.getFinalInteger("checkUserId", request);//审查人员编号
 							Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, ajSqAddress, 
-									ajYxqId, ajUpload, ajRemark, ajEwyqId, ajApplyDate, ajStatus, pubZlId,cpyId,checkUserId);
+									ajYxqId, ajUpload, ajRemark, ajEwyqId, ajApplyDate, ajStatus, pubZlId,cpyId,checkUserId,zxUserId,
+									tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId);
 							if(zlId > 0){
 								msg = "success";
 							}

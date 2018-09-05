@@ -105,6 +105,42 @@
                 <comment>审查人员编号（没有就为0）</comment>
             </column>
         </property>
+        <property name="zxUserId" type="java.lang.Integer">
+            <column name="zx_user_id">
+                <comment>案件撰写人员（没有就为0）</comment>
+            </column>
+        </property>
+        <property name="tjUserId" type="java.lang.Integer">
+            <column name="tj_user_id">
+                <comment>定稿提交人员（没有就为0）</comment>
+            </column>
+        </property>
+        <property name="tzsUserId" type="java.lang.Integer">
+            <column name="tzs_user_id">
+                <comment>通知书导入人员（没有就为0）</comment>
+            </column>
+        </property>
+        <property name="feeUserId" type="java.lang.Integer">
+            <column name="fee_user_id">
+                <comment>费用催缴人员（没有就为0）</comment>
+            </column>
+        </property>
+        <property name="bzUserId" type="java.lang.Integer">
+            <column name="bz_user_id">
+                <comment>案件补正人员（没有就为0）</comment>
+            </column>
+        </property>
+        <property name="bzshUserId" type="java.lang.Integer">
+            <column name="bzsh_user_id">
+                <comment>案件补正审核人员（没有就为0）</comment>
+            </column>
+        </property>
+        <property name="bhUserId" type="java.lang.Integer">
+            <column name="bh_user_id">
+                <comment>案件驳回人员（没有就为0）</comment>
+            </column>
+        </property>
+        
         <property name="pubZlId" type="java.lang.Integer">
             <column name="pub_zl_id" not-null="true">
                 <comment>发布案件的编号（不是接任务的就是0）</comment>

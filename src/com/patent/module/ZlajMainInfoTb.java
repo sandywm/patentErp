@@ -35,6 +35,13 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private String ajStatus;
 	private Integer ajFaId;
 	private Integer checkUserId;
+	private Integer zxUserId;
+	private Integer tjUserId;
+	private Integer tzsUserId;
+	private Integer feeUserId;
+	private Integer bzUserId;
+	private Integer bzshUserId;
+	private Integer bhUserId;
 	private Integer pubZlId;
 	private Integer ajStopStatus;
 	private String ajStopDate;
@@ -58,7 +65,8 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
-			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId) {
+			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,
+			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId) {
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
 		this.ajNoQt = ajNoQt;
@@ -84,6 +92,13 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajStopUserType = ajStopUserType;
 		this.ajAddDate = ajAddDate;
 		this.checkUserId = checkUserId;
+		this.zxUserId = zxUserId;
+		this.tjUserId = tjUserId;
+		this.tzsUserId = tzsUserId;
+		this.feeUserId = feeUserId;
+		this.bzUserId = bzUserId;
+		this.bzshUserId = bzshUserId;
+		this.bhUserId = bhUserId;
 	}
 
 	/** full constructor */
@@ -92,7 +107,8 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
-			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId) {
+			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,
+			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId) {
 		this.id = id;
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
@@ -119,6 +135,13 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajStopUserType = ajStopUserType;
 		this.ajAddDate = ajAddDate;
 		this.checkUserId = checkUserId;
+		this.zxUserId = zxUserId;
+		this.tjUserId = tjUserId;
+		this.tzsUserId = tzsUserId;
+		this.feeUserId = feeUserId;
+		this.bzUserId = bzUserId;
+		this.bzshUserId = bzshUserId;
+		this.bhUserId = bhUserId;
 	}
 
 	// Property accessors
@@ -361,6 +384,62 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	public void setZlajFeeInfoTbs(Set<ZlajFeeInfoTb> zlajFeeInfoTbs) {
 		this.zlajFeeInfoTbs = zlajFeeInfoTbs;
+	}
+
+	public Integer getZxUserId() {
+		return zxUserId;
+	}
+
+	public void setZxUserId(Integer zxUserId) {
+		this.zxUserId = zxUserId;
+	}
+
+	public Integer getTjUserId() {
+		return tjUserId;
+	}
+
+	public void setTjUserId(Integer tjUserId) {
+		this.tjUserId = tjUserId;
+	}
+
+	public Integer getTzsUserId() {
+		return tzsUserId;
+	}
+
+	public void setTzsUserId(Integer tzsUserId) {
+		this.tzsUserId = tzsUserId;
+	}
+
+	public Integer getFeeUserId() {
+		return feeUserId;
+	}
+
+	public void setFeeUserId(Integer feeUserId) {
+		this.feeUserId = feeUserId;
+	}
+
+	public Integer getBzUserId() {
+		return bzUserId;
+	}
+
+	public void setBzUserId(Integer bzUserId) {
+		this.bzUserId = bzUserId;
+	}
+
+	public Integer getBzshUserId() {
+		return bzshUserId;
+	}
+
+	public void setBzshUserId(Integer bzshUserId) {
+		this.bzshUserId = bzshUserId;
+	}
+
+	public Integer getBhUserId() {
+		return bhUserId;
+	}
+
+	public void setBhUserId(Integer bhUserId) {
+		this.bhUserId = bhUserId;
 	}
 
 
