@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -29,6 +30,7 @@ import org.apache.struts.actions.DispatchAction;
 import com.alibaba.fastjson.JSON;
 import com.patent.tools.CheckImage;
 import com.patent.tools.CommonTools;
+import com.patent.util.Constants;
 import com.patent.util.WebUrl;
 
 /** 
@@ -39,6 +41,29 @@ import com.patent.util.WebUrl;
  * @struts.action validate="true"
  */
 public class UploadAction extends DispatchAction {
+	
+	/**
+	 * 获取session中的登录类型
+	 * @author Administrator
+	 * @date 2018-7-31 下午09:39:57
+	 * @ModifiedBy
+	 * @param request
+	 * @return
+	 */
+	private String getLoginType(HttpServletRequest request){
+        String loginType = (String)request.getSession(false).getAttribute(Constants.LOGIN_TYPE);
+        return loginType;
+	}
+	
+	/**
+	 * 获取session中的用户ID
+	 * @param request
+	 * @return
+	 */
+	private Integer getLoginUserId(HttpServletRequest request){
+        Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ID);
+        return userId;
+	}
 	
 	/**
 	 * 封装json
@@ -72,22 +97,40 @@ public class UploadAction extends DispatchAction {
 		boolean upFlag = false;
 		String fileUrl = "";
 		Integer ajId = CommonTools.getFinalInteger("ajId", request);
-		String fileType = CommonTools.getFinalStr("fileType", request);//tzs,fj
-		Map<String,String> map = new HashMap<String,String>();
+		String fileType = CommonTools.getFinalStr("fileType", request);//tzs(通知书),fj(附件),pj(票据),dg(底稿)
+		String loginType = this.getLoginType(request);
+		Map<String,Object> map = new HashMap<String,Object>();
 		if (ServletFileUpload.isMultipartContent(request)){// 判断是否是上传文件
 			DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();// 创建工厂对象
 			ServletFileUpload fileUpload = new ServletFileUpload(diskFileItemFactory); // 创建上传对象
 			try {
 				List<FileItem> filelist = fileUpload.parseRequest(request);
 				ListIterator<FileItem> iterator = filelist.listIterator();
-				String userPath = WebUrl.DATA_URL_UP_FILE_UPLOAD;
-				if(fileType.equals("tzs")){
-					userPath += "/" + ajId + "/tzs";
-				}else if(fileType.equals("fj")){
-					userPath += "/" + ajId + "/fj";
-				}else{//申请个人/公司提交的技术底稿
-					//之前放在外层，等待专利之家后，剪切到ajId下
+				String userPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "/" + loginType + "/" + this.getLoginUserId(request);
+				if(loginType.equals("appUser")){
+					if(ajId > 0){
+						userPath += "/" + ajId;
+					}
+				}else if(loginType.equals("cpyUser")){
+					if(ajId > 0){
+						if(fileType.equals("tzs")){
+							userPath += "/tzs/" + ajId;
+						}else if(fileType.equals("fj")){
+							userPath += "/fj/" + ajId;
+						}else if(fileType.equals("pj")){
+							userPath += "/pj/" + ajId;
+						}else if(fileType.equals("dg")){//技术底稿
+							//之前放在外层，等待专利增加后，剪切到ajId下
+							userPath += "/dg/" + ajId;
+						}
+					}else{
+						//技术底稿
+						//之前放在外层，等待专利增加后，剪切到ajId下
+						userPath += "/dg";
+					}
+					
 				}
+				
 				while (iterator.hasNext()) {
 					FileItem fileItem = iterator.next();// 获取文件对象
 					// 处理文件上传
@@ -121,11 +164,19 @@ public class UploadAction extends DispatchAction {
 						fileOutputStream.write(data);// 写入文件
 						fileOutputStream.close();// 关闭文件流
 						msg = "success";
-						fileUrl = userPath + "/" + filename;
-						map.put("upFileUrl", fileUrl);
+						fileUrl += "/" + userPath + "/" + filename + ",";
 					}
 				}
-				map.put("result", msg);
+				map.put("code", 0);
+				map.put("msg", msg);
+				if(!fileUrl.equals("")){
+					fileUrl = fileUrl.substring(0, fileUrl.length() - 1);
+				}
+				List<Object> list_f = new ArrayList<Object>();
+				Map<String,String> map_f = new HashMap<String,String>();
+				map_f.put("src", fileUrl);
+				list_f.add(map_f);
+				map.put("data", list_f);
 				this.getJsonPkg(map, response);
 			}catch (FileUploadException e) {
 				e.printStackTrace();
