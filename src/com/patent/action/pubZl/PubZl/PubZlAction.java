@@ -4,6 +4,7 @@
  */
 package com.patent.action.pubZl.PubZl;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -36,7 +37,9 @@ import com.patent.service.PubZlInfoManager;
 import com.patent.service.ZlajMainInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.CurrentTime;
+import com.patent.tools.FileOpration;
 import com.patent.util.Constants;
+import com.patent.util.WebUrl;
 
 /** 
  * MyEclipse Struts
@@ -571,13 +574,62 @@ public class PubZlAction extends DispatchAction {
 			String zlTitle = Transcode.unescape_new("zlTitle", request);
 			String zlContent = Transcode.unescape_new("zlContent", request);
 			String zlType = CommonTools.getFinalStr("zlType", request);
-			String zlUpCl = CommonTools.getFinalStr("zlUpCl", request);
+			String zlUpCl = Transcode.unescape_new("zlUpCl", request);
 			if(zlType.equals("fm") || zlType.equals("syxx") || zlType.equals("wg")){
-				pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, zlType, zlUpCl, CurrentTime.getCurrentTime());
+				Integer pzId = pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, zlType, zlUpCl, CurrentTime.getCurrentTime());
+				if(pzId > 0){
+					//如果存在上传的文件，需要移动
+					if(!zlUpCl.equals("")){
+						String[] upFileArr = zlUpCl.split(",");
+						String newPath =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "/appUser/" + this.getLoginUserId(request) + "/" + pzId;
+						File file = new File(newPath);
+						if(!file.exists()){
+			    			file.mkdirs();
+			    		}
+						for(Integer i = 0 ; i < upFileArr.length ; i++){
+							String oldPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "/" +upFileArr[i];
+							String newPathFinal = newPath + "/" + upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
+							boolean flag = FileOpration.copyFile(oldPath, newPathFinal);
+							if(flag){
+								//删除之前文件
+								FileOpration.deleteFile(oldPath);
+							}
+						}
+					}
+				}
 				msg = "success";
 			}else if(zlType.equals("fmxx")){//发明+新型
-				pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, "fm", zlUpCl, CurrentTime.getCurrentTime());
-				pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, "syxx", zlUpCl, CurrentTime.getCurrentTime());
+				Integer pubId_1 = pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, "fm", zlUpCl, CurrentTime.getCurrentTime());
+				Integer pubId_2 = pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, "syxx", zlUpCl, CurrentTime.getCurrentTime());
+				if(pubId_1 > 0 && pubId_2 > 0){
+					//如果存在上传的文件，需要移动
+					if(!zlUpCl.equals("")){
+						String[] upFileArr = zlUpCl.split(",");
+						String newPath_1 =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "/appUser/" + this.getLoginUserId(request) + "/" + pubId_1;
+						String newPath_2 =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "/appUser/" + this.getLoginUserId(request) + "/" + pubId_2;
+						File file_1 = new File(newPath_1);
+						if(!file_1.exists()){
+							file_1.mkdirs();
+			    		}
+						File file_2 = new File(newPath_2);
+						if(!file_2.exists()){
+							file_2.mkdirs();
+			    		}
+						for(Integer i = 0 ; i < upFileArr.length ; i++){
+							String oldPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "/" +upFileArr[i];
+							String newPathFinal_1 = newPath_1 + "/" + upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
+							String newPathFinal_2 = newPath_2 + "/" + upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
+							boolean flag = FileOpration.copyFile(oldPath, newPathFinal_1);
+							if(flag){
+								flag = FileOpration.copyFile(oldPath, newPathFinal_2);
+								if(flag){
+									//删除之前文件
+									FileOpration.deleteFile(oldPath);
+								}
+							}
+						}
+					}
+				}
 				msg = "success";
 			}
 		}else{
@@ -741,4 +793,5 @@ public class PubZlAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
+
 }

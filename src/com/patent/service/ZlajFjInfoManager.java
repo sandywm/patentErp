@@ -35,4 +35,15 @@ public interface ZlajFjInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajFjInfoTb> listInfoByAjId(Integer ajId) throws WEBException;
+	
+	/**
+	 * 根据案件编号获取第一条附件信息记录（id降序排列）
+	 * @description
+	 * @author wm
+	 * @date 2018-9-5 上午10:35:35
+	 * @param ajId 案件编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajFjInfoTb> listLastInfoByAjId(Integer ajId) throws WEBException;
 }

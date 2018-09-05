@@ -17,8 +17,11 @@ public class WebUrl {
     //到期提醒日志留存地
     public static String LOG_URL;
     
-    //上传文件留存地
+    //上传文件留存地(绝对路径)
     public static String DATA_URL_UP_FILE_UPLOAD;
+    
+  //上传文件留存地(相对路径)
+    public static String NEW_DATA_URL_UP_FILE_UPLOAD;
     
     
 }

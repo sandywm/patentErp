@@ -61,4 +61,21 @@ public class ZlajFjInfoManagerImpl implements ZlajFjInfoManager {
 		}
 	}
 
+	@Override
+	public List<ZlajFjInfoTb> listLastInfoByAjId(Integer ajId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fjDao = (ZlajFjInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FJ_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fjDao.findLastInfoByAjId(sess, ajId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据专利编号获取第一条专利附件时（id降序排列）出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

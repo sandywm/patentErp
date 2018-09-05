@@ -55,4 +55,15 @@ public interface ZlajFjInfoDao {
 	*  @return
 	 */
 	List<ZlajFjInfoTb> findInfoByAjId(Session sess,Integer ajId);
+	
+	/**
+	 * 根据案件编号获取第一条记录（id降序排列）
+	 * @description
+	 * @author wm
+	 * @date 2018-9-5 上午10:34:00
+	 * @param sess
+	 * @param ajId 案件编号
+	 * @return
+	 */
+	List<ZlajFjInfoTb> findLastInfoByAjId(Session sess,Integer ajId);
 }
