@@ -47,6 +47,7 @@ import com.patent.page.PageConst;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.CustomerInfoManager;
 import com.patent.service.JsFiledInfoManager;
+import com.patent.service.MailInfoManager;
 import com.patent.service.ZlajEwyqInfoManager;
 import com.patent.service.ZlajFeeInfoManager;
 import com.patent.service.ZlajFjInfoManager;
@@ -291,6 +292,13 @@ public class ZlMainAction extends DispatchAction {
 					}
 					map_d.put("ajStopUserType", soptUserType);
 					map_d.put("ajAddDate", zl.getAjAddDate());
+					Integer zxUserId = zl.getZxUserId();
+					String zxUserName = "暂无";
+					CpyUserInfo zxUser = cum.getEntityById(zxUserId);
+					if(zxUser != null){
+						zxUserName = zxUser.getUserName();
+					}
+					map_d.put("zxUserName", zxUserName);
 					list_d.add(map_d);
 				}
 				map.put("msg", "success");
@@ -455,6 +463,13 @@ public class ZlMainAction extends DispatchAction {
 						}
 						map.put("jsFieldInfo", list_j);
 						map.put("checkUserId", zl.getCheckUserId());
+						map.put("zxUserId", zl.getZxUserId());
+						map.put("tjUserId", zl.getTzsUserId());
+						map.put("tzsUserId", zl.getTzsUserId());
+						map.put("feeUserId", zl.getFeeUserId());
+						map.put("bzUserId", zl.getBzUserId());
+						map.put("bzshUserId", zl.getBzshUserId());
+						map.put("bhUserId", zl.getBhUserId());
 						//获取当前代理机构所有人员
 						List<CpyUserInfo> uList = cum.listValidInfoByOpt(cpyId, 0);
 						List<Object> list_u = new ArrayList<Object>();
@@ -686,6 +701,14 @@ public class ZlMainAction extends DispatchAction {
 		return null;
 	}
 	
+//	public ActionForward getCurrAjNo(ActionMapping mapping, ActionForm form,
+//			HttpServletRequest request, HttpServletResponse response) throws Exception {
+//		// TODO Auto-generated method stub
+//		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+//	
+//		return null;
+//	}
+	
 	/**
 	 * 获取当前的案件号（增加时前台显示--参考，解决可能出现几个人在同时增加就会出现问题）
 	 * @author  Administrator
@@ -766,6 +789,7 @@ public class ZlMainAction extends DispatchAction {
 		// TODO Auto-generated method stub
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
 		Integer cpyId = 0;
 		String nextNumStr = "";
 		String ajNoQt = "";
@@ -847,6 +871,15 @@ public class ZlMainAction extends DispatchAction {
 									tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId);
 							if(zlId > 0){
 								msg = "success";
+//								if(zxUserId.equals(0)){
+									//给全体员工（对专利具有修改操作的人）发送邮件
+//									List<CpyUserInfo> uList = cum.listValidInfoByOpt(cpyId, 0);
+//									for(Iterator<CpyUserInfo> it = uList.iterator() ; it.hasNext();){
+//										CpyUserInfo user = it.next();
+//										
+//									}
+//									mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, acceptUserId, "cpyUser", "新的专利发布啦","新的专利发布了，快来领取撰写任务了！");
+//								}
 							}
 						}
 					}
@@ -930,7 +963,7 @@ public class ZlMainAction extends DispatchAction {
 		String fileName = "";
 		if(!fileUrl.equals("")){
 			fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1,fileUrl.length());
-			absoFilePath = WebUrl.DATA_URL_PRO + fileUrl;
+			absoFilePath = WebUrl.NEW_DATA_URL_UP_FILE_UPLOAD + fileUrl;
 			try  {  
 		        //第七步 下载文件到客户端
 		        OutputStream fos = null;
