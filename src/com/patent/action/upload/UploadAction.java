@@ -106,27 +106,19 @@ public class UploadAction extends DispatchAction {
 			try {
 				List<FileItem> filelist = fileUpload.parseRequest(request);
 				ListIterator<FileItem> iterator = filelist.listIterator();
-				String userPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "/" + loginType + "/" + this.getLoginUserId(request);
+				String userPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "/" + loginType + "/";
 				if(loginType.equals("appUser")){
+					userPath += this.getLoginUserId(request);
 					if(ajId > 0){
-						userPath += "/" + ajId;
+						userPath +=  "/" + ajId;
 					}
 				}else if(loginType.equals("cpyUser")){
 					if(ajId > 0){
-						if(fileType.equals("tzs")){
-							userPath += "/tzs/" + ajId;
-						}else if(fileType.equals("fj")){
-							userPath += "/fj/" + ajId;
-						}else if(fileType.equals("pj")){
-							userPath += "/pj/" + ajId;
-						}else if(fileType.equals("dg")){//技术底稿
-							//之前放在外层，等待专利增加后，剪切到ajId下
-							userPath += "/dg/" + ajId;
-						}
+						userPath += ajId + "/" + fileType;
 					}else{
 						//技术底稿
 						//之前放在外层，等待专利增加后，剪切到ajId下
-						userPath += "/dg";
+						userPath += "dg";
 					}
 					
 				}
