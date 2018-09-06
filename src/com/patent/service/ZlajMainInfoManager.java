@@ -181,4 +181,35 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateAjNoGfById(Integer zlId,String ajNoGf) throws WEBException;
+	
+	/**
+	 * 根据主键修改专利环节负责人员
+	 * @description
+	 * @author wm
+	 * @date 2018-9-6 上午08:24:54
+	 * @param zlId 专利编号
+	 * @param checkUserId 审查人员编号（-1不修改）
+	 * @param zxUserId 撰写人员编号（-1不修改）
+	 * @param tjUserId 定稿提交人员（-1不修改）
+	 * @param tzsUserId 通知书导入人员（-1不修改）
+	 * @param feeUserId 费用催缴人员（-1不修改）
+	 * @param bzUserId 案件补正人员（-1不修改）
+	 * @param bzshUserId 案件补正审核人员（-1不修改）
+	 * @param bhUserId 案件驳回人员（-1不修改）
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateOperatorUserInfoByZlId(Integer zlId,Integer checkUserId,Integer zxUserId,
+			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId) throws WEBException;
+	
+	/**
+	 * 修改专利状态
+	 * @description
+	 * @author wm
+	 * @date 2018-9-6 上午09:06:32
+	 * @param zlStatus 专利状态
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateZlStatusById(Integer id,String zlStatus) throws WEBException;
 }

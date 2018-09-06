@@ -701,13 +701,44 @@ public class ZlMainAction extends DispatchAction {
 		return null;
 	}
 	
-//	public ActionForward getCurrAjNo(ActionMapping mapping, ActionForm form,
-//			HttpServletRequest request, HttpServletResponse response) throws Exception {
-//		// TODO Auto-generated method stub
-//		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
-//	
-//		return null;
-//	}
+	/**
+	 * 修改专利操作人员
+	 * @description
+	 * @author wm
+	 * @date 2018-9-6 上午08:20:32
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward updateOperatorUserInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		boolean abilityFlag = false;
+		if(this.getLoginType(request).equals("cpyUser")){
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				//获取当前用户是否拥有增加的权限--将修改专利操作人员的权限归类为增加权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");
+			}
+		}
+		Integer zlId = CommonTools.getFinalInteger("zlId", request);
+		Integer zxUserId = CommonTools.getFinalInteger("zxUserId", request);
+		Integer tjUserId = CommonTools.getFinalInteger("tjUserId", request);
+		Integer tzsUserId = CommonTools.getFinalInteger("tzsUserId", request);
+		Integer feeUserId = CommonTools.getFinalInteger("feeUserId", request);
+		Integer bzUserId = CommonTools.getFinalInteger("bzUserId", request);
+		Integer bzshUserId = CommonTools.getFinalInteger("bzshUserId", request);
+		Integer bhUserId = CommonTools.getFinalInteger("bhUserId", request);
+		Integer checkUserId = CommonTools.getFinalInteger("checkUserId", request);
+		
+		return null;
+	}
 	
 	/**
 	 * 获取当前的案件号（增加时前台显示--参考，解决可能出现几个人在同时增加就会出现问题）

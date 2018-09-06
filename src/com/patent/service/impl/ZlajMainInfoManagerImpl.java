@@ -237,4 +237,81 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 		}
 	}
 
+	@Override
+	public boolean updateOperatorUserInfoByZlId(Integer zlId,
+			Integer checkUserId, Integer zxUserId, Integer tjUserId,
+			Integer tzsUserId, Integer feeUserId, Integer bzUserId,
+			Integer bzshUserId, Integer bhUserId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajMainInfoTb zl = zlDao.get(sess, zlId);
+			if(zl != null){
+				if(checkUserId >= 0){
+					zl.setCheckUserId(checkUserId);
+				}
+				if(zxUserId >= 0){
+					zl.setZxUserId(zxUserId);
+				}
+				if(tjUserId >= 0){
+					zl.setTjUserId(tjUserId);
+				}
+				if(tzsUserId >= 0){
+					zl.setTzsUserId(tzsUserId);
+				}
+				if(feeUserId >= 0){
+					zl.setFeeUserId(feeUserId);
+				}
+				if(bzUserId >= 0){
+					zl.setBzUserId(bzUserId);
+				}
+				if(bzshUserId >= 0){
+					zl.setBzshUserId(bzshUserId);
+				}
+				if(bhUserId >= 0){
+					zl.setBhUserId(bhUserId);
+				}
+				zlDao.update(sess, zl);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键修改专利环节负责人员时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateZlStatusById(Integer id,String zlStatus) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajMainInfoTb zl = zlDao.get(sess, id);
+			if(zl != null){
+				if(Integer.parseInt(zlStatus) >= 0){
+					zl.setAjStatus(zlStatus);
+					zlDao.update(sess, zl);
+					tran.commit();
+					return true;
+				}
+				return false;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键修改专利状态时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

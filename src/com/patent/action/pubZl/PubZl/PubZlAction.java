@@ -588,7 +588,7 @@ public class PubZlAction extends DispatchAction {
 			    		}
 						for(Integer i = 0 ; i < upFileArr.length ; i++){
 							String oldPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "/" +upFileArr[i];
-							String newPathFinal = newPath + "/" + upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
+							String newPathFinal = newPath + "/" + upFileArr[i].substring((upFileArr[i].lastIndexOf("/") + 1));
 							boolean flag = FileOpration.copyFile(oldPath, newPathFinal);
 							if(flag){
 								//删除之前文件
@@ -617,8 +617,8 @@ public class PubZlAction extends DispatchAction {
 			    		}
 						for(Integer i = 0 ; i < upFileArr.length ; i++){
 							String oldPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "/" +upFileArr[i];
-							String newPathFinal_1 = newPath_1 + "/" + upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
-							String newPathFinal_2 = newPath_2 + "/" + upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
+							String newPathFinal_1 = newPath_1 + "/" + upFileArr[i].substring((upFileArr[i].lastIndexOf("/") + 1));
+							String newPathFinal_2 = newPath_2 + "/" + upFileArr[i].substring((upFileArr[i].lastIndexOf("/") + 1));
 							boolean flag = FileOpration.copyFile(oldPath, newPathFinal_1);
 							if(flag){
 								flag = FileOpration.copyFile(oldPath, newPathFinal_2);
