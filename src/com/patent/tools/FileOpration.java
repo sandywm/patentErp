@@ -2,9 +2,7 @@ package com.patent.tools;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.InputStream;
 
 /**
@@ -15,29 +13,13 @@ import java.io.InputStream;
  */
 public class FileOpration {
 	
-	/**
-	 * 判断文件是否存在（解决exists遇到空格找不到的异常）
-	 * @description
-	 * @author wm
-	 * @date 2018-9-6 上午09:55:39
-	 * @param filePath
-	 * @return
-	 */
-	public static boolean checkExistFile(String filePath){
-		try{
-			new FileReader(new File(filePath));
-			return true;
-		}catch (FileNotFoundException e) {
-			return false;
-		}
-	}
-	
 	//复制文件
 	public static boolean copyFile(String oldPath,String newPath){
 		 try {            
 			 int bytesum = 0;            
-			 int byteread = 0;                 
-			 if (FileOpration.checkExistFile(oldPath)) { //文件存在时                
+			 int byteread = 0; 
+			 File file = new File(oldPath);
+			 if (file.exists()) { //文件存在时                
 				 InputStream inStream = new FileInputStream(oldPath); //读入原文件              
 				 FileOutputStream fs = new FileOutputStream(newPath);                
 				 byte[] buffer = new byte[1444];                          
@@ -60,10 +42,10 @@ public class FileOpration {
 	public static boolean deleteFile(String filePath){
 		boolean flag = false;
 		File file = new File(filePath);
-		if(file.isFile() && FileOpration.checkExistFile(filePath)) {   
+		if(file.isFile() && file.exists()) {   
 	        flag = file.delete();   
 	    }
-		if(!FileOpration.checkExistFile(filePath)){
+		if(!file.exists()){
 			flag = true; 
 		}
 		return flag;
@@ -71,7 +53,7 @@ public class FileOpration {
 	//删除文件夹里面的所有文件和文件夹
 	public static boolean deleteAllFile(String path){
 		File file = new File(path);
-		if(!FileOpration.checkExistFile(path)){
+		if(!file.exists()){
 			return false;
 		}
 		if(!file.isDirectory()){

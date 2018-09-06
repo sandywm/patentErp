@@ -123,6 +123,50 @@ public class Transcode {
     	}
     }  
     
+    /**
+     * 自定义反编译函数-new（保留原始数据一致，不去除空格）
+     * @description
+     * @author wm
+     * @date 2018-9-6 上午10:26:39
+     * @param src
+     * @param request
+     * @return
+     */
+    public static String unescape_new1(String src,HttpServletRequest request) { 
+    	src = String.valueOf(request.getParameter(src));
+    	if(src.equals("null")){
+    		return "";
+    	}else{
+    		Integer inputStrLength = src.length();
+    		StringBuffer tmp = new StringBuffer();  
+            tmp.ensureCapacity(inputStrLength);  
+            int lastPos = 0, pos = 0;  
+            char ch;  
+            while (lastPos < src.length()) {  
+                pos = src.indexOf("%", lastPos);  
+                if (pos == lastPos) {  
+                    if (src.charAt(pos + 1) == 'u') {  
+                        ch = (char) Integer.parseInt(src.substring(pos + 2, pos + 6), 16);  
+                        tmp.append(ch);  
+                        lastPos = pos + 6;  
+                    } else {  
+                        ch = (char) Integer.parseInt(src.substring(pos + 1, pos + 3), 16);  
+                        tmp.append(ch);  
+                        lastPos = pos + 3;  
+                    }  
+                } else {  
+                    if (pos == -1) {  
+                        tmp.append(src.substring(lastPos));  
+                        lastPos = src.length();  
+                    } else {  
+                        tmp.append(src.substring(lastPos, pos));  
+                        lastPos = pos;  
+                    }  
+                }  
+            }  
+            return tmp.toString();
+    	}
+    }  
     
     /**
      * Unicode转UTF-8的转化

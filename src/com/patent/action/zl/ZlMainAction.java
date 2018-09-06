@@ -717,16 +717,9 @@ public class ZlMainAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		boolean abilityFlag = false;
-		if(this.getLoginType(request).equals("cpyUser")){
-			if(this.getLoginRoleName(request).equals("管理员")){
-				abilityFlag = true;
-			}else{
-				//获取当前用户是否拥有增加的权限--将修改专利操作人员的权限归类为增加权限
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");
-			}
-		}
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		Integer zxUserId = CommonTools.getFinalInteger("zxUserId", request);
 		Integer tjUserId = CommonTools.getFinalInteger("tjUserId", request);
@@ -736,6 +729,24 @@ public class ZlMainAction extends DispatchAction {
 		Integer bzshUserId = CommonTools.getFinalInteger("bzshUserId", request);
 		Integer bhUserId = CommonTools.getFinalInteger("bhUserId", request);
 		Integer checkUserId = CommonTools.getFinalInteger("checkUserId", request);
+		Integer cpyId = -1;
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
+			if(user != null){
+				cpyId = user.getCpyInfoTb().getId();
+			}
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				//获取当前用户是否拥有增加的权限--将修改专利操作人员的权限归类为增加权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");
+				if(!abilityFlag && Ability.checkAuthorization(this.getLoginRoleId(request), "upZl")){//没有增加权限但是有修改权限
+					//如果是只修改领取人--比如说之前没有领取人的时候，这个时候有修改权限的员工就可以修改
+					zlm.listSpecInfoById(zlId, cpyId);
+				}
+			}
+		}
+		
 		
 		return null;
 	}

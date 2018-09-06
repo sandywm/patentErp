@@ -574,7 +574,7 @@ public class PubZlAction extends DispatchAction {
 			String zlTitle = Transcode.unescape_new("zlTitle", request);
 			String zlContent = Transcode.unescape_new("zlContent", request);
 			String zlType = CommonTools.getFinalStr("zlType", request);
-			String zlUpCl = Transcode.unescape_new("zlUpCl", request);
+			String zlUpCl = Transcode.unescape_new1("zlUpCl", request);
 			if(zlType.equals("fm") || zlType.equals("syxx") || zlType.equals("wg")){
 				Integer pzId = pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, zlType, zlUpCl, CurrentTime.getCurrentTime());
 				if(pzId > 0){
