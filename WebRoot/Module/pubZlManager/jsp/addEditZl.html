@@ -133,7 +133,7 @@
 									return;
 								}
 							}
-							//console.log(zlTitle + "--" + zlContent + "--" + zlTypeInp + "--" + $('#fujianInp').val())
+							
 							if(addEditZlOpts == 'editZlOpts'){//表示编辑
 								url = '/pubZl.do?action=updateSelfPzInfo';
 								var field = {pubId : pubId, zlTitle : escape(zlTitle), zlContent : escape(zlContent), zlType : zlTypeInp, zlUpCl : $('#fujianInp').val()};
@@ -141,6 +141,7 @@
 								url = '/pubZl.do?action=addPzInfo';
 								var field = { zlTitle : escape(zlTitle), zlContent : escape(zlContent), zlType : zlTypeInp, zlUpCl : $('#fujianInp').val()};
 							}
+							//console.log(pubId + "--" + zlTitle + "--" + zlContent + "--" + zlTypeInp + "--" + $('#fujianInp').val())
 							layer.load('1');
 							$.ajax({
 			   					type:'post',
@@ -343,6 +344,9 @@
 				if(addEditZlOpts == 'editZlOpts' && $('.deleteBtn_edit').length > 0){//表示编辑的时候执行附件删除动作
 					$('.deleteBtn_edit').on('click',function(){
 						$(this).parent().parent().remove();
+						if($('.deleteBtn_edit').length == 0){
+							$('#fujianInp').val('');
+						}
 					});
 				}
 			}
