@@ -74,7 +74,14 @@ public class ReadExcelFile {
 //		System.out.println(json);
 		Double aa = 0.9796;
 		System.out.println(aa * 100);
-		String bb = "/Module/uploadFile/jsFile/wm1122.xls";
-		System.out.println(bb.substring(bb.lastIndexOf("/")+1,bb.length()));
+		//删除的是appUser/1/headBanner1.jpg
+		String oldFile = "appUser/1/4D数字化校园可行性报告.doc,appUser/1/headBanner.jpg,appUser/1/headBanner1.jpg";
+		String newFile = "appUser/1/4D数字化校园可行性报告.doc,appUser/1/headBanner2.jpg,appUser/1/headBanner.jpg";
+		String[] newFileArr =  newFile.split(",");
+		for(int i = 0 ; i < newFileArr.length ; i++){
+			if(oldFile.indexOf(newFileArr[i]) >= 0){
+				System.out.println("ok");
+			}
+		}
 	}
 }

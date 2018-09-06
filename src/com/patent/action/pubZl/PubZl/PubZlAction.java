@@ -381,11 +381,34 @@ public class PubZlAction extends DispatchAction {
 			Integer pubId = Integer.parseInt(request.getParameter("pubId"));
 			List<PubZlInfoTb> pubZlList = pzm.listSpecInfoByOpt(pubId, currUserId);
 			if(pubZlList.size() > 0){
-				if(pubZlList.get(0).getZlStatus().equals(0)){
+				PubZlInfoTb zl = pubZlList.get(0);
+				if(zl.getZlStatus().equals(0)){
 					String zlTitle = Transcode.unescape(request.getParameter("zlTitle"), request);
 					String zlContent =  Transcode.unescape(request.getParameter("zlContent"), request);
 					String zlType = request.getParameter("zlType");
 					String zlUpCl = request.getParameter("zlUpCl");
+					String zlUpCl_db = zl.getZlUpCl();
+					if(zlUpCl.equals("")){//删除该文件夹里面所有文件
+						
+					}else{
+						if(zlUpCl_db.equals("")){
+							//不执行删除
+						}else{
+							if(zlUpCl.equals(zlUpCl_db)){
+								//不执行删除
+							}else{
+								String[] zlUpClArr = zlUpCl.split(",");
+								String[] zlUpClArr_db = zlUpCl_db.split(",");
+								for(Integer i = 0 ; i < zlUpClArr.length ; i++){
+									for(Integer j = 0 ; j < zlUpClArr_db.length ; j++){
+										
+									}
+								}
+
+							}
+						}
+					}
+					
 					boolean flag = pzm.updateBasicInfoById(pubId, zlTitle, zlContent, zlType, zlUpCl);
 					if(flag){
 						msg = "success";
