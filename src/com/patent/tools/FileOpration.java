@@ -74,4 +74,20 @@ public class FileOpration {
 		}
 		return true;
 	}
+	
+	/**
+	 * 获取文件大小
+	 * @description
+	 * @author wm
+	 * @date 2018-9-6 上午10:46:14
+	 * @param filePath
+	 * @return
+	 */
+	public static String getFileSize(String filePath){
+		File file = new File(filePath);
+		if(file.exists()){
+			return Convert.convertInputNumber_1((file.length() / 1024.0)) + "KB";
+		}
+		return "";
+	}
 }

@@ -53,10 +53,18 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 			tran = sess.beginTransaction();
 			PubZlInfoTb pz = pzDao.get(sess, id);
 			if(pz != null){
-				pz.setZlTitle(zlTitle);
-				pz.setZlContent(zlContent);
-				pz.setZlType(zlType);
-				pz.setZlUpCl(zlUpCl);
+				if(!zlTitle.equals("")){
+					pz.setZlTitle(zlTitle);
+				}
+				if(!zlContent.equals("")){
+					pz.setZlContent(zlContent);				
+				}
+				if(!zlType.equals("")){
+					pz.setZlType(zlType);
+				}
+				if(!zlUpCl.equals("")){
+					pz.setZlUpCl(zlUpCl);
+				}
 				pzDao.update(sess, pz);
 				tran.commit();
 				return true;

@@ -200,6 +200,7 @@ public class PubZlAction extends DispatchAction {
 					}
 				}
 				map_d.put("ajNoQt", ajNoQt);
+				map_d.put("ajLqStatus", pz.getZlStatus());
 				list_d.add(map_d);
 			}
 			map.put("data", list_d);
@@ -312,7 +313,23 @@ public class PubZlAction extends DispatchAction {
 					map.put("typeChi", "外观");
 				}
 				map.put("zlType", zlType);
-				map.put("zlUpCl", pz.getZlUpCl());
+				String zlUpCl = pz.getZlUpCl();
+				String zlUpClSize = "";
+				String zlUpClName = "";
+				List<Object> list_file = new ArrayList<Object>();
+				if(!zlUpCl.equals("")){
+					String[] zlUpClArr = zlUpCl.split(",");
+					for(Integer i = 0  ; i < zlUpClArr.length ; i++){
+						zlUpClName = zlUpClArr[i].substring((zlUpClArr[i].lastIndexOf("\\") + 1));
+						zlUpClSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + zlUpClArr[i]);
+						Map<String,String> map_file = new HashMap<String,String>();
+						map_file.put("fileName", zlUpClName);
+						map_file.put("fileSize", zlUpClSize);
+						list_file.add(map_file);
+					}
+				}
+				map.put("zlUpCl", list_file);
+				
 				map.put("zlStatus", pz.getZlStatus());
 				map.put("zlStatusChi", pz.getZlStatus().equals(0) ? "待领取" : "已领取");
 				map.put("pubDate", pz.getZlNewDate());
@@ -581,19 +598,28 @@ public class PubZlAction extends DispatchAction {
 					//如果存在上传的文件，需要移动
 					if(!zlUpCl.equals("")){
 						String[] upFileArr = zlUpCl.split(",");
-						String newPath =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "/appUser/" + this.getLoginUserId(request) + "/" + pzId;
+						String newPath =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\appUser\\" + this.getLoginUserId(request) + "\\" + pzId;
 						File file = new File(newPath);
 						if(!file.exists()){
 			    			file.mkdirs();
 			    		}
+						String newPath_db = "";
+						String path_pre = upFileArr[0].substring(0,upFileArr[0].lastIndexOf("\\")) + "\\" + pzId + "\\";
 						for(Integer i = 0 ; i < upFileArr.length ; i++){
-							String oldPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "/" +upFileArr[i];
-							String newPathFinal = newPath + "/" + upFileArr[i].substring((upFileArr[i].lastIndexOf("/") + 1));
+							String oldPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" +upFileArr[i];
+							String fileName = upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
+							String newPathFinal = newPath + "\\" + fileName;
+							newPath_db +=  path_pre + fileName + ",";
 							boolean flag = FileOpration.copyFile(oldPath, newPathFinal);
 							if(flag){
 								//删除之前文件
-								FileOpration.deleteFile(oldPath);
+								flag = FileOpration.deleteFile(oldPath);
 							}
+						}
+						//修改上传附件的真实路径
+						if(!newPath_db.equals("")){
+							newPath_db = newPath_db.substring(0, newPath_db.length() - 1);
+							pzm.updateBasicInfoById(pzId, "", "", "", newPath_db);
 						}
 					}
 				}
@@ -605,8 +631,8 @@ public class PubZlAction extends DispatchAction {
 					//如果存在上传的文件，需要移动
 					if(!zlUpCl.equals("")){
 						String[] upFileArr = zlUpCl.split(",");
-						String newPath_1 =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "/appUser/" + this.getLoginUserId(request) + "/" + pubId_1;
-						String newPath_2 =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "/appUser/" + this.getLoginUserId(request) + "/" + pubId_2;
+						String newPath_1 =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\appUser\\" + this.getLoginUserId(request) + "\\" + pubId_1;
+						String newPath_2 =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\appUser\\" + this.getLoginUserId(request) + "\\" + pubId_2;
 						File file_1 = new File(newPath_1);
 						if(!file_1.exists()){
 							file_1.mkdirs();
@@ -615,10 +641,16 @@ public class PubZlAction extends DispatchAction {
 						if(!file_2.exists()){
 							file_2.mkdirs();
 			    		}
+						String newPath_db_1 = "",newPath_db_2 = "";
+						String path_1_pre = upFileArr[0].substring(0,upFileArr[0].lastIndexOf("\\")) + "\\" + pubId_1 + "\\";
+						String path_2_pre = upFileArr[0].substring(0,upFileArr[0].lastIndexOf("\\")) + "\\" + pubId_2 + "\\";
 						for(Integer i = 0 ; i < upFileArr.length ; i++){
-							String oldPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "/" +upFileArr[i];
-							String newPathFinal_1 = newPath_1 + "/" + upFileArr[i].substring((upFileArr[i].lastIndexOf("/") + 1));
-							String newPathFinal_2 = newPath_2 + "/" + upFileArr[i].substring((upFileArr[i].lastIndexOf("/") + 1));
+							String oldPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" +upFileArr[i];
+							String fileName = upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
+							String newPathFinal_1 = newPath_1 + "\\" + fileName;
+							String newPathFinal_2 = newPath_2 + "\\" + fileName;
+							newPath_db_1 +=  path_1_pre + fileName + ",";
+							newPath_db_2 +=  path_2_pre + fileName + ",";
 							boolean flag = FileOpration.copyFile(oldPath, newPathFinal_1);
 							if(flag){
 								flag = FileOpration.copyFile(oldPath, newPathFinal_2);
@@ -627,6 +659,15 @@ public class PubZlAction extends DispatchAction {
 									FileOpration.deleteFile(oldPath);
 								}
 							}
+						}
+						//修改上传附件的真实路径
+						if(!newPath_db_1.equals("")){
+							newPath_db_1 = newPath_db_1.substring(0, newPath_db_1.length() - 1);
+							pzm.updateBasicInfoById(pubId_1, "", "", "", newPath_db_1);
+						}
+						if(!newPath_db_2.equals("")){
+							newPath_db_2 = newPath_db_2.substring(0, newPath_db_2.length() - 1);
+							pzm.updateBasicInfoById(pubId_2, "", "", "", newPath_db_2);
 						}
 					}
 				}
