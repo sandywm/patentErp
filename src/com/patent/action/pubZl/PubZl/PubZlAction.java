@@ -597,6 +597,7 @@ public class PubZlAction extends DispatchAction {
 				if(pzId > 0){
 					//如果存在上传的文件，需要移动
 					if(!zlUpCl.equals("")){
+						zlUpCl = zlUpCl.replaceAll("/", "\\\\");
 						String[] upFileArr = zlUpCl.split(",");
 						String newPath =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\appUser\\" + this.getLoginUserId(request) + "\\" + pzId;
 						File file = new File(newPath);
@@ -630,6 +631,7 @@ public class PubZlAction extends DispatchAction {
 				if(pubId_1 > 0 && pubId_2 > 0){
 					//如果存在上传的文件，需要移动
 					if(!zlUpCl.equals("")){
+						zlUpCl = zlUpCl.replaceAll("/", "\\\\");
 						String[] upFileArr = zlUpCl.split(",");
 						String newPath_1 =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\appUser\\" + this.getLoginUserId(request) + "\\" + pubId_1;
 						String newPath_2 =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\appUser\\" + this.getLoginUserId(request) + "\\" + pubId_2;

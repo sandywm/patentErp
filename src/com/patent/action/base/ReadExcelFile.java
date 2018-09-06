@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
-import com.patent.tools.Convert;
 import com.patent.tools.CurrentTime;
-import com.patent.util.WebUrl;
 
 import jxl.*;
 import jxl.read.biff.BiffException;
@@ -78,21 +76,5 @@ public class ReadExcelFile {
 		System.out.println(aa * 100);
 		String bb = "/Module/uploadFile/jsFile/wm1122.xls";
 		System.out.println(bb.substring(bb.lastIndexOf("/")+1,bb.length()));
-		
-		String cc = "appUser/4/aa.txt,appUser/4/ab.txt,appUser/4/ac.txt";
-		String newPath_db = "";
-		if(!cc.equals("")){
-			String[] upFileArr = cc.split(",");
-			Integer pzId = 1;
-			String gdPath = upFileArr[0].substring(0,upFileArr[0].lastIndexOf("/")) + "/" + pzId + "/";
-			for(Integer i = 0 ; i < upFileArr.length ; i++){
-				String fileName = upFileArr[i].substring((upFileArr[i].lastIndexOf("/") + 1));
-				newPath_db +=  gdPath + fileName + ",";
-			}
-			if(!newPath_db.equals("")){
-				newPath_db = newPath_db.substring(0, newPath_db.length() - 1);
-			}
-		}
-		System.out.println(newPath_db);
 	}
 }
