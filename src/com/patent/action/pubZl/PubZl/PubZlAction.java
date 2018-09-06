@@ -323,6 +323,7 @@ public class PubZlAction extends DispatchAction {
 						zlUpClName = zlUpClArr[i].substring((zlUpClArr[i].lastIndexOf("\\") + 1));
 						zlUpClSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + zlUpClArr[i]);
 						Map<String,String> map_file = new HashMap<String,String>();
+						map_file.put("zlUpClPath", zlUpClArr[i]);
 						map_file.put("fileName", zlUpClName);
 						map_file.put("fileSize", zlUpClSize);
 						list_file.add(map_file);
@@ -616,7 +617,7 @@ public class PubZlAction extends DispatchAction {
 			String zlType = CommonTools.getFinalStr("zlType", request);
 			String zlUpCl = Transcode.unescape_new1("zlUpCl", request);
 			if(zlType.equals("fm") || zlType.equals("syxx") || zlType.equals("wg")){
-				Integer pzId = pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, zlType, zlUpCl, CurrentTime.getCurrentTime());
+				Integer pzId = pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, zlType, zlUpCl, CurrentTime.getStringDate());
 				if(pzId > 0){
 					//如果存在上传的文件，需要移动
 					if(!zlUpCl.equals("")){
