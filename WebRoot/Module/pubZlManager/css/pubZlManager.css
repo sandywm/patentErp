@@ -1,0 +1,46 @@
+@import url("../../../css/common.css");
+@import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
+body{
+	background:#f2f2f2;
+	color:#666;
+}
+#addPubZlBtn{
+	display:none;
+}
+.noData{
+	display:none;
+	position:absolute;
+	left:50%;
+	margin-left:-50px;
+	top:100px;
+}
+.layui-form-item input[type='text']{
+	width:350px;
+}
+.layui-form-item textarea,
+.layui-form-item table{
+	width:90%;
+}
+#upListAction{
+	display:none;
+	position:absolute;
+	right:10%;
+	top:0;
+}
+.hasFujianSpan{
+	color:#01AAED;
+}
+.zlTypeSpan{
+	display:inline-block;
+	padding:0 5px;
+	height:20px;
+	line-height:20px;
+	background:#009688;
+	color:#fff;
+	border-radius:2px;
+	font-size:12px;
+}
+.noticeSpan{
+	margin-left:10px;
+	color:#F47837;
+}

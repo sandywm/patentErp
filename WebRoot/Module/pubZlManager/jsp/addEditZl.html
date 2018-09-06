@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/pubZlManager/css/pubZlManager.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+  	<title>增加新专利</title>
+</head>
+<body style="background:#fff;">
+	<div id="addNewZl" class="layui-form">
+		<div class="layui-form-item" style="margin-top:15px;">
+			<label class="layui-form-label">专利名称</label>
+			<div class="layui-input-inline">
+				<input id="zlTitleInp" type="text" name="zlTitle" placeholder="请输入专利名称(40字以内)" maxlength="40" autocomplete="off" class="layui-input"/>
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">专利类型</label>
+			<input id="zlTypeInp" name="zlType" type="hidden" value="fm"/>
+			<div class="layui-input-block">
+				<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明" checked>
+				<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="使用新型"/>
+				<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>
+				<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">专利描述</label>
+			<div class="layui-input-block">
+				<textarea id="zlContent" name="zlContent" placeholder="请输入专利描述(280字以内)" class="layui-textarea" maxlength="280"></textarea>
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">附件</label>
+			<div class="layui-input-block">
+				<button type="button" class="layui-btn layui-btn-normal" id="selFileBtn">选择文件</button> 
+				<span class="noticeSpan">注：附件中单个图片大小不能超过5M，单个文件大小不能超过10M</span>
+				<button type="button" class="layui-btn" id="upListAction">上传附件</button>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label"></label>
+			<input id="fujianInp" name="zlUpCl" type="hidden"/>
+			<div class="layui-input-block">
+				<table class="layui-table">
+			      <thead>
+			        <tr><th>文件名</th>
+			        <th>大小</th>
+			        <th>状态</th>
+			        <th>操作</th>
+			      </tr></thead>
+			      <tbody id="upLoadFileList"></tbody>
+			    </table>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label"></label>
+			<div class="layui-input-block" style="width:75%;text-align:center;">
+				<button type="button" id="saveZlBtn"  class="layui-btn" style="width:120px;margin-left:0px;">保存专利</button>
+			</div>
+		</div>
+	</div>
+	
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,pubId = parent.globalPubId;;
+		layui.use(['layer','jquery','form','upload'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form,
+				upload = layui.upload;
+			var page = {
+				init : function(){
+					this.onLoad();
+					this.bindEvent();
+				},
+				onLoad : function(){
+					if(addEditZlOpts == 'editZlOpts'){//表示编辑
+						$('#addNewZl').html('');
+						var _this = this;
+						layer.load('1');
+						$.ajax({
+		   					type:'post',
+		   			        async:false,
+		   			        dataType:'json',
+		   			        data:{pubId : pubId},
+		   			        url:'/pubZl.do?action=getDetailInfo',
+		   			        success:function (json){
+		   			        	layer.closeAll('loading');
+		   			        	if(json['result'] == 'success'){
+		   			        		_this.renderEditPubZl(json);
+		   			        	}else if(json['result'] == 'error'){
+		   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
+		   			        	}
+		   			        }
+		   				});
+					}else{//表示增加 onload直接调用上传这个方法
+						selectFileUpload();
+					}
+				},
+				bindEvent : function(){
+					$('#saveZlBtn').on('click',function(){
+						var zlTitle = $.trim($('#zlTitleInp').val()),
+							zlTypeInp = $('#zlTypeInp').val(),
+							zlContent = $.trim($('#zlContent').val()),
+							url = '';
+						if(zlTitle == ''){
+							layer.msg('专利名称不能为空',{icon:5,anim:6,time:1000});
+						}else if(zlContent == ''){
+							layer.msg('专利描述不能为空',{icon:5,anim:6,time:1000});
+						}else{
+							var isHasUpLoadFlag = false;
+							if($('.deleteBtn').length > 0){
+								if($('input[name="hasUpSuccInp"]').length == 0){//表示用户选择了文件，但是没有点击上传
+									isHasUpLoadFlag = false;
+								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length == 0){
+									//表示用户选择了文件并且全部上传了
+									isHasUpLoadFlag = true;
+								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0){
+									//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传
+									isHasUpLoadFlag = false;
+								}
+								if(isHasUpLoadFlag){
+									upSuccSrcArray.length = 0;
+									$('input[name="hasUpSuccInp"]').each(function(i){
+										upSuccSrcArray.push($('input[name="hasUpSuccInp"]').eq(i).val());
+									});
+									$('#fujianInp').val(upSuccSrcArray.join(','));
+								}else{
+									layer.msg('您有未上传的附件，请先上传附件',{icon:5,anim:6,time:1000});
+									return;
+								}
+							}
+							//console.log(zlTitle + "--" + zlContent + "--" + zlTypeInp + "--" + $('#fujianInp').val())
+							if(addEditZlOpts == 'editZlOpts'){//表示编辑
+								url = '/pubZl.do?action=updateSelfPzInfo';
+								var field = {pubId : pubId, zlTitle : escape(zlTitle), zlContent : escape(zlContent), zlType : zlTypeInp, zlUpCl : $('#fujianInp').val()};
+							}else{//增加
+								url = '/pubZl.do?action=addPzInfo';
+								var field = { zlTitle : escape(zlTitle), zlContent : escape(zlContent), zlType : zlTypeInp, zlUpCl : $('#fujianInp').val()};
+							}
+							layer.load('1');
+							$.ajax({
+			   					type:'post',
+			   			        async:false,
+			   			        dataType:'json',
+			   			        data:field,
+			   			        url:url,
+			   			        success:function (json){
+			   			        	layer.closeAll('loading');
+			   			        	if(json['result'] == 'success'){
+			   			        		function callBackSucc(){
+			   			        			var index= parent.layer.getFrameIndex(window.name);
+					        				parent.layer.close(index);
+					        				parent.addZlFlag = true;
+			   			        		}
+			   			        		if(addEditZlOpts == 'editZlOpts'){
+			   			        			layer.msg('编辑专利成功',{icon:1,time:1000},callBackSucc);
+			   			        		}else{
+			   			        			layer.msg('添加专利成功',{icon:1,time:1000},callBackSucc);
+			   			        		}
+			   			        	}else if(json['result'] == 'noAbility'){
+			   			        		layer.msg('抱歉，您暂无权限添加编辑专利', {icon:5,anim:6,time:1000});
+			   			        	}else if(json['result'] == 'error'){
+			   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
+			   			        	}
+			   			        }
+			   				});
+						}
+					});
+				},
+				//编辑时渲染结构
+				renderEditPubZl : function(json){
+					console.log(json)
+					var strHtml = '';
+					strHtml += '<div class="layui-form-item" style="margin-top:15px;">';
+					strHtml += '<label class="layui-form-label">专利名称</label><div class="layui-input-inline">';
+					strHtml += '<input id="zlTitleInp" type="text" name="zlTitle" value="'+ json.zlTitle +'" placeholder="请输入专利名称(40字以内)" maxlength="40" autocomplete="off" class="layui-input"/></div></div>';
+					//专利类型
+					strHtml += '<div class="layui-form-item">';
+					strHtml += '<label class="layui-form-label">专利类型</label><input id="zlTypeInp" name="zlType" type="hidden" value="'+ json.zlType +'"/>';
+					strHtml += '<div class="layui-input-block">';
+					if(json.zlType == 'fm'){
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明" checked/>';
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="使用新型"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>';
+					}else if(json.zlType == 'syxx'){
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="使用新型" checked/>';
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>';
+					}else if(json.zlType == 'wg'){
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="使用新型"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观" checked/>';
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>';
+					}else if(json.zlType == 'fmxx'){
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="使用新型"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型" checked/>';
+					}
+					strHtml += '</div></div>';
+					//专利描述
+					strHtml += '<div class="layui-form-item">';
+					strHtml += '<label class="layui-form-label">专利描述</label>';
+					strHtml += '<div class="layui-input-block">';
+					strHtml += '<textarea id="zlContent" name="zlContent" placeholder="请输入专利描述(280字以内)" class="layui-textarea" maxlength="280">'+ json.zlContent +'</textarea>';
+					strHtml += '</div></div>';
+					//附件
+					strHtml += '<div class="layui-form-item">';
+					strHtml += '<label class="layui-form-label">附件</label>';
+					strHtml += '<div class="layui-input-block">';
+					strHtml += '<button type="button" class="layui-btn layui-btn-normal" id="selFileBtn">选择文件</button>';
+					strHtml += '<span class="noticeSpan">注：附件中单个图片大小不能超过5M，单个文件大小不能超过10M</span>';
+					strHtml += '<button type="button" class="layui-btn" id="upListAction">上传附件</button>';
+					strHtml += '</div></div>';
+					//附件对应table
+					strHtml += '<div class="layui-form-item">';
+					//<input id="fujianInp" name="zlUpCl" value="'+ json.zlUpCl +'" type="hidden"/>
+					strHtml += '<label class="layui-form-label"></label><input id="fujianInp" name="zlUpCl" value="" type="hidden"/>';
+					strHtml += '<div class="layui-input-block">';
+					strHtml += '<table class="layui-table"><thead><tr><th>文件名</th><th>大小</th><th>状态</th><th>操作</th></tr></thead>';
+					strHtml += '<tbody id="upLoadFileList">';
+					var zlUpClArray = json.zlUpCl;
+					for(var i=0;i<zlUpClArray.length;i++){
+						strHtml += '<tr id="upload-'+ i +'">';
+						strHtml += '<td>'+ zlUpClArray[i].fileName.split('/')[zlUpClArray[i].fileName.split('/').length-1] +'</td>';
+						strHtml += '<td>'+ zlUpClArray[i].fileSize +'</td>';
+						strHtml += '<td><span style="color: #5FB878;">上传成功</span></td>';
+						strHtml += '<td>';
+						//strHtml += '<button class="layui-btn layui-btn-xs reloadBtn reloadBtn_edit layui-hide">重传</button>';
+						strHtml += '<input class="uploadInpHid" name="hasUpSuccInp" value="'+ zlUpClArray[i].fileName +'" type="hidden"/>';
+						strHtml += '<button class="layui-btn layui-btn-xs layui-btn-danger deleteBtn deleteBtn_edit">删除</button></td>';
+						strHtml += '</tr>';
+					}
+					strHtml += '</tbody></table>';
+					strHtml += '</div></div>';
+					//保存专利
+					strHtml += '<div class="layui-form-item">';
+					strHtml += '<label class="layui-form-label"></label>';
+					strHtml += '<div class="layui-input-block" style="width:75%;text-align:center;">';
+					strHtml += '<button type="button" id="saveZlBtn"  class="layui-btn" style="width:120px;margin-left:0px;">保存专利</button>';
+					strHtml += '</div></div>';
+					$('#addNewZl').html(strHtml);
+					form.render();
+					selectFileUpload();//编辑时渲染结构完成调用上传方法
+				}
+			};
+			
+			form.on('radio(zlTypeFilter)', function(data){
+				var value = data.value;
+				$('#zlTypeInp').val(value);
+			});
+			function selectFileUpload(){
+				var upLoadFileList = $('#upLoadFileList');
+				var uploadListIns = upload.render({
+					elem: '#selFileBtn',
+					url: '/upload.do?action=uploadFile',
+					accept: 'file',
+					exts : 'doc|docx|wps|xls|xlsx|txt|pdf|pptx|ppt|zip|rar|dwg|eml|jpg|png|bmp|gif',
+					multiple: true,
+					auto: false,
+					number:5,
+					bindAction : '#upListAction',
+					before : function(obj){
+						layer.load(); //上传loading
+					},
+					choose : function(obj){
+						var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+						//读取本地文件
+						obj.preview(function(index,file,result){
+							var fileType = file.name.substr(file.name.lastIndexOf('.'));
+							var size = file.size;
+							if(fileType == '.jpg' || fileType == '.png' || fileType == '.bmp' || fileType == '.gif' || fileType == '.jpeg'){
+				    			//如果是图片，单个图片不能大于5M
+				    			if(size > (5 * 1024 * 1024)){
+				    				layer.msg('上传的图片文件不能大于5M',{icon:5,anim:6,time:1000});
+				    				return;
+				    			}
+				    		}else{
+				    			//如果是其他文件类类型，单个文件不能大于10M
+				    			if(size > (10 * 1024 * 1024)){
+				    				layer.msg('上传的文件不能大于10M',{icon:5,anim:6,time:1000});
+				    				return;
+				    			}
+				    		}
+				    		var tr = $(['<tr id="upload-'+ index +'">',
+				    			'<td>'+ file.name +'</td>',
+				    			'<td>'+ (file.size/1014).toFixed(1) +'kb</td>',
+				    			'<td>等待上传</td>',
+				    			'<td>',
+				    			'<button class="layui-btn layui-btn-xs reloadBtn reloadBtn_sel layui-hide">重传</button>',
+				    			'<input class="uploadInpHid" name="notUpInp" type="hidden"/>',
+				    			'<button class="layui-btn layui-btn-xs layui-btn-danger deleteBtn deleteBtn_sel">删除</button>',
+				    			'</td>',
+				    			'</tr>'].join(''));
+				    		//单个重传
+				    		tr.find('.reloadBtn_sel').on('click', function(){
+					            obj.upload(index, file);
+					        });
+				    		//删除
+					        tr.find('.deleteBtn_sel').on('click', function(){
+					        	delete files[index]; //删除对应的文件
+					            tr.remove();
+					            uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+					        	if($('.reloadBtn_sel').length == 0){
+					        		$('#upListAction').hide();
+					        		if($('.deleteBtn_edit').length == 0){
+					        			$('#fujianInp').val('');
+					        		}
+					        	}
+					        });
+					        upLoadFileList.append(tr);
+				        	$('#upListAction').show();
+						});
+					},
+					done : function(res, index, upload){
+						layer.closeAll('loading'); //关闭loading
+						if(res.code == 0){//上传成功
+							var tr = upLoadFileList.find('tr#upload-'+ index),
+								tds = tr.children();
+							tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+							//tds.eq(3).html(''); //清空操作uploadInpHid
+				         	tds.eq(3).find('.uploadInpHid').attr('name','hasUpSuccInp');
+				         	tds.eq(3).find('.uploadInpHid').val(res.data[0].src);
+				         	$('#upListAction').hide();
+				         	return delete this.files[index]; //删除文件队列已经上传成功的文件
+						}
+						this.error(index, upload);
+					},
+					error : function(index, upload){
+						layer.closeAll('loading'); //关闭loading
+						var tr = upLoadFileList.find('tr#upload-'+ index),
+							tds = tr.children();
+						tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
+				     	tds.eq(3).find('.reloadBtn_sel').removeClass('layui-hide'); //显示重传
+					}
+				});	
+				if(addEditZlOpts == 'editZlOpts' && $('.deleteBtn_edit').length > 0){//表示编辑的时候执行附件删除动作
+					$('.deleteBtn_edit').on('click',function(){
+						$(this).parent().parent().remove();
+					});
+				}
+			}
+			
+			  
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>
