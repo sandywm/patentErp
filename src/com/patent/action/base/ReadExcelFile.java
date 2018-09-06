@@ -72,16 +72,29 @@ public class ReadExcelFile {
 //		map.put("result", list_d);
 //		String json = JSON.toJSONString(map);
 //		System.out.println(json);
-		Double aa = 0.9796;
-		System.out.println(aa * 100);
+//		Double aa = 0.9796;
+//		System.out.println(aa * 100);
 		//删除的是appUser/1/headBanner1.jpg
 		String oldFile = "appUser/1/4D数字化校园可行性报告.doc,appUser/1/headBanner.jpg,appUser/1/headBanner1.jpg";
-		String newFile = "appUser/1/4D数字化校园可行性报告.doc,appUser/1/headBanner2.jpg,appUser/1/headBanner.jpg";
+		String newFile = "appUser/1/4D数字化校园可行性报告.doc,appUser/1/headBanner2.jpg";
+		System.out.println(CurrentTime.getCurrentTime());
+		String[] oldFileArr =  oldFile.split(",");
 		String[] newFileArr =  newFile.split(",");
-		for(int i = 0 ; i < newFileArr.length ; i++){
-			if(oldFile.indexOf(newFileArr[i]) >= 0){
-				System.out.println("ok");
+		for(int i = 0 ; i < oldFileArr.length ; i++){
+			boolean existFlag = false;
+			for(int j = 0 ; j < newFileArr.length ; j++){
+				if(oldFileArr[i].equals(newFileArr[j])){
+					existFlag = true;
+					break;
+				}else{
+					existFlag = false;
+				}
+			}
+			if(!existFlag){
+				System.out.println("需要删除的："+oldFileArr[i]);
 			}
 		}
+		System.out.println(CurrentTime.getCurrentTime());
+		
 	}
 }
