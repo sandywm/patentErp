@@ -717,37 +717,85 @@ public class ZlMainAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		boolean abilityFlag = false;
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		Integer zxUserId = CommonTools.getFinalInteger("zxUserId", request);
-		Integer tjUserId = CommonTools.getFinalInteger("tjUserId", request);
-		Integer tzsUserId = CommonTools.getFinalInteger("tzsUserId", request);
-		Integer feeUserId = CommonTools.getFinalInteger("feeUserId", request);
-		Integer bzUserId = CommonTools.getFinalInteger("bzUserId", request);
-		Integer bzshUserId = CommonTools.getFinalInteger("bzshUserId", request);
-		Integer bhUserId = CommonTools.getFinalInteger("bhUserId", request);
-		Integer checkUserId = CommonTools.getFinalInteger("checkUserId", request);
+		Integer tjUserId = -1;
+		Integer tzsUserId = -1;
+		Integer feeUserId = -1;
+		Integer bzUserId = -1;
+		Integer bzshUserId = -1;
+		Integer bhUserId = -1;
+		Integer checkUserId = -1;
 		Integer cpyId = -1;
 		Integer zxUserId_db = 0;
+		String currDate = CurrentTime.getStringDate();
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Integer zxUserId_yj = CommonTools.getFinalInteger("zxUserId_yj", request);//准备接受移交撰写任务的用户
 		if(this.getLoginType(request).equals("cpyUser")){
-			CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
+			CpyUserInfo user = cum.getEntityById(currLoginUserId);
 			if(user != null){
 				cpyId = user.getCpyInfoTb().getId();
 			}
 			if(this.getLoginRoleName(request).equals("管理员")){
 				abilityFlag = true;
 			}else{
-				//获取当前用户是否拥有增加的权限--将修改专利操作人员的权限归类为增加权限
+				//获取当前用户是否拥有增加的权限--将分配专利操作人员的权限归类为增加权限
 				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");
-				if(!abilityFlag && Ability.checkAuthorization(this.getLoginRoleId(request), "upZl")){//没有增加权限但是有修改权限
-					//如果是只修改领取人--比如说之前没有领取人的时候，这个时候有修改权限的员工就可以修改
+			}
+			if(abilityFlag){
+				//可以修改任意操作人员
+				tjUserId = CommonTools.getFinalInteger("tjUserId", request);
+				tzsUserId = CommonTools.getFinalInteger("tzsUserId", request);
+				feeUserId = CommonTools.getFinalInteger("feeUserId", request);
+				bzUserId = CommonTools.getFinalInteger("bzUserId", request);
+				bzshUserId = CommonTools.getFinalInteger("bzshUserId", request);
+				bhUserId = CommonTools.getFinalInteger("bhUserId", request);
+				checkUserId = CommonTools.getFinalInteger("checkUserId", request);
+				boolean flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, tjUserId, 
+						tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+			}else{//不是管理员、不具有分配专利操作人员的权限（增加权限）
+				if(Ability.checkAuthorization(this.getLoginRoleId(request), "upZl")){//有修改权限
+					//可以领取任务，前提是当前专利没有分配撰写人员
 					if(cpyId > 0){
 						List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
 						if(zlList.size() > 0){
 							zxUserId_db = zlList.get(0).getZxUserId();
-							abilityFlag = true;
+							if(zxUserId_db > 0){
+								//存在，就不能进行修改,只能由当前撰写人进行任务移交
+								//增加一个任务移交的流程
+								CpyUserInfo user_yj = cum.getEntityById(zxUserId_yj);
+								if(user_yj != null){
+									
+								}
+								Integer lcId = lcm.addLcInfo(zlId, "移交撰写任务", user.getUserName()+"将撰写任务移交给", currDate, 
+										currDate, currDate, currDate);
+								if(lcId > 0){
+									mxm.addLcMx(lcId, zxUserId, "领取撰写任务", 1.0, currDate, currDate,
+											"", 0, "", "", "");
+								}
+							}else{
+								boolean flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, currLoginUserId, tjUserId, 
+										tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+								if(flag){
+									//增加领取流程明细
+									List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zlId);
+									if(lcList.size() > 0){
+										
+									}else{
+										Integer lcId = lcm.addLcInfo(zlId, "领取撰写任务", user.getUserName()+"领取了撰写任务", currDate, 
+												currDate, currDate, currDate);
+										if(lcId > 0){
+											mxm.addLcMx(lcId, zxUserId, "领取撰写任务", 1.0, currDate, currDate,
+													"", 0, "", "", "");
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -1007,7 +1055,8 @@ public class ZlMainAction extends DispatchAction {
 	public ActionForward downFile(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
-		String fileUrl = CommonTools.getFinalStr("fileUrl", request);
+//		String fileUrl = CommonTools.getFinalStr("fileUrl", request);
+		String fileUrl = Transcode.MyTranscodeUTF(request.getParameter("fileUrl"));
 		String absoFilePath = "";//绝对地址
 		String fileName = "";
 		OutputStream fos = null;
