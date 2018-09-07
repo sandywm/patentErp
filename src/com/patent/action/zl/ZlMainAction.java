@@ -1011,9 +1011,8 @@ public class ZlMainAction extends DispatchAction {
 		String absoFilePath = "";//绝对地址
 		String fileName = "";
 		if(!fileUrl.equals("")){
-			fileUrl = fileUrl.replaceAll("/", "\\\\");
 			fileName = fileUrl.substring(fileUrl.lastIndexOf("\\")+1,fileUrl.length());
-			absoFilePath = WebUrl.NEW_DATA_URL_UP_FILE_UPLOAD + fileUrl;
+			absoFilePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" +fileUrl;
 			try  {  
 		        //第七步 下载文件到客户端
 		        OutputStream fos = null;

@@ -114,19 +114,19 @@ public class UploadAction extends DispatchAction {
 			try {
 				List<FileItem> filelist = fileUpload.parseRequest(request);
 				ListIterator<FileItem> iterator = filelist.listIterator();
-				String userPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "/" + loginType + "/";
-				String absolutPath = loginType + "/";
+				String userPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + loginType + "\\";
+				String absolutPath = loginType + "\\";
 				if(loginType.equals("appUser")){
 					userPath += this.getLoginUserId(request);
 					absolutPath += this.getLoginUserId(request);
 					if(ajId > 0){
-						userPath +=  "/" + ajId;
-						absolutPath +=  "/" + ajId;
+						userPath +=  "\\" + ajId;
+						absolutPath +=  "\\" + ajId;
 					}
 				}else if(loginType.equals("cpyUser")){
 					if(ajId > 0){
-						userPath += ajId + "/" + fileType;
-						absolutPath += ajId + "/" + fileType;
+						userPath += ajId + "\\" + fileType;
+						absolutPath += ajId + "\\" + fileType;
 					}else{
 						//技术底稿
 						//之前放在外层，等待专利增加后，剪切到ajId下
@@ -184,7 +184,7 @@ public class UploadAction extends DispatchAction {
 						fileOutputStream.write(data);// 写入文件
 						fileOutputStream.close();// 关闭文件流
 						msg = "success";
-						fileUrl +=  absolutPath  + "/" + filename + ",";
+						fileUrl +=  absolutPath  + "\\" + filename + ",";
 					}
 				}
 				map.put("code", 0);
