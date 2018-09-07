@@ -361,38 +361,10 @@
 				}
 				$('.downloadBtn').on('click',function(){
 					var downFilePath = $(this).attr('downFilePath');
-					alert(downFilePath)
-					layer.load('1');
-					$.ajax({
-	   					type:'post',
-	   			        async:false,
-	   			        dataType:'json',
-	   			        data:{fileUrl : downFilePath},
-	   			        url:'/zlm.do?action=downFile',
-	   			        success:function (json){
-	   			        	layer.closeAll('loading');
-	   			        	/*if(json['result'] == 'success'){
-	   			        		function callBackSucc(){
-	   			        			var index= parent.layer.getFrameIndex(window.name);
-			        				parent.layer.close(index);
-			        				parent.addZlFlag = true;
-	   			        		}
-	   			        		if(addEditZlOpts == 'editZlOpts'){
-	   			        			layer.msg('编辑专利成功',{icon:1,time:1000},callBackSucc);
-	   			        		}else{
-	   			        			layer.msg('添加专利成功',{icon:1,time:1000},callBackSucc);
-	   			        		}
-	   			        	}else if(json['result'] == 'noAbility'){
-	   			        		layer.msg('抱歉，您暂无权限添加编辑专利', {icon:5,anim:6,time:1000});
-	   			        	}else if(json['result'] == 'error'){
-	   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
-	   			        	}*/
-	   			        }
-	   				});
+					window.location.href = "/zlm.do?action=downFile&fileUrl="+downFilePath;
+					
 				});
 			}
-			
-			  
 			$(function(){
 				page.init();
 			});

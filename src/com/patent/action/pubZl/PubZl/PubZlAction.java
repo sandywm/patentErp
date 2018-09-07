@@ -420,11 +420,11 @@ public class PubZlAction extends DispatchAction {
 									}
 								}
 								if(!zlUpCl_final.equals("")){
-									zlUpCl_final = zlUpCl_final.substring(0, zlUpCl_final.length());
+									zlUpCl_final = zlUpCl_final.substring(0, zlUpCl_final.length() - 1);
 									//删除文件
 									String[] zlUpClArr_final = zlUpCl_final.split(",");
 									for(Integer k = 0 ; k < zlUpClArr_final.length ; k++){
-										FileOpration.deleteFile(zlUpClArr_final[k]);
+										FileOpration.deleteFile(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + zlUpClArr_final[k]);
 									}
 								}
 							}

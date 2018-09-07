@@ -1010,15 +1010,16 @@ public class ZlMainAction extends DispatchAction {
 		String fileUrl = CommonTools.getFinalStr("fileUrl", request);
 		String absoFilePath = "";//绝对地址
 		String fileName = "";
+		OutputStream fos = null;
+        BufferedOutputStream bos = null;
+        InputStream fis = null;
+        BufferedInputStream bis = null;
 		if(!fileUrl.equals("")){
 			fileName = fileUrl.substring(fileUrl.lastIndexOf("\\")+1,fileUrl.length());
 			absoFilePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" +fileUrl;
 			try  {  
 		        //第七步 下载文件到客户端
-		        OutputStream fos = null;
-		        BufferedOutputStream bos = null;
-		        InputStream fis = null;
-		        BufferedInputStream bis = null;
+		        
 		        fis = new FileInputStream(new File(absoFilePath));
 				bis = new BufferedInputStream(fis);
 				fos = response.getOutputStream();
@@ -1034,14 +1035,13 @@ public class ZlMainAction extends DispatchAction {
 		        byte[] buffer = new byte[8192];
 		        while ((bytesRead = bis.read(buffer,0,8192)) != -1) {
 		        	fos.write(buffer, 0, bytesRead);
-		        }
+		        } 
 		        fos.flush();
 		        fis.close();
 		        bis.close();
 		        fos.close();
 		        bos.close();
-		    }  
-		    catch (IOException e){  
+		    } catch (IOException e){  
 		        e.printStackTrace();  
 		    }
 		}
