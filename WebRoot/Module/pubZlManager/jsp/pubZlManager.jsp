@@ -23,6 +23,52 @@
   						<a id="addPubZlBtn" class="posAbs newAddBtn" opts="addZlOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>增加新专利</a>
   					</div>
   					<div class="layui-card-body" pad15>
+  						<!-- 查询层 -->
+  						<div class="layui-form searchForm clearfix">
+	  						<div class="itemDiv fl">
+	  							<div class="layui-input-inline">
+	  								 <input id="zlTypeInp" type="hidden" value=""/>
+	  								 <select id="zlTypeListSel" lay-filter="zlTypeListSel">
+	  								 	<option value="">请选择专利类型</option>
+	  								 	<option value="fm">发明</option>
+	  								 	<option value="syxx">实用新型</option>
+	  								 	<option value="wg">外观</option>
+	  								 	<option value="fmxx">发明+新型</option>
+	  								 </select> 
+	  							</div>
+	  						</div>
+	  						<div class="itemDiv fl">
+	  							<div class="layui-input-inline">
+	  								<input id="zlStatusInp" type="hidden" value="-1"/>
+	  								<select id="zlStatusSel" lay-filter="zlStatusSel">
+								       	<option value="">请选择领取状态</option>
+								        <option value="0">未领取</option>
+						    			<option value="1">已领取</option>
+								      </select>
+	  							</div>
+	  						</div>
+	  						<div class="itemDiv fl">
+	  							<div class="layui-input-inline">
+	  								<input id="pubDateInp" type="text" readonly value="" placeholder="请选择发布日期" autocomplete="off" class="layui-input"/>
+	  							</div>
+	  						</div>
+	  						<div class="itemDiv fl">
+	  							<div class="layui-input-inline">
+	  								<input type="text" id="zlNoInp" placeholder="请输入专利案件编号" autocomplete="off" class="layui-input">
+	  							</div>
+	  						</div>
+	  						<div class="itemDiv fl">
+	  							<div class="layui-input-inline">
+	  								<input type="text" id="zlTitleInp" placeholder="请输入专利名称" autocomplete="off" class="layui-input">
+	  							</div>
+	  						</div>
+	  						<div class="itemDiv fl">
+	  							<div class="layui-input-inline">
+	  								<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search
+ "></i></button>
+	  							</div>
+	  						</div>
+	  					</div>
   						<div id="puZlList">
   							<div class='noData'></div>
   							<table id="pubZlListTable" class="layui-table" lay-filter="pubZlTable"></table>
@@ -35,11 +81,15 @@
   	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		var loginType = parent.loginType,addEditZlOpts='',addZlFlag = false,globalPubId=0;
-		layui.use(['layer','form','jquery','table'],function(){
+		layui.use(['layer','form','jquery','table','laydate'],function(){
 			var layer = layui.layer,
 				form = layui.form,
 				$ = layui.jquery,
-				table = layui.table;
+				table = layui.table,
+				laydate = layui.laydate;
+			 laydate.render({
+			    elem: '#pubDateInp' //指定元素
+			 });
 			var page = {
 				init : function(){
 					this.onLoad();
@@ -51,6 +101,7 @@
 					}
 				},
 				bindEvent : function(){
+					//增加专利
 					$('#addPubZlBtn').on('click',function(){
 						var addZlOpts = $(this).attr('opts');
 						addEditZlOpts = addZlOpts;
@@ -75,14 +126,23 @@
 							layer.msg('抱歉，您暂无权限增加新专利', {icon:5,anim:6,time:1000});
 						}
 					});
+					//查询
+					$('#queryBtn').on('click',function(){
+						loadQueryZlList('queryLoad');
+					});
 				}
 			};
 			//获取已发布专利的list
 			function loadQueryZlList(opts){
 				if(opts == 'initLoad'){//初始加载
 					var field = {zlTitle : '',zlNo : '',zlType : '',pubDate : '', zlStatus : -1};
-				}else{//查询
-					
+				}else{//查询 queryLoad
+					var zlTypeInp = $('#zlTypeInp').val(),
+						zlStatusInp = $('#zlStatusInp').val(),
+						pubDateInp = $('#pubDateInp').val(),
+						zlNoInp = $.trim($('#zlNoInp').val()),
+						zlTitleInp = $.trim($('#zlTitleInp').val());
+					var field = {zlTitle : escape(zlTitleInp),zlNo : escape(zlNoInp),zlType : zlTypeInp,pubDate : pubDateInp, zlStatus : zlStatusInp};
 				}
 				layer.load('1');
 				table.render({
@@ -96,8 +156,14 @@
 					limit : 10,
 					limits:[10,20,30,40],
 					cols : [[
-						{field : 'id', title: 'ID', width:60, fixed: 'left' , align:'center'},
-						{field : 'title', title: '专利名称', width:200 , align:'center',fixed: 'left' },
+						{field : '', title: '序号',type:'numbers', width:60, fixed: 'left' , align:'center'},
+						{field : 'title', title: '专利名称', width:200 , align:'center',fixed: 'left',templet:function(d){
+							if(d.ajLqStatus == 0){//待领取
+								return '<span class="waitReceive fl">[待领取]</span><p class="zlTitleP fl">'+ d.title +'</p>';	
+							}else{
+								return '<span class="hasReceive fl">[已领取]</span><p class="zlTitleP fl">'+ d.title +'</p>';
+							}
+						}},
 						{field : 'type', title: '专利类型', width:150 , align:'center',templet : function(d){
 							return '<span class="zlTypeSpan">'+ d.type +'</span>';
 						}},
@@ -113,8 +179,14 @@
 						{field : 'lqrCpyName', title: '领取人所属公司', width:180 , align:'center'},
 						{field : 'lqDate', title: '领取日期', width:150 , align:'center'},
 						{field : 'pubInfo', title: '发布者', width:100 , align:'center'},
-						{field : '', title: '操作', width:100 , fixed: 'right', align:'center',templet : function(d){
-							return '<a class="layui-btn layui-btn-xs editInfoBtns" lay-event="updatePubZl" zlTitle="'+ d.title +'"  pubId="'+ d.id +'" opts="editZlOpts"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
+						{field : '', title: '操作', width:150 , fixed: 'right', align:'center',templet : function(d){
+							if(loginType == 'appUser'){
+								return '<a class="layui-btn layui-btn-xs editInfoBtns" lay-event="updatePubZl" zlTitle="'+ d.title +'"  pubId="'+ d.id +'" opts="editZlOpts"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
+							}else if(loginType == 'spUser'){
+								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'"><i class="layui-icon layui-icon-search"></i>查看详情</a>';
+							}else if(loginType == 'cpyUser'){
+								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'"><i class="layui-icon layui-icon-search"></i>查看详情</a>';
+							}
 						}},
 					]],
 					done : function(res, curr, count){
@@ -158,10 +230,52 @@
 					}else{
 						layer.msg('抱歉，您暂无权限编辑此专利', {icon:5,anim:6,time:1000});
 					}
+				}else if(obj.event == 'viewPubZlDetails'){
+					//代理机构下查看专利任务信息
+					var pubId = $(this).attr('pubId');
+					//alert(pubId)
+					$.ajax({
+	   					type:'post',
+	   			        async:false,
+	   			        dataType:'json',
+	   			        data : {pubId : pubId},
+	   			        url:'/pubZl.do?action=getDetailInfo',
+	   			        success:function (json){
+	   			        	layer.closeAll('loading');
+	   			        	console.log(json)
+	   			        	if(json['result'] == 'outDate'){
+	   			        		layer.msg('抱歉，您当前的会员已经到期，暂不能查看', {icon:5,anim:6,time:1000});
+	   			        	}
+	   			        	/*if(json['result'] == 'success'){
+	   			        		function callBackSucc(){
+	   			        			var index= parent.layer.getFrameIndex(window.name);
+			        				parent.layer.close(index);
+			        				parent.addZlFlag = true;
+	   			        		}
+	   			        		if(addEditZlOpts == 'editZlOpts'){
+	   			        			layer.msg('编辑专利成功',{icon:1,time:1000},callBackSucc);
+	   			        		}else{
+	   			        			layer.msg('添加专利成功',{icon:1,time:1000},callBackSucc);
+	   			        		}
+	   			        	}else if(json['result'] == 'noAbility'){
+	   			        		layer.msg('抱歉，您暂无权限添加编辑专利', {icon:5,anim:6,time:1000});
+	   			        	}else if(json['result'] == 'error'){
+	   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
+	   			        	}*/
+	   			        }
+	   				});
 				}
 			});
-			
-			
+			//form 监听选择专利类型
+			form.on('select(zlTypeListSel)', function(data){
+				var value = data.value;
+				value == '' ? $('#zlTypeInp').val('') : $('#zlTypeInp').val(value);
+			});
+			//form 监听选择领取状态
+			form.on('select(zlStatusSel)', function(data){
+				var value = data.value;
+				value == '' ? $('#zlStatusInp').val(-1) : $('#zlStatusInp').val(value);
+			});
 			
 			$(function(){
 				page.init();
