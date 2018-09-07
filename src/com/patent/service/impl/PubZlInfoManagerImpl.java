@@ -62,9 +62,7 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 				if(!zlType.equals("")){
 					pz.setZlType(zlType);
 				}
-				if(!zlUpCl.equals("")){
-					pz.setZlUpCl(zlUpCl);
-				}
+				pz.setZlUpCl(zlUpCl);
 				pzDao.update(sess, pz);
 				tran.commit();
 				return true;

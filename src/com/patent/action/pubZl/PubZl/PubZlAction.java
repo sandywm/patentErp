@@ -387,25 +387,45 @@ public class PubZlAction extends DispatchAction {
 					String zlTitle = Transcode.unescape(request.getParameter("zlTitle"), request);
 					String zlContent =  Transcode.unescape(request.getParameter("zlContent"), request);
 					String zlType = request.getParameter("zlType");
-					String zlUpCl = request.getParameter("zlUpCl");
-					String zlUpCl_db = zl.getZlUpCl();
+					String zlUpCl = request.getParameter("zlUpCl");//页面传递过来
+					String zlUpCl_db = zl.getZlUpCl();//数据库中
+					String zlUpCl_final = "";//需要删除的文件路径
 					if(zlUpCl.equals("")){//删除该文件夹里面所有文件
-						
+						if(!zlUpCl_db.equals("")){
+							String firstFilePath = zlUpCl_db.split(",")[0].replaceAll("/", "\\\\");
+							FileOpration.deleteAllFile(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + firstFilePath.substring(0,firstFilePath.lastIndexOf("\\")));
+						}
 					}else{
-						if(zlUpCl_db.equals("")){
+						if(zlUpCl_db.equals("")){//数据库为空
 							//不执行删除
 						}else{
-							if(zlUpCl.equals(zlUpCl_db)){
+							if(zlUpCl.equals(zlUpCl_db)){//数据库和页面传递相同
 								//不执行删除
 							}else{
 								String[] zlUpClArr = zlUpCl.split(",");
 								String[] zlUpClArr_db = zlUpCl_db.split(",");
-								for(Integer i = 0 ; i < zlUpClArr.length ; i++){
-									for(Integer j = 0 ; j < zlUpClArr_db.length ; j++){
-										
+								for(Integer i = 0 ; i < zlUpClArr_db.length ; i++){
+									boolean existFlag = false;
+									for(Integer j = 0 ; j < zlUpClArr.length ; j++){
+										if(zlUpClArr_db[i].equals(zlUpClArr[j])){
+											existFlag = true;
+											break;
+										}else{
+											existFlag = false;
+										}
+									}
+									if(!existFlag){
+										zlUpCl_final += zlUpClArr_db[i] + ",";
 									}
 								}
-
+								if(!zlUpCl_final.equals("")){
+									zlUpCl_final = zlUpCl_final.substring(0, zlUpCl_final.length());
+									//删除文件
+									String[] zlUpClArr_final = zlUpCl_final.split(",");
+									for(Integer k = 0 ; k < zlUpClArr_final.length ; k++){
+										FileOpration.deleteFile(zlUpClArr_final[k]);
+									}
+								}
 							}
 						}
 					}

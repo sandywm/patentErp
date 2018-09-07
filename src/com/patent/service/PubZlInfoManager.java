@@ -32,7 +32,7 @@ public interface PubZlInfoManager {
 	 * @param zlTitle 专利标题(""不修改)
 	 * @param zlContent 专利内容简介(""不修改)
 	 * @param zlType 专利类型(""不修改)
-	 * @param zlUpCl 专利交底材料(""不修改)
+	 * @param zlUpCl 专利交底材料
 	 * @return
 	 * @throws WEBException
 	 */

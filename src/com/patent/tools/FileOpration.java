@@ -64,12 +64,10 @@ public class FileOpration {
 				File delfile = new File(path + "\\" + tempList[i]); 
 				if(!delfile.isDirectory()){
 					delfile.delete();  
-					System.out.println(delfile.getAbsolutePath() + "删除文件成功");  
 				}else if(delfile.isDirectory()){
 					deleteAllFile(path + "\\" + tempList[i]);  
 				}
 			}
-			System.out.println(file.getAbsolutePath()+"删除成功");  
 			file.delete();  
 		}
 		return true;
