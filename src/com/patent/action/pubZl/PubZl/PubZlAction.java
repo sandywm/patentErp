@@ -295,7 +295,7 @@ public class PubZlAction extends DispatchAction {
 				msg = "success";
 			}
 		}
-		if(msg.equals("success")){
+		if(!msg.equals("error")){
 			List<PubZlInfoTb> pbZlList = pzm.listSpecInfoByOpt(pubId, userId);
 			if(pbZlList.size() > 0){
 				PubZlInfoTb pz = pbZlList.get(0);
@@ -342,9 +342,15 @@ public class PubZlAction extends DispatchAction {
 				}
 				ApplyInfoTb appUser = pz.getApplyInfoTb();
 				map.put("pubInfo", appUser.getAppName());
-				map.put("pubLxrInfo", appUser.getAppLxr());
-				map.put("pubLxrTelInfo", appUser.getAppTel());
-				map.put("pubLxrEmailInfo", appUser.getAppEmail());
+				if(msg.equals("success")){//针对有权限的开放
+					map.put("pubLxrInfo", appUser.getAppLxr());
+					map.put("pubLxrTelInfo", appUser.getAppTel());
+					map.put("pubLxrEmailInfo", appUser.getAppEmail());
+				}else{//没权限或者会员已到期的不能查看
+					map.put("pubLxrInfo", "");
+					map.put("pubLxrTelInfo", "");
+					map.put("pubLxrEmailInfo", "");
+				}
 				Integer ajId = pz.getAjId();
 				String ajNoQt = "";
 				map.put("ajId", ajId);
@@ -475,9 +481,9 @@ public class PubZlAction extends DispatchAction {
 		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO);
 		ApplyInfoManager am = (ApplyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_APPLY_INFO);
 		Map<String,String> map = new HashMap<String,String>();
-		String msg = "";
-		Integer pubId = CommonTools.getFinalInteger(request.getParameter("pubId"));
-		Integer zlStatus = 0;
+		String msg = "error";
+		Integer pubId = CommonTools.getFinalInteger(request.getParameter("pubId"));//发布专利任务编号
+		Integer zlStatus = CommonTools.getFinalInteger("zlStatus", request);//0:未领取,1:已领取
 		Integer lqUserId = this.getLoginUserId(request);;
 		String lqUserName = "";
 		Integer lqCpyId = 0;
@@ -485,15 +491,17 @@ public class PubZlAction extends DispatchAction {
 		String lqDate = "";
 		Integer ajId = 0;
 		boolean flag = false;
+		String currLoginType = this.getLoginType(request);
 		List<PubZlInfoTb> pzList = new ArrayList<PubZlInfoTb>();
 		if(pubId > 0){
-			if(this.getLoginType(request).equals("appUser")){//申请人/公司修改专利状态
+			if(currLoginType.equals("appUser")){//申请人/公司修改专利状态
 				Integer currUserId = this.getLoginUserId(request);
 				pzList = pzm.listSpecInfoByOpt(pubId, currUserId);
-				if(pzList.size() > 0 && pzList.get(0).getZlStatus().equals(1)){//只有当专利领取状态为已领取的时候才能进行撤销
+				if(pzList.size() > 0){//只有当专利领取状态为已领取的时候才能进行撤销
+					zlStatus = 0;//只能撤销
 					flag = true;
 				}
-			}else if(this.getLoginType(request).equals("cpyUser")){//当是代理机构员工时
+			}else if(currLoginType.equals("cpyUser")){//当是代理机构员工时
 				//必须是银牌以上会员并且没到期才能接任务
 				CpyUserInfo cUser = cum.getEntityById(lqUserId);
 				CpyInfoTb cpy = cUser.getCpyInfoTb();
@@ -527,15 +535,6 @@ public class PubZlAction extends DispatchAction {
 								flag = true;
 							}
 						}
-						if(flag){
-							zlStatus  = 1;
-						}
-					}else{//已领取，设置成撤销领取
-						//先判断是不是自己领取的
-						if(pzList.get(0).getLqCpyId().equals(cpy.getId())){
-							zlStatus  = 0;
-							flag = true;
-						}
 					}
 				}
 			}
@@ -543,7 +542,7 @@ public class PubZlAction extends DispatchAction {
 				msg = "success";
 				String mailTitle = "";
 				String mailCon = "";
-				if(this.getLoginType(request).equals("appUser")){//申请人/公司撤销领取状态
+				if(currLoginType.equals("appUser")){//申请人/公司撤销领取状态
 					PubZlInfoTb pz = pzm.listSpecInfoByOpt(pubId, this.getLoginUserId(request)).get(0);
 					mailTitle = "专利任务撤回通知";
 					String zlTitle = pz.getZlTitle();
@@ -561,8 +560,8 @@ public class PubZlAction extends DispatchAction {
 					//减少领取公司的领取数量
 					cm.updateZlNumById(lqCpyId, -1);
 					//需要修改对应的案件终止状态--------------------------------------------
-					zlm.updateStopStatusById(ajId, 1, CurrentTime.getCurrentTime(), am.getEntityById(this.getLoginUserId(request)).getAppName(), this.getLoginType(request));
-				}else if(this.getLoginType(request).equals("cpyUser")){//代理公司领取/撤销领取状态
+					zlm.updateStopStatusById(ajId, 1, CurrentTime.getCurrentTime(), am.getEntityById(this.getLoginUserId(request)).getAppName(), currLoginType);
+				}else if(currLoginType.equals("cpyUser")){//代理公司领取/撤销领取状态
 					PubZlInfoTb pz = pzm.listSpecInfoByOpt(pubId, 0).get(0);
 					lqCpyId = pz.getLqCpyId();
 					if(zlStatus.equals(0)){//被代理机构员工撤销
@@ -594,7 +593,7 @@ public class PubZlAction extends DispatchAction {
 						//增加领取公司的领取数量
 						cm.updateZlNumById(lqCpyId, 1);
 						//需要修改对应的案件终止状态---------------------------------------------
-						zlm.updateStopStatusById(ajId, 0, CurrentTime.getCurrentTime(), lqUserName, this.getLoginType(request));
+						zlm.updateStopStatusById(ajId, 0, CurrentTime.getCurrentTime(), lqUserName, currLoginType);
 					}
 				}
 				//修改领取状态
