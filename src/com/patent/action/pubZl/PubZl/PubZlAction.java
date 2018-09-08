@@ -24,6 +24,7 @@ import org.apache.struts.actions.DispatchAction;
 import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
+import com.patent.module.ApplyInfoTb;
 import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.PubZlInfoTb;
@@ -269,7 +270,7 @@ public class PubZlAction extends DispatchAction {
 		Integer userId = 0;
 		String msg = "error";
 		String loginType = this.getLoginType(request);
-		if(loginType.equals("appuser")){
+		if(loginType.equals("appUser") || loginType.equals("spUser")){
 			userId = this.getLoginUserId(request);
 			msg = "success";
 		}else{
@@ -281,15 +282,12 @@ public class PubZlAction extends DispatchAction {
 					List<CpyInfoTb> cpyList = cm.listInfoById(cpyId);
 					if(cpyList.size() > 0){
 						CpyInfoTb cpy = cpyList.get(0);
-						if(cpy.getCpyLevel() > 0){//收费会员
-							Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpy.getEndDate());
-							if(diffDays > 0){
-								msg = "success";
-							}else{
-								msg = "outDate";//过期会员不能使用
-							}
+						Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpy.getEndDate());
+						//免费会员、收费会员在未到期的情况下都能查看
+						if(diffDays > 0){
+							msg = "success";
 						}else{
-							msg = "lowLevel";//免费会员不能使用
+							msg = "outDate";//过期会员不能使用
 						}
 					}
 				}
@@ -342,7 +340,11 @@ public class PubZlAction extends DispatchAction {
 				}else{
 					map.put("lqDate", "");
 				}
-				map.put("pubInfo", pz.getApplyInfoTb().getAppName());
+				ApplyInfoTb appUser = pz.getApplyInfoTb();
+				map.put("pubInfo", appUser.getAppName());
+				map.put("pubLxrInfo", appUser.getAppLxr());
+				map.put("pubLxrTelInfo", appUser.getAppTel());
+				map.put("pubLxrEmailInfo", appUser.getAppEmail());
 				Integer ajId = pz.getAjId();
 				String ajNoQt = "";
 				map.put("ajId", ajId);
@@ -506,31 +508,24 @@ public class PubZlAction extends DispatchAction {
 				if(pzList.size() > 0){//存在信息&& pzList.get(0).getZlStatus().equals(zlStatus)
 					if(pzList.get(0).getZlStatus().equals(0)){//未领取，设置为成领取
 						Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpy.getEndDate());
-						if(cpyLevel > 0 &&  diffDays > 0){
-							//获取当前代理机构已增加的专利个数
-							Integer totalNum = cpy.getZlNum();
-							if(cpyLevel.equals(1) && totalNum < Constants.ADD_ZL_NUM_YP){
-								flag = true;
-							}else if(cpyLevel.equals(2) && totalNum < Constants.ADD_ZL_NUM_JP){
-								flag = true;
-							}else if(cpyLevel.equals(3)){//钻石无限制
-								flag = true;
-							}else{
-								flag = false;
-							}
-						}else if(cpyLevel.equals(0)){//免费会员
-							//免费会员在试用期内部判断
+						if(cpyLevel > 0){//收费会员
 							if(diffDays > 0){
-								flag = true;
-							}else{
-								//获取当月有无增加的专利---免费会员每月有增加专利条数的限制
-								Integer currMonthAddNum = 0;//从数据库获取
-								if(currMonthAddNum < Constants.MONTH_MAX_ZL_NUM_TP){
+								//获取当前代理机构已增加的专利个数
+								Integer totalNum = cpy.getZlNum();
+								if(cpyLevel.equals(1) && totalNum < Constants.ADD_ZL_NUM_YP){
 									flag = true;
+								}else if(cpyLevel.equals(2) && totalNum < Constants.ADD_ZL_NUM_JP){
+									flag = true;
+								}else if(cpyLevel.equals(3)){//钻石无限制
+									flag = true;
+								}else{
+									flag = false;
 								}
 							}
-						}else{
-							flag = false;
+						}else{//免费会员
+							if(diffDays > 0){
+								flag = true;
+							}
 						}
 						if(flag){
 							zlStatus  = 1;

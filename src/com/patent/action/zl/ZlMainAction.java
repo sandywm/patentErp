@@ -720,6 +720,7 @@ public class ZlMainAction extends DispatchAction {
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		boolean abilityFlag = false;
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
@@ -733,9 +734,11 @@ public class ZlMainAction extends DispatchAction {
 		Integer checkUserId = -1;
 		Integer cpyId = -1;
 		Integer zxUserId_db = 0;
+		String ajNoQt = "";
 		String currDate = CurrentTime.getStringDate();
 		Integer currLoginUserId = this.getLoginUserId(request);
 		Integer zxUserId_yj = CommonTools.getFinalInteger("zxUserId_yj", request);//准备接受移交撰写任务的用户
+		String msg = "error";
 		if(this.getLoginType(request).equals("cpyUser")){
 			CpyUserInfo user = cum.getEntityById(currLoginUserId);
 			if(user != null){
@@ -748,7 +751,7 @@ public class ZlMainAction extends DispatchAction {
 				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");
 			}
 			if(abilityFlag){
-				//可以修改任意操作人员
+				//可以修改任意操作人员(强制修改)
 				tjUserId = CommonTools.getFinalInteger("tjUserId", request);
 				tzsUserId = CommonTools.getFinalInteger("tzsUserId", request);
 				feeUserId = CommonTools.getFinalInteger("feeUserId", request);
@@ -758,41 +761,63 @@ public class ZlMainAction extends DispatchAction {
 				checkUserId = CommonTools.getFinalInteger("checkUserId", request);
 				boolean flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, tjUserId, 
 						tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+				if(flag){
+					msg = "success";
+				}
 			}else{//不是管理员、不具有分配专利操作人员的权限（增加权限）
 				if(Ability.checkAuthorization(this.getLoginRoleId(request), "upZl")){//有修改权限
 					//可以领取任务，前提是当前专利没有分配撰写人员
 					if(cpyId > 0){
 						List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
 						if(zlList.size() > 0){
-							zxUserId_db = zlList.get(0).getZxUserId();
+							ZlajMainInfoTb zl = zlList.get(0);
+							zxUserId_db = zl.getZxUserId();
+							ajNoQt = zl.getAjNoQt();
 							if(zxUserId_db > 0){
 								//存在，就不能进行修改,只能由当前撰写人进行任务移交
 								//增加一个任务移交的流程
-								CpyUserInfo user_yj = cum.getEntityById(zxUserId_yj);
-								if(user_yj != null){
-									
+								if(zxUserId_db.equals(currLoginUserId)){//只能是当前撰写人亲自移交
+									CpyUserInfo user_yj = cum.getEntityById(zxUserId_yj);
+									if(user_yj != null){
+										Integer lcId = lcm.addLcInfo(zlId, "移交撰写任务", user.getUserName()+"将撰写任务移交给"+user_yj.getUserName(), currDate, 
+												currDate, currDate, currDate);
+										if(lcId > 0){
+											//获取当前流程数字
+											List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
+											double currLcNo = 1.0;
+											if(mxList.size() > 0){
+												currLcNo = mxList.get(0).getLcMxNo();
+											}
+											mxm.addLcMx(lcId, zxUserId_yj, "领取撰写任务", currLcNo, currDate, currDate,
+													"", 0, "", "", "");
+											//给被移交人发送邮件提醒
+											mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, zxUserId_yj, "cpyUser", ajNoQt + "撰写任务移交", user.getUserName()+"将["+ajNoQt+"]撰写任务移交给你");
+											msg = "success";
+										}
+									}
+								}else{
+									msg = "noAbility";//只能有当前人亲自移交（归类到没有移交权限中）
 								}
-								Integer lcId = lcm.addLcInfo(zlId, "移交撰写任务", user.getUserName()+"将撰写任务移交给", currDate, 
-										currDate, currDate, currDate);
-								if(lcId > 0){
-									mxm.addLcMx(lcId, zxUserId, "领取撰写任务", 1.0, currDate, currDate,
-											"", 0, "", "", "");
-								}
-							}else{
+								
+							}else{//当前专利不存在撰写人（可以直接领取）
 								boolean flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, currLoginUserId, tjUserId, 
 										tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
 								if(flag){
 									//增加领取流程明细
 									List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zlId);
-									if(lcList.size() > 0){
-										
-									}else{
-										Integer lcId = lcm.addLcInfo(zlId, "领取撰写任务", user.getUserName()+"领取了撰写任务", currDate, 
-												currDate, currDate, currDate);
-										if(lcId > 0){
-											mxm.addLcMx(lcId, zxUserId, "领取撰写任务", 1.0, currDate, currDate,
-													"", 0, "", "", "");
+									Integer lcId = lcm.addLcInfo(zlId, "领取撰写任务", user.getUserName()+"领取了撰写任务", currDate, 
+											currDate, currDate, currDate);
+									if(lcList.size() > 0 && lcId > 0){//肯定存在
+										//获取最后一个流程
+										ZlajLcInfoTb lc = lcList.get(0);
+										//获取当前流程数字
+										List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lc.getId());
+										double currLcNo = 1.0;
+										if(mxList.size() > 0){
+											currLcNo = mxList.get(0).getLcMxNo();
 										}
+										mxm.addLcMx(lc.getId(), currLoginUserId, "领取撰写任务", currLcNo, currDate, currDate,"", 0, "", "", "");
+										msg = "success";
 									}
 								}
 							}
@@ -802,7 +827,8 @@ public class ZlMainAction extends DispatchAction {
 			}
 		}
 		
-		
+		map.put("success", msg);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -887,6 +913,8 @@ public class ZlMainAction extends DispatchAction {
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		Integer cpyId = 0;
 		String nextNumStr = "";
 		String ajNoQt = "";
@@ -952,13 +980,13 @@ public class ZlMainAction extends DispatchAction {
 							String ajRemark = CommonTools.getFinalStr("ajRemark", request);
 							String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
 							Integer pubZlId = CommonTools.getFinalInteger("pubZlId", request);//发布专利的编号
-							Integer zxUserId = CommonTools.getFinalInteger("zxUserId", request);
-							Integer tjUserId = CommonTools.getFinalInteger("tjUserId", request);
-							Integer tzsUserId = CommonTools.getFinalInteger("tzsUserId", request);
-							Integer feeUserId = CommonTools.getFinalInteger("feeUserId", request);
-							Integer bzUserId = CommonTools.getFinalInteger("bzUserId", request);
-							Integer bzshUserId = CommonTools.getFinalInteger("bzshUserId", request);
-							Integer bhUserId = CommonTools.getFinalInteger("bhUserId", request);
+							Integer zxUserId = CommonTools.getFinalInteger("zxUserId", request);//可以为空
+							Integer tjUserId = CommonTools.getFinalInteger("tjUserId", request);//不能为空
+							Integer tzsUserId = CommonTools.getFinalInteger("tzsUserId", request);//不能为空
+							Integer feeUserId = CommonTools.getFinalInteger("feeUserId", request);//不能为空
+							Integer bzUserId = CommonTools.getFinalInteger("bzUserId", request);//不能为空
+							Integer bzshUserId = CommonTools.getFinalInteger("bzshUserId", request);//不能为空
+							Integer bhUserId = CommonTools.getFinalInteger("bhUserId", request);//不能为空
 							
 							String ajApplyDate = "";
 							String ajStatus = CommonTools.getFinalStr("ajStatus", request);
@@ -967,6 +995,8 @@ public class ZlMainAction extends DispatchAction {
 									ajYxqId, ajUpload, ajRemark, ajEwyqId, ajApplyDate, ajStatus, pubZlId,cpyId,checkUserId,zxUserId,
 									tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId);
 							if(zlId > 0){
+								//增加流程
+//								lcm.addLcInfo(zlId, "提出申请", lcDetail, sDate, cpyDate, comDate, gfDate);
 								msg = "success";
 //								if(zxUserId.equals(0)){
 									//给全体员工（对专利具有修改操作的人）发送邮件
@@ -1006,30 +1036,38 @@ public class ZlMainAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		String msg = "error";
 		Map<String,String> map = new HashMap<String,String>();
+		boolean abilityFlag = false;
+		String stopUser = "";
+		String stopDate = "";
+		String stopUserType = "";
+		Integer stopStatus = 0;
 		if(this.getLoginType(request).equals("cpyUser")){
 			//判断权限
 			//获取当前用户是否有修改权限
-			boolean abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");//只有具有创建专利权限和管理员才有资格修改专利状态
+			}
 			if(abilityFlag){
-				String zlIdStr = CommonTools.getFinalStr("zlId", request);//可能是发明+新型（发布人可同时取消）
-				if(!zlIdStr.equals("")){
-					String[] zlIdStrArr = zlIdStr.split(",");
-					Integer stopStatus = CommonTools.getFinalInteger("stopStatus", request);
-					String stopUser = "";
-					String stopDate = "";
-					String stopUserType = "";
-					if(stopStatus.equals(1)){
-						stopUser = CommonTools.getFinalStr("stopUser", request);
-						stopDate = CurrentTime.getCurrentTime();
-						stopUserType = this.getLoginType(request);
+				Integer zlId = CommonTools.getFinalInteger("zlId", request);
+				if(zlId > 0){
+					CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
+					if(user != null){
+						stopStatus = CommonTools.getFinalInteger("stopStatus", request);
+						if(stopStatus.equals(1)){
+							stopUser = user.getUserName();
+							stopDate = CurrentTime.getCurrentTime();
+							stopUserType = this.getLoginType(request);
+						}
+						boolean flag = zlm.updateStopStatusById(zlId, stopStatus, stopDate, stopUser, stopUserType);
+						if(flag){
+							msg = "success";
+						}
 					}
-					zlm.updateStopStatusById(Integer.parseInt(zlIdStrArr[0]), stopStatus, stopDate, stopUser, stopUserType);
-					if(zlIdStrArr.length == 2){
-						zlm.updateStopStatusById(Integer.parseInt(zlIdStrArr[1]), stopStatus, stopDate, stopUser, stopUserType);
-					}
-					msg = "success";
 				}
 			}else{
 				msg = "noAbility";
