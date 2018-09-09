@@ -47,6 +47,10 @@
 #basicInfoDiv li.specHeiLi{
 	height:100px;
 }
+#basicInfoDiv li.specHeiLi div.innerPar:first-child{
+	width:100%;
+	border-right:none;
+}
 .specSvg{
 	margin:8px 0 0 5px !important;
 }

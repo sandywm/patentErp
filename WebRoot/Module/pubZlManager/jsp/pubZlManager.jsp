@@ -19,8 +19,8 @@
   			<div class="layui-col-md12 layui-col-lg12">
   				<div class="layui-card">
   					<div class="layui-card-header posRel">
-  						<span>专利任务发布</span>
-  						<a id="addPubZlBtn" class="posAbs newAddBtn" opts="addZlOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>增加新专利</a>
+  						<span id="zlNavTit"></span>
+  						<a id="addPubZlBtn" class="posAbs newAddBtn" opts="addZlOpts" href="javascript:void(0)"><i class="layui-icon" style="font-size:20px;">&#xe609;</i>发布专利任务</a>
   					</div>
   					<div class="layui-card-body" pad15>
   						<!-- 查询层 -->
@@ -42,7 +42,7 @@
 	  								<input id="zlStatusInp" type="hidden" value="-1"/>
 	  								<select id="zlStatusSel" lay-filter="zlStatusSel">
 								       	<option value="">请选择领取状态</option>
-								        <option value="0">未领取</option>
+								        <option value="0">待领取</option>
 						    			<option value="1">已领取</option>
 								      </select>
 	  							</div>
@@ -98,7 +98,28 @@
 				onLoad : function(){
 					if(loginType == 'appUser'){
 						$('#addPubZlBtn').show();
+						$('#zlNavTit').html('专利任务发布');
+					}else{
+						$('#zlNavTit').html('专利任务列表');
 					}
+					
+					$.ajax({
+	   					type:'post',
+	   			        async:false,
+	   			        dataType:'json',
+	   			        data:{zlTitle : '',zlNo : '',zlType : '',pubDate : '', zlStatus : -1},
+	   			        url:'pubZl.do?action=getPageInfo',
+	   			        success:function (json){
+	   			        	layer.closeAll('loading');
+	   			        	console.log("111")
+	   			        	console.log(json)
+	   			        	if(json['result'] == 'success'){
+	   			        		console.log(json)
+	   			        	}else if(json['result'] == 'outDate'){
+	   			        		layer.msg('抱歉，您当前的会员已经到期，暂不能查看', {icon:5,anim:6,time:1000});
+	   			        	}
+	   			        }
+	   				});
 				},
 				bindEvent : function(){
 					//增加专利
@@ -179,13 +200,13 @@
 						{field : 'lqrCpyName', title: '领取人所属公司', width:180 , align:'center'},
 						{field : 'lqDate', title: '领取日期', width:150 , align:'center'},
 						{field : 'pubInfo', title: '发布者', width:100 , align:'center'},
-						{field : '', title: '操作', width:150 , fixed: 'right', align:'center',templet : function(d){
+						{field : '', title: '操作', fixed: 'right', width:200, align:'center',templet : function(d){
 							if(loginType == 'appUser'){
 								return '<a class="layui-btn layui-btn-xs editInfoBtns" lay-event="updatePubZl" zlTitle="'+ d.title +'"  pubId="'+ d.id +'" opts="editZlOpts"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
 							}else if(loginType == 'spUser'){
-								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'"><i class="layui-icon layui-icon-search"></i>查看详情</a>';
+								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'"><i class="layui-icon layui-icon-search"></i>任务详情</a>';
 							}else if(loginType == 'cpyUser'){
-								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'"><i class="layui-icon layui-icon-search"></i>查看详情</a>';
+								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'" taskTit="'+ d.title +'"><i class="layui-icon layui-icon-search"></i>任务详情</a> <a class="btn layui-btn layui-btn-xs" lay-event="receiveZlTask" zlStatus="'+ d.ajLqStatus +'" zlTitle="'+ d.title +'" pubId="'+ d.id +'">领取</a>';
 							}
 						}},
 					]],
@@ -232,38 +253,53 @@
 					}
 				}else if(obj.event == 'viewPubZlDetails'){
 					//代理机构下查看专利任务信息
-					var pubId = $(this).attr('pubId');
-					//alert(pubId)
-					$.ajax({
-	   					type:'post',
-	   			        async:false,
-	   			        dataType:'json',
-	   			        data : {pubId : pubId},
-	   			        url:'/pubZl.do?action=getDetailInfo',
-	   			        success:function (json){
-	   			        	layer.closeAll('loading');
-	   			        	console.log(json)
-	   			        	if(json['result'] == 'outDate'){
-	   			        		layer.msg('抱歉，您当前的会员已经到期，暂不能查看', {icon:5,anim:6,time:1000});
-	   			        	}
-	   			        	/*if(json['result'] == 'success'){
-	   			        		function callBackSucc(){
-	   			        			var index= parent.layer.getFrameIndex(window.name);
-			        				parent.layer.close(index);
-			        				parent.addZlFlag = true;
-	   			        		}
-	   			        		if(addEditZlOpts == 'editZlOpts'){
-	   			        			layer.msg('编辑专利成功',{icon:1,time:1000},callBackSucc);
-	   			        		}else{
-	   			        			layer.msg('添加专利成功',{icon:1,time:1000},callBackSucc);
-	   			        		}
-	   			        	}else if(json['result'] == 'noAbility'){
-	   			        		layer.msg('抱歉，您暂无权限添加编辑专利', {icon:5,anim:6,time:1000});
-	   			        	}else if(json['result'] == 'error'){
-	   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
-	   			        	}*/
-	   			        }
-	   				});
+					globalPubId = $(this).attr('pubId');
+					var taskTit = $(this).attr('taskTit');
+					var fullScreenIndex = layer.open({
+						title:taskTit + '专利任务详情',
+						type: 2,
+					  	area: ['700px', '500px'],
+					  	fixed: false, //不固定
+					  	maxmin: false,
+					  	shadeClose :false,
+					  	content : '/Module/pubZlManager/jsp/viewZlTaskDetail.html',
+					  	end:function(){
+					  		/*if(addZlFlag){
+					  			loadQueryZlList('initLoad');
+					  		}*/
+					  	}
+					});	
+					layer.full(fullScreenIndex);
+					
+				}else if(obj.event == 'receiveZlTask'){
+					var zlStatus = $(this).attr('zlStatus'),
+						pubId = $(this).attr('pubId'),
+						zlTitle = $(this).attr('zlTitle');
+					layer.confirm('确认要领取专利任务[<span class="taskColor">'+ zlTitle +'</span>]吗？', {
+					  title:'提示',
+					  skin: 'layui-layer-molv',
+					  btn: ['确定','取消'] //按钮
+					},function(){
+						layer.load('1');
+						$.ajax({
+		   					type:'post',
+		   			        async:false,
+		   			        dataType:'json',
+		   			        data:{pubId : pubId,zlStatus:zlStatus},
+		   			        url:'/pubZl.do?action=updateHignPzInfo',
+		   			        success:function (json){
+		   			        	layer.closeAll('loading');
+		   			        	console.log(json)
+		   			        	if(json['result'] == 'success'){
+		   			        		layer.msg('领取成功',{icon:1,time:1000},function(){
+		   			        			loadQueryZlList('initLoad');
+					        		});
+		   			        	}else if(json['result'] == 'lowLevel'){
+		   			        		layer.msg('抱歉，您当前的会员已经到期或当前等级不够，暂不能领取', {icon:5,anim:6,time:1000});
+		   			        	}
+		   			        }
+		   				});
+					});
 				}
 			});
 			//form 监听选择专利类型

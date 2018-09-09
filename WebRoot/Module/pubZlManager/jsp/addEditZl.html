@@ -58,7 +58,7 @@
 		<div class="layui-form-item">
 			<label class="layui-form-label"></label>
 			<div class="layui-input-block" style="width:75%;text-align:center;">
-				<button type="button" id="saveZlBtn"  class="layui-btn" style="width:120px;margin-left:0px;">保存专利</button>
+				<button type="button" id="saveZlBtn"  class="layui-btn" style="width:120px;margin-left:0px;"><i class="layui-icon">&#xe609;</i>发布任务</button>
 			</div>
 		</div>
 	</div>
@@ -167,6 +167,8 @@
 			   			        		layer.msg('抱歉，您暂无权限添加编辑专利', {icon:5,anim:6,time:1000});
 			   			        	}else if(json['result'] == 'error'){
 			   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
+			   			        	}else if(json['result'] == 'notUpdate'){//只有在专利没领取的时候才能修改
+			   			        		layer.msg('抱歉，该任务已被领取，暂不能编辑', {icon:5,anim:6,time:1000});
 			   			        	}
 			   			        }
 			   				});
@@ -229,16 +231,14 @@
 					strHtml += '<tbody id="upLoadFileList">';
 					var zlUpClArray = json.zlUpCl;
 					for(var i=0;i<zlUpClArray.length;i++){
-						//zlUpClArray[i].fileName.split('/')[zlUpClArray[i].fileName.split('/').length-1]
 						strHtml += '<tr id="upload-'+ i +'">';
 						strHtml += '<td>'+ zlUpClArray[i].fileName +'</td>';
 						strHtml += '<td>'+ zlUpClArray[i].fileSize +'</td>';
 						strHtml += '<td><span style="color: #5FB878;">上传成功</span></td>';
 						strHtml += '<td>';
-						//strHtml += '<button class="layui-btn layui-btn-xs reloadBtn reloadBtn_edit layui-hide">重传</button>';
 						strHtml += '<input class="uploadInpHid" name="hasUpSuccInp" value="'+ zlUpClArray[i].zlUpClPath +'" type="hidden"/>';
-						strHtml += '<button class="layui-btn layui-btn-xs downloadBtn" downFilePath="'+ zlUpClArray[i].zlUpClPath +'">下载</button>';
-						strHtml += '<button class="layui-btn layui-btn-xs layui-btn-danger deleteBtn deleteBtn_edit">删除</button></td>';
+						strHtml += '<button class="layui-btn layui-btn-xs layui-btn-danger deleteBtn deleteBtn_edit">删除</button>';
+						strHtml += '<button class="layui-btn layui-btn-xs downloadBtn" downFilePath="'+ zlUpClArray[i].downFilePath +'">下载</button></td>';
 						strHtml += '</tr>';
 					}
 					strHtml += '</tbody></table>';
@@ -361,8 +361,7 @@
 				}
 				$('.downloadBtn').on('click',function(){
 					var downFilePath = $(this).attr('downFilePath');
-					window.location.href = "/zlm.do?action=downFile&fileUrl="+downFilePath;
-					
+					window.location.href = "/zlm.do?action=downFile&fileUrl=" + downFilePath;
 				});
 			}
 			$(function(){
