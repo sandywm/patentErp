@@ -702,7 +702,193 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 修改专利操作人员
+	 * 获取当前用户有多少操作类型（zx-撰写,sc-审查,dgtj-定稿提交,tzs-通知书,fycj-费用催缴,bz-补正,bzsh-补正审核,bh-驳回）
+	 * 为权利移交时使用
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-8 下午10:03:36
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCurrOperatorType(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
+		String msg = "error";
+		if(this.getLoginType(request).equals("cpyUser")){//只针对代理机构下员工使用
+			Integer currLoginUserId = this.getLoginUserId(request);
+			if(Ability.checkAuthorization(this.getLoginRoleId(request), "upZl")){//只针对具有修改权限的员工使用
+				CpyUserInfo user = cum.getEntityById(currLoginUserId);
+				if(user != null){
+					Integer cpyId = user.getCpyInfoTb().getId();
+					Integer zlId = CommonTools.getFinalInteger("zlId", request);
+					List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
+					if(zlList.size() > 0){
+						ZlajMainInfoTb zl = zlList.get(0);
+						if(zl.getAjStopStatus().equals(0)){//只有案件在正常状态下才能进行移交
+							Map<String,String> map_d = new HashMap<String,String>();
+							List<Object> list_d = new ArrayList<Object>();
+							Integer yyNum = 0;
+							if(currLoginUserId.equals(zl.getZxUserId())){
+								map_d.put("typeName", "zx");
+								list_d.add(map_d);
+								yyNum += 1;
+							}
+							if(currLoginUserId.equals(zl.getCheckUserId())){
+								map_d = new HashMap<String,String>();
+								map_d.put("typeName", "sc");
+								list_d.add(map_d);
+								yyNum += 1;
+							}
+							if(currLoginUserId.equals(zl.getTjUserId())){
+								map_d = new HashMap<String,String>();
+								map_d.put("typeName", "dgtj");
+								list_d.add(map_d);
+								yyNum += 1;
+							}
+							if(currLoginUserId.equals(zl.getTzsUserId())){
+								map_d = new HashMap<String,String>();
+								map_d.put("typeName", "tzs");
+								list_d.add(map_d);
+								yyNum += 1;
+							}
+							if(currLoginUserId.equals(zl.getFeeUserId())){
+								map_d = new HashMap<String,String>();
+								map_d.put("typeName", "fycj");
+								list_d.add(map_d);
+								yyNum += 1;
+							}
+							if(currLoginUserId.equals(zl.getBzUserId())){
+								map_d = new HashMap<String,String>();
+								map_d.put("typeName", "bz");
+								list_d.add(map_d);
+								yyNum += 1;
+							}
+							if(currLoginUserId.equals(zl.getBzshUserId())){
+								map_d = new HashMap<String,String>();
+								map_d.put("typeName", "bzsh");
+								list_d.add(map_d);
+								yyNum += 1;
+							}
+							if(currLoginUserId.equals(zl.getBhUserId())){
+								map_d = new HashMap<String,String>();
+								map_d.put("typeName", "bh");
+								list_d.add(map_d);
+								yyNum += 1;
+							}
+							if(yyNum.equals(0)){
+								msg = "noInfo";
+							}else{
+								msg = "success";
+								map.put("yyType", list_d);
+							}
+						}else{
+							msg = "ajStop";//案件在终止状态下不能进行移交操作
+						}
+					}
+				}
+			}else{
+				msg = "noAbility";
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 流程移交操作--针对代理机构员工开放
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-9 下午09:15:22
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward setLcYj(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		boolean abilityFlag = false;
+		Integer zlId = CommonTools.getFinalInteger("zlId", request);
+		String msg = "error";
+		boolean flag = false;
+		if(zlId > 0){
+			if(this.getLoginType(request).equals("cpyUser")){
+				Integer currLoginUserId = this.getLoginUserId(request);
+				//获取当前用户是否拥有增加的权限--将分配专利操作人员的权限归类为增加权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");
+				if(abilityFlag){
+					Integer userId_yj = CommonTools.getFinalInteger("userId_yj", request);//准备接受移交任务的用户
+					//移交类型zx-撰写,sc-审查,dgtj-定稿提交,tzs-通知书,fycj-费用催缴,bz-补正,bzsh-补正审核,bh-驳回
+					String yjType = CommonTools.getFinalStr("yjType", request);//移交类型
+					String[] yjTypeArr = {"zx","sc","dgtj","tzs","fycj","bz","bzsh","bh"};
+					if(userId_yj > 0 && !yjType.equals("")){
+						for(Integer i = 0 ; i < yjTypeArr.length ; i++){
+							if(yjType.equals(yjTypeArr[i])){
+								flag = true;
+								break;
+							}
+						}
+						if(flag){
+							CpyUserInfo user = cum.getEntityById(currLoginUserId);
+							if(user != null){
+								List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, user.getCpyInfoTb().getId());
+								if(zlList.size() > 0){
+									ZlajMainInfoTb zl = zlList.get(0);
+									if(zl.getAjStopStatus().equals(0)){//只有案件在正常状态下才能进行移交
+										if(yjType.equals("zx") && currLoginUserId.equals(zl.getZxUserId())){
+											
+										}else if(yjType.equals("zx") && currLoginUserId.equals(zl.getZxUserId())){
+											
+										}else if(yjType.equals("sc") && currLoginUserId.equals(zl.getZxUserId())){
+											
+										}else if(yjType.equals("dgtj") && currLoginUserId.equals(zl.getZxUserId())){
+											
+										}else if(yjType.equals("tzs") && currLoginUserId.equals(zl.getZxUserId())){
+											
+										}else if(yjType.equals("fycj") && currLoginUserId.equals(zl.getZxUserId())){
+											
+										}else if(yjType.equals("bz") && currLoginUserId.equals(zl.getZxUserId())){
+											
+										}else if(yjType.equals("bzsh") && currLoginUserId.equals(zl.getZxUserId())){
+											
+										}else if(yjType.equals("bh") && currLoginUserId.equals(zl.getZxUserId())){
+											
+										}
+									}
+								}
+							}
+							
+						}
+					}
+				}else{
+					msg = "noAbility";
+				}
+				
+			}
+			
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * 修改专利操作人员(针对管理员和具有增加增加专利权限的人使用)
 	 * @description
 	 * @author wm
 	 * @date 2018-9-6 上午08:20:32
@@ -765,65 +951,67 @@ public class ZlMainAction extends DispatchAction {
 					msg = "success";
 				}
 			}else{//不是管理员、不具有分配专利操作人员的权限（增加权限）
-				if(Ability.checkAuthorization(this.getLoginRoleId(request), "upZl")){//有修改权限
-					//可以领取任务，前提是当前专利没有分配撰写人员
-					if(cpyId > 0){
-						List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
-						if(zlList.size() > 0){
-							ZlajMainInfoTb zl = zlList.get(0);
-							zxUserId_db = zl.getZxUserId();
-							ajNoQt = zl.getAjNoQt();
-							if(zxUserId_db > 0){
-								//存在，就不能进行修改,只能由当前撰写人进行任务移交
-								//增加一个任务移交的流程
-								if(zxUserId_db.equals(currLoginUserId)){//只能是当前撰写人亲自移交
-									CpyUserInfo user_yj = cum.getEntityById(zxUserId_yj);
-									if(user_yj != null){
-										Integer lcId = lcm.addLcInfo(zlId, "移交撰写任务", user.getUserName()+"将撰写任务移交给"+user_yj.getUserName(), currDate, 
-												currDate, currDate, currDate);
-										if(lcId > 0){
-											//获取当前流程数字
-											List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
-											double currLcNo = 1.0;
-											if(mxList.size() > 0){
-												currLcNo = mxList.get(0).getLcMxNo();
-											}
-											mxm.addLcMx(lcId, zxUserId_yj, "领取撰写任务", currLcNo, currDate, currDate,
-													"", 0, "", "", "");
-											//给被移交人发送邮件提醒
-											mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, zxUserId_yj, "cpyUser", ajNoQt + "撰写任务移交", user.getUserName()+"将["+ajNoQt+"]撰写任务移交给你");
-											msg = "success";
-										}
-									}
-								}else{
-									msg = "noAbility";//只能有当前人亲自移交（归类到没有移交权限中）
-								}
-								
-							}else{//当前专利不存在撰写人（可以直接领取）
-								boolean flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, currLoginUserId, tjUserId, 
-										tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
-								if(flag){
-									//增加领取流程明细
-									List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zlId);
-									Integer lcId = lcm.addLcInfo(zlId, "领取撰写任务", user.getUserName()+"领取了撰写任务", currDate, 
-											currDate, currDate, currDate);
-									if(lcList.size() > 0 && lcId > 0){//肯定存在
-										//获取最后一个流程
-										ZlajLcInfoTb lc = lcList.get(0);
-										//获取当前流程数字
-										List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lc.getId());
-										double currLcNo = 1.0;
-										if(mxList.size() > 0){
-											currLcNo = mxList.get(0).getLcMxNo();
-										}
-										mxm.addLcMx(lc.getId(), currLoginUserId, "领取撰写任务", currLcNo, currDate, currDate,"", 0, "", "", "");
-										msg = "success";
-									}
-								}
-							}
-						}
-					}
-				}
+//				if(Ability.checkAuthorization(this.getLoginRoleId(request), "upZl")){//有修改权限
+//					//可以领取任务，前提是当前专利没有分配撰写人员
+//					if(cpyId > 0){
+//						List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
+//						if(zlList.size() > 0){
+//							ZlajMainInfoTb zl = zlList.get(0);
+//							zxUserId_db = zl.getZxUserId();
+//							ajNoQt = zl.getAjNoQt();
+//							if(zxUserId_db > 0){
+//								//存在，就不能进行修改,只能由当前撰写人进行任务移交
+//								//增加一个任务移交的流程
+//								if(zxUserId_db.equals(currLoginUserId)){//只能是当前撰写人亲自移交
+//									CpyUserInfo user_yj = cum.getEntityById(zxUserId_yj);
+//									if(user_yj != null){
+//										Integer lcId = lcm.addLcInfo(zlId, "移交撰写任务", user.getUserName()+"将撰写任务移交给"+user_yj.getUserName(), currDate, 
+//												currDate, currDate, currDate);
+//										if(lcId > 0){
+//											//获取当前流程数字
+//											List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
+//											double currLcNo = 1.0;
+//											if(mxList.size() > 0){
+//												currLcNo = mxList.get(0).getLcMxNo();
+//											}
+//											mxm.addLcMx(lcId, zxUserId_yj, "领取撰写任务", currLcNo, currDate, currDate,
+//													"", 0, "", "", "");
+//											//给被移交人发送邮件提醒
+//											mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, zxUserId_yj, "cpyUser", ajNoQt + "撰写任务移交", user.getUserName()+"将["+ajNoQt+"]撰写任务移交给你");
+//											zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId_yj, tjUserId, 
+//													tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+//											msg = "success";
+//										}
+//									}
+//								}else{
+//									msg = "noAbility";//只能有当前人亲自移交（归类到没有移交权限中）
+//								}
+//								
+//							}else{//当前专利不存在撰写人（可以直接领取）
+//								boolean flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, currLoginUserId, tjUserId, 
+//										tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+//								if(flag){
+//									//增加领取流程明细
+//									List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zlId);
+//									Integer lcId = lcm.addLcInfo(zlId, "领取撰写任务", user.getUserName()+"领取了撰写任务", currDate, 
+//											currDate, currDate, currDate);
+//									if(lcList.size() > 0 && lcId > 0){//肯定存在
+//										//获取最后一个流程
+//										ZlajLcInfoTb lc = lcList.get(0);
+//										//获取当前流程数字
+//										List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lc.getId());
+//										double currLcNo = 1.0;
+//										if(mxList.size() > 0){
+//											currLcNo = mxList.get(0).getLcMxNo();
+//										}
+//										mxm.addLcMx(lc.getId(), currLoginUserId, "领取撰写任务", currLcNo, currDate, currDate,"", 0, "", "", "");
+//										msg = "success";
+//									}
+//								}
+//							}
+//						}
+//					}
+//				}
 			}
 		}
 		

@@ -24,7 +24,7 @@ public class Constants {
 	
 	//免费会员每月只能增加一个专利
 	public static final Integer MONTH_MAX_ZL_NUM_TP = 1;//免费会员每月只能增加的专利个数
-	public static final Integer ADD_ZL_NUM_YP = 100;//银牌可增加专利数
+	public static final Integer ADD_ZL_NUM_YP = 200;//银牌可增加专利数
 	public static final Integer ADD_ZL_NUM_JP = 2000;//金牌可增加专利数
 	//钻石会员无限制
 	
