@@ -153,7 +153,8 @@ public class PubZlAction extends DispatchAction {
 		String pubDate = request.getParameter("pubDate");
 		Integer zlStatus = Integer.parseInt(request.getParameter("zlStatus"));
 		Integer currUserId = 0;
-		if(this.getLoginType(request).equals("appUser")){//申请人/公司查看
+		String loginType = this.getLoginType(request);
+		if(loginType.equals("appUser")){//申请人/公司查看
 			currUserId = this.getLoginUserId(request);
 		}
 		//平台管理人员、代理机构查看全部
@@ -203,6 +204,21 @@ public class PubZlAction extends DispatchAction {
 				}
 				map_d.put("ajNoQt", ajNoQt);
 				map_d.put("ajLqStatus", pz.getZlStatus());
+				if(pz.getZlStatus().equals(1)){
+					if(loginType.equals("cpyUser")){
+						if(pz.getLqUserId().equals(this.getLoginUserId(request))){
+							map.put("undoShowFlag", true);
+						}else{
+							map.put("undoShowFlag", false);
+						}
+					}else if(loginType.equals("appUser")){
+						map.put("undoShowFlag", true);
+					}else  if(loginType.equals("spUser")){
+						map.put("undoShowFlag", false);
+					}
+				}else{
+					map.put("undoShowFlag", false);
+				}
 				list_d.add(map_d);
 			}
 			map.put("data", list_d);
@@ -332,6 +348,21 @@ public class PubZlAction extends DispatchAction {
 				
 				map.put("zlStatus", pz.getZlStatus());
 				map.put("zlStatusChi", pz.getZlStatus().equals(0) ? "待领取" : "已领取");
+				if(pz.getZlStatus().equals(1)){
+					if(loginType.equals("cpyUser")){
+						if(pz.getLqUserId().equals(this.getLoginUserId(request))){
+							map.put("undoShowFlag", true);
+						}else{
+							map.put("undoShowFlag", false);
+						}
+					}else if(loginType.equals("appUser")){
+						map.put("undoShowFlag", true);
+					}else  if(loginType.equals("spUser")){
+						map.put("undoShowFlag", false);
+					}
+				}else{
+					map.put("undoShowFlag", false);
+				}
 				map.put("pubDate", pz.getZlNewDate());
 				map.put("lqrName", pz.getLqUserName());
 				map.put("lqrCpyName", pz.getLqCpyName());
@@ -562,7 +593,7 @@ public class PubZlAction extends DispatchAction {
 						mailTitle = "专利任务撤回通知";
 						String zlTitle = pz.getZlTitle();
 						//给发布人发送邮件
-						mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "appUser", mailTitle, "您已主动撤回专利["+zlTitle+"],之前的代理机构["+pz.getLqCpyName()+"]将不能再进行操作!");
+						mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "appUser", mailTitle, "您已主动解除和["+pz.getLqCpyName()+"]代理机构关于对专利任务["+zlTitle+"]的合作关系，代理机构将不能再进行使用!");
 						lqCpyId = pz.getLqCpyId();
 						
 						//给代理机构管理员发送邮件

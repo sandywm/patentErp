@@ -944,10 +944,6 @@ public class ZlMainAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
-		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
-		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
-		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
-		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		boolean abilityFlag = false;
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
@@ -959,18 +955,8 @@ public class ZlMainAction extends DispatchAction {
 		Integer bzshUserId = -1;
 		Integer bhUserId = -1;
 		Integer checkUserId = -1;
-		Integer cpyId = -1;
-		Integer zxUserId_db = 0;
-		String ajNoQt = "";
-		String currDate = CurrentTime.getStringDate();
-		Integer currLoginUserId = this.getLoginUserId(request);
-		Integer zxUserId_yj = CommonTools.getFinalInteger("zxUserId_yj", request);//准备接受移交撰写任务的用户
 		String msg = "error";
 		if(this.getLoginType(request).equals("cpyUser")){
-			CpyUserInfo user = cum.getEntityById(currLoginUserId);
-			if(user != null){
-				cpyId = user.getCpyInfoTb().getId();
-			}
 			if(this.getLoginRoleName(request).equals("管理员")){
 				abilityFlag = true;
 			}else{
@@ -991,68 +977,8 @@ public class ZlMainAction extends DispatchAction {
 				if(flag){
 					msg = "success";
 				}
-			}else{//不是管理员、不具有分配专利操作人员的权限（增加权限）
-//				if(Ability.checkAuthorization(this.getLoginRoleId(request), "upZl")){//有修改权限
-//					//可以领取任务，前提是当前专利没有分配撰写人员
-//					if(cpyId > 0){
-//						List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
-//						if(zlList.size() > 0){
-//							ZlajMainInfoTb zl = zlList.get(0);
-//							zxUserId_db = zl.getZxUserId();
-//							ajNoQt = zl.getAjNoQt();
-//							if(zxUserId_db > 0){
-//								//存在，就不能进行修改,只能由当前撰写人进行任务移交
-//								//增加一个任务移交的流程
-//								if(zxUserId_db.equals(currLoginUserId)){//只能是当前撰写人亲自移交
-//									CpyUserInfo user_yj = cum.getEntityById(zxUserId_yj);
-//									if(user_yj != null){
-//										Integer lcId = lcm.addLcInfo(zlId, "移交撰写任务", user.getUserName()+"将撰写任务移交给"+user_yj.getUserName(), currDate, 
-//												currDate, currDate, currDate);
-//										if(lcId > 0){
-//											//获取当前流程数字
-//											List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
-//											double currLcNo = 1.0;
-//											if(mxList.size() > 0){
-//												currLcNo = mxList.get(0).getLcMxNo();
-//											}
-//											mxm.addLcMx(lcId, zxUserId_yj, "领取撰写任务", currLcNo, currDate, currDate,
-//													"", 0, "", "", "");
-//											//给被移交人发送邮件提醒
-//											mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, zxUserId_yj, "cpyUser", ajNoQt + "撰写任务移交", user.getUserName()+"将["+ajNoQt+"]撰写任务移交给你");
-//											zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId_yj, tjUserId, 
-//													tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
-//											msg = "success";
-//										}
-//									}
-//								}else{
-//									msg = "noAbility";//只能有当前人亲自移交（归类到没有移交权限中）
-//								}
-//								
-//							}else{//当前专利不存在撰写人（可以直接领取）
-//								boolean flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, currLoginUserId, tjUserId, 
-//										tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
-//								if(flag){
-//									//增加领取流程明细
-//									List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zlId);
-//									Integer lcId = lcm.addLcInfo(zlId, "领取撰写任务", user.getUserName()+"领取了撰写任务", currDate, 
-//											currDate, currDate, currDate);
-//									if(lcList.size() > 0 && lcId > 0){//肯定存在
-//										//获取最后一个流程
-//										ZlajLcInfoTb lc = lcList.get(0);
-//										//获取当前流程数字
-//										List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lc.getId());
-//										double currLcNo = 1.0;
-//										if(mxList.size() > 0){
-//											currLcNo = mxList.get(0).getLcMxNo();
-//										}
-//										mxm.addLcMx(lc.getId(), currLoginUserId, "领取撰写任务", currLcNo, currDate, currDate,"", 0, "", "", "");
-//										msg = "success";
-//									}
-//								}
-//							}
-//						}
-//					}
-//				}
+			}else{
+				msg = "noAbility";
 			}
 		}
 		
