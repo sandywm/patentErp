@@ -170,7 +170,7 @@
 						{field : 'lxrEmail', title: '联系人邮箱', width:160 , align:'center'},
 						{field : 'cpyUrl', title: '网址', width:180 , align:'center'},
 						{field : 'signDate', title: '注册日期', width:110 , align:'center'},
-						{field : '', title: '操作', width:150 , fixed: 'right', align:'center',templet : function(d){
+						{field : '', title: '操作', width:180 , fixed: 'right', align:'center',templet : function(d){
 							if(loginType == 'spUser'){
 								return '<input type="hidden" id="signDateInp_'+ d.id +'" value="'+ d.signDate +'"/><input type="hidden" id="endDateInpPar_'+ d.id +'" value="'+ d.endDate +'"/><input type="hidden" id="levelNumInp_'+ d.id +'" value="'+ d.levelNum +'"/><a class="layui-btn layui-btn-primary layui-btn-xs viewDetailInfoBtn" lay-event="viewInfo" cpyId="'+ d.id +'" cpyName="'+ d.cpyName +'"><i class="layui-icon layui-icon-search"></i>查看</a> <a id="update_'+ d.id +'" class="layui-btn layui-btn-xs editInfoBtns" lay-event="updateInfo" cpyId="'+ d.id +'" cpyName="'+ d.cpyName +'"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
 							}else if(loginType == 'appUser'){

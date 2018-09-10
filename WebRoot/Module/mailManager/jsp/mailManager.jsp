@@ -193,8 +193,8 @@
   						strHtmlCon += '<div class="layui-tab-item"><div id="buyMTab"></div><div id="laypageBuyM" class="comLayPage"></div></div>';
   						
   					}else if(loginType == 'appUser'){//个人、公司用户
-  						strHtmlNav += '<li id="taskNavLi" class="layui-this" isHasData="true">任务通知</li>';
-  						strHtmlCon += '<div id="taskTab" class="layui-tab-item layui-show"></div>';
+  						strHtmlNav += '<li id="taskNavLi" class="layui-this" isHasData="true">任务通知<div id="hasNoReadNum_task" class="isHasNoReadNumWrap"></div></li>';
+  						strHtmlCon += '<div class="layui-tab-item layui-show"><div id="taskTab"></div><div id="laypageTask" class="comLayPage"></div></div>';
   					}
   					$('#tabNav').html(strHtmlNav);
   					$('#tabContent').html(strHtmlCon);
@@ -261,7 +261,7 @@
   				//渲染邮件列表
   				renderListEmail : function(opts,listMailData,mailType){
   					var strHtml = '',_this = this;
-  					strHtml += '<ul>';
+  					strHtml += '<ul class="emailListUl">';
   					for(var i=0;i<listMailData.length;i++){
   						strHtml += '<li class="clearfix">';
   						//选中checkbox
@@ -297,6 +297,7 @@
   					}else if(mailType == 'buyM'){
   						$('#buyMTab').html(strHtml);
   					}
+  					$('.emailListUl li:odd').addClass('oddColor');
   					//DOM加载完成调用一次单选
   					singleCheck();
   					viewEmailDetail();

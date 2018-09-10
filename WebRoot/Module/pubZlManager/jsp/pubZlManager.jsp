@@ -80,7 +80,7 @@
   	</div>
   	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var loginType = parent.loginType,addEditZlOpts='',addZlFlag = false,globalPubId=0;
+		var loginType = parent.loginType,addEditZlOpts='',addZlFlag = false,viewZlFlag=false;globalPubId=0;
 		layui.use(['layer','form','jquery','table','laydate'],function(){
 			var layer = layui.layer,
 				form = layui.form,
@@ -103,7 +103,7 @@
 						$('#zlNavTit').html('专利任务列表');
 					}
 					
-					$.ajax({
+					/*$.ajax({
 	   					type:'post',
 	   			        async:false,
 	   			        dataType:'json',
@@ -111,15 +111,13 @@
 	   			        url:'pubZl.do?action=getPageInfo',
 	   			        success:function (json){
 	   			        	layer.closeAll('loading');
-	   			        	console.log("111")
-	   			        	console.log(json)
 	   			        	if(json['result'] == 'success'){
 	   			        		console.log(json)
 	   			        	}else if(json['result'] == 'outDate'){
 	   			        		layer.msg('抱歉，您当前的会员已经到期，暂不能查看', {icon:5,anim:6,time:1000});
 	   			        	}
 	   			        }
-	   				});
+	   				});*/
 				},
 				bindEvent : function(){
 					//增加专利
@@ -200,16 +198,24 @@
 						{field : 'lqrCpyName', title: '领取人所属公司', width:180 , align:'center'},
 						{field : 'lqDate', title: '领取日期', width:150 , align:'center'},
 						{field : 'pubInfo', title: '发布者', width:100 , align:'center'},
-						{field : '', title: '操作', fixed: 'right', width:200, align:'center',templet : function(d){
+						{field : '', title: '操作', fixed: 'right', width:200,templet : function(d){
 							if(loginType == 'appUser'){
-								return '<a class="layui-btn layui-btn-xs editInfoBtns" lay-event="updatePubZl" zlTitle="'+ d.title +'"  pubId="'+ d.id +'" opts="editZlOpts"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
+								if(d.ajLqStatus == 0){
+									return '<a class="layui-btn layui-btn-xs editInfoBtns" lay-event="updatePubZl" ajStatus="'+ d.ajLqStatus +'" zlTitle="'+ d.title +'"  pubId="'+ d.id +'" opts="editZlOpts"><i class="layui-icon layui-icon-edit"></i>编辑任务</a>';
+								}else{
+									return '<a class="layui-btn layui-btn-xs editInfoBtns" lay-event="updatePubZl" ajStatus="'+ d.ajLqStatus +'" zlTitle="'+ d.title +'"  pubId="'+ d.id +'" opts="editZlOpts"><i class="layui-icon layui-icon-edit"></i>编辑任务</a> <a class="btn layui-btn layui-btn-danger layui-btn-xs" lay-event="receiveZlTask" lqrCpyName = "'+ d.lqrCpyName +'" ajStatus="'+ d.ajLqStatus +'" zlTitle="'+ d.title +'" pubId="'+ d.id +'">解除合作</a>';
+								}
 							}else if(loginType == 'spUser'){
 								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'" taskTit="'+ d.title +'"><i class="layui-icon layui-icon-search"></i>查看任务详情</a>';
 							}else if(loginType == 'cpyUser'){
 								if(d.ajLqStatus == 0){
-									return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'" taskTit="'+ d.title +'"><i class="layui-icon layui-icon-search"></i>任务详情</a> <a class="btn layui-btn layui-btn-xs" lay-event="receiveZlTask" ajStatus="'+ d.ajLqStatus +'" zlTitle="'+ d.title +'" pubId="'+ d.id +'">领取</a>';
+									return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'" taskTit="'+ d.title +'"><i class="layui-icon layui-icon-search"></i>任务详情</a> <a class="btn layui-btn layui-btn-xs" lay-event="receiveZlTask" ajStatus="'+ d.ajLqStatus +'" zlTitle="'+ d.title +'" pubId="'+ d.id +'">领取任务</a>';
 								}else{
-									return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'" taskTit="'+ d.title +'"><i class="layui-icon layui-icon-search"></i>任务详情</a> <a class="btn layui-btn layui-btn-danger layui-btn-xs" lay-event="receiveZlTask" ajStatus="'+ d.ajLqStatus +'" zlTitle="'+ d.title +'" pubId="'+ d.id +'">撤销领取</a>';
+									if(d.undoShowFlag){//表示是领取本人 有撤销任务的权利
+										return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'" taskTit="'+ d.title +'"><i class="layui-icon layui-icon-search"></i>任务详情</a> <a class="btn layui-btn layui-btn-danger layui-btn-xs" lay-event="receiveZlTask" ajStatus="'+ d.ajLqStatus +'" zlTitle="'+ d.title +'" pubId="'+ d.id +'">撤销领取</a>';
+									}else{
+										return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'" taskTit="'+ d.title +'"><i class="layui-icon layui-icon-search"></i>任务详情</a>';
+									}
 								}
 							}
 						}},
@@ -234,8 +240,12 @@
 			table.on('tool(pubZlTable)',function(obj){
 				if(obj.event === 'updatePubZl'){
 					globalPubId = $(this).attr('pubId');
-					var zlTitle = $(this).attr('zlTitle'),editZlOpts = $(this).attr('opts');
+					var zlTitle = $(this).attr('zlTitle'),editZlOpts = $(this).attr('opts'),ajLqStatus = $(this).attr('ajStatus');
 					addEditZlOpts = editZlOpts;
+					if(ajLqStatus == 1){
+						layer.msg('抱歉，此专利任务已被代理机构领取，暂不能编辑', {icon:5,anim:6,time:1000});
+						return;
+					}
 					if(loginType == 'appUser'){
 						var fullScreenIndex = layer.open({
 							title:zlTitle + '的编辑',
@@ -258,7 +268,7 @@
 				}else if(obj.event == 'viewPubZlDetails'){
 					//代理机构下查看专利任务信息
 					globalPubId = $(this).attr('pubId');
-					console.log(globalPubId)
+					viewZlFlag = false;
 					var taskTit = $(this).attr('taskTit');
 					var fullScreenIndex = layer.open({
 						title:taskTit + '专利任务详情',
@@ -269,9 +279,9 @@
 					  	shadeClose :false,
 					  	content : '/Module/pubZlManager/jsp/viewZlTaskDetail.html',
 					  	end:function(){
-					  		/*if(addZlFlag){
+					  		if(viewZlFlag){
 					  			loadQueryZlList('initLoad');
-					  		}*/
+					  		}
 					  	}
 					});	
 					layer.full(fullScreenIndex);
@@ -280,22 +290,30 @@
 					var ajStatus = $(this).attr('ajStatus'),
 						pubId = $(this).attr('pubId'),
 						zlTitle = $(this).attr('zlTitle'),
+						lqrCpyName = $(this).attr('lqrCpyName'),
 						zlStatus = 0,
-						changeHtml = '领取';
+						changeHtml = '',changeTit = '';
 					if(ajStatus == 0){
 						zlStatus = 1; //撤销领取
-						changeHtml = '领取';
+						changeTit = '领取成功';
+						changeHtml = '确定要<span style="color:#F47837;">领取</span>专利任务[<span class="taskColor">'+ zlTitle +'</span>]吗？';
 					}else{
-						changeHtml = '<span style="color:#F47837;">撤销领取</span>';
+						if(loginType == 'cpyUser'){
+							changeHtml = '确定要<span style="color:#F47837;">撤销领取</span>专利任务[<span class="taskColor">'+ zlTitle +'</span>]吗？';
+							changeTit = '撤销成功';
+						}else if(loginType == 'appUser'){
+							var otherHtml = '';
+							changeHtml = '确定要<span style="color:#F47837;">解除</span>和<span style="color:#F47837;">'+ lqrCpyName +'</span>代理机构关于对专利任务[<span class="taskColor">'+ zlTitle +'</span>]的合作吗？';
+							changeTit = '解除成功';
+						}
 						zlStatus = 0; //领取
 					}
-					layer.confirm('确认要'+ changeHtml +'专利任务[<span class="taskColor">'+ zlTitle +'</span>]吗？', {
+					layer.confirm(changeHtml, {
 					  title:'提示',
 					  skin: 'layui-layer-molv',
 					  btn: ['确定','取消'] //按钮
 					},function(){
 						layer.load('1');
-						console.log(pubId + "-----" + zlStatus)
 						$.ajax({
 		   					type:'post',
 		   			        async:false,
@@ -306,11 +324,15 @@
 		   			        	layer.closeAll('loading');
 		   			        	console.log(json)
 		   			        	if(json['result'] == 'success'){
-		   			        		layer.msg(changeHtml + '成功',{icon:1,time:1000},function(){
+		   			        		layer.msg(changeTit,{icon:1,time:1000},function(){
 		   			        			loadQueryZlList('initLoad');
 					        		});
 		   			        	}else if(json['result'] == 'lowLevel'){
-		   			        		layer.msg('抱歉，您当前的会员已经到期或当前等级不够，暂不能领取', {icon:5,anim:6,time:1000});
+		   			        		layer.msg('抱歉，您当前的会员已经到期或当前等级不够，暂不能领取', {icon:5,anim:6,time:2500});
+		   			        	}else if(json['result'] == 'infoDiff'){
+		   			        		layer.msg('抱歉，此任务只有任务领取者或申请人才有权利进行撤销', {icon:5,anim:6,time:2500});
+		   			        	}else if(json['result'] == 'noReceiv'){
+		   			        		layer.msg('抱歉，该专利已被领取，不能再领取了', {icon:5,anim:6,time:1500});
 		   			        	}
 		   			        }
 		   				});

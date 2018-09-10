@@ -10,6 +10,7 @@
 </head>
 <body style="background:#fff;">
 	<div id="viewZlTask" class="layui-form">
+		<div id="outDate"></div>
 		<ul id="viewZlTaskUl"></ul>
 		<!-- 撰写人领取撤销记录 -->
 		<div id="receiveHisWrap"></div>
@@ -17,7 +18,7 @@
 	
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var pubId = parent.globalPubId;
+		var pubId = parent.globalPubId,loginType = parent.loginType;
 		layui.use(['layer','jquery','form','upload'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
@@ -29,6 +30,9 @@
 					this.bindEvent();
 				},
 				onLoad : function(){
+					this.loadZlDetailData();
+				},
+				loadZlDetailData : function(){
 					var _this = this;
 					layer.load('1');
 					$.ajax({
@@ -38,18 +42,70 @@
 	   			        data:{pubId : pubId},
 	   			        url:'/pubZl.do?action=getDetailInfo',
 	   			        success:function (json){
-	   			        	console.log(json)
 	   			        	layer.closeAll('loading');
 	   			        	if(json['result'] == 'success'){
 	   			        		_this.renderViewPubZlDetail(json);
 	   			        	}else if(json['result'] == 'outDate'){
-	   			        		layer.msg('抱歉，您当前的会员已经到期，暂不能查看', {icon:5,anim:6,time:1000});
+	   			        		var outDateHtml = '<div class="innerOutDate"><i class="layui-icon layui-icon-face-cry"></i><span>抱歉，您当前的会员已经到期，暂不能查看任务详情!</span></div>';
+	   			        		$('#outDate').html(outDateHtml);
+	   			        		$('#viewZlTaskUl').hide();
 	   			        	}
 	   			        }
 	   				});
 				},
 				bindEvent : function(){
-					
+					var _this = this;
+					$('.receiveBtn').on('click',function(){
+						var zlStatus = $(this).attr('zlStatus'),
+							pubId = $(this).attr('pubId'),
+							zlTitle = $(this).attr('zlTitle'),
+							lqrCpyName = $(this).attr('lqrCpyName'),
+							changeHtml = '',changeTit = '';
+						if(zlStatus == 0){
+							zlStatus = 1; //撤销领取
+							changeTit = '领取成功';
+							changeHtml = '确定要<span style="color:#F47837;">领取</span>专利任务[<span class="taskColor">'+ zlTitle +'</span>]吗？';
+						}else{
+							changeHtml = '确定要<span style="color:#F47837;">撤销领取</span>专利任务[<span class="taskColor">'+ zlTitle +'</span>]吗？';
+							changeTit = '撤销成功';
+							zlStatus = 0; //领取
+						}
+						layer.confirm(changeHtml, {
+						  title:'提示',
+						  skin: 'layui-layer-molv',
+						  btn: ['确定','取消'] //按钮
+						},function(){
+							layer.load('1');
+							$.ajax({
+			   					type:'post',
+			   			        async:false,
+			   			        dataType:'json',
+			   			        data:{pubId : pubId,zlStatus:zlStatus},
+			   			        url:'/pubZl.do?action=updateHignPzInfo',
+			   			        success:function (json){
+			   			        	layer.closeAll('loading');
+			   			        	if(json['result'] == 'success'){
+			   			        		layer.msg(changeTit,{icon:1,time:1000},function(){
+			   			        			var index= parent.layer.getFrameIndex(window.name);
+					        				parent.viewZlFlag = true;
+			   			        			_this.renderViewPubZlDetail(json);
+						        		});
+			   			        	}else if(json['result'] == 'lowLevel'){
+			   			        		layer.msg('抱歉，您当前的会员已经到期或当前等级不够，暂不能领取', {icon:5,anim:6,time:2500});
+			   			        	}else if(json['result'] == 'infoDiff'){
+			   			        		layer.msg('抱歉，此任务只有任务领取者或申请人才有权利进行撤销', {icon:5,anim:6,time:2500});
+			   			        	}else if(json['result'] == 'noReceiv'){
+			   			        		layer.msg('抱歉，该专利已被领取，不能再领取了', {icon:5,anim:6,time:1500});
+			   			        	}
+			   			        }
+			   				});
+						});
+					});
+					//下载附件
+					$('.downLoadBtn').on('click',function(){
+						var downFilePath = $(this).attr('downFilePath');
+						window.location.href = "/zlm.do?action=downFile&fileUrl=" + downFilePath;
+					});
 				},
 				//渲染任务详情结构
 				renderViewPubZlDetail : function(json){
@@ -60,12 +116,18 @@
 					strHtml += '<div class="innerPar"><p>发布日期</p><p>'+ json.pubDate +'</p></div></li>';
 					strHtml += '<li><div class="innerPar"><p>专利类型</p><p>'+ json.typeChi +'</p></div>';
 					strHtml += '<div class="innerPar"><p>领取状态</p><p>';
-					if(json.zlStatus == 0){//待领取
+					if(json.zlStatus == 0){//待领取 
 						strHtml += '<span  class="waitReceiveSp">'+ json.zlStatusChi +'</span>';
-						strHtml += '<button class="layui-btn layui-btn-xs receiveBtn">领取</button>';
+						if(loginType == 'cpyUser'){
+							strHtml += '<button class="layui-btn layui-btn-xs receiveBtn" zlStatus="'+ json.zlStatus +'" zlTitle="'+ json.zlTitle +'" pubId="'+ json.zlId +'">领取</button>';
+						}
 					}else{
 						strHtml += '<span class="hasReceiveSp">'+ json.zlStatusChi +'</span>';
-						strHtml += '<button class="layui-btn layui-btn-xs layui-btn-danger resetReceiveBtn">撤销领取</button>';
+						if(loginType == 'cpyUser'){
+							if(json.undoShowFlag){
+								strHtml += '<button class="layui-btn layui-btn-xs layui-btn-danger receiveBtn" zlStatus="'+ json.zlStatus +'" zlTitle="'+ json.zlTitle +'" lqrCpyName="'+ json.lqrCpyName +'" pubId="'+ json.zlId +'">撤销领取</button>';
+							}
+						}
 					}
 					strHtml += '</p></div></li>';
 					strHtml += '<li><div class="innerPar"><p>案件编号</p><p>'+ json.ajNoQt +'</p></div>';
@@ -82,8 +144,12 @@
 					strHtml += '<div class="innerPar"><p>领取时间</p><p>'+ json.lqDate +'</p></div></li>';
 					strHtml += '<li><div class="innerPar" style="width:100%;border-right:none;"><p>领取人所属公司</p><p>'+ json.lqrCpyName +'</p></div></li>';
 					$('#viewZlTaskUl').html(strHtml);
-					receiveHisHtml += '<fieldset class="layui-elem-field layui-field-title site-title">';
-					receiveHisHtml += '<legend><a name="use">撰写人领取撤销记录</a></legend></fieldset>';
+					receiveHisHtml += '<blockquote class="layui-elem-quote">撰写人领取/撤销记录</blockquote>';
+					receiveHisHtml += '<ul class="receiveHisUl">';
+					for(var i=0;i<json.zlCzInfo.length;i++){
+						receiveHisHtml += '<li><span>'+ json.zlCzInfo[i].czDetail +'<span></li>';
+					}
+					receiveHisHtml += '<ul>';
 					$('#receiveHisWrap').html(receiveHisHtml);
 				}
 			};
