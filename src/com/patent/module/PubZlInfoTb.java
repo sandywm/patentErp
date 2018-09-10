@@ -1,5 +1,8 @@
 package com.patent.module;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * PubZlInfoTb entity. @author MyEclipse Persistence Tools
  */
@@ -27,6 +30,7 @@ public class PubZlInfoTb implements java.io.Serializable {
 	private String lqCpyName;
 	private String lqDate;
 	private Integer ajId;
+	private Set<PubZlCzRecordTb> pubZlCzRecordTbs = new HashSet<PubZlCzRecordTb>();
 
 	// Constructors
 
@@ -196,6 +200,14 @@ public class PubZlInfoTb implements java.io.Serializable {
 
 	public void setZlContent(String zlContent) {
 		this.zlContent = zlContent;
+	}
+
+	public Set<PubZlCzRecordTb> getPubZlCzRecordTbs() {
+		return pubZlCzRecordTbs;
+	}
+
+	public void setPubZlCzRecordTbs(Set<PubZlCzRecordTb> pubZlCzRecordTbs) {
+		this.pubZlCzRecordTbs = pubZlCzRecordTbs;
 	}
 
 }

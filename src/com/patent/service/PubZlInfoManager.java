@@ -2,6 +2,7 @@ package com.patent.service;
 
 import java.util.List;
 import com.patent.exception.WEBException;
+import com.patent.module.PubZlCzRecordTb;
 import com.patent.module.PubZlInfoTb;
 
 public interface PubZlInfoManager {
@@ -165,4 +166,27 @@ public interface PubZlInfoManager {
 	 * @throws WEBException
 	 */
 	Integer getCountByOpt_2(Integer lqCpyId,Integer addStatus)throws WEBException ;
+	
+	/**
+	 * 根据专利任务编号获取领取/撤销记录
+	 * @description
+	 * @author wm
+	 * @date 2018-9-10 上午09:24:35
+	 * @param pubId 专利任务编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<PubZlCzRecordTb> listInfoByPubId(Integer pubId)throws WEBException ;
+	
+	/**
+	 * 增加指定专利任务下的领取/撤销记录
+	 * @description
+	 * @author wm
+	 * @date 2018-9-10 上午09:38:10
+	 * @param pubId 专利编号
+	 * @param addContent 领取/撤销记录
+	 * @return
+	 * @throws WEBException
+	 */
+	Integer addPzCzInfo(Integer pubId,String addContent)throws WEBException ;
 }

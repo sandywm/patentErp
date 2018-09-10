@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 
+import com.patent.module.PubZlCzRecordTb;
 import com.patent.module.PubZlInfoTb;
 
 public interface PubZlInfoDao {
@@ -38,6 +39,7 @@ public interface PubZlInfoDao {
 	 * @param id 需要修改发布专利信息的主键
 	 */
 	void update(Session sess,PubZlInfoTb pzInfo);
+	
 	
 	/**
 	 * 根据条件分页获取发布的专利信息列表
@@ -123,4 +125,21 @@ public interface PubZlInfoDao {
 	 * @return
 	 */
 	Integer getCountByOpt_2(Session sess, Integer lqCpyId,Integer addStatus);
+	
+	/**
+	 * 获取指定发布专利任务的领取/撤销记录
+	 * @description
+	 * @author wm
+	 * @date 2018-9-10 上午09:21:46
+	 * @param sess
+	 * @param pubId 专利任务编号
+	 * @return
+	 */
+	List<PubZlCzRecordTb> findInfoByPubId(Session sess,Integer pubId);
+	
+	/**
+	 * 保存发布专利领取/撤销信息实体，新增一条专利领取/撤销信息记录
+	 * @param pzCzInfo 保存的专利领取/撤销信息实例
+	 */
+	void saveCz(Session sess,PubZlCzRecordTb pzCzInfo);
 }

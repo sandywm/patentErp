@@ -9,8 +9,10 @@ import com.patent.dao.ApplyInfoDao;
 import com.patent.dao.PubZlInfoDao;
 import com.patent.exception.WEBException;
 import com.patent.factory.DaoFactory;
+import com.patent.module.PubZlCzRecordTb;
 import com.patent.module.PubZlInfoTb;
 import com.patent.service.PubZlInfoManager;
+import com.patent.tools.CurrentTime;
 import com.patent.tools.HibernateUtil;
 import com.patent.util.Constants;
 
@@ -262,6 +264,44 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据条件获取领取人所属公司的领取记录列表信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<PubZlCzRecordTb> listInfoByPubId(Integer pubId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return pzDao.findInfoByPubId(sess, pubId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据专利编号获取领取/撤销记录列表信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public Integer addPzCzInfo(Integer pubId, String addContent)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			PubZlCzRecordTb pzCz = new PubZlCzRecordTb(pzDao.get(sess, pubId),CurrentTime.getCurrentTime(),addContent);
+			pzDao.saveCz(sess, pzCz);
+			tran.commit();
+			return pzCz.getId();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("增加指定专利任务下的领取/撤销记录信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

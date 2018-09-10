@@ -80,5 +80,13 @@
                 <comment>案件编号</comment>
             </column>
         </property>
+        <set name="pubZlCzRecordTbs" inverse="true">
+            <key>
+                <column name="pub_zl_id" not-null="true">
+	                <comment>专利任务编号</comment>
+	            </column>
+            </key>
+            <one-to-many class="com.patent.module.PubZlCzRecordTb" />
+        </set>
     </class>
 </hibernate-mapping>

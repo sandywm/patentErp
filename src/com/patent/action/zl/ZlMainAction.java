@@ -827,6 +827,16 @@ public class ZlMainAction extends DispatchAction {
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		String msg = "error";
 		boolean flag = false;
+		Integer zxUserId = -1;
+		Integer checkUserId = -1;
+		Integer tjUserId = -1;
+		Integer tzsUserId = -1;
+		Integer feeUserId = -1;
+		Integer bzUserId = -1;
+		Integer bzshUserId = -1;
+		Integer bhUserId = -1;
+		String lcName = "";
+		String currDate = CurrentTime.getStringDate();
 		if(zlId > 0){
 			if(this.getLoginType(request).equals("cpyUser")){
 				Integer currLoginUserId = this.getLoginUserId(request);
@@ -851,24 +861,47 @@ public class ZlMainAction extends DispatchAction {
 								if(zlList.size() > 0){
 									ZlajMainInfoTb zl = zlList.get(0);
 									if(zl.getAjStopStatus().equals(0)){//只有案件在正常状态下才能进行移交
-										if(yjType.equals("zx") && currLoginUserId.equals(zl.getZxUserId())){
-											
-										}else if(yjType.equals("zx") && currLoginUserId.equals(zl.getZxUserId())){
-											
-										}else if(yjType.equals("sc") && currLoginUserId.equals(zl.getZxUserId())){
-											
-										}else if(yjType.equals("dgtj") && currLoginUserId.equals(zl.getZxUserId())){
-											
-										}else if(yjType.equals("tzs") && currLoginUserId.equals(zl.getZxUserId())){
-											
-										}else if(yjType.equals("fycj") && currLoginUserId.equals(zl.getZxUserId())){
-											
-										}else if(yjType.equals("bz") && currLoginUserId.equals(zl.getZxUserId())){
-											
-										}else if(yjType.equals("bzsh") && currLoginUserId.equals(zl.getZxUserId())){
-											
-										}else if(yjType.equals("bh") && currLoginUserId.equals(zl.getZxUserId())){
-											
+										CpyUserInfo user_yj = cum.getEntityById(userId_yj);
+										String ajNoQt = zl.getAjNoQt();//平台定义的案件号
+										if(user_yj != null){
+											Integer ajStatus = Integer.parseInt(zl.getAjStatus());
+											if(yjType.equals("zx") && currLoginUserId.equals(zl.getZxUserId())){
+												if(ajStatus < 6){//在案件确认之前都可以移交
+													lcName = "撰写";
+													Integer lcId = lcm.addLcInfo(zlId, lcName+"任务移交", user.getUserName()+"将"+lcName+"任务移交给"+user_yj.getUserName(), currDate, 
+															currDate, currDate, currDate);
+													if(lcId > 0){
+														//获取当前流程数字
+														List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
+														double currLcNo = 1.0;
+														if(mxList.size() > 0){
+															currLcNo = mxList.get(0).getLcMxNo();
+														}
+														zxUserId = userId_yj;
+														mxm.addLcMx(lcId, userId_yj, "领取"+lcName+"任务", currLcNo, currDate, currDate,"", 0, "", "", "");
+														//给被移交人发送邮件提醒
+														mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, userId_yj, "cpyUser",  ajNoQt+ " "+lcName+"移交", user.getUserName()+"将["+ajNoQt+"]"+lcName+"任务移交给你");
+														zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+														msg = "success";
+													}
+												}
+											}else if(yjType.equals("sc") && currLoginUserId.equals(zl.getCheckUserId())){
+												if(ajStatus < 7){//在案件定稿提交之前都可以移交
+													lcName = "技术审核";
+												}
+											}else if(yjType.equals("dgtj") && currLoginUserId.equals(zl.getZxUserId())){
+												
+											}else if(yjType.equals("tzs") && currLoginUserId.equals(zl.getZxUserId())){
+												
+											}else if(yjType.equals("fycj") && currLoginUserId.equals(zl.getZxUserId())){
+												
+											}else if(yjType.equals("bz") && currLoginUserId.equals(zl.getZxUserId())){
+												
+											}else if(yjType.equals("bzsh") && currLoginUserId.equals(zl.getZxUserId())){
+												
+											}else if(yjType.equals("bh") && currLoginUserId.equals(zl.getZxUserId())){
+												
+											}
 										}
 									}
 								}

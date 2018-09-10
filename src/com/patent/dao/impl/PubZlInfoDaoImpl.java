@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Session;
 
 import com.patent.dao.PubZlInfoDao;
+import com.patent.module.PubZlCzRecordTb;
 import com.patent.module.PubZlInfoTb;
 import com.patent.tools.CommonTools;
 
@@ -151,6 +152,19 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);
+	}
+
+	@Override
+	public List<PubZlCzRecordTb> findInfoByPubId(Session sess, Integer pubId) {
+		// TODO Auto-generated method stub
+		String hql = " from PubZlCzRecordTb as pzcr where pzcr.pubZlInfoTb.id = "+pubId;
+		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public void saveCz(Session sess, PubZlCzRecordTb pzCzInfo) {
+		// TODO Auto-generated method stub
+		sess.save(pzCzInfo);
 	}
 
 }
