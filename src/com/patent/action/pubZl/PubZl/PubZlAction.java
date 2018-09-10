@@ -207,17 +207,17 @@ public class PubZlAction extends DispatchAction {
 				if(pz.getZlStatus().equals(1)){
 					if(loginType.equals("cpyUser")){
 						if(pz.getLqUserId().equals(this.getLoginUserId(request))){
-							map.put("undoShowFlag", true);
+							map_d.put("undoShowFlag", true);
 						}else{
-							map.put("undoShowFlag", false);
+							map_d.put("undoShowFlag", false);
 						}
 					}else if(loginType.equals("appUser")){
-						map.put("undoShowFlag", true);
+						map_d.put("undoShowFlag", true);
 					}else  if(loginType.equals("spUser")){
-						map.put("undoShowFlag", false);
+						map_d.put("undoShowFlag", false);
 					}
 				}else{
-					map.put("undoShowFlag", false);
+					map_d.put("undoShowFlag", false);
 				}
 				list_d.add(map_d);
 			}

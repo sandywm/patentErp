@@ -868,6 +868,7 @@ public class ZlMainAction extends DispatchAction {
 											if(yjType.equals("zx") && currLoginUserId.equals(zl.getZxUserId())){
 												if(ajStatus < 6){//在案件确认之前都可以移交
 													lcName = "撰写";
+													zxUserId = userId_yj;
 												}else{
 													msg = "noYj_zx";
 													flag = false;
@@ -875,22 +876,29 @@ public class ZlMainAction extends DispatchAction {
 											}else if(yjType.equals("sc") && currLoginUserId.equals(zl.getCheckUserId())){
 												if(ajStatus < 6){//在案件定稿提交之前都可以移交
 													lcName = "技术审核";
+													checkUserId = userId_yj;
 												}else{
 													msg = "noYj_sc";
 													flag = false;
 												}
 											}else if(yjType.equals("dgtj") && currLoginUserId.equals(zl.getZxUserId())){
 												lcName = "定稿提交";//无限制
+												tjUserId = userId_yj;
 											}else if(yjType.equals("tzs") && currLoginUserId.equals(zl.getZxUserId())){
 												lcName = "导入通知书";//无限制
+												tzsUserId = userId_yj;
 											}else if(yjType.equals("fycj") && currLoginUserId.equals(zl.getZxUserId())){
 												lcName = "费用催缴";//无限制
+												feeUserId = userId_yj;
 											}else if(yjType.equals("bz") && currLoginUserId.equals(zl.getZxUserId())){
 												lcName = "案件补正";//无限制
+												bzUserId = userId_yj;
 											}else if(yjType.equals("bzsh") && currLoginUserId.equals(zl.getZxUserId())){
 												lcName = "补正审核";//无限制
+												bzshUserId = userId_yj;
 											}else if(yjType.equals("bh") && currLoginUserId.equals(zl.getZxUserId())){
 												lcName = "驳回";//无限制
+												bhUserId = userId_yj;
 											}
 											if(flag){
 												Integer lcId = lcm.addLcInfo(zlId, lcName+"任务移交", user.getUserName()+"将"+lcName+"任务移交给"+user_yj.getUserName(), currDate, 
