@@ -868,39 +868,47 @@ public class ZlMainAction extends DispatchAction {
 											if(yjType.equals("zx") && currLoginUserId.equals(zl.getZxUserId())){
 												if(ajStatus < 6){//在案件确认之前都可以移交
 													lcName = "撰写";
-													Integer lcId = lcm.addLcInfo(zlId, lcName+"任务移交", user.getUserName()+"将"+lcName+"任务移交给"+user_yj.getUserName(), currDate, 
-															currDate, currDate, currDate);
-													if(lcId > 0){
-														//获取当前流程数字
-														List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
-														double currLcNo = 1.0;
-														if(mxList.size() > 0){
-															currLcNo = mxList.get(0).getLcMxNo();
-														}
-														zxUserId = userId_yj;
-														mxm.addLcMx(lcId, userId_yj, "领取"+lcName+"任务", currLcNo, currDate, currDate,"", 0, "", "", "");
-														//给被移交人发送邮件提醒
-														mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, userId_yj, "cpyUser",  ajNoQt+ " "+lcName+"移交", user.getUserName()+"将["+ajNoQt+"]"+lcName+"任务移交给你");
-														zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
-														msg = "success";
-													}
+												}else{
+													msg = "noYj_zx";
+													flag = false;
 												}
 											}else if(yjType.equals("sc") && currLoginUserId.equals(zl.getCheckUserId())){
-												if(ajStatus < 7){//在案件定稿提交之前都可以移交
+												if(ajStatus < 6){//在案件定稿提交之前都可以移交
 													lcName = "技术审核";
+												}else{
+													msg = "noYj_sc";
+													flag = false;
 												}
 											}else if(yjType.equals("dgtj") && currLoginUserId.equals(zl.getZxUserId())){
-												
+												lcName = "定稿提交";//无限制
 											}else if(yjType.equals("tzs") && currLoginUserId.equals(zl.getZxUserId())){
-												
+												lcName = "导入通知书";//无限制
 											}else if(yjType.equals("fycj") && currLoginUserId.equals(zl.getZxUserId())){
-												
+												lcName = "费用催缴";//无限制
 											}else if(yjType.equals("bz") && currLoginUserId.equals(zl.getZxUserId())){
-												
+												lcName = "案件补正";//无限制
 											}else if(yjType.equals("bzsh") && currLoginUserId.equals(zl.getZxUserId())){
-												
+												lcName = "补正审核";//无限制
 											}else if(yjType.equals("bh") && currLoginUserId.equals(zl.getZxUserId())){
-												
+												lcName = "驳回";//无限制
+											}
+											if(flag){
+												Integer lcId = lcm.addLcInfo(zlId, lcName+"任务移交", user.getUserName()+"将"+lcName+"任务移交给"+user_yj.getUserName(), currDate, 
+														currDate, currDate, currDate);
+												if(lcId > 0){
+													//获取当前流程数字
+													List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
+													double currLcNo = 1.0;
+													if(mxList.size() > 0){
+														currLcNo = mxList.get(0).getLcMxNo();
+													}
+													zxUserId = userId_yj;
+													mxm.addLcMx(lcId, userId_yj, "领取"+lcName+"任务", currLcNo, currDate, currDate,"", 0, "", "", "");
+													//给被移交人发送邮件提醒
+													mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, userId_yj, "cpyUser",  ajNoQt+ " "+lcName+"移交", user.getUserName()+"将["+ajNoQt+"]"+lcName+"任务移交给你");
+													zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+													msg = "success";
+												}
 											}
 										}
 									}
@@ -912,10 +920,10 @@ public class ZlMainAction extends DispatchAction {
 				}else{
 					msg = "noAbility";
 				}
-				
 			}
-			
 		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	

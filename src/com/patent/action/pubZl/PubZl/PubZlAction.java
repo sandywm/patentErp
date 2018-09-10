@@ -271,30 +271,29 @@ public class PubZlAction extends DispatchAction {
 		Integer userId = 0;
 		String msg = "error";
 		String loginType = this.getLoginType(request);
-		if(loginType.equals("appUser") || loginType.equals("spUser")){
+		if(loginType.equals("appUser")){
 			userId = this.getLoginUserId(request);
 			msg = "success";
-		}else{
-			if(loginType.equals("cpyUser")){
-				//需要判断当前用户所在的代理机构是否是收费会员
-				CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
-				if(user != null){
-					Integer cpyId = user.getCpyInfoTb().getId();
-					List<CpyInfoTb> cpyList = cm.listInfoById(cpyId);
-					if(cpyList.size() > 0){
-						CpyInfoTb cpy = cpyList.get(0);
-						Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpy.getEndDate());
-						//免费会员、收费会员在未到期的情况下都能查看
-						if(diffDays > 0){
-							msg = "success";
-						}else{
-							msg = "outDate";//过期会员不能使用
-						}
+		}else if(loginType.equals("cpyUser")){
+			//需要判断当前用户所在的代理机构是否是收费会员
+			CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
+			if(user != null){
+				Integer cpyId = user.getCpyInfoTb().getId();
+				List<CpyInfoTb> cpyList = cm.listInfoById(cpyId);
+				if(cpyList.size() > 0){
+					CpyInfoTb cpy = cpyList.get(0);
+					Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpy.getEndDate());
+					//免费会员、收费会员在未到期的情况下都能查看
+					if(diffDays > 0){
+						msg = "success";
+					}else{
+						msg = "outDate";//过期会员不能使用
 					}
 				}
-			}else{
-				msg = "success";
-			}
+			}	
+		}else if(loginType.equals("spUser")){
+			 msg = "success";
+			 userId = 0;
 		}
 		if(!msg.equals("error")){
 			List<PubZlInfoTb> pbZlList = pzm.listSpecInfoByOpt(pubId, userId);
@@ -587,7 +586,7 @@ public class PubZlAction extends DispatchAction {
 					PubZlInfoTb pz = pzm.listSpecInfoByOpt(pubId, 0).get(0);
 					if(zlStatus.equals(0)){//被代理机构员工撤销
 						if(pz.getZlStatus().equals(1)){
-							if(lqCpyId.equals(pz.getLqCpyId()) && currUserId.equals(pz.getLqUserId())){//领取任务的公司必须和员工公司一致且是领取人才能进行撤销
+							if(currUserId.equals(pz.getLqUserId())){//只有领取人才能进行撤销
 								ajId = pz.getAjId();
 								mailTitle = "专利任务撤回通知";
 								mailCon = "由于代理机构人员["+pz.getLqUserName()+"]主动撤回。您无法再对该任务进行编辑!";
@@ -606,7 +605,7 @@ public class PubZlAction extends DispatchAction {
 								pzm.addPzCzInfo(pubId, "该专利任务已被代理机构["+lqCpyName+"]下的员工["+lqUserName+"]取消认领");
 							}else{
 								flag = false;
-								msg = "infoDiff";//当前操作的员工所在的代理机构必须和领取任务员工所在的公司一致
+								msg = "infoDiff";//只有领取人才能进行撤销
 							}
 						}else{
 							flag = false;
