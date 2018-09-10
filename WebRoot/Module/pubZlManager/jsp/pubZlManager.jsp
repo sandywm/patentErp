@@ -204,9 +204,13 @@
 							if(loginType == 'appUser'){
 								return '<a class="layui-btn layui-btn-xs editInfoBtns" lay-event="updatePubZl" zlTitle="'+ d.title +'"  pubId="'+ d.id +'" opts="editZlOpts"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
 							}else if(loginType == 'spUser'){
-								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'"><i class="layui-icon layui-icon-search"></i>任务详情</a>';
+								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'" taskTit="'+ d.title +'"><i class="layui-icon layui-icon-search"></i>查看任务详情</a>';
 							}else if(loginType == 'cpyUser'){
-								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'" taskTit="'+ d.title +'"><i class="layui-icon layui-icon-search"></i>任务详情</a> <a class="btn layui-btn layui-btn-xs" lay-event="receiveZlTask" zlStatus="'+ d.ajLqStatus +'" zlTitle="'+ d.title +'" pubId="'+ d.id +'">领取</a>';
+								if(d.ajLqStatus == 0){
+									return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'" taskTit="'+ d.title +'"><i class="layui-icon layui-icon-search"></i>任务详情</a> <a class="btn layui-btn layui-btn-xs" lay-event="receiveZlTask" ajStatus="'+ d.ajLqStatus +'" zlTitle="'+ d.title +'" pubId="'+ d.id +'">领取</a>';
+								}else{
+									return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.id +'" taskTit="'+ d.title +'"><i class="layui-icon layui-icon-search"></i>任务详情</a> <a class="btn layui-btn layui-btn-danger layui-btn-xs" lay-event="receiveZlTask" ajStatus="'+ d.ajLqStatus +'" zlTitle="'+ d.title +'" pubId="'+ d.id +'">撤销领取</a>';
+								}
 							}
 						}},
 					]],
@@ -254,6 +258,7 @@
 				}else if(obj.event == 'viewPubZlDetails'){
 					//代理机构下查看专利任务信息
 					globalPubId = $(this).attr('pubId');
+					console.log(globalPubId)
 					var taskTit = $(this).attr('taskTit');
 					var fullScreenIndex = layer.open({
 						title:taskTit + '专利任务详情',
@@ -272,15 +277,25 @@
 					layer.full(fullScreenIndex);
 					
 				}else if(obj.event == 'receiveZlTask'){
-					var zlStatus = $(this).attr('zlStatus'),
+					var ajStatus = $(this).attr('ajStatus'),
 						pubId = $(this).attr('pubId'),
-						zlTitle = $(this).attr('zlTitle');
-					layer.confirm('确认要领取专利任务[<span class="taskColor">'+ zlTitle +'</span>]吗？', {
+						zlTitle = $(this).attr('zlTitle'),
+						zlStatus = 0,
+						changeHtml = '领取';
+					if(ajStatus == 0){
+						zlStatus = 1; //撤销领取
+						changeHtml = '领取';
+					}else{
+						changeHtml = '<span style="color:#F47837;">撤销领取</span>';
+						zlStatus = 0; //领取
+					}
+					layer.confirm('确认要'+ changeHtml +'专利任务[<span class="taskColor">'+ zlTitle +'</span>]吗？', {
 					  title:'提示',
 					  skin: 'layui-layer-molv',
 					  btn: ['确定','取消'] //按钮
 					},function(){
 						layer.load('1');
+						console.log(pubId + "-----" + zlStatus)
 						$.ajax({
 		   					type:'post',
 		   			        async:false,
@@ -291,7 +306,7 @@
 		   			        	layer.closeAll('loading');
 		   			        	console.log(json)
 		   			        	if(json['result'] == 'success'){
-		   			        		layer.msg('领取成功',{icon:1,time:1000},function(){
+		   			        		layer.msg(changeHtml + '成功',{icon:1,time:1000},function(){
 		   			        			loadQueryZlList('initLoad');
 					        		});
 		   			        	}else if(json['result'] == 'lowLevel'){

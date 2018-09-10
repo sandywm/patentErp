@@ -56,7 +56,7 @@ body{
 	margin-right:5px;
 }
 .hasReceive{
-	color:#999;
+	color:#009688;
 	margin-right:5px;
 }
 /* 查看任务详情 代理机构 平台用户下使用 */
@@ -156,4 +156,7 @@ body{
 }
 .taskColor{
 	color:#F47837;
+}
+.layui-elem-field legend{
+	font-size:14px;
 }

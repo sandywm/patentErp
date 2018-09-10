@@ -10,7 +10,9 @@
 </head>
 <body style="background:#fff;">
 	<div id="viewZlTask" class="layui-form">
-		<ul></ul>
+		<ul id="viewZlTaskUl"></ul>
+		<!-- 撰写人领取撤销记录 -->
+		<div id="receiveHisWrap"></div>
 	</div>
 	
 	<script src="/plugins/layui/layui.js"></script>
@@ -36,6 +38,7 @@
 	   			        data:{pubId : pubId},
 	   			        url:'/pubZl.do?action=getDetailInfo',
 	   			        success:function (json){
+	   			        	console.log(json)
 	   			        	layer.closeAll('loading');
 	   			        	if(json['result'] == 'success'){
 	   			        		_this.renderViewPubZlDetail(json);
@@ -51,7 +54,7 @@
 				//渲染任务详情结构
 				renderViewPubZlDetail : function(json){
 					console.log(json)
-					var strHtml = '';
+					var strHtml = '',receiveHisHtml='';
 					strHtml += '<li class="taskTitDetail">'+ json.zlTitle +'</li>';
 					strHtml += '<li><div class="innerPar"><p>发布者</p><p>'+ json.pubInfo +'</p></div>';
 					strHtml += '<div class="innerPar"><p>发布日期</p><p>'+ json.pubDate +'</p></div></li>';
@@ -78,7 +81,10 @@
 					strHtml += '<li><div class="innerPar"><p>领取人</p><p>'+ json.lqrName +'</p></div>';
 					strHtml += '<div class="innerPar"><p>领取时间</p><p>'+ json.lqDate +'</p></div></li>';
 					strHtml += '<li><div class="innerPar" style="width:100%;border-right:none;"><p>领取人所属公司</p><p>'+ json.lqrCpyName +'</p></div></li>';
-					$('#viewZlTask ul').html(strHtml);
+					$('#viewZlTaskUl').html(strHtml);
+					receiveHisHtml += '<fieldset class="layui-elem-field layui-field-title site-title">';
+					receiveHisHtml += '<legend><a name="use">撰写人领取撤销记录</a></legend></fieldset>';
+					$('#receiveHisWrap').html(receiveHisHtml);
 				}
 			};
 			$(function(){
