@@ -497,7 +497,6 @@ public class PubZlAction extends DispatchAction {
 		String msg = "error";
 		Integer pubId = CommonTools.getFinalInteger(request.getParameter("pubId"));//发布专利任务编号
 		Integer zlStatus = CommonTools.getFinalInteger("zlStatus", request);//0:未领取,1:已领取
-		zlStatus = 1;
 		Integer currUserId = this.getLoginUserId(request);;
 		String lqUserName = "";
 		Integer lqCpyId = 0;
@@ -525,7 +524,6 @@ public class PubZlAction extends DispatchAction {
 				lqCpyId = cUser.getCpyInfoTb().getId();
 				lqCpyName = cUser.getCpyInfoTb().getCpyName();
 				lqDate = CurrentTime.getCurrentTime();
-				ajId = CommonTools.getFinalInteger("ajId", request);
 				
 				pzList = pzm.listSpecInfoByOpt(pubId, 0);
 				if(pzList.size() > 0){//存在信息&& pzList.get(0).getZlStatus().equals(zlStatus)
@@ -561,10 +559,11 @@ public class PubZlAction extends DispatchAction {
 				if(currLoginType.equals("appUser")){//申请人/公司撤销领取状态
 					PubZlInfoTb pz = pzm.listSpecInfoByOpt(pubId, this.getLoginUserId(request)).get(0);
 					if(pz != null){
+						ajId = pz.getAjId();
 						mailTitle = "专利任务撤回通知";
 						String zlTitle = pz.getZlTitle();
 						//给发布人发送邮件
-						mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "appType", mailTitle, "您已主动撤回专利["+zlTitle+"],之前的代理机构["+pz.getLqCpyName()+"]将不能再进行操作!");
+						mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "appUser", mailTitle, "您已主动撤回专利["+zlTitle+"],之前的代理机构["+pz.getLqCpyName()+"]将不能再进行操作!");
 						lqCpyId = pz.getLqCpyId();
 						
 						//给代理机构管理员发送邮件
@@ -575,10 +574,13 @@ public class PubZlAction extends DispatchAction {
 							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, mailCon);
 						}
 						//需要修改对应的案件终止状态--------------------------------------------
-						flag = zlm.updateStopStatusById(ajId, 1, CurrentTime.getCurrentTime(), am.getEntityById(this.getLoginUserId(request)).getAppName(), currLoginType);
+						if(ajId > 0){
+							flag = zlm.updateStopStatusById(ajId, 1, CurrentTime.getCurrentTime(), am.getEntityById(this.getLoginUserId(request)).getAppName(), currLoginType);
+						}
 						//增加撤销记录
 						pzm.addPzCzInfo(pubId, "该专利任务已被专利任务发起人 "+pz.getApplyInfoTb().getAppName() + "主动撤销");
 					}else{
+						flag = false;
 						msg = "fail";//捣乱
 					}
 				}else if(currLoginType.equals("cpyUser")){//代理公司领取/撤销领取状态
@@ -586,10 +588,11 @@ public class PubZlAction extends DispatchAction {
 					if(zlStatus.equals(0)){//被代理机构员工撤销
 						if(pz.getZlStatus().equals(1)){
 							if(lqCpyId.equals(pz.getLqCpyId()) && currUserId.equals(pz.getLqUserId())){//领取任务的公司必须和员工公司一致且是领取人才能进行撤销
+								ajId = pz.getAjId();
 								mailTitle = "专利任务撤回通知";
 								mailCon = "由于代理机构人员["+pz.getLqUserName()+"]主动撤回。您无法再对该任务进行编辑!";
 								//给发布人/公司发送邮件
-								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appType", mailTitle, "代理机构["+lqCpyName+"]下的员工["+lqUserName+"]主动撤回对您发布的专利任务["+pz.getZlTitle()+"]");
+								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appUser", mailTitle, "代理机构["+lqCpyName+"]下的员工["+lqUserName+"]主动撤回对您发布的专利任务["+pz.getZlTitle()+"]");
 								//给代理机构所有管理员发送邮件
 								List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(lqCpyId, "管理员");
 								for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
@@ -597,12 +600,16 @@ public class PubZlAction extends DispatchAction {
 									mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, mailCon);
 								}
 								//需要修改对应的案件终止状态---------------------------------------------
-								flag = zlm.updateStopStatusById(ajId, 1, "", "", "");;
+								if(ajId > 0){
+									flag = zlm.updateStopStatusById(ajId, 1, "", "", "");
+								}
 								pzm.addPzCzInfo(pubId, "该专利任务已被代理机构["+lqCpyName+"]下的员工["+lqUserName+"]取消认领");
 							}else{
+								flag = false;
 								msg = "infoDiff";//当前操作的员工所在的代理机构必须和领取任务员工所在的公司一致
 							}
 						}else{
+							flag = false;
 							msg = "noCancel";//该专利已被撤销，不能再进行撤销操作
 						}
 					}else{//被代理机构员工领取
@@ -610,7 +617,7 @@ public class PubZlAction extends DispatchAction {
 							mailTitle = "专利任务领取通知";
 							mailCon = "您发布的专利["+pz.getZlTitle()+"]已被代理机构["+lqCpyName+"]下员工["+lqUserName+"]领取!";
 							//给发布人/公司发送邮件
-							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appType", mailTitle, mailCon);
+							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appUser", mailTitle, mailCon);
 							//给代理机构所有管理员发送邮件
 							List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(lqCpyId, "管理员");
 							for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
@@ -621,6 +628,7 @@ public class PubZlAction extends DispatchAction {
 							flag = cm.updateZlNumById(lqCpyId, 1);
 							pzm.addPzCzInfo(pubId, "该专利任务已被代理机构["+lqCpyName+"]下的员工["+lqUserName+"]认领");
 						}else{
+							flag = false;
 							msg = "noReceive";//该专利已被领取
 						}
 					}
