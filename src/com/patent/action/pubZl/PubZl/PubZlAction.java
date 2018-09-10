@@ -843,9 +843,8 @@ public class PubZlAction extends DispatchAction {
 				if(purpose.equals("allInfo")){//用于浏览单位全部领取记录用
 					pageFlag = true;
 					if(count > 0){
-						pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("pageSize")), 10);
-						Integer pageCount = PageConst.getPageCount(count, pageSize);
-						pageNo = PageConst.getPageNo(String.valueOf(request.getParameter("pageNo")), pageCount);
+						pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+						pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
 						List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, addStatus, pageFlag, pageNo, pageSize);
 						msg = "success";
 						for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
@@ -876,7 +875,9 @@ public class PubZlAction extends DispatchAction {
 							map_d.put("zlNo", zlNo);
 							list_d.add(map_d);
 						}
-						map.put("pzInfo", list_d);
+						map.put("data", list_d);
+						map.put("count", count);
+						map.put("code", 0);
 					}else{
 						msg = "noInfo";
 					}
