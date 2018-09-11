@@ -81,7 +81,7 @@
 	            <div class="layui-tab-content">
 	                <div class="layui-tab-item layui-show">
 	                	<!--  iframe id="mainIframe" src="cpyManager.do?action=goCpyDetailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
-	                    <!--  iframe id="mainIframe" src="user.do?action=goWelcomePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
+	                    <iframe id="mainIframe" src="user.do?action=goWelcomePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
 	                    <!--  iframe id="mainIframe" src="jfm.do?action=goJfPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserDetailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
@@ -89,7 +89,7 @@
 	                    <!-- iframe id="mainIframe" src="cpyManager.do?action=goCpyPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe -->
 	                	<!--  iframe id="mainIframe" src="cpyManager.do?action=goSubParCpyPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!--  iframe id="mainIframe" src="mail.do?action=goMailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
-	                	<iframe id="mainIframe" src="pubZl.do?action=goPubZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
+	                	<!--  iframe id="mainIframe" src="pubZl.do?action=goPubZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                </div>
 	            </div>
 	        </div>
@@ -119,6 +119,9 @@
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="jfm.do?action=goJfPage" tab-id="6">技术领域管理</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="7">代理机构角色权限管理</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goSubParCpyPage" tab-id="8">代理机构主/子公司</a></dd></dl></li>';
+		        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)"><i class="layui-icon layui-icon-form" style="font-size:16px;"></i>专利任务管理</a>';
+		        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" path="pubZl.do?action=goPubZlPage" tab-id="10">专利任务领取</a></dd>';
+		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="pubZl.do?action=goLqZlPage" tab-id="11">专利任务领取记录</a></dd></dl></li>';
 			        	liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="9"><i class="iconfont layui-extend-goumai"></i>会员续费/购买</a></li>';
 	        		}else{
 	        			liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="3"></i><cite>我的代理机构</cite></a></li>';
@@ -144,12 +147,13 @@
 	        		}
 	        	}else if(roleName == '申请人/公司' && loginType == 'appUser'){//申请人/公司
 	        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)">任务</a>';
-	        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" tab-id="3">专利任务发布</a></dd>';
+	        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" path="pubZl.do?action=goPubZlPage" tab-id="3">专利任务发布</a></dd>';
 	        		liItem += '<dd class="navLi"><a href="javascript:void(0)" tab-id="4">查看任务进度</a></dd></dl></li>';
 	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyPage" tab-id="5">查看代理机构</a></li>';
 	        	}else{ //平台用户（超管 财务、总经理）
 	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="3"><i class="iconfont layui-extend-mokuai"></i>模块权限管理</a></li>';
-	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyPage" tab-id="4"><i class="iconfont layui-extend-jigou"></i>代理机构管理</a></li>';
+	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyPage" tab-id="4"><i class="iconfont layui-extend-jigou"></i>代理机构管理</a></li>'; 		
+	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="pubZl.do?action=goPubZlPage" tab-id="7"><i class="layui-icon layui-icon-search"></i>查看专利任务</a></li>';
 	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="5"><i class="iconfont layui-extend-chakan"></i>查看专利申请(人/公司)</a></li>';
 	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="6"><i class="iconfont layui-extend-feiyong"></i>费用列表</a></li>';
 	        	}

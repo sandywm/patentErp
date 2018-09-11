@@ -78,7 +78,7 @@
   	</div>
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
-  		var loginType = parent.loginType,currPage = 1,mailIdArray=[];
+  		var loginType = parent.loginType,currPage = 1,mailIdArray=[],roleName = parent.roleName;
   		layui.use(['layer','jquery','element','laypage','form'],function(){
   			var layer = layui.layer,
   				$ = layui.jquery,
@@ -186,12 +186,13 @@
   					var strHtmlNav = '',strHtmlCon = '';
   					if(loginType == 'cpyUser'){//代理机构用户
   						strHtmlNav += '<li id="taskNavLi" class="layui-this" isHasData="true">任务通知<div id="hasNoReadNum_task" class="isHasNoReadNumWrap"></div></li>';
-  						strHtmlNav += '<li id="endDateLi" isHasData="true">会员到期通知<div id="hasNoReadNum_end" class="isHasNoReadNumWrap"></div></li>';
-  						strHtmlNav += '<li id="buyMLi" isHasData="true">会员购买通知<div id="hasNoReadNum_buy" class="isHasNoReadNumWrap"></div></li>';
   						strHtmlCon += '<div class="layui-tab-item layui-show"><div id="taskTab"></div><div id="laypageTask" class="comLayPage"></div></div>';
-  						strHtmlCon += '<div class="layui-tab-item"><div id="endDateTab"></div><div id="laypageEndDate" class="comLayPage"></div></div>';
-  						strHtmlCon += '<div class="layui-tab-item"><div id="buyMTab"></div><div id="laypageBuyM" class="comLayPage"></div></div>';
-  						
+  						if(roleName == '管理员'){
+  							strHtmlNav += '<li id="endDateLi" isHasData="true">会员到期通知<div id="hasNoReadNum_end" class="isHasNoReadNumWrap"></div></li>';
+  	  						strHtmlNav += '<li id="buyMLi" isHasData="true">会员购买通知<div id="hasNoReadNum_buy" class="isHasNoReadNumWrap"></div></li>';
+  	  						strHtmlCon += '<div class="layui-tab-item"><div id="endDateTab"></div><div id="laypageEndDate" class="comLayPage"></div></div>';
+  	  						strHtmlCon += '<div class="layui-tab-item"><div id="buyMTab"></div><div id="laypageBuyM" class="comLayPage"></div></div>';
+  						}
   					}else if(loginType == 'appUser'){//个人、公司用户
   						strHtmlNav += '<li id="taskNavLi" class="layui-this" isHasData="true">任务通知<div id="hasNoReadNum_task" class="isHasNoReadNumWrap"></div></li>';
   						strHtmlCon += '<div class="layui-tab-item layui-show"><div id="taskTab"></div><div id="laypageTask" class="comLayPage"></div></div>';

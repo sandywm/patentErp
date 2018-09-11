@@ -27,7 +27,6 @@
 			var page = {
 				init : function(){
 					this.onLoad();
-					this.bindEvent();
 				},
 				onLoad : function(){
 					this.loadZlDetailData();
@@ -45,6 +44,7 @@
 	   			        	layer.closeAll('loading');
 	   			        	if(json['result'] == 'success'){
 	   			        		_this.renderViewPubZlDetail(json);
+	   			        		_this.bindEvent();
 	   			        	}else if(json['result'] == 'outDate'){
 	   			        		var outDateHtml = '<div class="innerOutDate"><i class="layui-icon layui-icon-face-cry"></i><span>抱歉，您当前的会员已经到期，暂不能查看任务详情!</span></div>';
 	   			        		$('#outDate').html(outDateHtml);
@@ -88,7 +88,7 @@
 			   			        		layer.msg(changeTit,{icon:1,time:1000},function(){
 			   			        			var index= parent.layer.getFrameIndex(window.name);
 					        				parent.viewZlFlag = true;
-			   			        			_this.renderViewPubZlDetail(json);
+			   			        			_this.loadZlDetailData();
 						        		});
 			   			        	}else if(json['result'] == 'lowLevel'){
 			   			        		layer.msg('抱歉，您当前的会员已经到期或当前等级不够，暂不能领取', {icon:5,anim:6,time:2500});
@@ -109,7 +109,6 @@
 				},
 				//渲染任务详情结构
 				renderViewPubZlDetail : function(json){
-					console.log(json)
 					var strHtml = '',receiveHisHtml='';
 					strHtml += '<li class="taskTitDetail">'+ json.zlTitle +'</li>';
 					strHtml += '<li><div class="innerPar"><p>发布者</p><p>'+ json.pubInfo +'</p></div>';

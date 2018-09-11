@@ -44,6 +44,7 @@
     <!-- 发布专利模块管理 -->
     <action path="/pubZl" parameter="action" scope="request" type="com.patent.action.pubZl.PubZl.PubZlAction">
       <forward name="zlPage" path="/Module/pubZlManager/jsp/pubZlManager.jsp"></forward>
+      <forward name="lqzlPage" path="/Module/pubZlManager/jsp/zlTaskLqHistory.jsp"></forward>
     </action>
     <!-- 邮件系统管理 -->
     <action path="/mail"  parameter="action" scope="request" type="com.patent.action.mail.MailAction">

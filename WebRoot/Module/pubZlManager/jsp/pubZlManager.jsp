@@ -102,22 +102,6 @@
 					}else{
 						$('#zlNavTit').html('专利任务列表');
 					}
-					
-					/*$.ajax({
-	   					type:'post',
-	   			        async:false,
-	   			        dataType:'json',
-	   			        data:{zlTitle : '',zlNo : '',zlType : '',pubDate : '', zlStatus : -1},
-	   			        url:'pubZl.do?action=getPageInfo',
-	   			        success:function (json){
-	   			        	layer.closeAll('loading');
-	   			        	if(json['result'] == 'success'){
-	   			        		console.log(json)
-	   			        	}else if(json['result'] == 'outDate'){
-	   			        		layer.msg('抱歉，您当前的会员已经到期，暂不能查看', {icon:5,anim:6,time:1000});
-	   			        	}
-	   			        }
-	   				});*/
 				},
 				bindEvent : function(){
 					//增加专利
