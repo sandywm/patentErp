@@ -230,39 +230,7 @@ public class PubZlAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
-	
-	/**
-	 * 根据条件获取发布专利列表记录条数
-	 * @description
-	 * @author wm
-	 * @date 2018-8-13 上午11:27:28
-	 * @param mapping
-	 * @param form
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	public ActionForward getCount(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// TODO Auto-generated method stub
-		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
-		Map<String,Integer> map = new HashMap<String,Integer>();
-		String zlTitle = Transcode.unescape(request.getParameter("zlTitle"), request);
-		String zlNo = request.getParameter("zlNo");
-		String zlType = request.getParameter("zlType");
-		String pubDate = request.getParameter("pubDate");
-		Integer zlStatus = Integer.parseInt(request.getParameter("zlStatus"));
-		Integer currUserId = 0;
-		if(this.getLoginType(request).equals("appUser")){//申请人/公司查看
-			currUserId = this.getLoginUserId(request);
-		}
-		Integer count = pzm.getCountByOpt(currUserId, zlTitle, zlNo, zlType, pubDate, zlStatus);
-		map.put("result", count);
-		this.getJsonPkg(map, response);
-		return null;
-	}
-	
+
 	/**
 	 * 获取专利任务详情（只有收费会员和平台可以查看详情，发布人可以查看自己的发布任务详情）
 	 * @description

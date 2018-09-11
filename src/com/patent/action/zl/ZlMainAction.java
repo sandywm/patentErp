@@ -874,7 +874,7 @@ public class ZlMainAction extends DispatchAction {
 													flag = false;
 												}
 											}else if(yjType.equals("sc") && currLoginUserId.equals(zl.getCheckUserId())){
-												if(ajStatus < 6){//在案件定稿提交之前都可以移交
+												if(ajStatus < 7){//在案件定稿提交之前都可以移交
 													lcName = "技术审核";
 													checkUserId = userId_yj;
 												}else{
@@ -1140,6 +1140,7 @@ public class ZlMainAction extends DispatchAction {
 							String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
 							String ajYxqId = CommonTools.getFinalStr("ajYxqId", request);
 							String ajUpload = CommonTools.getFinalStr("ajUpload", request);
+							String lcMxUpSize = CommonTools.getFinalStr("lcMxUpSize", request);
 							String ajRemark = CommonTools.getFinalStr("ajRemark", request);
 							String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
 							Integer pubZlId = CommonTools.getFinalInteger("pubZlId", request);//发布专利的编号
@@ -1150,16 +1151,36 @@ public class ZlMainAction extends DispatchAction {
 							Integer bzUserId = CommonTools.getFinalInteger("bzUserId", request);//不能为空
 							Integer bzshUserId = CommonTools.getFinalInteger("bzshUserId", request);//不能为空
 							Integer bhUserId = CommonTools.getFinalInteger("bhUserId", request);//不能为空
+							String cpyDate = CommonTools.getFinalStr("cpyDate", request);//内部期限
+							String sDate = CurrentTime.getStringDate();//开始日期
 							
 							String ajApplyDate = "";
-							String ajStatus = CommonTools.getFinalStr("ajStatus", request);
+//							String ajStatus = CommonTools.getFinalStr("ajStatus", request);
 							Integer checkUserId = CommonTools.getFinalInteger("checkUserId", request);//审查人员编号
 							Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, ajSqAddress, 
-									ajYxqId, ajUpload, ajRemark, ajEwyqId, ajApplyDate, ajStatus, pubZlId,cpyId,checkUserId,zxUserId,
+									ajYxqId, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "3.0", pubZlId,cpyId,checkUserId,zxUserId,
 									tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId);
 							if(zlId > 0){
 								//增加流程
-//								lcm.addLcInfo(zlId, "提出申请", lcDetail, sDate, cpyDate, comDate, gfDate);
+								Integer lcId_1 = lcm.addLcInfo(zlId, "专利案件录入", "专利案件录入", sDate, cpyDate, sDate, sDate);
+								if(lcId_1 > 0){
+									mxm.addLcMx(lcId_1, this.getLoginUserId(request), "专利案件录入", 1.0, sDate, sDate, ajUpload, pubZlId, sDate, lcMxUpSize, ajRemark);
+									//增加专利撰写流程
+									if(zxUserId > 0){
+										Integer lcId_2 = lcm.addLcInfo(zlId, "人员分配", "人员分配", sDate, sDate, sDate, sDate);
+										mxm.addLcMx(lcId_2, zxUserId, "人员分配", 2.0, sDate, sDate, ajUpload, pubZlId, sDate, lcMxUpSize, ajRemark);
+										
+										Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", sDate, cpyDate, "", "");
+										mxm.addLcMx(lcId_1, zxUserId, "新申请撰稿", 3.0, sDate, "", "", 0, "", "", "");
+									}else{
+										//如果没有指派撰写人，需要撰写人认领抢购
+										//1：先将案件状态修改成2.0
+										zlm.updateZlStatusById(zlId, "2.0");
+										
+									}
+									
+									
+								}
 								msg = "success";
 //								if(zxUserId.equals(0)){
 									//给全体员工（对专利具有修改操作的人）发送邮件
