@@ -237,12 +237,12 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 	}
 
 	@Override
-	public List<PubZlInfoTb> listSpecInfoByOpt_2(Integer lqCpyId,Integer addStatus,boolean pageFlag, Integer pageNo, Integer pageSize)throws WEBException {
+	public List<PubZlInfoTb> listSpecInfoByOpt_2(Integer lqCpyId,Integer lqUserId, Integer addStatus,boolean pageFlag, Integer pageNo, Integer pageSize)throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return pzDao.findSpecInfoByOpt_2(sess, lqCpyId, addStatus, pageFlag, pageNo, pageSize);
+			return pzDao.findSpecInfoByOpt_2(sess, lqCpyId, lqUserId, addStatus, pageFlag, pageNo, pageSize);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -253,13 +253,13 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 	}
 
 	@Override
-	public Integer getCountByOpt_2(Integer lqCpyId, Integer addStatus)
+	public Integer getCountByOpt_2(Integer lqCpyId, Integer lqUserId, Integer addStatus)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return pzDao.getCountByOpt_2(sess, lqCpyId, addStatus);
+			return pzDao.getCountByOpt_2(sess, lqCpyId, lqUserId, addStatus);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

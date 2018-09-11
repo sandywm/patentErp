@@ -122,13 +122,16 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 	}
 
 	@Override
-	public List<PubZlInfoTb> findSpecInfoByOpt_2(Session sess, Integer lqCpyId,Integer addStatus,boolean pageFlag,Integer pageNo,Integer pageSize) {
+	public List<PubZlInfoTb> findSpecInfoByOpt_2(Session sess, Integer lqCpyId,Integer lqUserId, Integer addStatus,boolean pageFlag,Integer pageNo,Integer pageSize) {
 		// TODO Auto-generated method stub
 		String hql = " from PubZlInfoTb as pz where pz.lqCpyId = "+lqCpyId;
 		if(addStatus.equals(1)){
 			hql += " and pz.ajId > 0";
 		}else if(addStatus.equals(0)){
 			hql += " and pz.ajId = 0";
+		}
+		if(lqUserId > 0){
+			hql += " and pz.lqUserId = "+lqUserId;
 		}
 		if(pageFlag){
 			int offset = (pageNo - 1) * pageSize;
@@ -141,7 +144,7 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 	}
 
 	@Override
-	public Integer getCountByOpt_2(Session sess, Integer lqCpyId,
+	public Integer getCountByOpt_2(Session sess, Integer lqCpyId,Integer lqUserId,
 			Integer addStatus) {
 		// TODO Auto-generated method stub
 		String hql = "select count(pz.id) from PubZlInfoTb as pz where pz.lqCpyId = "+lqCpyId;
@@ -149,6 +152,9 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 			hql += " and pz.ajId > 0";
 		}else if(addStatus.equals(0)){
 			hql += " and pz.ajId = 0";
+		}
+		if(lqUserId > 0){
+			hql += " and pz.lqUserId = "+lqUserId;
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);

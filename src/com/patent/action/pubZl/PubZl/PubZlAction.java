@@ -599,9 +599,17 @@ public class PubZlAction extends DispatchAction {
 						//给代理机构管理员发送邮件
 						List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(lqCpyId, "管理员");
 						mailCon = "由于专利发布人员主动撤回专利["+zlTitle+"]。您无法再对该任务进行编辑，如有疑问，请联系专利发布人员["+pz.getApplyInfoTb().getAppName()+"]!";
+						boolean flag_exsit = false;
 						for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
 							CpyUserInfo cUser = it.next();
+							if(pz.getLqUserId().equals(cUser.getId())){
+								flag_exsit = true;
+							}
 							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, mailCon);
+						}
+						//给领取人发送邮件
+						if(!flag_exsit){
+							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getLqUserId(), "appUser", mailTitle, mailCon);
 						}
 						//需要修改对应的案件终止状态--------------------------------------------
 						if(ajId > 0){
@@ -620,14 +628,22 @@ public class PubZlAction extends DispatchAction {
 							if(currUserId.equals(pz.getLqUserId())){//只有领取人才能进行撤销
 								ajId = pz.getAjId();
 								mailTitle = "专利任务撤回通知";
-								mailCon = "由于代理机构人员["+pz.getLqUserName()+"]主动撤回。您无法再对该任务进行编辑!";
+								mailCon = "由于代理机构人员["+pz.getLqUserName()+"]主动撤回。无法再对该任务进行编辑!";
 								//给发布人/公司发送邮件
 								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appUser", mailTitle, "代理机构["+lqCpyName+"]下的员工["+lqUserName+"]主动撤回对您发布的专利任务["+pz.getZlTitle()+"]");
 								//给代理机构所有管理员发送邮件
+								boolean flag_exsit = false;
 								List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(lqCpyId, "管理员");
 								for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
 									CpyUserInfo cUser = it.next();
+									if(pz.getLqUserId().equals(cUser.getId())){
+										flag_exsit = true;
+									}
 									mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, mailCon);
+								}
+								//给领取人发送邮件
+								if(!flag_exsit){
+									mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getLqUserId(), "cpyUser", mailTitle, mailCon);
 								}
 								//需要修改对应的案件终止状态---------------------------------------------
 								if(ajId > 0){
@@ -650,9 +666,16 @@ public class PubZlAction extends DispatchAction {
 							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appUser", mailTitle, mailCon);
 							//给代理机构所有管理员发送邮件
 							List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(lqCpyId, "管理员");
+							boolean flag_exsit = false;
 							for(Iterator<CpyUserInfo> it = cuList.iterator() ; it.hasNext();){
 								CpyUserInfo cUser = it.next();
+								if(currUserId.equals(cUser.getId())){
+									flag_exsit = true;
+								}
 								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, "员工["+lqUserName+"]已成功领取["+pz.getZlTitle()+"]专利任务!");
+							}
+							if(!flag_exsit){
+								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", mailTitle, "您["+lqUserName+"]已成功领取["+pz.getZlTitle()+"]专利任务!");
 							}
 							//增加领取公司的领取数量
 							flag = cm.updateZlNumById(lqCpyId, 1);
@@ -793,7 +816,7 @@ public class PubZlAction extends DispatchAction {
 	}
 	
 	/**
-	 * 专利列表管理界面
+	 * 导向专利列表已领取的管理界面（代理机构）
 	 * @description
 	 * @author wm
 	 * @date 2018-8-13 上午09:00:29
@@ -836,16 +859,21 @@ public class PubZlAction extends DispatchAction {
 			if(cUser != null){
 				Integer cpyId = cUser.getCpyInfoTb().getId();
 				Integer addStatus = CommonTools.getFinalInteger("addStatus", request);
-				String purpose = CommonTools.getFinalStr("purpose", request);
+				String option = CommonTools.getFinalStr("option", request);//cpy:查看代理机构,yg:查看员工
+				String purpose = CommonTools.getFinalStr("purpose", request);//allInfo:用于浏览单位全部领取记录用,simpleInfo://用于增加专利时显示用
 				boolean pageFlag = false;
 				Integer pageNo = 0,pageSize = 0;
-				Integer count = pzm.getCountByOpt_2(cpyId, addStatus);
+				Integer lqUserId = 0;
+				if(option.equals("yg")){
+					lqUserId = this.getLoginUserId(request);
+				}
+				Integer count = pzm.getCountByOpt_2(cpyId, lqUserId, addStatus);
 				if(purpose.equals("allInfo")){//用于浏览单位全部领取记录用
 					pageFlag = true;
 					if(count > 0){
 						pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
 						pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
-						List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, addStatus, pageFlag, pageNo, pageSize);
+						List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, lqUserId, addStatus, pageFlag, pageNo, pageSize);
 						msg = "success";
 						for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
 							PubZlInfoTb pz = it.next();
@@ -882,7 +910,7 @@ public class PubZlAction extends DispatchAction {
 						msg = "noInfo";
 					}
 				}else if(purpose.equals("simpleInfo")){//用于增加专利时显示用
-					List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, addStatus, pageFlag, pageNo, pageSize);
+					List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, 0,0, pageFlag, pageNo, pageSize);
 					if(pzList.size() > 0){
 						msg = "success";
 						for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
@@ -914,37 +942,4 @@ public class PubZlAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
-	
-	/**
-	 * 获取当前代理机构已领取的发布专利任务列表
-	 * @author  Administrator
-	 * @ModifiedBy  
-	 * @date  2018-8-29 下午09:11:56
-	 * @param mapping
-	 * @param form
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	public ActionForward getLqPzCount(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// TODO Auto-generated method stub
-		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
-		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
-		Map<String,Integer> map = new HashMap<String,Integer>();
-		Integer count = 0;
-		if(this.getLoginType(request).equals("cpyUser")){
-			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
-			if(cUser != null){
-				Integer cpyId = cUser.getCpyInfoTb().getId();
-				Integer addStatus = CommonTools.getFinalInteger("addStatus", request);
-				count = pzm.getCountByOpt_2(cpyId, addStatus);
-			}
-		}
-		map.put("result", count);
-		this.getJsonPkg(map, response);
-		return null;
-	}
-
 }

@@ -109,10 +109,11 @@ public interface PubZlInfoDao {
 	 * @param sess
 	 * @param addStatus 增加标记(1：已增加，0：未增加)
 	 * @param lqCpyId 申请公司
+	 * @param lqUserId 领取人编号（0表示全部）
 	 * @param pageFlag 是否分页（true：分页,false：不分页）
 	 * @return
 	 */
-	List<PubZlInfoTb> findSpecInfoByOpt_2(Session sess, Integer lqCpyId,Integer addStatus,boolean pageFlag,Integer pageNo,Integer pageSize);
+	List<PubZlInfoTb> findSpecInfoByOpt_2(Session sess, Integer lqCpyId,Integer lqUserId, Integer addStatus,boolean pageFlag,Integer pageNo,Integer pageSize);
 	
 	/**
 	 * 根据条件获取领取人所属公司的领取记录条数
@@ -122,9 +123,10 @@ public interface PubZlInfoDao {
 	 * @param sess
 	 * @param addStatus 增加标记(1：已增加，0：未增加)
 	 * @param lqCpyId 申请公司
+	 * @param lqUserId 领取人编号（0表示全部）
 	 * @return
 	 */
-	Integer getCountByOpt_2(Session sess, Integer lqCpyId,Integer addStatus);
+	Integer getCountByOpt_2(Session sess, Integer lqCpyId,Integer lqUserId, Integer addStatus);
 	
 	/**
 	 * 获取指定发布专利任务的领取/撤销记录
