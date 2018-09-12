@@ -10,11 +10,6 @@
             <column name="id" />
             <generator class="native" />
         </id>
-        <many-to-one name="cpyUserInfo" class="com.patent.module.CpyUserInfo" lazy="false">
-            <column name="lc_fz_user_id" not-null="true">
-                <comment>流程负责人(等同于(承办人))</comment>
-            </column>
-        </many-to-one>
         <many-to-one name="zlajLcInfoTb" class="com.patent.module.ZlajLcInfoTb" lazy="false">
             <column name="lc_id" not-null="true">
                 <comment>流程编号</comment>
@@ -23,6 +18,11 @@
         <property name="lcMxName" type="java.lang.String">
             <column name="lc_mx_name" length="50" not-null="true">
                 <comment>流程明细名称</comment>
+            </column>
+        </property>
+         <property name="lcFzUserId" type="java.lang.String">
+            <column name="lc_fz_user_id" not-null="true">
+                <comment>流程负责人(等同于(承办人))</comment>
             </column>
         </property>
         <property name="lcMxNo" type="java.lang.Double">

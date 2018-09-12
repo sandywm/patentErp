@@ -5,13 +5,10 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.patent.dao.CpyUserInfoDao;
 import com.patent.dao.ZlajLcInfoDao;
 import com.patent.dao.ZlajLcMxInfoDao;
 import com.patent.exception.WEBException;
 import com.patent.factory.DaoFactory;
-import com.patent.module.CpyUserInfo;
-import com.patent.module.ZlajLcInfoTb;
 import com.patent.module.ZlajLcMxInfoTb;
 import com.patent.service.ZlajLcMxInfoManager;
 import com.patent.tools.HibernateUtil;
@@ -21,7 +18,6 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 
 	ZlajLcInfoDao lcDao = null;
 	ZlajLcMxInfoDao mxDao = null;
-	CpyUserInfoDao uDao = null;
 	Transaction tran = null;
 	@Override
 	public Integer addLcMx(Integer lcId, Integer fzUserId, String lcMxName,
@@ -31,11 +27,10 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 		// TODO Auto-generated method stub
 		try {
 			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
-			uDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
 			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			ZlajLcMxInfoTb mxInfo = new ZlajLcMxInfoTb(uDao.get(sess, fzUserId), lcDao.get(sess, lcId),
+			ZlajLcMxInfoTb mxInfo = new ZlajLcMxInfoTb(fzUserId, lcDao.get(sess, lcId),
 					lcMxName, lcMxNo, lcMxSDate, lcMxEDate,lcMxUpFile, lcMxUpUserId, lcMxUpDate,
 					lcMxUpSize, lcMxRemark);
 			mxDao.save(sess, mxInfo);

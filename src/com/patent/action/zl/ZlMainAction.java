@@ -508,7 +508,13 @@ public class ZlMainAction extends DispatchAction {
 									Map<String,Object> map_d = new HashMap<String,Object>();
 									map_d.put("mxId", mx.getId());
 									map_d.put("mxName", mx.getLcMxName());
-									map_d.put("fzUserName", mx.getCpyUserInfo().getUserName());
+									Integer lcFzUserId = mx.getLcFzUserId();
+									CpyUserInfo user = cum.getEntityById(lcFzUserId);
+									if(user != null){
+										map_d.put("fzUserName", user.getUserName());
+									}else{
+										map_d.put("fzUserName", "");
+									}
 									map_d.put("mxSDate", mx.getLcMxSDate());
 									map_d.put("mxEDate", mx.getLcMxEDate());
 									String upFile = mx.getLcMxUpFile();
@@ -1155,14 +1161,13 @@ public class ZlMainAction extends DispatchAction {
 							String sDate = CurrentTime.getStringDate();//开始日期
 							
 							String ajApplyDate = "";
-//							String ajStatus = CommonTools.getFinalStr("ajStatus", request);
 							Integer checkUserId = CommonTools.getFinalInteger("checkUserId", request);//审查人员编号
 							Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, ajSqAddress, 
 									ajYxqId, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "3.0", pubZlId,cpyId,checkUserId,zxUserId,
 									tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId);
 							if(zlId > 0){
 								//增加流程
-								Integer lcId_1 = lcm.addLcInfo(zlId, "专利案件录入", "专利案件录入", sDate, cpyDate, sDate, sDate);
+								Integer lcId_1 = lcm.addLcInfo(zlId, "专利案件录入", "专利案件录入", sDate, sDate, sDate, sDate);
 								if(lcId_1 > 0){
 									mxm.addLcMx(lcId_1, this.getLoginUserId(request), "专利案件录入", 1.0, sDate, sDate, ajUpload, pubZlId, sDate, lcMxUpSize, ajRemark);
 									//增加专利撰写流程
@@ -1170,13 +1175,16 @@ public class ZlMainAction extends DispatchAction {
 										Integer lcId_2 = lcm.addLcInfo(zlId, "人员分配", "人员分配", sDate, sDate, sDate, sDate);
 										mxm.addLcMx(lcId_2, zxUserId, "人员分配", 2.0, sDate, sDate, ajUpload, pubZlId, sDate, lcMxUpSize, ajRemark);
 										
-										Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", sDate, cpyDate, "", "");
+										lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", sDate, cpyDate, "", "");
 										mxm.addLcMx(lcId_1, zxUserId, "新申请撰稿", 3.0, sDate, "", "", 0, "", "", "");
+										//给当前撰写人发送邮件
+										
 									}else{
 										//如果没有指派撰写人，需要撰写人认领抢购
 										//1：先将案件状态修改成2.0
 										zlm.updateZlStatusById(zlId, "2.0");
-										
+										Integer lcId_2 = lcm.addLcInfo(zlId, "人员分配", "人员分配", sDate, CurrentTime.getFinalDate(sDate,1), "", "");
+										mxm.addLcMx(lcId_2, 0, "等待撰写人员领取", 2.0, sDate, "", "", pubZlId, "", "", "");
 									}
 									
 									

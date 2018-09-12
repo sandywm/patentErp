@@ -186,7 +186,16 @@ public class CurrentTime {
 		SimpleDateFormat formatter = new SimpleDateFormat(format);
 		return formatter.format(currentTime);
 	}
-	//指定日期+/-天数
+	
+	/**
+	 * 指定日期+/-天数
+	 * @description
+	 * @author wm
+	 * @date 2018-9-12 上午11:30:01
+	 * @param specifiedDate
+	 * @param days
+	 * @return
+	 */
 	public static String getFinalDate(String specifiedDate,int days){
 		String finalDate = "";
         try {

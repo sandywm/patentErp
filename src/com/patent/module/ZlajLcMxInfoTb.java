@@ -13,7 +13,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Integer id;
-	private CpyUserInfo cpyUserInfo;
+	private Integer lcFzUserId;
 	private ZlajLcInfoTb zlajLcInfoTb;
 	private String lcMxName;
 	private Double lcMxNo;
@@ -32,11 +32,11 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public ZlajLcMxInfoTb(CpyUserInfo cpyUserInfo, ZlajLcInfoTb zlajLcInfoTb,
+	public ZlajLcMxInfoTb(Integer lcFzUserId, ZlajLcInfoTb zlajLcInfoTb,
 			String lcMxName, Double lcMxNo, String lcMxSDate, String lcMxEDate,
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,
 			String lcMxUpSize, String lcMxRemark) {
-		this.cpyUserInfo = cpyUserInfo;
+		this.lcFzUserId = lcFzUserId;
 		this.zlajLcInfoTb = zlajLcInfoTb;
 		this.lcMxName = lcMxName;
 		this.lcMxNo = lcMxNo;
@@ -50,12 +50,12 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public ZlajLcMxInfoTb(Integer id,CpyUserInfo cpyUserInfo, ZlajLcInfoTb zlajLcInfoTb,
+	public ZlajLcMxInfoTb(Integer id,Integer lcFzUserId, ZlajLcInfoTb zlajLcInfoTb,
 			String lcMxName, Double lcMxNo, String lcMxSDate, String lcMxEDate,
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,
 			String lcMxUpSize, String lcMxRemark) {
 		this.id = id;
-		this.cpyUserInfo = cpyUserInfo;
+		this.lcFzUserId = lcFzUserId;
 		this.zlajLcInfoTb = zlajLcInfoTb;
 		this.lcMxName = lcMxName;
 		this.lcMxNo = lcMxNo;
@@ -78,12 +78,13 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 		this.id = id;
 	}
 
-	public CpyUserInfo getCpyUserInfo() {
-		return this.cpyUserInfo;
+
+	public Integer getLcFzUserId() {
+		return lcFzUserId;
 	}
 
-	public void setCpyUserInfo(CpyUserInfo cpyUserInfo) {
-		this.cpyUserInfo = cpyUserInfo;
+	public void setLcFzUserId(Integer lcFzUserId) {
+		this.lcFzUserId = lcFzUserId;
 	}
 
 	public ZlajLcInfoTb getZlajLcInfoTb() {

@@ -512,6 +512,65 @@ public class CustomerAction extends DispatchAction {
 	}
 	
 	/**
+	 * 根据客户编号获取联系人、发明人详细信息
+	 * @description
+	 * @author wm
+	 * @date 2018-9-12 下午04:14:29
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCusDetail(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		String opt = CommonTools.getFinalStr("opt", request);//cus,lxr,fmr
+		String msg = "error";
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			if(opt.equals("lxr")){
+				Integer lxrId = CommonTools.getFinalInteger("lxrId", request);
+				List<CustomerLxrInfoTb> clxrList = cm.listLxrInfoByCusId(lxrId, cpyId);
+				if(clxrList.size() > 0){
+					msg = "success";
+					CustomerLxrInfoTb lxr = clxrList.get(0);
+					map.put("lxrId", lxr.getId());
+					map.put("lxrName", lxr.getCusLxrName());
+					map.put("lxrTel", lxr.getCusLxrTel());
+					map.put("lxrEmail", lxr.getCusLxrEmail());
+				}else{
+					msg = "noInfo";
+				}
+			}else if(opt.equals("fmr")){
+				Integer fmrId = CommonTools.getFinalInteger("fmrId", request);
+				List<CustomerFmrInfoTb> cfmrList = cm.listFmrInfoByFmrId(fmrId, cpyId);
+				if(cfmrList.size() > 0){
+					msg = "success";
+					CustomerFmrInfoTb fmr = cfmrList.get(0);
+					map.put("fmrId", fmr.getId());
+					map.put("fmrName", fmr.getCusFmrName());
+					map.put("fmrTel", fmr.getCusFmrTel());
+					map.put("fmrEmail", fmr.getCusFxrEmail());
+					map.put("fmriCard", fmr.getCusFmrICard());
+				}else{
+					msg = "noInfo";
+				}
+			}
+			
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
 	 * 修改客户基本信息
 	 * @description
 	 * @author wm
