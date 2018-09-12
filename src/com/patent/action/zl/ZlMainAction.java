@@ -1178,7 +1178,7 @@ public class ZlMainAction extends DispatchAction {
 										lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", sDate, cpyDate, "", "");
 										mxm.addLcMx(lcId_1, zxUserId, "新申请撰稿", 3.0, sDate, "", "", 0, "", "", "");
 										//给当前撰写人发送邮件
-										
+										mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zxUserId, "cpyUser", "新任务通知", "");
 									}else{
 										//如果没有指派撰写人，需要撰写人认领抢购
 										//1：先将案件状态修改成2.0
