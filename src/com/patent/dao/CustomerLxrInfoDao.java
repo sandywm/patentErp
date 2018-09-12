@@ -46,9 +46,10 @@ public interface CustomerLxrInfoDao {
 	 * @date 2018-8-19 下午04:26:38
 	 * @param sess
 	 * @param cusId 客户编号
+	 * @param cpyId 代理机构编号
 	 * @return
 	 */
-	List<CustomerLxrInfoTb> findInfoByCusId(Session sess,Integer cusId);
+	List<CustomerLxrInfoTb> findInfoByOpt(Session sess, Integer cusId,Integer cpyId);
 	
 	/**
 	 * 根据联系人编号、代理机构编号获取联系人信息

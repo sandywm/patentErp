@@ -208,24 +208,31 @@ public class CustomerAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		Integer currLoginUserId = this.getLoginUserId(request);
 		Map<String,Object> map = new HashMap<String,Object>();
+		String opt = CommonTools.getFinalStr("opt", request);//cus,lxr,fmr
 		String msg = "error";
+		Integer cusId = CommonTools.getFinalInteger("cusId", request);
 		if(this.getLoginType(request).equals("cpyUser")){
 			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
 			Integer cpyId = cUser.getCpyInfoTb().getId();
-			Integer cusId = CommonTools.getFinalInteger("cusId", request);
-			List<CustomerInfoTb> cList = cm.listInfoById(cpyId, cusId);
-			if(cList.size() > 0){
-				msg = "success";
-				CustomerInfoTb cInfo = cList.get(0);
-				map.put("cusId", cInfo.getId());
-				map.put("cusType", cInfo.getCusType());
-				map.put("cusName", cInfo.getCusName());
-				map.put("cusiCard", cInfo.getCusICard());
-				map.put("cusAddress", cInfo.getCusAddress());
-				map.put("cusZip", cInfo.getCusZip());
-				List<CustomerLxrInfoTb> clxrList = cm.listLxrInfoByCusId(cusId);
+			if(opt.equals("cus")){
+				List<CustomerInfoTb> cList = cm.listInfoById(cpyId, cusId);
+				if(cList.size() > 0){
+					msg = "success";
+					CustomerInfoTb cInfo = cList.get(0);
+					map.put("cusId", cInfo.getId());
+					map.put("cusType", cInfo.getCusType());
+					map.put("cusName", cInfo.getCusName());
+					map.put("cusiCard", cInfo.getCusICard());
+					map.put("cusAddress", cInfo.getCusAddress());
+					map.put("cusZip", cInfo.getCusZip());
+				}else{
+					msg = "noInfo";
+				}
+			}else if(opt.equals("lxr")){
+				List<CustomerLxrInfoTb> clxrList = cm.listLxrInfoByOpt(cusId,cpyId);
 				List<Object> list_lxr = new ArrayList<Object>();
 				if(clxrList.size() > 0){
+					msg = "success";
 					for(Iterator<CustomerLxrInfoTb> it = clxrList.iterator() ; it.hasNext();){
 						CustomerLxrInfoTb lxr = it.next();
 						Map<String,Object> map_d = new HashMap<String,Object>();
@@ -235,11 +242,15 @@ public class CustomerAction extends DispatchAction {
 						map_d.put("lxrEmail", lxr.getCusLxrEmail());
 						list_lxr.add(map_d);
 					}
+					map.put("lxrInfo", list_lxr);
+				}else{
+					msg = "noInfo";
 				}
-				map.put("lxrInfo", list_lxr);
-				List<CustomerFmrInfoTb> cfmrList = cm.listFmrInfoByCusId(cusId);
+			}else if(opt.equals("fmr")){
+				List<CustomerFmrInfoTb> cfmrList = cm.listFmrInfoByCusId(cusId,cpyId);
 				List<Object> list_fmr = new ArrayList<Object>();
 				if(cfmrList.size() > 0){
+					msg = "success";
 					for(Iterator<CustomerFmrInfoTb> it = cfmrList.iterator() ; it.hasNext();){
 						CustomerFmrInfoTb fmr = it.next();
 						Map<String,Object> map_d = new HashMap<String,Object>();
@@ -250,8 +261,10 @@ public class CustomerAction extends DispatchAction {
 						map_d.put("fmriCard", fmr.getCusFmrICard());
 						list_fmr.add(map_d);
 					}
+					map.put("fmrInfo", list_fmr);
+				}else{
+					msg = "noInfo";
 				}
-				map.put("fmrInfo", list_fmr);
 			}
 		}
 		map.put("result", msg);

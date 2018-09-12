@@ -223,13 +223,13 @@ public class CustomerInfoManagerImpl implements CustomerInfoManager{
 	}
 
 	@Override
-	public List<CustomerLxrInfoTb> listLxrInfoByCusId(Integer cusId)
+	public List<CustomerLxrInfoTb> listLxrInfoByOpt(Integer cusId,Integer cpyId)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			clDao = (CustomerLxrInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUSTOMER_LXR_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return clDao.findInfoByCusId(sess, cusId);
+			return clDao.findInfoByOpt(sess, cusId,cpyId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -335,13 +335,13 @@ public class CustomerInfoManagerImpl implements CustomerInfoManager{
 	}
 
 	@Override
-	public List<CustomerFmrInfoTb> listFmrInfoByCusId(Integer cusId)
+	public List<CustomerFmrInfoTb> listFmrInfoByCusId(Integer cusId,Integer cpyId)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			cfDao = (CustomerFmrInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUSTOMER_FMR_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return cfDao.findInfoByCusId(sess, cusId);
+			return cfDao.findInfoByCusId(sess, cusId,cpyId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

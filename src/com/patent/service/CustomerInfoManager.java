@@ -138,10 +138,11 @@ public interface CustomerInfoManager {
 	 * @author wm
 	 * @date 2018-8-19 下午05:27:47
 	 * @param cusId 客户编号
+	 * @param cpyId 代理机构编号
 	 * @return
 	 * @throws WEBException
 	 */
-	List<CustomerLxrInfoTb> listLxrInfoByCusId(Integer cusId) throws WEBException;
+	List<CustomerLxrInfoTb> listLxrInfoByOpt(Integer cusId,Integer cpyId) throws WEBException;
 	
 	/**
 	 * 根据联系人编号、代理机构编号获取联系人信息
@@ -202,10 +203,11 @@ public interface CustomerInfoManager {
 	 * @author wm
 	 * @date 2018-8-19 下午05:34:12
 	 * @param cusId
+	 * @param cpyId 代理机构编号
 	 * @return
 	 * @throws WEBException
 	 */
-	List<CustomerFmrInfoTb> listFmrInfoByCusId(Integer cusId) throws WEBException;
+	List<CustomerFmrInfoTb> listFmrInfoByCusId(Integer cusId,Integer cpyId) throws WEBException;
 	
 	/**
 	 * 根据发明人编号、代理机构编号获取发明人信息
