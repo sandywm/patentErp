@@ -96,7 +96,7 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 					pz.setLqUserName("");
 					pz.setLqCpyId(0);
 					pz.setLqCpyName("");
-					pz.setLqDate(null);
+					pz.setLqDate("");
 					pz.setAjId(0);
 				}else if(zlStatus.equals(1)){//设置成已领取
 					pz.setZlStatus(zlStatus);
