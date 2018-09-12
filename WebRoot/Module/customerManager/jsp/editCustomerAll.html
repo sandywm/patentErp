@@ -99,7 +99,11 @@
 				        	}else if(json['result'] == 'error'){
 				        		layer.msg('系统错误，请重试',{icon:5,anim:6,time:1000});
 				        	}else if(json['result'] == 'noInfo'){
-				        		layer.msg('暂无此客户信息',{icon:5,anim:6,time:2000});
+				        		if(globalOpts == 'lxr'){
+				        			$('#editCustLxrBox').html("<div class='noData' style='display:block;'><i class='iconfont layui-extend-noData'></i><p>暂未添加联系人，请添加</p></div>");
+				        		}else if(globalOpts == 'fmr'){
+				        			$('#editCustFmrBox').html("<div class='noData' style='display:block;'><i class='iconfont layui-extend-noData'></i><p>暂未添加发明人，请添加</p></div>");
+				        		}
 				        	}
 				        }
 					});
@@ -154,7 +158,12 @@
 					var strHtml = '';
 					//客户名称
 					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">客户名称</label><div class="layui-input-block">';
-					strHtml += '<input type="text" name="cusName" required lay-verify="judgeName" value="'+ json.cusName +'" placeholder="请输入客户姓名(4字以内)" maxlength="4" autocomplete="off" class="layui-input"/></div></div>';
+					if(json.cusType == 'gr'){
+						strHtml += '<input type="text" name="cusName" required lay-verify="judgeName" value="'+ json.cusName +'" placeholder="请输入个人姓名(4字以内)" maxlength="4" autocomplete="off" class="layui-input"/></div></div>';
+					}else{
+						strHtml += '<input type="text" name="cusName" required lay-verify="judgeName" value="'+ json.cusName +'" placeholder="请输入客户姓名(25字以内)" maxlength="25" autocomplete="off" class="layui-input"/></div></div>';
+					}
+					
 					//客户类型
 					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">客户类型</label>';
 					strHtml += '<input id="cusTypeInp" name="cusType" type="hidden" value="'+ json.cusType +'"/><div class="layui-input-block">';
@@ -213,33 +222,25 @@
 				//编辑联系人结构
 				renderCustLxr : function(lxrArray){
 					var strHtml = '';
-					if(lxrArray.length > 0){
-						for(var i=0;i<lxrArray.length;i++){
-							strHtml += '<li><p>'+ lxrArray[i].lxrName +'</p>';
-							strHtml += '<p>'+ lxrArray[i].lxrTel +'</p>';
-							strHtml += '<p>'+ lxrArray[i].lxrEmail +'</p>';
-							strHtml += '<p><a class="blockA editBtn_lxr" opts="editLxrOpts" lxrName="'+ lxrArray[i].lxrName +'" lxrId="'+ lxrArray[i].lxrId +'" href="javascript:void(0)"><i class="layui-icon layui-icon-edit"></i>编辑</a></p></li>';
-						}
-						$('#editCustLxrBox').html(strHtml);
-					}else{//暂无数据
-						$('#editCustLxrBox').html("<div class='noData' style='display:block;'><i class='iconfont layui-extend-noData'></i><p>暂未添加联系人，请添加</p></div>");
+					for(var i=0;i<lxrArray.length;i++){
+						strHtml += '<li><p>'+ lxrArray[i].lxrName +'</p>';
+						strHtml += '<p>'+ lxrArray[i].lxrTel +'</p>';
+						strHtml += '<p>'+ lxrArray[i].lxrEmail +'</p>';
+						strHtml += '<p><a class="blockA editBtn_lxr" opts="editLxrOpts" lxrName="'+ lxrArray[i].lxrName +'" lxrId="'+ lxrArray[i].lxrId +'" href="javascript:void(0)"><i class="layui-icon layui-icon-edit"></i>编辑</a></p></li>';
 					}
+					$('#editCustLxrBox').html(strHtml);
 				},
 				//编辑发明人结构
 				renderCustFmr : function(fmrArray){
 					var strHtml = '';
-					if(fmrArray.length > 0){
-						for(var i=0;i<fmrArray.length;i++){
-							strHtml += '<li><p>'+ fmrArray[i].fmrName +'</p>';
-							strHtml += '<p>'+ fmrArray[i].fmriCard +'</p>';
-							strHtml += '<p>'+ fmrArray[i].fmrTel +'</p>';
-							strHtml += '<p>'+ fmrArray[i].fmrEmail +'</p>';
-							strHtml += '<p><a class="blockA editBtn_fmr" opts="editFmrOpts" fmrName="'+ fmrArray[i].fmrName +'" fmrId="'+ fmrArray[i].fmrId +'" href="javascript:void(0)"><i class="layui-icon layui-icon-edit"></i>编辑</a></p></li>';
-						}
-						$('#editCustFmrBox').html(strHtml);
-					}else{//暂无数据
-						$('#editCustFmrBox').html("<div class='noData' style='display:block;'><i class='iconfont layui-extend-noData'></i><p>暂未添加发明人，请添加</p></div>");
+					for(var i=0;i<fmrArray.length;i++){
+						strHtml += '<li><p>'+ fmrArray[i].fmrName +'</p>';
+						strHtml += '<p>'+ fmrArray[i].fmriCard +'</p>';
+						strHtml += '<p>'+ fmrArray[i].fmrTel +'</p>';
+						strHtml += '<p>'+ fmrArray[i].fmrEmail +'</p>';
+						strHtml += '<p><a class="blockA editBtn_fmr" opts="editFmrOpts" fmrName="'+ fmrArray[i].fmrName +'" fmrId="'+ fmrArray[i].fmrId +'" href="javascript:void(0)"><i class="layui-icon layui-icon-edit"></i>编辑</a></p></li>';
 					}
+					$('#editCustFmrBox').html(strHtml);
 				}
 			};
 			//form radio事件监听
@@ -247,16 +248,16 @@
 				var value = data.value;
 				$('#cusTypeInp').val(value);
 				if(value == 'gr'){
-					$('input[name=cusName]').val('').attr('placeholder','请输入客户姓名(4字以内)').attr('maxlength','4');
+					$('input[name=cusName]').attr('placeholder','请输入客户姓名(4字以内)').attr('maxlength','4');
 					$('input[name=cusName]').attr('lay-verify','judgeName');
 					$('#cusiCardLab').html('个人身份证号');
-					$('input[name=cusiCard]').attr('placeholder','请输入个人身份证号').val('');
+					$('input[name=cusiCard]').attr('placeholder','请输入个人身份证号');
 					$('input[name=cusiCard]').attr('lay-verify','identity');
 				}else{
-					$('input[name=cusName]').val('').attr('placeholder','请输入客户名称(25字以内)').attr('maxlength','25');
+					$('input[name=cusName]').attr('placeholder','请输入客户名称(25字以内)').attr('maxlength','25');
 					$('input[name=cusName]').attr('lay-verify','judgeCompName');
 					$('#cusiCardLab').html('公司组织机构代码');
-					$('input[name=cusiCard]').attr('placeholder','请输入公司组织机构代码').val('');
+					$('input[name=cusiCard]').attr('placeholder','请输入公司组织机构代码').attr('maxlength','40');
 					$('input[name=cusiCard]').attr('lay-verify','judegeOrgCode');
 				}
 			});
@@ -295,8 +296,9 @@
 					if(value == ''){
 						return '请填写公司组织机构代码';
 					}else{
-						if(value.length < 4){
-							return '请如实填写公司组织机构代码';
+						var reg = /^[a-zA-Z\d]*([a-zA-Z\d]+-?)*[a-zA-Z\d]+$/;
+						if(!reg.test(value)){
+							return '请填写正确的公司组织机构代码';
 						}
 					}
 				},

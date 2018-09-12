@@ -66,16 +66,16 @@
 				var value = data.value;
 				$('#cusTypeInp').val(value);
 				if(value == 'gr'){
-					$('input[name=cusName]').val('').attr('placeholder','请输入客户姓名(4字以内)').attr('maxlength','4');
+					$('input[name=cusName]').attr('placeholder','请输入客户姓名(4字以内)').attr('maxlength','4');
 					$('input[name=cusName]').attr('lay-verify','judgeName');
 					$('#cusiCardLab').html('个人身份证号');
-					$('input[name=cusiCard]').attr('placeholder','请输入个人身份证号').val('');
+					$('input[name=cusiCard]').attr('placeholder','请输入个人身份证号');
 					$('input[name=cusiCard]').attr('lay-verify','identity');
 				}else{
-					$('input[name=cusName]').val('').attr('placeholder','请输入客户名称(25字以内)').attr('maxlength','25');
+					$('input[name=cusName]').attr('placeholder','请输入客户名称(25字以内)').attr('maxlength','25');
 					$('input[name=cusName]').attr('lay-verify','judgeCompName');
 					$('#cusiCardLab').html('公司组织机构代码');
-					$('input[name=cusiCard]').attr('placeholder','请输入公司组织机构代码').val('');
+					$('input[name=cusiCard]').attr('placeholder','请输入公司组织机构代码').attr('maxlength','40');
 					$('input[name=cusiCard]').attr('lay-verify','judegeOrgCode');
 				}
 			});
@@ -114,8 +114,9 @@
 					if(value == ''){
 						return '请填写公司组织机构代码';
 					}else{
-						if(value.length < 4){
-							return '请如实填写公司组织机构代码';
+						var reg = /^[a-zA-Z\d]*([a-zA-Z\d]+-?)*[a-zA-Z\d]+$/;
+						if(!reg.test(value)){
+							return '请填写正确的公司组织机构代码';
 						}
 					}
 				},

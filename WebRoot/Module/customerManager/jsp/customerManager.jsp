@@ -141,6 +141,8 @@
     		table.on('tool(cusTableFilter)',function(obj){
     			var addFlag_tmp = false;
     			if(obj.event == 'viewCusDetails'){//查看信息详情
+    				var cusId = $(this).attr('cusId'),cusName = $(this).attr('cusName');
+    				globalCusId = cusId;
     				var fullScreenIndex = layer.open({
 						title:'客户['+ cusName +']信息',
 						type: 2,

@@ -23,28 +23,42 @@ body{
 	margin:0 auto;
 }
 .editLxrUlTit,
-.editFmrUlTit{
+.editFmrUlTit,
+.viewLxrUlTit,
+.viewFmrUlTit{
 	background:#f1f1f1;
 }
 .editLxrUlTit li,
 .editLxrUlCon li p,
 .editFmrUlTit li,
-.editFmrUlCon li p{
+.editFmrUlCon li p,
+.viewLxrUlTit li,
+.viewLxrUlCon li p,
+.viewFmrUlTit li,
+.viewFmrUlCon li p{
 	height:40px;
 	line-height:40px;
 	float:left;
 	text-align:center;
 }
 .editLxrUlTit li,
-.editLxrUlCon li p{
+.editLxrUlCon li p,
+.viewFmrUlTit li,
+.viewFmrUlCon li p{
 	width:25%;
+}
+.viewLxrUlTit li,
+.viewLxrUlCon li p{
+	width:33.33%;
 }
 .editFmrUlTit li,
 .editFmrUlCon li p{
 	width:20%;
 }
 .editLxrUlCon li,
-.editFmrUlCon li{
+.editFmrUlCon li,
+.viewLxrUlCon li,
+.viewFmrUlCon li{
 	height:40px;
 	line-height:40px;
 	border-bottom:1px solid #ebebeb;
@@ -74,3 +88,5 @@ body{
 .layui-table-page>div{
 	text-align:right;
 }
+/* 查看联系人信息 */
+.viewLxrUlTit

@@ -81,7 +81,7 @@
 	            <div class="layui-tab-content">
 	                <div class="layui-tab-item layui-show">
 	                	<!--  iframe id="mainIframe" src="cpyManager.do?action=goCpyDetailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
-	                    <!-- iframe id="mainIframe" src="user.do?action=goWelcomePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
+	                    <iframe id="mainIframe" src="user.do?action=goWelcomePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
 	                    <!--  iframe id="mainIframe" src="jfm.do?action=goJfPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserDetailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
@@ -90,7 +90,7 @@
 	                	<!--  iframe id="mainIframe" src="cpyManager.do?action=goSubParCpyPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!--  iframe id="mainIframe" src="mail.do?action=goMailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!--  iframe id="mainIframe" src="pubZl.do?action=goPubZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
-	                	<iframe id="mainIframe" src="customer.do?action=goCusPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
+	                	<!--  iframe id="mainIframe" src="customer.do?action=goCusPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                </div>
 	            </div>
 	        </div>
@@ -120,9 +120,10 @@
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="jfm.do?action=goJfPage" tab-id="6">技术领域管理</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="7">代理机构角色权限管理</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goSubParCpyPage" tab-id="8">代理机构主/子公司</a></dd></dl></li>';
-		        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)"><i class="layui-icon layui-icon-form" style="font-size:16px;"></i>专利任务管理</a>';
+		        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)"><i class="layui-icon layui-icon-form" style="font-size:16px;margin-right:5px;"></i>专利任务管理</a>';
 		        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" path="pubZl.do?action=goPubZlPage" tab-id="10">专利任务领取</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="pubZl.do?action=goLqZlPage" tab-id="11">专利任务领取记录</a></dd></dl></li>';
+		        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="11" path="customer.do?action=goCusPage"><i class="layui-icon layui-icon-user" style="font-size:16px;margin-right:5px;"></i>客户管理</a></li>';
 			        	liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="9"><i class="iconfont layui-extend-goumai"></i>会员续费/购买</a></li>';
 	        		}else{
 	        			liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="3"></i><cite>我的代理机构</cite></a></li>';
