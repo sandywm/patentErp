@@ -52,7 +52,7 @@
     </action>
     <!-- 客户信息管理 -->
     <action path="/customer" parameter="action" scope="request" type="com.patent.action.customer.CustomerAction">
-      <set-property property="cancellable" value="true" />
+      <forward name="cusPage" path="/Module/customerManager/jsp/customerManager.jsp"></forward>
     </action>
     <!-- 专利案件额外要求管理 -->
     <action path="/zlyq" parameter="action" scope="request" type="com.patent.action.zlyq.ZlajEwyqAction">

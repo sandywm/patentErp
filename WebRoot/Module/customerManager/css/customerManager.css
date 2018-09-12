@@ -1,0 +1,76 @@
+@import url("../../../css/common.css");
+@import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
+body{
+	background:#f2f2f2;
+	color:#666;
+}
+.noData{
+	display:none;
+	position:absolute;
+	left:50%;
+	margin-left:-50px;
+	top:100px;
+}
+.layui-form-label{
+	width:115px;
+}
+.layui-input{
+	width:84%;
+}
+/* 编辑 */
+.editWrap{
+	width:98%;
+	margin:0 auto;
+}
+.editLxrUlTit,
+.editFmrUlTit{
+	background:#f1f1f1;
+}
+.editLxrUlTit li,
+.editLxrUlCon li p,
+.editFmrUlTit li,
+.editFmrUlCon li p{
+	height:40px;
+	line-height:40px;
+	float:left;
+	text-align:center;
+}
+.editLxrUlTit li,
+.editLxrUlCon li p{
+	width:25%;
+}
+.editFmrUlTit li,
+.editFmrUlCon li p{
+	width:20%;
+}
+.editLxrUlCon li,
+.editFmrUlCon li{
+	height:40px;
+	line-height:40px;
+	border-bottom:1px solid #ebebeb;
+}
+.editLxrUlCon li p a,
+.editFmrUlCon li p a{
+	position:relative;
+}
+.editLxrUlCon li p a i,
+.editFmrUlCon li p a i{
+	font-size:20px;
+	position:absolute;
+	left:50%;
+	margin-left:-32px;
+	top:0px;
+}
+.editLxrUlCon li p a:hover,
+.editFmrUlCon li p a:hover{
+	color:#FF5722;
+}
+.itemDiv:last-child{
+	margin-right:10px;
+}
+.itemDiv input[type="text"]{
+	width:230px;
+}
+.layui-table-page>div{
+	text-align:right;
+}

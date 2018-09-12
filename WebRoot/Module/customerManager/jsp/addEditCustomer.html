@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/customerManager/css/customerManager.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+  	<title>增加新客户</title>
+</head>
+<body style="background:#fff;">
+	<div class="layui-form">
+		<div class="layui-form-item" style="margin-top:15px;">
+			<label class="layui-form-label">客户名称</label>
+			<div class="layui-input-block">
+				<input type="text" name="cusName" required lay-verify="judgeName" placeholder="请输入客户姓名(4字以内)" maxlength="4" autocomplete="off" class="layui-input"/>
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">客户类型</label>
+			<input id="cusTypeInp" name="cusType" type="hidden" value="gr"/>
+			<div class="layui-input-block">
+				<input type="radio" name="cusTypeRad" lay-filter="cusTypeFilter" value="gr" title="个人" checked/>
+				<input type="radio" name="cusTypeRad" lay-filter="cusTypeFilter" value="dzyx" title="大专院校"/>
+				<input type="radio" name="cusTypeRad" lay-filter="cusTypeFilter" value="kydw" title="科研单位"/>
+				<input type="radio" name="cusTypeRad" lay-filter="cusTypeFilter" value="gkqy" title="工矿企业"/>
+				<input type="radio" name="cusTypeRad" lay-filter="cusTypeFilter" value="sydw" title="事业单位"/>
+			</div>				
+		</div>
+		<div class="layui-form-item" style="margin-top:15px;">
+			<label id="cusiCardLab" class="layui-form-label">个人身份证号</label>
+			<div class="layui-input-block">
+				<input type="text" name="cusiCard" required lay-verify="identity" placeholder="请输入身份证号" autocomplete="off" class="layui-input"/>
+			</div>				
+		</div>
+		<div class="layui-form-item" style="margin-top:15px;">
+			<label class="layui-form-label">客户地址</label>
+			<div class="layui-input-block">
+				<input type="text" name="cusAddress" required lay-verify="judegeAddress" placeholder="请输入客户地址(50字以内)" maxlength="50" autocomplete="off" class="layui-input"/>
+			</div>				
+		</div>
+		<div class="layui-form-item" style="margin-top:15px;">
+			<label class="layui-form-label">邮政编码</label>
+			<div class="layui-input-block">
+				<input type="text" name="cusZip" required lay-verify="judegeCusZip" placeholder="请输入邮政编码" autocomplete="off" class="layui-input"/>
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label"></label>
+			<div class="layui-input-block">
+				<button type="button" lay-submit lay-filter="setCustInfo" class="layui-btn" style="width:120px;margin-left:160px;">保存客户信息</button>
+			</div>
+		</div>
+	</div>
+	
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var addEditCusOpts = parent.addEditCusOpts,zlId=0,pubId = parent.globalPubId;
+		layui.use(['layer','jquery','form'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form;
+				
+			//form radio事件监听
+			form.on('radio(cusTypeFilter)', function(data){
+				var value = data.value;
+				$('#cusTypeInp').val(value);
+				if(value == 'gr'){
+					$('input[name=cusName]').val('').attr('placeholder','请输入客户姓名(4字以内)').attr('maxlength','4');
+					$('input[name=cusName]').attr('lay-verify','judgeName');
+					$('#cusiCardLab').html('个人身份证号');
+					$('input[name=cusiCard]').attr('placeholder','请输入个人身份证号').val('');
+					$('input[name=cusiCard]').attr('lay-verify','identity');
+				}else{
+					$('input[name=cusName]').val('').attr('placeholder','请输入客户名称(25字以内)').attr('maxlength','25');
+					$('input[name=cusName]').attr('lay-verify','judgeCompName');
+					$('#cusiCardLab').html('公司组织机构代码');
+					$('input[name=cusiCard]').attr('placeholder','请输入公司组织机构代码').val('');
+					$('input[name=cusiCard]').attr('lay-verify','judegeOrgCode');
+				}
+			});
+			//自定义表单验证
+  			form.verify({
+  				judgeName : function(value){
+  					var reg = /^[\u4E00-\u9FA5]+$/; 
+					if(value == ''){
+						return '客户姓名不能为空';
+					}else if(!reg.test(value)){
+				      return '客户姓名应为汉字';
+				    }else if(value.length < 2 || value.length > 4){
+				    	 return '客户姓名最少应为2个字符最多为4个字符';
+				    }
+  				},
+  				judgeCompName : function(value){
+					var reg = /^[\u4E00-\u9FA5]+$/; 
+					if(value == ''){
+						return '客户名称不能为空';
+					}else if(!reg.test(value)){
+				      return '客户名称应为汉字';
+				    }else if(value.length < 4 || value.length > 25){
+				    	 return '客户名称最少为4个字符最多为25个字符';
+				    }
+  				},
+  				judegeAddress : function(value){
+					if(value == ''){
+						return '地址不能为空';
+					}else{
+						if(value.length < 4){
+							return '请如实填写地址';
+						}
+					}
+				},
+				judegeOrgCode : function(value){
+					if(value == ''){
+						return '请填写公司组织机构代码';
+					}else{
+						if(value.length < 4){
+							return '请如实填写公司组织机构代码';
+						}
+					}
+				},
+				judegeCusZip : function(value){
+					if(value == ''){
+						return '邮政编码不能为空';
+					}else{
+						var reg = /^[1-9][0-9]{5}$/;
+						if(!reg.test(value)){
+							return '邮政编码格式不正确';
+						}
+					}
+				}
+  			});
+  			form.on('submit(setCustInfo)',function(data){
+  				var field = data.field;
+  				for(var attr in field){
+		  			if(attr == "cusName" || attr == "cusAddress"){
+		  				field[attr] = $.trim(escape(field[attr]));
+		  			}
+		  		}
+  				$.ajax({
+		    		type:"post",
+			        async:false,
+			        dataType:"json",
+			        url:'/customer.do?action=addCusData',
+			        data:field,
+			        success:function (json){
+			        	layer.closeAll('loading');
+			        	if(json["result"] == 'success'){
+			        		layer.msg('添加客户信息成功',{icon:1,time:1000},function(){
+			        			var index= parent.layer.getFrameIndex(window.name);
+        						parent.layer.close(index);
+        						parent.addCustFlag = true;
+			        		});
+			        	}else if(json["result"] == 'noInfo'){
+			        		layer.msg("暂无此信息，请重试！",{icon:5,anim:6,time:1000});
+			        	}else if(json["result"] == 'error'){
+			        		layer.msg("保存失败，请重试！",{icon:5,anim:6,time:1000});
+			        	}
+			        }
+		    	});
+  			});
+		});
+	</script>
+</body> 
+</html>

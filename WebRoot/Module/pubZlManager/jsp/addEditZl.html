@@ -142,7 +142,6 @@
 								url = '/pubZl.do?action=addPzInfo';
 								var field = { zlTitle : escape(zlTitle), zlContent : escape(zlContent), zlType : zlTypeInp, zlUpCl : $('#fujianInp').val()};
 							}
-							console.log(pubId + "--" + zlId + "--" + zlTitle + "--" + zlContent + "--" + zlTypeInp + "--" + $('#fujianInp').val())
 							layer.load('1');
 							$.ajax({
 			   					type:'post',
