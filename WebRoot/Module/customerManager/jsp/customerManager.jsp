@@ -19,7 +19,7 @@
   			<div class="layui-col-md12 layui-col-lg12">
   				<div class="layui-card">
   					<div class="layui-card-header posRel">
-  						<span id="zlNavTit"></span>
+  						<span>客户管理</span>
   						<a id="addCusBtn" class="posAbs newAddBtn" opts="addCusOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加客户</a>
   					</div>
   					<div class="layui-card-body" pad15>
