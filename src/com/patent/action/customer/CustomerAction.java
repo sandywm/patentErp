@@ -4,6 +4,7 @@
  */
 package com.patent.action.customer;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +83,23 @@ public class CustomerAction extends DispatchAction {
 	private String getLoginType(HttpServletRequest request){
         String loginType = (String)request.getSession(false).getAttribute(Constants.LOGIN_TYPE);
         return loginType;
+	}
+	
+	/**
+	 * 封装json
+	*  @author  Administrator
+	*  @ModifiedBy  
+	*  @date  2018-8-21 下午10:17:05
+	*  @param obj
+	*  @param response
+	*  @throws IOException
+	 */
+	private void getJsonPkg(Object obj,HttpServletResponse response) throws IOException{
+		String json = JSON.toJSONString(obj);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
 	}
 	
 	/**
@@ -167,12 +185,78 @@ public class CustomerAction extends DispatchAction {
 		}else{
 			map.put("msg", "error");
 		}
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
         return null;
+	}
+	
+	/**
+	 * 获取指定客户的详细信息(针对代理机构员工开放)
+	 * @description
+	 * @author wm
+	 * @date 2018-9-12 上午09:38:47
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCusDetailInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		String msg = "error";
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			Integer cusId = CommonTools.getFinalInteger("cusId", request);
+			List<CustomerInfoTb> cList = cm.listInfoById(cpyId, cusId);
+			if(cList.size() > 0){
+				msg = "success";
+				CustomerInfoTb cInfo = cList.get(0);
+				map.put("cusId", cInfo.getId());
+				map.put("cusType", cInfo.getCusType());
+				map.put("cusName", cInfo.getCusName());
+				map.put("cusiCard", cInfo.getCusICard());
+				map.put("cusAddress", cInfo.getCusAddress());
+				map.put("cusZip", cInfo.getCusZip());
+				List<CustomerLxrInfoTb> clxrList = cm.listLxrInfoByCusId(cusId);
+				List<Object> list_lxr = new ArrayList<Object>();
+				if(clxrList.size() > 0){
+					for(Iterator<CustomerLxrInfoTb> it = clxrList.iterator() ; it.hasNext();){
+						CustomerLxrInfoTb lxr = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("lxrId", lxr.getId());
+						map_d.put("lxrName", lxr.getCusLxrName());
+						map_d.put("lxrTel", lxr.getCusLxrTel());
+						map_d.put("lxrEmail", lxr.getCusLxrEmail());
+						list_lxr.add(map_d);
+					}
+				}
+				map.put("lxrInfo", list_lxr);
+				List<CustomerFmrInfoTb> cfmrList = cm.listFmrInfoByCusId(cusId);
+				List<Object> list_fmr = new ArrayList<Object>();
+				if(cfmrList.size() > 0){
+					for(Iterator<CustomerFmrInfoTb> it = cfmrList.iterator() ; it.hasNext();){
+						CustomerFmrInfoTb fmr = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("fmrId", fmr.getId());
+						map_d.put("fmrName", fmr.getCusFmrName());
+						map_d.put("fmrTel", fmr.getCusFmrTel());
+						map_d.put("fmrEmail", fmr.getCusFxrEmail());
+						map_d.put("fmriCard", fmr.getCusFmrICard());
+						list_fmr.add(map_d);
+					}
+				}
+				map.put("fmrInfo", list_fmr);
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
 	}
 	
 	/**
@@ -223,11 +307,7 @@ public class CustomerAction extends DispatchAction {
 		}else{
 			map.put("result", "error");
 		}
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -270,7 +350,7 @@ public class CustomerAction extends DispatchAction {
 						list_d.add(map_d);
 					}
 					map.put("result", "success");
-					map.put("lxrInfo", list_d);
+					map.put("fmrInfo", list_d);
 				}else{
 					map.put("result", "noInfo");
 				}
@@ -280,11 +360,7 @@ public class CustomerAction extends DispatchAction {
 		}else{
 			map.put("result", "error");
 		}
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
         return null;
 	}
 	
@@ -331,11 +407,7 @@ public class CustomerAction extends DispatchAction {
 			msg = "noAbility";
 		}
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -385,11 +457,7 @@ public class CustomerAction extends DispatchAction {
 			msg = "noAbility";
 		}
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -439,11 +507,7 @@ public class CustomerAction extends DispatchAction {
 			msg = "noAbility";
 		}
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -491,11 +555,7 @@ public class CustomerAction extends DispatchAction {
 			msg = "noAbility";
 		}
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -544,11 +604,7 @@ public class CustomerAction extends DispatchAction {
 			msg = "noAbility";
 		}
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -598,11 +654,7 @@ public class CustomerAction extends DispatchAction {
 			msg = "noAbility";
 		}
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 }
