@@ -298,7 +298,7 @@ public class CustomerAction extends DispatchAction {
 			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
 			List<CustomerInfoTb> cList = cm.listInfoById(cpyId, cusId);
 			if(cList.size() > 0){
-				List<CustomerLxrInfoTb> clxrList = cm.listLxrInfoByCusId(cusId);
+				List<CustomerLxrInfoTb> clxrList = cm.listLxrInfoByOpt(cusId,cpyId);
 				if(clxrList.size() > 0){
 					for(Iterator<CustomerLxrInfoTb> it = clxrList.iterator() ; it.hasNext();){
 						CustomerLxrInfoTb lxr = it.next();
@@ -350,7 +350,7 @@ public class CustomerAction extends DispatchAction {
 			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
 			List<CustomerInfoTb> cList = cm.listInfoById(cpyId, cusId);
 			if(cList.size() > 0){
-				List<CustomerFmrInfoTb> cfmrList = cm.listFmrInfoByCusId(cusId);
+				List<CustomerFmrInfoTb> cfmrList = cm.listFmrInfoByCusId(cusId,cpyId);
 				if(cfmrList.size() > 0){
 					for(Iterator<CustomerFmrInfoTb> it = cfmrList.iterator() ; it.hasNext();){
 						CustomerFmrInfoTb fmr = it.next();
