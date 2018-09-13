@@ -38,6 +38,7 @@ public interface ZlajMainInfoManager {
 	 * @param bzUserId 案件补正人员
 	 * @param bzshUserId 案件补正审核人员
 	 * @param bhUserId 案件驳回人员
+	 * @param ajAddUserId 案件录入人员
 	 * @return
 	 * @throws WEBException
 	 */
@@ -46,7 +47,7 @@ public interface ZlajMainInfoManager {
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,Integer pubZlId,Integer checkUserId,Integer zxUserId,
-			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId) throws WEBException;
+			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId) throws WEBException;
 	
 	/**
 	 * 根据条件分页获取专利列表(ID降序)

@@ -326,4 +326,12 @@ public class MailAction extends DispatchAction {
 		return null;
 	}
 	
+	public ActionForward sendEmail(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, 1, "cpyUser", "新任务通知：[<a href='www.baidu.com'>专利撰写</a>]", "专利[一种枪械]已发布，请您于2018-09-15之前完成专利撰写工作!");
+		return null;
+	}
+	
 }

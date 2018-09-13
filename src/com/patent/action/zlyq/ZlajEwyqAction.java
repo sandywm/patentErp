@@ -267,10 +267,10 @@ public class ZlajEwyqAction extends DispatchAction {
 					if(yqType_db.indexOf("fm") >= 0){
 						yqTypeChi = "发明,";
 					}
-					if(yqType_db.indexOf("fm") >= 0){
+					if(yqType_db.indexOf("syxx") >= 0){
 						yqTypeChi += "实用新型,";
 					}
-					if(yqType_db.indexOf("fm") >= 0){
+					if(yqType_db.indexOf("wg") >= 0){
 						yqTypeChi = "外观,";
 					}
 					if(!yqTypeChi.equals("")){

@@ -26,7 +26,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,Integer pubZlId, Integer checkUserId,Integer zxUserId,
-			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId)
+			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -37,7 +37,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			ZlajMainInfoTb zl = new ZlajMainInfoTb(cDao.get(sess, cpyId), ajNo, ajNoQt, ajNoGf,
 					ajTitle, ajType, ajFieldId, ajSqrId,ajFmrId, ajLxrId, ajSqAddress, ajYxqDetail,
 					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, 0,0,pubZlId,"","","",CurrentTime.getStringDate(),checkUserId,zxUserId,
-					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId);
+					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId);
 			zlDao.save(sess, zl);
 			tran.commit();
 			return zl.getId();
