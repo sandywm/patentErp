@@ -104,9 +104,9 @@ public class ZlajEwyqAction extends DispatchAction {
 			if(yqm.listInfoByCnt(yqContent).size() > 0){
 				msg = "exist";
 			}else{
-				if(yqType.indexOf("fm") >= 0 && yqType.indexOf("syxx") >= 0){//如果同时是发明、实用新型时动态增加发明+新型
-					yqType += ",fmxx";
-				}
+//				if(yqType.indexOf("fm") >= 0 && yqType.indexOf("syxx") >= 0){//如果同时是发明、实用新型时动态增加发明+新型
+//					yqType += ",fmxx";
+//				}
 				Integer yqId = yqm.addYq(yqContent, yqType);
 				if(yqId > 0){
 					msg = "success";
@@ -150,9 +150,9 @@ public class ZlajEwyqAction extends DispatchAction {
 			if(existFlag){
 				msg = "exist";
 			}else{
-				if(yqType.indexOf("fm") >= 0 && yqType.indexOf("syxx") >= 0){//如果同时是发明、实用新型时动态增加发明+新型
-					yqType += ",fmxx";
-				}
+//				if(yqType.indexOf("fm") >= 0 && yqType.indexOf("syxx") >= 0){//如果同时是发明、实用新型时动态增加发明+新型
+//					yqType += ",fmxx";
+//				}
 				boolean flag = yqm.updateYq(yqId, yqContent, yqType);
 				if(flag){
 					msg = "success";
