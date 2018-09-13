@@ -184,6 +184,10 @@ public class ZlMainAction extends DispatchAction {
 		String sDate = CommonTools.getFinalStr("sDate", request);
 		String eDate = CommonTools.getFinalStr("eDate", request);
 		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：撰写任务领取，1：专利任务）
+		//当任务条件为0时，撰写任务领取，这时需要强制stopStatus为正常（0）
+		if(lqStatus.equals(0)){
+			stopStatus = 0;//明天修改-------------------------------------------------
+		}
 		Map<String,Object> map = new HashMap<String,Object>();
 		String loginType = this.getLoginType(request);
 		boolean abilityFlag = false;
@@ -762,19 +766,22 @@ public class ZlMainAction extends DispatchAction {
 							Map<String,String> map_d = new HashMap<String,String>();
 							List<Object> list_d = new ArrayList<Object>();
 							Integer yyNum = 0;
-							if(currLoginUserId.equals(zl.getZxUserId())){
+							//案件确认之前可以移交撰写任务
+							if(currLoginUserId.equals(zl.getZxUserId()) && Integer.parseInt(zl.getAjStatus()) < 6){
 								map_d.put("typeName", "zx");
 								map_d.put("typeNameChi", "撰写");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
-							if(currLoginUserId.equals(zl.getCheckUserId())){
+							//导入通知书之前可以移交技术审核
+							if(currLoginUserId.equals(zl.getCheckUserId()) && Integer.parseInt(zl.getAjStatus()) < 7){
 								map_d = new HashMap<String,String>();
 								map_d.put("typeName", "sc");
 								map_d.put("typeNameChi", "技术审核");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
+							//之后流程无限制
 							if(currLoginUserId.equals(zl.getTjUserId())){
 								map_d = new HashMap<String,String>();
 								map_d.put("typeName", "dgtj");
@@ -983,6 +990,10 @@ public class ZlMainAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		boolean abilityFlag = false;
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
@@ -1003,6 +1014,7 @@ public class ZlMainAction extends DispatchAction {
 				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");
 			}
 			if(abilityFlag){
+				Integer cpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
 				//可以修改任意操作人员(强制修改)
 				tjUserId = CommonTools.getFinalInteger("tjUserId", request);
 				tzsUserId = CommonTools.getFinalInteger("tzsUserId", request);
@@ -1011,11 +1023,41 @@ public class ZlMainAction extends DispatchAction {
 				bzshUserId = CommonTools.getFinalInteger("bzshUserId", request);
 				bhUserId = CommonTools.getFinalInteger("bhUserId", request);
 				checkUserId = CommonTools.getFinalInteger("checkUserId", request);
-				boolean flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, tjUserId, 
-						tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
-				if(flag){
-					msg = "success";
+				List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
+				if(zlList.size() > 0){
+					ZlajMainInfoTb zl = zlList.get(0);
+					if(zl.getAjStopStatus().equals(0)){//案件正常状态下
+						boolean flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, tjUserId, 
+								tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+						if(flag){
+							Integer checkUserId_db = zl.getCheckUserId();
+							Integer zxUserId_db = zl.getZxUserId();
+							Integer tjUserId_db = zl.getTjUserId();
+							Integer tzsUserId_db = zl.getTzsUserId();
+							Integer feeUserId_db = zl.getFeeUserId();
+							Integer bzUserId_db = zl.getBzUserId();
+							Integer bzshUserId_db = zl.getBzUserId();
+							Integer bhUserId_db = zl.getBhUserId();
+							if(!zxUserId.equals(zxUserId_db)){
+								if(zxUserId_db.equals(0)){//没人领取，修改
+//									mxm.listLastInfoByLcId(lcId);
+									//明天修改-------------------------------------------------
+								}else{//有人领取，增加
+									
+								}
+							}
+							if(!checkUserId.equals(checkUserId_db)){
+								
+							}
+						}
+						if(flag){
+							msg = "success";
+						}
+					}else{
+						msg = "stopInfo";//案件在终止状态下不能进行修改
+					}
 				}
+				
 			}else{
 				msg = "noAbility";
 			}
@@ -1257,7 +1299,7 @@ public class ZlMainAction extends DispatchAction {
 			if(this.getLoginRoleName(request).equals("管理员")){
 				abilityFlag = true;
 			}else{
-				Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");//只有具有创建专利权限和管理员才有资格修改专利状态
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");//只有具有创建专利权限和管理员才有资格修改专利状态
 			}
 			if(abilityFlag){
 				Integer zlId = CommonTools.getFinalInteger("zlId", request);
@@ -1282,6 +1324,83 @@ public class ZlMainAction extends DispatchAction {
 		}
 		map.put("result", msg);
 		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 修改专利基本信息
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-13 下午09:44:23
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward updateZlBasicInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		String msg = "error";
+		Map<String,String> map = new HashMap<String,String>();
+		boolean abilityFlag = false;
+		return null;
+	}
+	
+	/**
+	 * 抢购专利任务
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-13 下午09:45:02
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward lqZlTask(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		String msg = "error";
+		Map<String,String> map = new HashMap<String,String>();
+		boolean abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//只有修改权限的员工才能领取任务
+		if(abilityFlag){
+			Integer zlId = CommonTools.getFinalInteger("zlId", request);
+			CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
+			if(user != null && zlId > 0){
+				List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, user.getCpyInfoTb().getId());
+				if(zlList.size() > 0){
+					ZlajMainInfoTb zl = zlList.get(0);
+					//只有在案件状态正常时（0）、案件状态（2.0）、案件撰写人（0）、流程期限未到（cpyDate）才能领取
+					if(zl.getAjStopStatus().equals(0) && zl.getAjStatus().equals("2.0") && zl.getCheckUserId().equals(0)){//正常案件且状态在2.0且没有被撰写人领取时
+						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz("人员分配");
+						if(lcList.size() > 0){
+							ZlajLcInfoTb lc = lcList.get(0);
+							Integer lcId = lc.getId();
+							Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(),lc.getLcCpyDate());
+							if(diffDays > 0){//可以领取
+								List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
+								if(mxList.size() > 0){
+//									mxm.updateEdateById(id, eDate, lcMxRemark);
+									//明天修改-------------------------------------------------
+								}
+							}else{
+								msg = "notLq";//期限已过，不能领取
+							}
+						}
+					}
+				}
+			}
+		}
 		return null;
 	}
 	

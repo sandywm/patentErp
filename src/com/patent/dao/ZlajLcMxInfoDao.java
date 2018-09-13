@@ -54,4 +54,15 @@ public interface ZlajLcMxInfoDao {
 	 * @return
 	 */
 	List<ZlajLcMxInfoTb> findLastInfoByLcId(Session sess,Integer lcId);
+	
+	/**
+	 * 根据流程主键获取第一个动作（获取未领取的流程明细）
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-13 下午10:49:40
+	 * @param sess
+	 * @param lcId 流程编号
+	 * @return
+	 */
+	List<ZlajLcMxInfoTb> findFirstInfoByLcId(Session sess,Integer lcId);
 }

@@ -46,7 +46,8 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 	}
 
 	@Override
-	public boolean updateEdateById(Integer id, String eDate, String lcMxRemark)
+	public boolean updateEdateById(Integer id,Integer fzUserId,String lcMxUpUserId,String lcMxUpFile,
+			String lcMxUpDate,String lcMxUpSize,String eDate, String lcMxRemark)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -102,6 +103,23 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据流程编号获取第一条记录(最后一个动作)（id降序排列）时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<ZlajLcMxInfoTb> listFirstInfoByLcId(Integer lcId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return mxDao.findLastInfoByLcId(sess, lcId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据流程主键获取第一个动作（获取未领取的流程明细）时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}
