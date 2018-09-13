@@ -91,6 +91,7 @@
 	                	<!--  iframe id="mainIframe" src="mail.do?action=goMailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!--  iframe id="mainIframe" src="pubZl.do?action=goPubZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!--  iframe id="mainIframe" src="customer.do?action=goCusPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
+	                	<!-- iframe id="mainIframe" src="zlyq.do?action=goZlyqPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe -->
 	                </div>
 	            </div>
 	        </div>
@@ -158,6 +159,7 @@
 	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="pubZl.do?action=goPubZlPage" tab-id="7"><i class="layui-icon layui-icon-search"></i>查看专利任务</a></li>';
 	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="5"><i class="iconfont layui-extend-chakan"></i>查看专利申请(人/公司)</a></li>';
 	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="6"><i class="iconfont layui-extend-feiyong"></i>费用列表</a></li>';
+	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="8" path="zlyq.do?action=goZlyqPage"><i class="layui-icon layui-icon-tree" style="font-size:18px;margin-right:5px;"></i>专利额外要求管理</a></li>';
 	        	}
 	        	
 	        	$("#leftSideNav").html(liItem);

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlYqManager/css/zlYqManager.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+  	<title>增加编辑专利要求</title>
+</head>
+<body style="background:#fff;">
+	<div id="zlyqWrap" class="layui-form">
+		<div class="layui-form-item" style="margin-top:15px;">
+			<label class="layui-form-label">专利要求类型</label>
+			<input id="zlYqTypeInp" name="yqType" type="hidden" value=""/>
+			<div class="layui-input-block">
+				<input type="checkbox" class="zlyqInps" name="yqTypeCheck" lay-skin="primary" value="fm" title="发明"/>
+				<input type="checkbox" class="zlyqInps" name="yqTypeCheck" lay-skin="primary" value="syxx" title="实用新型"/>
+				<input type="checkbox" class="zlyqInps" name="yqTypeCheck" lay-skin="primary" value="wg" title="外观"/>
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">专利要求内容</label>
+			<div class="layui-input-block">
+				<input type="text" id="yqContent" required placeholder="请输入专利要求内容(20字以内)" maxlength=20 autocomplete="off" class="layui-input"/>
+			</div>				
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label"></label>
+			<div class="layui-input-block">
+				<button id="setZlYqInfo" type="button" class="layui-btn" style="width:120px;margin-left:60px;">保存</button>
+			</div>
+		</div>
+	</div>
+	
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var addEditZlYqOpts = parent.addEditZlYqOpts,zlYqId = parent.globalZlYqId;
+		layui.use(['layer','jquery','form'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form;
+			var page = {
+				init : function(){
+					this.onLoad();
+					this.bindEvent();
+				},
+				onLoad : function(){
+					if(addEditZlYqOpts == 'editZlYqOpts'){//表示编辑
+						var _this = this;
+						layer.load('1');
+						$.ajax({
+		   					type:'post',
+		   			        async:false,
+		   			        dataType:'json',
+		   			        data:{yqId : zlYqId},
+		   			        url:'/zlyq.do?action=getSpecZlyqData',
+		   			        success:function (json){
+		   			        	layer.closeAll('loading');
+		   			        	if(json['result'] == 'success'){
+		   			        		_this.renderEditZlYq(json);
+		   			        	}else if(json['result'] == 'error'){
+		   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
+		   			        	}else if(json['result'] == 'noAbility'){
+		   			        		layer.msg('抱歉，您暂无权限编辑', {icon:5,anim:6,time:1000});
+		   			        	}
+		   			        }
+		   				});
+					}
+				},
+				bindEvent : function(){
+					$('#setZlYqInfo').on('click',function(){
+						var yqContent = $.trim($('#yqContent').val());
+						if(!$('.zlyqInps').is(':checked')) {
+							layer.msg('请选择专利额外要求类型', {icon:5,anim:6,time:1000});
+						}else if(yqContent == ''){
+							layer.msg('专利额外要求内容不能为空', {icon:5,anim:6,time:1000});
+						}else{
+							if(yqContent.length > 20){
+								layer.msg('专利额外要求内容字数不能超过20个', {icon:5,anim:6,time:1000});
+							}else{
+								layer.load('1');
+								var tmpArray = [];
+						  		tmpArray.length = 0;
+						  		$('input[name=yqTypeCheck]:checked').each(function(i){
+						  			tmpArray.push($('input[name=yqTypeCheck]:checked').eq(i).val());
+						  		});
+						  		$('#zlYqTypeInp').val(tmpArray.join(','));
+						  		if(addEditZlYqOpts == 'addZlYqOpts'){//增加专利额外要求
+						  			url = '/zlyq.do?action=addZlyq';
+						  		}else{
+						  			url = '/zlyq.do?action=upZlyq&yqId=' + zlYqId;
+						  		}
+						  		$.ajax({
+						    		type:"post",
+							        async:false,
+							        dataType:"json",
+							        url:url,
+							        data: {yqType : $('#zlYqTypeInp').val(),yqContent:escape(yqContent)},
+							        success:function (json){
+							        	layer.closeAll('loading');
+							        	if(json["result"] == 'success'){
+							        		function callBackSucc(){
+							        			var index= parent.layer.getFrameIndex(window.name);
+						        				parent.layer.close(index);
+						        				parent.addEditZlYqFlag = true;
+							        		}
+				   			        		if(addEditZlYqOpts == 'editZlYqOpts'){
+				   			        			layer.msg('编辑成功',{icon:1,time:1000},callBackSucc);
+				   			        		}else{
+				   			        			layer.msg('添加成功',{icon:1,time:1000},callBackSucc);
+				   			        		}
+							        	}else if(json["result"] == 'noAbility'){
+							        		layer.msg("抱歉，您暂无权限操作",{icon:5,anim:6,time:1000});
+							        	}else if(json["result"] == 'exist'){
+							        		layer.msg("该专利要求已存在，请重新输入",{icon:5,anim:6,time:1000});
+							        	}else if(json["result"] == 'error'){
+							        		layer.msg("系统错误，请重试",{icon:5,anim:6,time:2500});
+							        	}
+							        }
+						    	});
+							}
+						}
+					});
+				},
+				//编辑时渲染结构
+				renderEditZlYq : function(json){
+					var strHtml = '';
+					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">专利要求类型</label>';
+					strHtml += '<input id="zlYqTypeInp" name="yqType" type="hidden" value=""/><div class="layui-input-block">';
+					for(var i=0;i<json.yqType.length;i++){
+						if(json.yqType[i].checked == true){
+							strHtml += '<input type="checkbox" class="zlyqInps" name="yqTypeCheck" lay-skin="primary" value="'+ json.yqType[i].typeNameValue +'" title="'+ json.yqType[i].typeNameChi +'" checked/>';
+						}else{
+							strHtml += '<input type="checkbox" class="zlyqInps" name="yqTypeCheck" lay-skin="primary" value="'+ json.yqType[i].typeNameValue +'" title="'+ json.yqType[i].typeNameChi +'"/>';
+						}
+					}
+					strHtml += '</div></div>';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">专利要求内容</label><div class="layui-input-block">';
+					strHtml += '<input type="text" id="yqContent" required value="'+ json.yqContent +'" placeholder="请输入专利要求内容(20字以内)" maxlength=20 autocomplete="off" class="layui-input"/></div></div>';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"></label><div class="layui-input-block">';
+					strHtml += '<button id="setZlYqInfo" type="button" class="layui-btn" style="width:120px;margin-left:60px;">保存</button></div></div>';
+					$('#zlyqWrap').html(strHtml);
+					form.render();
+				}
+			};
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>
