@@ -143,4 +143,21 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajLcInfoTb> listLcInfoByLcMz(String lcTitle)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return lcDao.findInfoByLcMz(sess, lcTitle);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据流程名字获取流程信息列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

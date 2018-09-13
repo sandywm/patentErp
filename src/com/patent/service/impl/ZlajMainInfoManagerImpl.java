@@ -54,12 +54,12 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	public List<ZlajMainInfoTb> listPageInfoByOpt(Integer cpyId,
 			Integer stopStatus, String sqAddress, String ajNoQt, String zlNo,
 			String ajTitle, String ajType, String lxr, String sDate,
-			String eDate, Integer pageNo, Integer pageSize) throws WEBException {
+			String eDate,Integer lqStatus, Integer pageNo, Integer pageSize) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return zlDao.findPageInfoByOpt(sess, cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, pageNo, pageSize);
+			return zlDao.findPageInfoByOpt(sess, cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, lqStatus, pageNo, pageSize);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -72,13 +72,13 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	@Override
 	public Integer getCountByOpt(Integer cpyId, Integer stopStatus,
 			String sqAddress, String ajNoQt, String zlNo, String ajTitle,
-			String ajType, String lxr, String sDate, String eDate)
+			String ajType, String lxr, String sDate, String eDate,Integer lqStatus)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return zlDao.getCountByOpt(sess, cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate);
+			return zlDao.getCountByOpt(sess, cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, lqStatus);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

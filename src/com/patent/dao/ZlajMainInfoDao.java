@@ -49,12 +49,13 @@ public interface ZlajMainInfoDao {
 	 * @param lxr 案件联系人（""表示全部）
 	 * @param sDate 开始时间(####-##)确定要月份（""表示全部）
 	 * @param eDate 结束时间(####-##)确定要月份（""表示全部）
+	 * @param lqStatus 任务条件（0：撰写任务领取，1：专利任务）
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 */
 	List<ZlajMainInfoTb> findPageInfoByOpt(Session sess,Integer cpyId,Integer stopStatus,String sqAddress,
-			String ajNoQt,String zlNo,String ajTitle,String ajType,String lxr,String sDate,String eDate,Integer pageNo,Integer pageSize);
+			String ajNoQt,String zlNo,String ajTitle,String ajType,String lxr,String sDate,String eDate,Integer lqStatus,Integer pageNo,Integer pageSize);
 	
 	/**
 	 * 根据条件获取专利基本信息记录条数
@@ -71,10 +72,11 @@ public interface ZlajMainInfoDao {
 	 * @param lxr 案件联系人（""表示全部）
 	 * @param sDate 开始时间(####-##)确定要月份（""表示全部）
 	 * @param eDate 结束时间(####-##)确定要月份（""表示全部）
+	 * @param lqStatus 任务条件（0：撰写任务领取，1：专利任务）
 	 * @return
 	 */
 	Integer getCountByOpt(Session sess,Integer cpyId,Integer stopStatus,String sqAddress,
-			String ajNoQt,String zlNo,String ajTitle,String ajType,String lxr,String sDate,String eDate);
+			String ajNoQt,String zlNo,String ajTitle,String ajType,String lxr,String sDate,String eDate,Integer lqStatus);
 	
 	/**
 	 * 根据主键获取专利案件信息

@@ -173,7 +173,6 @@ public class ZlMainAction extends DispatchAction {
 		JsFiledInfoManager jsm = (JsFiledInfoManager) AppFactory.instance(null).getApp(Constants.WEB_JS_FIELD_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
-		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		Integer cpyId = CommonTools.getFinalInteger("cpyId",request);
 		Integer stopStatus = CommonTools.getFinalInteger("stopStatus",request);
 		String ajNoQt = CommonTools.getFinalStr("ajNoQt",request);
@@ -184,6 +183,7 @@ public class ZlMainAction extends DispatchAction {
 		String lxr = CommonTools.getFinalStr("lxr", request);
 		String sDate = CommonTools.getFinalStr("sDate", request);
 		String eDate = CommonTools.getFinalStr("eDate", request);
+		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：撰写任务领取，1：专利任务）
 		Map<String,Object> map = new HashMap<String,Object>();
 		String loginType = this.getLoginType(request);
 		boolean abilityFlag = false;
@@ -197,11 +197,11 @@ public class ZlMainAction extends DispatchAction {
 			abilityFlag = true;
 		}
 		if(abilityFlag){
-			Integer count = zlm.getCountByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate);
+			Integer count = zlm.getCountByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate,lqStatus);
 			if(count > 0){
 				Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
 				Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
-				List<ZlajMainInfoTb> zlList = zlm.listPageInfoByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, pageNo, pageSize);
+				List<ZlajMainInfoTb> zlList = zlm.listPageInfoByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, lqStatus, pageNo, pageSize);
 				List<Object> list_d = new ArrayList<Object>();
 				for(Iterator<ZlajMainInfoTb> it = zlList.iterator() ; it.hasNext();){
 					ZlajMainInfoTb zl = it.next();
@@ -336,7 +336,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 获取指定专利详情
+	 * 获取指定专利详情(撰写任务领取【只获取基本信息】、专利任务共用)
 	 * @description
 	 * @author wm
 	 * @date 2018-8-30 上午11:38:03
@@ -764,48 +764,56 @@ public class ZlMainAction extends DispatchAction {
 							Integer yyNum = 0;
 							if(currLoginUserId.equals(zl.getZxUserId())){
 								map_d.put("typeName", "zx");
+								map_d.put("typeNameChi", "撰写");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
 							if(currLoginUserId.equals(zl.getCheckUserId())){
 								map_d = new HashMap<String,String>();
 								map_d.put("typeName", "sc");
+								map_d.put("typeNameChi", "技术审核");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
 							if(currLoginUserId.equals(zl.getTjUserId())){
 								map_d = new HashMap<String,String>();
 								map_d.put("typeName", "dgtj");
+								map_d.put("typeNameChi", "定稿提交");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
 							if(currLoginUserId.equals(zl.getTzsUserId())){
 								map_d = new HashMap<String,String>();
 								map_d.put("typeName", "tzs");
+								map_d.put("typeNameChi", "导入通知书");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
 							if(currLoginUserId.equals(zl.getFeeUserId())){
 								map_d = new HashMap<String,String>();
 								map_d.put("typeName", "fycj");
+								map_d.put("typeNameChi", "费用催缴");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
 							if(currLoginUserId.equals(zl.getBzUserId())){
 								map_d = new HashMap<String,String>();
 								map_d.put("typeName", "bz");
+								map_d.put("typeNameChi", "案件补正");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
 							if(currLoginUserId.equals(zl.getBzshUserId())){
 								map_d = new HashMap<String,String>();
 								map_d.put("typeName", "bzsh");
+								map_d.put("typeNameChi", "补正审核");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
 							if(currLoginUserId.equals(zl.getBhUserId())){
 								map_d = new HashMap<String,String>();
 								map_d.put("typeName", "bh");
+								map_d.put("typeNameChi", "驳回");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
@@ -928,17 +936,13 @@ public class ZlMainAction extends DispatchAction {
 												bhUserId = userId_yj;
 											}
 											if(flag){
-												Integer lcId = lcm.addLcInfo(zlId, lcName+"任务移交", user.getUserName()+"将"+lcName+"任务移交给"+user_yj.getUserName(), currDate, 
-														currDate, currDate, currDate);
-												if(lcId > 0){
-													//获取当前流程数字
-													List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
-													double currLcNo = 1.0;
-													if(mxList.size() > 0){
-														currLcNo = mxList.get(0).getLcMxNo();
-													}
-													zxUserId = userId_yj;
-													mxm.addLcMx(lcId, userId_yj, "领取"+lcName+"任务", currLcNo, currDate, currDate,"", 0, "", "", "");
+												//人员移交统一归纳到2.0（人员分配中来）
+												List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz("人员分配");
+												if(lcList.size() > 0){
+													Integer lcId = lcList.get(0).getId();
+													double currLcNo = 2.0;
+
+													mxm.addLcMx(lcId, userId_yj, "任务领取", currLcNo, currDate, currDate,"", 0, "", "", "");
 													//给被移交人发送邮件提醒
 													mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, userId_yj, "cpyUser",  ajNoQt+ " "+lcName+"移交", user.getUserName()+"将["+ajNoQt+"]"+lcName+"任务移交给你");
 													zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);

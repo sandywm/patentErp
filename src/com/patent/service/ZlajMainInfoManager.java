@@ -64,6 +64,7 @@ public interface ZlajMainInfoManager {
 	 * @param lxr 联系人（""时表示全部）
 	 * @param sDate 开始日期（""时表示全部）
 	 * @param eDate 结束日期（""时表示全部）
+	 * @param lqStatus 任务条件（0：撰写任务领取，1：专利任务）
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
@@ -71,7 +72,7 @@ public interface ZlajMainInfoManager {
 	 */
 	List<ZlajMainInfoTb> listPageInfoByOpt(Integer cpyId,Integer stopStatus, String sqAddress, String ajNoQt, String zlNo,
 			String ajTitle, String ajType, String lxr, String sDate,
-			String eDate, Integer pageNo, Integer pageSize) throws WEBException;
+			String eDate, Integer lqStatus, Integer pageNo, Integer pageSize) throws WEBException;
 	
 	/**
 	 * 根据条件获取专利记录条数
@@ -88,11 +89,12 @@ public interface ZlajMainInfoManager {
 	 * @param lxr 联系人（""时表示全部）
 	 * @param sDate 开始日期（""时表示全部）
 	 * @param eDate 结束日期（""时表示全部）
+	 * @param lqStatus 任务条件（0：撰写任务领取，1：专利任务）
 	 * @return
 	 * @throws WEBException
 	 */
 	Integer getCountByOpt(Integer cpyId,Integer stopStatus, String sqAddress, String ajNoQt, String zlNo,
-			String ajTitle, String ajType, String lxr, String sDate,String eDate)  throws WEBException;
+			String ajTitle, String ajType, String lxr, String sDate,String eDate,Integer lqStatus)  throws WEBException;
 	
 	/**
 	 * 根据主键获取专利信息

@@ -271,7 +271,7 @@ public class ZlajEwyqAction extends DispatchAction {
 						yqTypeChi += "实用新型,";
 					}
 					if(yqType_db.indexOf("wg") >= 0){
-						yqTypeChi = "外观,";
+						yqTypeChi += "外观,";
 					}
 					if(!yqTypeChi.equals("")){
 						yqTypeChi = yqTypeChi.substring(0, yqTypeChi.length() - 1);

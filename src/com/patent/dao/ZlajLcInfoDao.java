@@ -54,4 +54,15 @@ public interface ZlajLcInfoDao {
 	*  @return
 	 */
 	List<ZlajLcInfoTb> findInfoById(Session sess,Integer id);
+	
+	/**
+	 * 根据流程名字获取流程详细信息
+	 * @description
+	 * @author wm
+	 * @date 2018-9-13 下午05:51:01
+	 * @param sess
+	 * @param lcMz 流程名字
+	 * @return
+	 */
+	List<ZlajLcInfoTb> findInfoByLcMz(Session sess,String lcMz);
 }
