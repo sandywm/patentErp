@@ -886,7 +886,7 @@ public class ZlMainAction extends DispatchAction {
 				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");
 				if(abilityFlag){
 					Integer userId_yj = CommonTools.getFinalInteger("userId_yj", request);//准备接受移交任务的用户
-					//移交类型zx-撰写,sc-审查,dgtj-定稿提交,tzs-通知书,fycj-费用催缴,bz-补正,bzsh-补正审核,bh-驳回
+					//移交类型zx-撰写,sc-技术审核,dgtj-定稿提交,tzs-通知书,fycj-费用催缴,bz-补正,bzsh-补正审核,bh-驳回
 					String yjType = CommonTools.getFinalStr("yjType", request);//移交类型
 					String[] yjTypeArr = {"zx","sc","dgtj","tzs","fycj","bz","bzsh","bh"};
 					if(userId_yj > 0 && !yjType.equals("")){
@@ -924,8 +924,14 @@ public class ZlMainAction extends DispatchAction {
 													flag = false;
 												}
 											}else if(yjType.equals("dgtj") && currLoginUserId.equals(zl.getZxUserId())){
-												lcName = "定稿提交";//无限制
-												tjUserId = userId_yj;
+												if(ajStatus < 8){
+													lcName = "定稿提交";//无限制
+													tjUserId = userId_yj;
+												}else{
+													msg = "noYj_tj";
+													flag = false;
+												}
+												
 											}else if(yjType.equals("tzs") && currLoginUserId.equals(zl.getZxUserId())){
 												lcName = "导入通知书";//无限制
 												tzsUserId = userId_yj;
@@ -949,9 +955,9 @@ public class ZlMainAction extends DispatchAction {
 													Integer lcId = lcList.get(0).getId();
 													double currLcNo = 2.0;
 
-													mxm.addLcMx(lcId, userId_yj, "任务领取", currLcNo, currDate, currDate,"", 0, "", "", "");
+													mxm.addLcMx(lcId, userId_yj, lcName+"任务领取", currLcNo, currDate, currDate,"", 0, "", "", user.getUserName()+"任务移交");
 													//给被移交人发送邮件提醒
-													mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, userId_yj, "cpyUser",  ajNoQt+ " "+lcName+"移交", user.getUserName()+"将["+ajNoQt+"]"+lcName+"任务移交给你");
+													mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, userId_yj, "cpyUser",  ajNoQt+ " "+lcName+"任务移交", user.getUserName()+"将["+ajNoQt+"]"+lcName+"任务移交给你");
 													zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
 													msg = "success";
 												}
@@ -996,6 +1002,7 @@ public class ZlMainAction extends DispatchAction {
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		Map<String,String> map = new HashMap<String,String>();
 		boolean abilityFlag = false;
+		String currDate = CurrentTime.getStringDate();
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		Integer zxUserId = CommonTools.getFinalInteger("zxUserId", request);
 		Integer tjUserId = -1;
@@ -1030,6 +1037,7 @@ public class ZlMainAction extends DispatchAction {
 						boolean flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, tjUserId, 
 								tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
 						if(flag){
+							Integer ajStatus = Integer.parseInt(zl.getAjStatus());
 							Integer checkUserId_db = zl.getCheckUserId();
 							Integer zxUserId_db = zl.getZxUserId();
 							Integer tjUserId_db = zl.getTjUserId();
@@ -1038,26 +1046,56 @@ public class ZlMainAction extends DispatchAction {
 							Integer bzUserId_db = zl.getBzUserId();
 							Integer bzshUserId_db = zl.getBzUserId();
 							Integer bhUserId_db = zl.getBhUserId();
-							if(!zxUserId.equals(zxUserId_db)){
-								if(zxUserId_db.equals(0)){//没人领取，修改
-//									mxm.listLastInfoByLcId(lcId);
-									//明天修改-------------------------------------------------
-								}else{//有人领取，增加
-									
+							//人员移交统一归纳到2.0（人员分配中来）
+							List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz("人员分配");
+							if(lcList.size() > 0){
+								Integer lcId = lcList.get(0).getId();
+								double currLcNo = 2.0;
+								//案件
+								if(ajStatus < 6){
+									if(!zxUserId.equals(zxUserId_db)){
+										if(zxUserId_db.equals(0)){//没人领取，修改
+											List<ZlajLcMxInfoTb> mxList = mxm.listFirstInfoByLcId(lcId);
+											if(mxList.size() > 0){
+												mxm.updateEdateById(mxList.get(0).getId(), zxUserId, "", "", "", "", currDate, "操作人员主动分配");
+											}
+										}else{//有人领取，增加
+											mxm.addLcMx(lcId, zxUserId, "撰写人员修改", currLcNo, currDate, currDate, "", 0, "", "", "操作人员修改");
+										}
+									}
 								}
+								if(ajStatus < 7){
+									if(!checkUserId.equals(checkUserId_db)){
+										mxm.addLcMx(lcId, checkUserId, "审核人员修改", currLcNo, currDate, currDate, "", 0, "", "", "操作人员修改");
+									}
+								}
+								if(ajStatus < 8){
+									if(!tjUserId.equals(tjUserId_db)){
+										mxm.addLcMx(lcId, tjUserId, "提交人员修改", currLcNo, currDate, currDate, "", 0, "", "", "操作人员修改");
+									}
+								}
+								if(!tzsUserId.equals(tzsUserId_db)){
+									mxm.addLcMx(lcId, tzsUserId, "通知书人员修改", currLcNo, currDate, currDate, "", 0, "", "", "操作人员修改");
+								}
+								if(!feeUserId.equals(feeUserId_db)){
+									mxm.addLcMx(lcId, feeUserId, "费用催缴人员修改", currLcNo, currDate, currDate, "", 0, "", "", "操作人员修改");
+								}
+								if(!bzUserId.equals(bzUserId_db)){
+									mxm.addLcMx(lcId, bzUserId, "补正人员修改", currLcNo, currDate, currDate, "", 0, "", "", "操作人员修改");
+								}
+								if(!bzshUserId.equals(bzshUserId_db)){
+									mxm.addLcMx(lcId, bzshUserId, "补正审核人员修改", currLcNo, currDate, currDate, "", 0, "", "", "操作人员修改");
+								}
+								if(!bhUserId.equals(bhUserId_db)){
+									mxm.addLcMx(lcId, bhUserId, "驳回人员修改", currLcNo, currDate, currDate, "", 0, "", "", "操作人员修改");
+								}
+								msg = "success";
 							}
-							if(!checkUserId.equals(checkUserId_db)){
-								
-							}
-						}
-						if(flag){
-							msg = "success";
 						}
 					}else{
 						msg = "stopInfo";//案件在终止状态下不能进行修改
 					}
 				}
-				
 			}else{
 				msg = "noAbility";
 			}
@@ -1239,21 +1277,29 @@ public class ZlMainAction extends DispatchAction {
 								if(lcId_1 > 0){
 									mxm.addLcMx(lcId_1, currLoginUserId, "专利案件录入", 1.0, sDate, sDate, ajUpload, pubZlId, sDate, lcMxUpSize, ajRemark);
 									//增加专利撰写流程
+									Integer lcId_2 = 0;
 									if(zxUserId > 0){
-										Integer lcId_2 = lcm.addLcInfo(zlId, "人员分配", "人员分配", sDate, sDate, sDate, sDate);
-										mxm.addLcMx(lcId_2, zxUserId, "人员分配", 2.0, sDate, sDate, ajUpload, pubZlId, sDate, lcMxUpSize, ajRemark);
+										lcId_2 = lcm.addLcInfo(zlId, "人员分配", "人员分配", sDate, sDate, sDate, sDate);
+										mxm.addLcMx(lcId_2, zxUserId, "撰写任务分配", 2.0, sDate, sDate, ajUpload, pubZlId, sDate, lcMxUpSize, ajRemark);
 										
-										lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", sDate, cpyDate, "", "");
-										mxm.addLcMx(lcId_1, zxUserId, "新申请撰稿", 3.0, sDate, "", "", 0, "", "", "");
+										Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", sDate, cpyDate, "", "");
+										mxm.addLcMx(lcId_3, zxUserId, "新申请撰稿", 3.0, sDate, "", "", 0, "", "", "");
 										//给当前撰写人发送邮件
 										mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zxUserId, "cpyUser", "新任务通知：专利撰写", "专利["+ajTitle+"]已发布，请您于["+cpyDate+"]之前完成专利撰写工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
 									}else{
 										//如果没有指派撰写人，需要撰写人认领抢购
 										//1：先将案件状态修改成2.0
 										zlm.updateZlStatusById(zlId, "2.0");
-										Integer lcId_2 = lcm.addLcInfo(zlId, "人员分配", "人员分配", sDate, CurrentTime.getFinalDate(sDate,1), "", "");
+										lcId_2 = lcm.addLcInfo(zlId, "人员分配", "人员分配", sDate, CurrentTime.getFinalDate(sDate,1), "", "");
 										mxm.addLcMx(lcId_2, 0, "等待撰写人员领取", 2.0, sDate, "", "", pubZlId, "", "", "");
 									}
+									mxm.addLcMx(lcId_2, checkUserId, "技术审核任务分配", 2.0, sDate, sDate, "", 0, "", "", "");
+									mxm.addLcMx(lcId_2, tjUserId, "定稿提交任务分配", 2.0, sDate, sDate, "", 0, "", "", "");
+									mxm.addLcMx(lcId_2, tzsUserId, "通知书任务分配", 2.0, sDate, sDate, "", 0, "", "", "");
+									mxm.addLcMx(lcId_2, feeUserId, "费用催缴任务分配", 2.0, sDate, sDate, "", 0, "", "", "");
+									mxm.addLcMx(lcId_2, bzUserId, "补正任务分配", 2.0, sDate, sDate, "", 0, "", "", "");
+									mxm.addLcMx(lcId_2, bzshUserId, "补正审核任务分配", 2.0, sDate, sDate, "", 0, "", "", "");
+									mxm.addLcMx(lcId_2, bhUserId, "驳回任务分配", 2.0, sDate, sDate, "", 0, "", "", "");
 								}
 								msg = "success";
 							}
@@ -1371,6 +1417,7 @@ public class ZlMainAction extends DispatchAction {
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		String msg = "error";
+		String currDate = CurrentTime.getStringDate();
 		Map<String,String> map = new HashMap<String,String>();
 		boolean abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//只有修改权限的员工才能领取任务
 		if(abilityFlag){
@@ -1388,10 +1435,12 @@ public class ZlMainAction extends DispatchAction {
 							Integer lcId = lc.getId();
 							Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(),lc.getLcCpyDate());
 							if(diffDays > 0){//可以领取
-								List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
+								List<ZlajLcMxInfoTb> mxList = mxm.listFirstInfoByLcId(lcId);//撰写任务领取肯定是第一个
 								if(mxList.size() > 0){
-//									mxm.updateEdateById(id, eDate, lcMxRemark);
+									mxm.updateEdateById(mxList.get(0).getId(), user.getId(), "", "", "", "", currDate, "撰写任务已被领取");
 									//明天修改-------------------------------------------------
+									Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", currDate, cpyDate, "", "");
+									mxm.addLcMx(lcId_3, user.getId(), "新申请撰稿", 3.0, currDate, "", "", 0, "", "", "");
 								}
 							}else{
 								msg = "notLq";//期限已过，不能领取

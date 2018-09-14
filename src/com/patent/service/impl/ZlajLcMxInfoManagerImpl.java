@@ -115,7 +115,7 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 		try {
 			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return mxDao.findLastInfoByLcId(sess, lcId);
+			return mxDao.findFirstInfoByLcId(sess, lcId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
