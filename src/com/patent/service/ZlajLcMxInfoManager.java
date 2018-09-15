@@ -30,14 +30,14 @@ public interface ZlajLcMxInfoManager {
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,String lcMxUpSize, String lcMxRemark) throws WEBException;
 	
 	/**
-	 * 修改流程负责人、完成时间、备注（一般是领取）
+	 * 修改流程负责人、完成时间、备注等（一般是领取）
 	 * @description
 	 * @author wm
 	 * @date 2018-9-2 下午05:38:14
 	 * @param id 主键
 	 * @param fzUserId 流程负责人(-1时不修改)
 	 * @param lcMxUpFile 附件(""时不修改)
-	 * @param lcMxUpUserId 上传人(""时不修改)
+	 * @param lcMxUpUserId 上传人(-1时不修改)
 	 * @param lcMxUpDate 上传时间(""时不修改)
 	 * @param lcMxUpSize  附件大小(""时不修改)
 	 * @param eDate 完成时间
@@ -45,7 +45,7 @@ public interface ZlajLcMxInfoManager {
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateEdateById(Integer id,Integer fzUserId,String lcMxUpUserId,String lcMxUpFile,
+	boolean updateEdateById(Integer id,Integer fzUserId,Integer lcMxUpUserId,String lcMxUpFile,
 			String lcMxUpDate,String lcMxUpSize,String eDate, String lcMxRemark) throws WEBException;
 	
 	/**

@@ -46,7 +46,7 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 	}
 
 	@Override
-	public boolean updateEdateById(Integer id,Integer fzUserId,String lcMxUpUserId,String lcMxUpFile,
+	public boolean updateEdateById(Integer id,Integer fzUserId,Integer lcMxUpUserId,String lcMxUpFile,
 			String lcMxUpDate,String lcMxUpSize,String eDate, String lcMxRemark)
 			throws WEBException {
 		// TODO Auto-generated method stub
@@ -57,6 +57,19 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 			ZlajLcMxInfoTb mx = mxDao.get(sess, id);
 			if(mx != null){
 				mx.setLcMxEDate(eDate);
+				mx.setLcFzUserId(fzUserId);
+				if(!lcMxUpUserId.equals(-1)){
+					mx.setLcMxUpUserId(lcMxUpUserId);
+				}
+				if(!lcMxUpFile.equals("")){
+					mx.setLcMxUpFile(lcMxUpFile);
+				}
+				if(!lcMxUpDate.equals("")){
+					mx.setLcMxUpDate(lcMxUpDate);
+				}
+				if(!lcMxUpSize.equals("")){
+					mx.setLcMxUpSize(lcMxUpSize);
+				}
 				if(!lcMxRemark.equals("")){
 					mx.setLcMxRemark(lcMxRemark);
 				}

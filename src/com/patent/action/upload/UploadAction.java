@@ -105,6 +105,7 @@ public class UploadAction extends DispatchAction {
 		Integer ajId = CommonTools.getFinalInteger("ajId", request);
 		String fileType = CommonTools.getFinalStr("fileType", request);//tzs(通知书),fj(附件),pj(票据),dg(底稿)
 		String loginType = this.getLoginType(request);
+		Integer currLoginUserId = this.getLoginUserId(request);
 		Map<String,Object> map = new HashMap<String,Object>();
 		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
@@ -117,8 +118,8 @@ public class UploadAction extends DispatchAction {
 				String userPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + loginType + "\\";
 				String absolutPath = loginType + "\\";
 				if(loginType.equals("appUser")){
-					userPath += this.getLoginUserId(request);
-					absolutPath += this.getLoginUserId(request);
+					userPath += currLoginUserId;
+					absolutPath += currLoginUserId;
 					if(ajId > 0){
 						userPath +=  "\\" + ajId;
 						absolutPath +=  "\\" + ajId;
@@ -132,6 +133,7 @@ public class UploadAction extends DispatchAction {
 						//之前放在外层，等待专利增加后，剪切到ajId下
 //						userPath += "dg";
 //						absolutPath += "dg";
+						userPath += "u_"+currLoginUserId;//怕引起文件名重复，暂时将代理机构下人员上传的文件存在u_id下
 					}
 				}
 				while (iterator.hasNext()) {

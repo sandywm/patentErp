@@ -215,4 +215,16 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateZlStatusById(Integer id,String zlStatus) throws WEBException;
+	
+	/**
+	 * 修改专利底稿路径
+	 * @description
+	 * @author wm
+	 * @date 2018-9-15 下午05:08:30
+	 * @param id
+	 * @param zlUpFile 专利底稿路径
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateZlUpFile_dg(Integer id,String zlUpFile) throws WEBException;
 }
