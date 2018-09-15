@@ -172,8 +172,8 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	}
 
 	@Override
-	public boolean updateBasicInfoById(Integer zlId, String zlTitle,
-			String sqAddress, String zlType, Integer checkUserId,
+	public boolean updateBasicInfoById(Integer zlId, String zlTitle,String zlNo,
+			String zlNoQt,String sqAddress, String zlType,
 			String ajFieldId, String sqrId, String fmrId, String lxrId,
 			String yxqDetail, String upFile, String remark, String ewyq,
 			String applyDate, Integer faId) throws WEBException {
@@ -185,9 +185,14 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			ZlajMainInfoTb zl = zlDao.get(sess, zlId);
 			if(zl != null){
 				zl.setAjTitle(zlTitle);
+				if(!zlNo.equals("")){
+					zl.setAjNo(zlNo);
+				}
+				if(!zlNoQt.equals("")){
+					zl.setAjNoQt(zlNoQt);
+				}
 				zl.setAjSqAddress(sqAddress);
 				zl.setAjType(zlType);
-				zl.setCheckUserId(checkUserId);
 				zl.setAjFieldId(ajFieldId);
 				zl.setAjSqrId(sqrId);
 				zl.setAjFmrId(fmrId);
@@ -197,7 +202,9 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 				zl.setAjRemark(remark);
 				zl.setAjEwyqId(ewyq);
 				zl.setAjApplyDate(applyDate);
-				zl.setAjFaId(faId);
+				if(faId > 0){
+					zl.setAjFaId(faId);
+				}
 				zlDao.update(sess, zl);
 				tran.commit();
 				return true;

@@ -153,24 +153,25 @@ public interface ZlajMainInfoManager {
 	 * @author wm
 	 * @date 2018-9-3 上午08:18:28
 	 * @param zlId 主键
-	 * @param zlTitle 案件标题（""不修改）
-	 * @param sqAddress 案件地区（""不修改）
-	 * @param zlType 案件类型（""不修改）
-	 * @param checkUserId 审核人员编号（0不修改）
-	 * @param ajFieldId 案件技术领域（""不修改）
-	 * @param sqrId 申请人（""不修改）
-	 * @param fmrId 发明人（""不修改）
-	 * @param lxrId 联系人（""不修改）
-	 * @param yxqDetail 优先权明细（""不修改）
-	 * @param upFile 技术底稿（""不修改）
-	 * @param remark 备注（""不修改）
-	 * @param ewyq 额外要求（""不修改）
-	 * @param applyDate 申请日期（""不修改）
+	 * @param zlTitle 案件标题
+	 * @param zlNo 案件编号(年专利类型[01,02,03]000x机构编号)构成(排序用)(""不修改)
+	 * @param zlNoQt 案件编号(年专利类型[01,02,03]000x.机构编号)构成(前台显示用)(""不修改)
+	 * @param sqAddress 案件地区
+	 * @param zlType 案件类型
+	 * @param ajFieldId 案件技术领域
+	 * @param sqrId 申请人
+	 * @param fmrId 发明人
+	 * @param lxrId 联系人
+	 * @param yxqDetail 优先权明细
+	 * @param upFile 技术底稿
+	 * @param remark 备注
+	 * @param ewyq 额外要求
+	 * @param applyDate 申请日期
 	 * @param faId 分案编号（0不修改）
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateBasicInfoById(Integer zlId,String zlTitle,String sqAddress,String zlType,Integer checkUserId,String ajFieldId,
+	boolean updateBasicInfoById(Integer zlId,String zlTitle,String zlNo,String zlNoQt,String sqAddress,String zlType,String ajFieldId,
 			String sqrId,String fmrId,String lxrId,String yxqDetail,String upFile,String remark,String ewyq,String applyDate,Integer faId) throws WEBException;
 	
 	/**
