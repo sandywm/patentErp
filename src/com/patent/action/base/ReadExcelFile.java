@@ -75,26 +75,32 @@ public class ReadExcelFile {
 //		Double aa = 0.9796;
 //		System.out.println(aa * 100);
 		//删除的是appUser/1/headBanner1.jpg
-		String oldFile = "appUser/1/4D数字化校园可行性报告.doc,appUser/1/headBanner.jpg,appUser/1/headBanner1.jpg";
-		String newFile = "appUser/1/4D数字化校园可行性报告.doc,appUser/1/headBanner2.jpg";
-		System.out.println(CurrentTime.getCurrentTime());
-		String[] oldFileArr =  oldFile.split(",");
-		String[] newFileArr =  newFile.split(",");
-		for(int i = 0 ; i < oldFileArr.length ; i++){
-			boolean existFlag = false;
-			for(int j = 0 ; j < newFileArr.length ; j++){
-				if(oldFileArr[i].equals(newFileArr[j])){
-					existFlag = true;
-					break;
-				}else{
-					existFlag = false;
-				}
-			}
-			if(!existFlag){
-				System.out.println("需要删除的："+oldFileArr[i]);
-			}
-		}
-		System.out.println(CurrentTime.getCurrentTime());
-		
+//		String oldFile = "appUser/1/4D数字化校园可行性报告.doc,appUser/1/headBanner.jpg,appUser/1/headBanner1.jpg";
+//		String newFile = "appUser/1/4D数字化校园可行性报告.doc,appUser/1/headBanner2.jpg";
+//		System.out.println(CurrentTime.getCurrentTime());
+//		String[] oldFileArr =  oldFile.split(",");
+//		String[] newFileArr =  newFile.split(",");
+//		for(int i = 0 ; i < oldFileArr.length ; i++){
+//			boolean existFlag = false;
+//			for(int j = 0 ; j < newFileArr.length ; j++){
+//				if(oldFileArr[i].equals(newFileArr[j])){
+//					existFlag = true;
+//					break;
+//				}else{
+//					existFlag = false;
+//				}
+//			}
+//			if(!existFlag){
+//				System.out.println("需要删除的："+oldFileArr[i]);
+//			}
+//		}
+//		System.out.println(CurrentTime.getCurrentTime());
+		String bb = "aa_V1.jpg";
+		Integer lastIndex = bb.lastIndexOf("_");
+		String last_1 = bb.substring(lastIndex+1,bb.length());
+		Integer lastIndex_1 = last_1.indexOf(".");
+		String version = last_1.substring(0, lastIndex_1);
+		String suffix = last_1.substring(lastIndex_1+1, last_1.length());
+		System.out.println(version + "       "+suffix);
 	}
 }

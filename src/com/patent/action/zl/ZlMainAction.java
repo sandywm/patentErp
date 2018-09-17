@@ -371,6 +371,7 @@ public class ZlMainAction extends DispatchAction {
 		ZlajFeeInfoManager zfm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		String opt = CommonTools.getFinalStr("opt", request);//basic(基本信息),lcfz(流程负责人员),lc(流程),tzs(通知书),fj(附件),fy(费用)-后续有的再加
+		Integer lcId = CommonTools.getFinalInteger("lcId", request);//当是lc环节时才传递这个值，也可以不传，其他环节不传
 		String msg = "error";
 		boolean abilityFlag = false;
 		Integer cpyId = 0;
@@ -492,7 +493,7 @@ public class ZlMainAction extends DispatchAction {
 							list_j.add(map_j);
 						}
 						map.put("jsFieldInfo", list_j);
-					}else if(opt.equals("lc")){//流程负责人信息
+					}else if(opt.equals("lcfz")){//流程负责人信息
 						msg = "success";
 						ZlajMainInfoTb zl = zlList.get(0);
 						map.put("ajId", zlId);
@@ -576,6 +577,9 @@ public class ZlMainAction extends DispatchAction {
 							map.put("lcInfo", list_lc);
 							//默认获取最后一个流程的流程明细
 							Integer lastLcId = lcList.get(0).getId();
+							if(lcId > 0){
+								lastLcId = lcId;//当有指定的流程时
+							}
 							List<ZlajLcMxInfoTb> mxList = mxm.listDetailInfoByLcId(lastLcId);
 							if(mxList.size() > 0){
 								for(Iterator<ZlajLcMxInfoTb> it = mxList.iterator() ; it.hasNext();){
@@ -593,12 +597,29 @@ public class ZlMainAction extends DispatchAction {
 									map_d.put("mxSDate", mx.getLcMxSDate());
 									map_d.put("mxEDate", mx.getLcMxEDate());
 									String upFile = mx.getLcMxUpFile();
-									String upFileName = "";
+									String upFileName = "";//文件名称
+									String upFileSize = "";//文件大小
 									if(!upFile.equals("")){
-										upFileName = upFile.substring(upFile.lastIndexOf("/")+1,upFile.length());
+										String[] upFileArr = upFile.split(",");
+										String upUserName = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();//上传人
+										String upDate = mx.getLcMxUpDate();//上传日期
+										List<Object> list_mx_1 = new ArrayList<Object>();
+										for(Integer i = 0 ; i < upFileArr.length ; i++){
+											upFileName = upFileArr[i].substring(upFileArr[i].lastIndexOf("\\")+1,upFileArr[i].length());
+											upFile += upFileName + ",";
+											upFileSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upFileArr[i]);
+											Map<String,String> map_mx = new HashMap<String,String>();
+											map_d.put("upFileName", upFileName);
+											map_mx.put("upUserName", upUserName);
+											map_mx.put("upDate", upDate);
+											map_mx.put("upFileSize", upFileSize);
+											map_mx.put("downFilePath", upFileArr[i].replaceAll("\\\\", "\\\\\\\\"));
+											list_mx_1.add(map_mx);
+										}
+										map_d.put("upFileDetail", list_mx_1);//附件明细（当上传文件存在时出现）
+										upFile = upFile.substring(0, upFile.length() - 1);
 									}
 									map_d.put("upFile", upFile);
-									map_d.put("upFileName", upFileName);
 									map_d.put("mxRemark", mx.getLcMxRemark());
 									list_mx.add(map_d);
 								}
@@ -634,13 +655,14 @@ public class ZlMainAction extends DispatchAction {
 								ZlajFjInfoTb fj = it.next();
 								Map<String,Object> map_d = new HashMap<String,Object>();
 								map_d.put("fjId", fj.getId());
-								map_d.put("fjName", fj.getFjName());
+								map_d.put("fjName", fj.getFjName().substring(fj.getFjName().lastIndexOf("\\") + 1));
 								map_d.put("fjType", fj.getFjType());
 								map_d.put("fjVersion", fj.getFjVersion());
 								map_d.put("fjGs", fj.getFjGs());
 								map_d.put("fjDx", fj.getFjDx());
 								map_d.put("upUserName", fj.getCpyUserInfo().getUserName());
 								map_d.put("upDate", fj.getFjUpDate());
+								map_d.put("downFilePath", fj.getFjUpDate().replaceAll("\\\\", "\\\\\\\\"));
 								list_fj.add(map_d);
 							}
 							map.put("fjInfo", list_fj);
@@ -1242,6 +1264,7 @@ public class ZlMainAction extends DispatchAction {
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		Integer cpyId = 0;
 		String nextNumStr = "";
 		String ajNoQt = "";
@@ -1366,6 +1389,14 @@ public class ZlMainAction extends DispatchAction {
 												String newPathFinal = newPath + "\\" + fileName;
 												newPath_db +=  path_pre + fileName + ",";
 												FileOpration.copyFile(oldPath, newPathFinal);
+												
+												//增加附件记录
+												Integer lastIndex = fileName.lastIndexOf("_");
+												String lastFjName = fileName.substring(lastIndex+1, fileName.length());
+												Integer lastIndex_1 = lastFjName.indexOf(".");
+												String fjVersion = lastFjName.substring(0, lastIndex_1);
+												String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
+												fjm.addFj(zlId, path_pre + fileName, fjVersion, "技术底稿文件", fjGs, FileOpration.getFileSize(newPathFinal), currLoginUserId, sDate);
 											}
 											//修改上传附件的真实路径
 											if(!newPath_db.equals("")){
@@ -1484,7 +1515,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 修改专利基本信息
+	 * 修改专利基本信息(案件定稿提交前才能修改案件基本信息)
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-9-13 下午09:44:23
@@ -1502,11 +1533,13 @@ public class ZlMainAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
 		String msg = "error";
 		Map<String,String> map = new HashMap<String,String>();
 		boolean abilityFlag = false;
 		Integer currUserId = this.getLoginUserId(request);
 		String ajNoQt = "",ajNo = "";
+		Integer pubId = CommonTools.getFinalInteger("pubId", request);
 		if(this.getLoginType(request).equals("cpyUser")){
 			//判断权限
 			//获取当前用户是否有修改权限
@@ -1523,56 +1556,124 @@ public class ZlMainAction extends DispatchAction {
 					ZlajMainInfoTb zl = zlList.get(0);
 					String ajTitle = Transcode.unescape_new("ajTitle", request);
 					String ajType = CommonTools.getFinalStr("ajType", request);
-					//在专利定稿提交前可以进行专利类型的修改
+					//在专利定稿提交前可以进行专利基本信息修改
 					if(Integer.parseInt(zl.getAjStatus()) < 6){
 						String varCon = "",nextNumStr = "";
 						String currYear = CurrentTime.getYear();
-						if(!zl.getAjType().equals(ajType)){
-							if(zl.getPubZlId().equals(0)){//没有关联专利发布任务
-								
-							}else{
-								
-							}
-							msg = "success";
-							//需要重新获取专利号
-							if(ajType.equals("fm")){
-								varCon = "01";
-							}else if(ajType.equals("syxx")){
-								varCon = "02";
-							}else if(ajType.equals("wg")){
-								varCon = "03";
-							}
-							List<ZlajMainInfoTb> zlList_1 = zlm.listFirstInfoByOpt(cpyId,ajType,currYear);
-							if(zlList_1.size() > 0){
-								String ajNo_prev = zlList_1.get(0).getAjNo();//20180100011--201802
-								String str1 = ajNo_prev.substring(0,6);
-								String str2 = ajNo_prev.substring(6, 10);
-								Integer nextNum = Integer.parseInt(str2) + 1;
-								if(nextNum > 1000){
-									nextNumStr = nextNum + "";
-								}else if(nextNum > 100){
-									nextNumStr = "0" + nextNum;
-								}else if(nextNum > 10){
-									nextNumStr = "00" + nextNum;
-								}else if(nextNum > 1){
-									nextNumStr = "000" + nextNum;
+						Integer pubId_base = zl.getPubZlId();//原先关联的专利任务
+						if(!zl.getAjType().equals(ajType)){//类型变化，案件编号就需要变
+							if(pubId > 0){//传递的有专利任务编号
+								List<PubZlInfoTb> pubList = pzm.listSpecInfoByOpt(pubId, 0);
+								if(pubList.size() > 0){
+									PubZlInfoTb pub = pubList.get(0);
+									//首先判断原来有没有关联专利任务
+									if(pubId_base > 0){//原来存在专利任务编号
+										if(!pubId_base.equals(pubId)){//专利任务关联发生编号
+											if(pub.getZlType().equals(ajType)){//新变动的专利任务类型和选择的专利类型一致
+												//这时需要修改专利任务中的案件编号
+												//1:归0原来的专利任务中的案件编号
+												pzm.updateAjIdById(pubId_base, 0);
+												//2:修改新的专利任务中的案件编号
+												pzm.updateAjIdById(pubId, zlId);
+												msg = "success";
+											}else{
+												msg = "typDiff";//选择的专利类型和专利任务类型不一致
+											}
+										}else{//专利任务未发生变化（不可能出现这种情况--因为专利类型已经发生变化）
+											
+										}
+									}else{//原来不存在专利任务,新绑定的了专利任务
+										if(pub.getZlType().equals(ajType)){//新变动的专利任务类型和选择的专利类型一致
+											pzm.updateAjIdById(pubId, zlId);
+											msg = "success";
+										}else{
+											msg = "typDiff";//选择的专利类型和专利任务类型不一致
+										}
+									}
+								}	
+							}else{//没有关联专利任务
+								//需要查看原先有无关联专利任务
+								if(pubId_base > 0){//原来存在专利任务编号
+									pzm.updateAjIdById(pubId_base, 0);
 								}
-								ajNoQt = str1 + nextNumStr + "." + cpyId;
-								ajNo =  str1 + nextNumStr + cpyId;
-							}else{
-								ajNoQt = currYear + varCon + "0001" + "." + cpyId;
-								ajNo = currYear + varCon + "0001" + cpyId;
+								msg = "success";
+							}	
+							if(msg.equals("success")){////专利类型发生变化，需要重新获取专利号
+								if(ajType.equals("fm")){
+									varCon = "01";
+								}else if(ajType.equals("syxx")){
+									varCon = "02";
+								}else if(ajType.equals("wg")){
+									varCon = "03";
+								}
+								List<ZlajMainInfoTb> zlList_1 = zlm.listFirstInfoByOpt(cpyId,ajType,currYear);
+								if(zlList_1.size() > 0){
+									String ajNo_prev = zlList_1.get(0).getAjNo();//20180100011--201802
+									String str1 = ajNo_prev.substring(0,6);
+									String str2 = ajNo_prev.substring(6, 10);
+									Integer nextNum = Integer.parseInt(str2) + 1;
+									if(nextNum > 1000){
+										nextNumStr = nextNum + "";
+									}else if(nextNum > 100){
+										nextNumStr = "0" + nextNum;
+									}else if(nextNum > 10){
+										nextNumStr = "00" + nextNum;
+									}else if(nextNum > 1){
+										nextNumStr = "000" + nextNum;
+									}
+									ajNoQt = str1 + nextNumStr + "." + cpyId;
+									ajNo =  str1 + nextNumStr + cpyId;
+								}else{
+									ajNoQt = currYear + varCon + "0001" + "." + cpyId;
+								}
 							}
-						}else{//没修改案件类型
-							msg = "success";
+						}else{//类型没变，案件编号就不需要变化，需要判断专利任务有无发生变化
+							//首先判断原来有没有关联专利任务
+							if(pubId_base > 0){//原来存在专利任务编号
+								if(pubId > 0){//传递有专利任务编号
+									List<PubZlInfoTb> pubList = pzm.listSpecInfoByOpt(pubId, 0);
+									if(pubList.size() > 0){
+										PubZlInfoTb pub = pubList.get(0);
+										if(!pubId_base.equals(pubId)){//专利任务关联发生变化
+											if(pub.getZlType().equals(ajType)){//新变动的专利任务类型和选择的专利类型一致
+												//这时需要修改专利任务中的案件编号
+												//1:归0原来的专利任务中的案件编号
+												pzm.updateAjIdById(pubId_base, 0);
+												//2:修改新的专利任务中的案件编号
+												pzm.updateAjIdById(pubId, zlId);
+												msg = "success";
+											}else{
+												msg = "typDiff";//选择的专利类型和专利任务类型不一致
+											}
+										}else{//专利任务未发生变化（不可能出现这种情况--因为专利类型已经发生变化）
+											msg = "success";
+										}
+									}
+								}else{//没有绑定专利任务
+									pzm.updateAjIdById(pubId_base, 0);
+									msg = "success";
+								}
+							}else{//原来不存在专利任务
+								if(pubId > 0){//新绑定的了专利任务
+									List<PubZlInfoTb> pubList = pzm.listSpecInfoByOpt(pubId, 0);
+									if(pubList.size() > 0){
+										PubZlInfoTb pub = pubList.get(0);
+										if(pub.getZlType().equals(ajType)){//新变动的专利任务类型和选择的专利类型一致
+											pzm.updateAjIdById(pubId, zlId);
+											msg = "success";
+										}else{
+											msg = "typDiff";//选择的专利类型和专利任务类型不一致
+										}
+									}		
+								}else{//没有绑定专利任务
+									msg = "success";
+								}
+							}
 						}
-					}else{//案件提交以后不能进行案件类型的修改
-						if(zl.getAjType().equals(ajType)){
-							msg = "success";
-						}else{
-							msg = "notUpdate";//案件类型只能在定稿提交之前能修改
-						}
+					}else{
+						msg = "notUpdate";//定稿以后不能修改
 					}
+
 					if(msg.equals("success")){
 						String ajFieldId = CommonTools.getFinalStr("ajFieldId", request);
 						String ajSqrId  = CommonTools.getFinalStr("ajSqrId", request);
@@ -1583,11 +1684,17 @@ public class ZlMainAction extends DispatchAction {
 						String ajUpload = CommonTools.getFinalStr("ajUpload", request);
 						String ajRemark = CommonTools.getFinalStr("ajRemark", request);
 						String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
-						zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt, ajSqAddress, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0);
+						Integer upUserId = -1;
+						String upFileDate = "";
+						if(!ajUpload.equals(zl.getAjUpload())){//上传资料发生变化
+							upUserId = currUserId;
+							upFileDate = CurrentTime.getStringDate();
+						}
+						zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt, pubId, ajSqAddress, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0);
 						if(!ajUpload.equals(zlList.get(0).getAjUpload())){
 							List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz("专利案件录入");
 							if(lcList.size() > 0){
-								mxm.updateEdateById(lcList.get(0).getId(), -1, currUserId, ajUpload, CurrentTime.getStringDate(), "", "", "");
+								mxm.updateEdateById(lcList.get(0).getId(), -1, upUserId, ajUpload, upFileDate, "", "", "");
 							}
 						}
 					}

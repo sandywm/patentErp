@@ -151,11 +151,11 @@ public class UploadAction extends DispatchAction {
 							if(fjList.size() > 0){
 								nextNum = Integer.parseInt(fjList.get(0).getFjVersion()) + 1;
 							}
-							nextVersion = "V"+nextNum+".0";
+							nextVersion = "V"+nextNum;
 							filename = filePre + "_" + nextVersion + "." + suffix;
 						 }else if(fileType.equals("pj")){
 							 List<ZlajFeeInfoTb> fList = fm.listInfoByOpt(ajId, "");
-							 nextVersion = "V" + (fList.size() + 1) + ".0";
+							 nextVersion = "V" + (fList.size() + 1);
 							 filename = filePre + "_" + nextVersion + "." + suffix;
 						 }
 					 }

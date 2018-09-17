@@ -173,7 +173,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 
 	@Override
 	public boolean updateBasicInfoById(Integer zlId, String zlTitle,String zlNo,
-			String zlNoQt,String sqAddress, String zlType,
+			String zlNoQt,Integer pubId,String sqAddress, String zlType,
 			String ajFieldId, String sqrId, String fmrId, String lxrId,
 			String yxqDetail, String upFile, String remark, String ewyq,
 			String applyDate, Integer faId) throws WEBException {
@@ -197,6 +197,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 				zl.setAjSqrId(sqrId);
 				zl.setAjFmrId(fmrId);
 				zl.setAjLxrId(lxrId);
+				zl.setPubZlId(pubId);
 				zl.setAjYxqDetail(yxqDetail);
 				zl.setAjUpload(upFile);
 				zl.setAjRemark(remark);

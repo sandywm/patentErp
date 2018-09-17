@@ -171,7 +171,7 @@ public interface ZlajMainInfoManager {
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateBasicInfoById(Integer zlId,String zlTitle,String zlNo,String zlNoQt,String sqAddress,String zlType,String ajFieldId,
+	boolean updateBasicInfoById(Integer zlId,String zlTitle,String zlNo,String zlNoQt,Integer pubId, String sqAddress,String zlType,String ajFieldId,
 			String sqrId,String fmrId,String lxrId,String yxqDetail,String upFile,String remark,String ewyq,String applyDate,Integer faId) throws WEBException;
 	
 	/**
