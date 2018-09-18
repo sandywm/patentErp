@@ -386,6 +386,7 @@ public class ZlMainAction extends DispatchAction {
 				List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
 				if(zlList.size() > 0){
 					if(opt.equals("basic")){//基本信息
+						map = new HashMap<String,Object>();
 						msg = "success";
 						ZlajMainInfoTb zl = zlList.get(0);
 						map.put("ajId", zlId);
@@ -469,6 +470,7 @@ public class ZlMainAction extends DispatchAction {
 						map.put("yqInfo", list_d);
 						map.put("upFile", zl.getAjUpload());//附件
 						map.put("stopStatus", zl.getAjStopStatus());//案件在终止状态下基本信息不能被修改
+						map.put("ajStatus", zl.getAjStatus());
 						String selJsFieldStr = zl.getAjFieldId();
 						String[] selJsFieldArr = selJsFieldStr.split(",");
 						List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, "");
@@ -494,6 +496,7 @@ public class ZlMainAction extends DispatchAction {
 						}
 						map.put("jsFieldInfo", list_j);
 					}else if(opt.equals("lcfz")){//流程负责人信息
+						map = new HashMap<String,Object>();
 						msg = "success";
 						ZlajMainInfoTb zl = zlList.get(0);
 						map.put("ajId", zlId);
@@ -505,6 +508,7 @@ public class ZlMainAction extends DispatchAction {
 						Integer bzUserId = zl.getBzUserId();
 						Integer bzshUserId = zl.getBzshUserId();
 						Integer bhUserId = zl.getBhUserId();
+						map.put("ajStatus", zl.getAjStatus());
 						map.put("checkUserId", checkUserId);
 						map.put("checkUserName", cum.getEntityById(checkUserId).getUserName());
 						map.put("zxUserId", zxUserId);
@@ -558,6 +562,7 @@ public class ZlMainAction extends DispatchAction {
 						}
 						map.put("allUserInfo", list_u);
 					}else if(opt.equals("lc")){//流程
+						map = new HashMap<String,Object>();
 						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zlId);
 						List<Object> list_lc = new ArrayList<Object>();
 						List<Object> list_mx = new ArrayList<Object>();
@@ -629,6 +634,7 @@ public class ZlMainAction extends DispatchAction {
 							msg = "noInfo";
 						}
 					}else if(opt.equals("tzs")){//通知书
+						map = new HashMap<String,Object>();
 						List<ZlajTzsInfoTb> tzsList = tzsm.listInfoByZlId(zlId);
 						if(tzsList.size() > 0){
 							msg = "success";
@@ -636,10 +642,12 @@ public class ZlMainAction extends DispatchAction {
 							for(Iterator<ZlajTzsInfoTb> it = tzsList.iterator() ; it.hasNext();){
 								ZlajTzsInfoTb tzs = it.next();
 								Map<String,Object> map_d = new HashMap<String,Object>();
+								String tzsName = tzs.getTzsName();
 								map_d.put("tzsId", tzs.getId());
-								map_d.put("tzsName", tzs.getTzsName());
+								map_d.put("tzsName", tzsName.substring(tzsName.lastIndexOf("\\")+1,tzsName.length()));
 								map_d.put("fwrDate", tzs.getTzsFwr());
 								map_d.put("gfrDate", tzs.getTzsGfr());
+								map_d.put("downFilePath", tzsName.replaceAll("\\\\", "\\\\\\\\"));
 								list_tzs.add(map_d);
 							}
 							map.put("tzsInfo", list_tzs);
@@ -647,6 +655,7 @@ public class ZlMainAction extends DispatchAction {
 							msg = "noInfo";
 						}
 					}else if(opt.equals("fj")){//附件
+						map = new HashMap<String,Object>();
 						List<ZlajFjInfoTb> fjList = fjm.listInfoByAjId(zlId);
 						if(fjList.size() > 0){
 							msg = "success";
@@ -670,6 +679,7 @@ public class ZlMainAction extends DispatchAction {
 							msg = "noInfo";
 						}
 					}else if(opt.equals("fy")){//费用
+						map = new HashMap<String,Object>();
 						msg = "success";
 						List<ZlajFeeInfoTb> zfList_gf = zfm.listInfoByOpt(zlId, "gf");//官费
 						List<ZlajFeeInfoTb> zfList_dlf = zfm.listInfoByOpt(zlId, "dlf");//代理费
@@ -824,9 +834,15 @@ public class ZlMainAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		Map<String,Object> map = new HashMap<String,Object>();
 		String msg = "error";
+		boolean abilityFlag = false;
 		if(this.getLoginType(request).equals("cpyUser")){//只针对代理机构下员工使用
 			Integer currLoginUserId = this.getLoginUserId(request);
-			if(Ability.checkAuthorization(this.getLoginRoleId(request), "upZl")){//只针对具有修改权限的员工使用
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");
+			}
+			if(abilityFlag){//只针对具有修改权限的员工和管理员使用
 				CpyUserInfo user = cum.getEntityById(currLoginUserId);
 				if(user != null){
 					Integer cpyId = user.getCpyInfoTb().getId();
@@ -836,25 +852,26 @@ public class ZlMainAction extends DispatchAction {
 						ZlajMainInfoTb zl = zlList.get(0);
 						if(zl.getAjStopStatus().equals(0)){//只有案件在正常状态下才能进行移交
 							Map<String,String> map_d = new HashMap<String,String>();
+							Integer ajStatus = Integer.parseInt(zl.getAjStatus());
 							List<Object> list_d = new ArrayList<Object>();
 							Integer yyNum = 0;
-							//案件确认之前可以移交撰写任务
-							if(currLoginUserId.equals(zl.getZxUserId()) && Integer.parseInt(zl.getAjStatus()) < 7){
+							//案件没完成提交之前可以移交撰写任务
+							if(currLoginUserId.equals(zl.getZxUserId()) && ajStatus < 7){
 								map_d.put("typeName", "zx");
 								map_d.put("typeNameChi", "撰写");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
-							//案件提交之前可以移交技术审核
-							if(currLoginUserId.equals(zl.getCheckUserId()) && Integer.parseInt(zl.getAjStatus()) < 7){
+							//案件没完成提交之前可以移交技术审核
+							if(currLoginUserId.equals(zl.getCheckUserId()) && ajStatus < 7){
 								map_d = new HashMap<String,String>();
 								map_d.put("typeName", "sc");
 								map_d.put("typeNameChi", "技术审核");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
-							//导入通知书之前可以移交定稿审核
-							if(currLoginUserId.equals(zl.getTjUserId())  && Integer.parseInt(zl.getAjStatus()) < 7){
+							//案件没完成提交之前可以移交定稿审核
+							if(currLoginUserId.equals(zl.getTjUserId())  && ajStatus < 7){
 								map_d = new HashMap<String,String>();
 								map_d.put("typeName", "dgtj");
 								map_d.put("typeNameChi", "定稿提交");
@@ -955,8 +972,11 @@ public class ZlMainAction extends DispatchAction {
 		if(zlId > 0){
 			if(this.getLoginType(request).equals("cpyUser")){
 				Integer currLoginUserId = this.getLoginUserId(request);
-				//获取当前用户是否拥有增加的权限--将分配专利操作人员的权限归类为增加权限
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");
+				if(this.getLoginRoleName(request).equals("管理员")){
+					abilityFlag = true;
+				}else{
+					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");
+				}
 				if(abilityFlag){
 					Integer userId_yj = CommonTools.getFinalInteger("userId_yj", request);//准备接受移交任务的用户
 					//移交类型zx-撰写,sc-技术审核,dgtj-定稿提交,tzs-通知书,fycj-费用催缴,bz-补正,bzsh-补正审核,bh-驳回
@@ -981,7 +1001,7 @@ public class ZlMainAction extends DispatchAction {
 										if(user_yj != null){
 											Integer ajStatus = Integer.parseInt(zl.getAjStatus());
 											if(yjType.equals("zx") && currLoginUserId.equals(zl.getZxUserId())){
-												if(ajStatus < 7){//导入通知书之前都可以移交
+												if(ajStatus < 7){//案件没完成提交之前可以移交
 													lcName = "撰写";
 													zxUserId = userId_yj;
 												}else{
@@ -989,7 +1009,7 @@ public class ZlMainAction extends DispatchAction {
 													flag = false;
 												}
 											}else if(yjType.equals("sc") && currLoginUserId.equals(zl.getCheckUserId())){
-												if(ajStatus < 7){//导入通知书之前都可以移交
+												if(ajStatus < 7){//案件没完成提交之前可以移交
 													lcName = "技术审核";
 													checkUserId = userId_yj;
 												}else{
@@ -998,7 +1018,7 @@ public class ZlMainAction extends DispatchAction {
 												}
 											}else if(yjType.equals("dgtj") && currLoginUserId.equals(zl.getZxUserId())){
 												if(ajStatus < 7){
-													lcName = "定稿提交";//导入通知书之前都可以移交
+													lcName = "定稿提交";//案件没完成提交之前可以移交
 													tjUserId = userId_yj;
 												}else{
 													msg = "noYj_tj";
@@ -1070,7 +1090,6 @@ public class ZlMainAction extends DispatchAction {
 		// TODO Auto-generated method stub
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
-		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		Map<String,String> map = new HashMap<String,String>();
@@ -1349,8 +1368,8 @@ public class ZlMainAction extends DispatchAction {
 								String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
 								String yxqDetail = CommonTools.getFinalStr("yxqDetail", request);
 								String ajUpload = CommonTools.getFinalStr("ajUpload", request);
-								String lcMxUpSize = CommonTools.getFinalStr("lcMxUpSize", request);
-								String ajRemark = CommonTools.getFinalStr("ajRemark", request);
+//								String lcMxUpSize = CommonTools.getFinalStr("lcMxUpSize", request);
+								String ajRemark =  Transcode.unescape_new("ajRemark", request);
 								String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
 								Integer zxUserId = CommonTools.getFinalInteger("zxUserId", request);//可以为空
 								Integer tjUserId = CommonTools.getFinalInteger("tjUserId", request);//不能为空
@@ -1371,7 +1390,7 @@ public class ZlMainAction extends DispatchAction {
 									//增加流程
 									Integer lcId_1 = lcm.addLcInfo(zlId, "专利案件录入", "专利案件录入", sDate, cpyDate, sDate, "");
 									if(lcId_1 > 0){
-										Integer lcMxId = mxm.addLcMx(lcId_1, currLoginUserId, "专利案件录入", 1.0, sDate, sDate, ajUpload, pubZlId, sDate, lcMxUpSize, ajRemark);
+										Integer lcMxId = mxm.addLcMx(lcId_1, currLoginUserId, "专利案件录入", 1.0, sDate, sDate, ajUpload, pubZlId, sDate, "", ajRemark);
 										//移动上传文件
 										if(!ajUpload.equals("")){
 											//将u_currLoginUserId里面的文件复制到cpyUser/zlId/dg下面
@@ -1539,7 +1558,7 @@ public class ZlMainAction extends DispatchAction {
 		boolean abilityFlag = false;
 		Integer currUserId = this.getLoginUserId(request);
 		String ajNoQt = "",ajNo = "";
-		Integer pubId = CommonTools.getFinalInteger("pubId", request);
+		Integer pubId = CommonTools.getFinalInteger("pubZlId", request);
 		if(this.getLoginType(request).equals("cpyUser")){
 			//判断权限
 			//获取当前用户是否有修改权限
@@ -1554,10 +1573,13 @@ public class ZlMainAction extends DispatchAction {
 				List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
 				if(zlList.size() > 0){
 					ZlajMainInfoTb zl = zlList.get(0);
+					if(zl.getAjStopStatus().equals(0)){//案件正常状态下
+						
+					}
 					String ajTitle = Transcode.unescape_new("ajTitle", request);
 					String ajType = CommonTools.getFinalStr("ajType", request);
-					//在专利定稿提交前可以进行专利基本信息修改
-					if(Integer.parseInt(zl.getAjStatus()) < 6){
+					//在专利定稿提交前且专利状态正常下可以进行专利基本信息修改
+					if(Integer.parseInt(zl.getAjStatus()) < 6 && zl.getAjStopStatus().equals(0)){
 						String varCon = "",nextNumStr = "";
 						String currYear = CurrentTime.getYear();
 						Integer pubId_base = zl.getPubZlId();//原先关联的专利任务
@@ -1671,7 +1693,7 @@ public class ZlMainAction extends DispatchAction {
 							}
 						}
 					}else{
-						msg = "notUpdate";//定稿以后不能修改
+						msg = "notUpdate";//定稿以后或是专利状态终止的条件下不能修改
 					}
 
 					if(msg.equals("success")){
@@ -1775,7 +1797,7 @@ public class ZlMainAction extends DispatchAction {
 									}
 								}
 							}else{
-								msg = "noReceive";//该流程任务已被领取
+								msg = "noReceive";//该流程任务已被其他员工领取
 							}
 						}else{
 							msg = "stopStatus";//案件已终止，不能进行流程任务领取
@@ -1791,6 +1813,9 @@ public class ZlMainAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
+	
+	
+	
 	
 	/**
 	 * 下载文件
