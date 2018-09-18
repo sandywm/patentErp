@@ -30,7 +30,6 @@ import com.alibaba.fastjson.JSON;
 import com.patent.util.WebUrl;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
-import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.CustomerFmrInfoTb;
 import com.patent.module.CustomerInfoTb;
@@ -1304,7 +1303,7 @@ public class ZlMainAction extends DispatchAction {
 				//当案件类型是发明+新型时，就不会有发布专利编号
 				if(ajType.equals("fmxx")){
 					if(pubZlId > 0){
-						msg = "error";
+						msg = "typeDiff";//专利类型不一致
 					}else{
 						msg = "success";
 					}
@@ -1315,6 +1314,8 @@ public class ZlMainAction extends DispatchAction {
 						if(pubList.size() > 0){
 							if(pubList.get(0).getZlType().equals(ajType)){
 								msg = "success";
+							}else{
+								msg = "typeDiff";//专利类型不一致
 							}
 						}
 					}
@@ -1731,7 +1732,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 抢购专利任务
+	 * 抢购专利撰写任务
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-9-13 下午09:45:02
@@ -1787,6 +1788,8 @@ public class ZlMainAction extends DispatchAction {
 												String cpyDate = lcList_f.get(0).getLcCpyDate();
 												Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", currDate, cpyDate, "", "");
 												mxm.addLcMx(lcId_3, currUserId, "新申请撰稿", 3.0, currDate, "", "", 0, "", "", "");
+												//领取成功后把状态修改成3.0
+												zlm.updateZlStatusById(zlId, "3.0");//修改专利状态为3
 												//给当前撰写人发送邮件
 												mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", "新任务通知：专利撰写", "您已成功领取专利["+lc.getZlajMainInfoTb().getAjTitle()+"]任务，请您于["+cpyDate+"]之前完成专利撰写工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
 												msg = "success";
@@ -1814,7 +1817,130 @@ public class ZlMainAction extends DispatchAction {
 		return null;
 	}
 	
+	/**
+	 * 获取当前未完成任务流程环节的负责人是否和当前用户一致
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-18 下午10:12:43
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCurrLcFzrInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		String msg = "error";
+		Map<String,String> map = new HashMap<String,String>();
+		if(this.getLoginType(request).equals("cpyUser")){
+			Integer zlId = CommonTools.getFinalInteger("zlId", request);
+			Integer currUserId = this.getLoginUserId(request);
+			CpyUserInfo user = cum.getEntityById(currUserId);
+			if(user != null && zlId > 0){
+				List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, user.getCpyInfoTb().getId());
+				if(zlList.size() > 0){
+					ZlajMainInfoTb zl = zlList.get(0);
+					//只有在案件状态正常时（0）
+					if(zl.getAjStopStatus().equals(0)){
+						//获取当前最后一个未完成的流程
+						List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
+						if(lcList.size() > 0){
+							List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcList.get(0).getId());
+							if(mxList.size() > 0){
+								ZlajLcMxInfoTb lcmx = mxList.get(0);
+								if(lcmx.getLcMxEDate().equals("")){
+									if(currUserId.equals(lcmx.getLcFzUserId())){
+										msg = "success";
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
 	
+	
+	/**
+	 * 流程细节处理
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-18 下午08:47:28
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward dealLcDetail(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		String msg = "error";
+		String currDate = CurrentTime.getStringDate();
+		Map<String,String> map = new HashMap<String,String>();
+		boolean abilityFlag = false;
+		String roleName = this.getLoginRoleName(request);
+		if(this.getLoginType(request).equals("cpyUser")){
+			//判断权限
+			//获取当前用户是否有修改权限
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//只有修改权限的员工才能进行流程处理
+			}
+			if(abilityFlag){
+				Integer zlId = CommonTools.getFinalInteger("zlId", request);
+				Integer currUserId = this.getLoginUserId(request);
+				CpyUserInfo user = cum.getEntityById(currUserId);
+				if(user != null && zlId > 0){
+					List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, user.getCpyInfoTb().getId());
+					if(zlList.size() > 0){
+						ZlajMainInfoTb zl = zlList.get(0);
+						//只有在案件状态正常时（0）
+						if(zl.getAjStopStatus().equals(0)){
+							String ajStatus = zl.getAjStatus();
+							//获取当前最后一个流程
+							List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
+							if(lcList.size() > 0){
+								List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcList.get(0).getId());
+								if(mxList.size() > 0){
+									ZlajLcMxInfoTb lcmx = mxList.get(0);
+									double lcNo = lcmx.getLcMxNo();
+									if(lcmx.getLcMxEDate().equals("")){
+										if(currUserId.equals(lcmx.getLcFzUserId())){
+											if(lcNo >= 3.0 && lcNo < 4.0){
+												
+											}
+										}else{
+											msg = "fzrError";//当前操作用户和当前流程负责人不一致
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		this.getJsonPkg(map, response);
+		return null;
+	}
 	
 	
 	/**

@@ -87,4 +87,15 @@ public interface ZlajLcInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajLcInfoTb> listLcInfoByLcMz(String lcTitle) throws WEBException;
+	
+	/**
+	 * 获取最后一个未完成的流程
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-18 下午09:18:09
+	 * @param ajId 专利编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajLcInfoTb> listLastInfoByAjId(Integer ajId) throws WEBException;
 }

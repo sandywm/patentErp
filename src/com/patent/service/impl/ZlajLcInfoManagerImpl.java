@@ -160,4 +160,21 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajLcInfoTb> listLastInfoByAjId(Integer ajId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return lcDao.findLastInfo(sess, ajId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取最后一个未完成的流程任务时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

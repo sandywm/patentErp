@@ -65,4 +65,17 @@ public interface ZlajLcInfoDao {
 	 * @return
 	 */
 	List<ZlajLcInfoTb> findInfoByLcMz(Session sess,String lcMz);
+	
+	/**
+	 * 获取最后一个未完成的流程任务列表
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-18 下午09:35:29
+	 * @param sess
+	 * @param ajId 专利编号
+	 * @return
+	 */
+	List<ZlajLcInfoTb> findLastInfo(Session sess,Integer ajId);
+	
+	
 }
