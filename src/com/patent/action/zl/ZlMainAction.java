@@ -1925,7 +1925,7 @@ public class ZlMainAction extends DispatchAction {
 									if(lcmx.getLcMxEDate().equals("")){
 										if(currUserId.equals(lcmx.getLcFzUserId())){
 											if(lcNo >= 3.0 && lcNo < 4.0){
-												
+												//测试看看
 											}
 										}else{
 											msg = "fzrError";//当前操作用户和当前流程负责人不一致
