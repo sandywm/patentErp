@@ -879,60 +879,73 @@ public class PubZlAction extends DispatchAction {
 						msg = "noInfo";
 					}
 				}else if(purpose.equals("simpleInfo")){//用于增加专利时显示用
-					List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, 0,0, pageFlag, pageNo, pageSize);
-					Integer pubId = CommonTools.getFinalInteger("pubId", request);//编辑时需要附带上该专利绑定的发布任务
-					if(pubId > 0){//增加时不用传递pubId
-						List<PubZlInfoTb> pubList = pzm.listSpecInfoByOpt(pubId, 0);
-						if(pubList.size() > 0){
-							PubZlInfoTb pz = pubList.get(0);
-							if(pz.getLqCpyId().equals(cpyId)){
+					String zlType = "";
+					//编辑时需要附带上该专利绑定的发布任务，增加时为0
+					//编辑是是专利编号，增加时不用传
+					Integer zlId = CommonTools.getFinalInteger("zlId", request);//代理机构增加的专利编号
+					if(zlId > 0){//编辑时默认获取同当前类型一致的专利任务
+						List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
+						if(zlList.size() > 0){
+							List<PubZlInfoTb> pzList_1 = pzm.listSpecInfoByOpt(zlList.get(0).getPubZlId(), 0);
+							if(pzList_1.size() > 0){
+								msg = "success";
+								PubZlInfoTb pz = pzList_1.get(0);
+								zlType = pz.getZlType();
 								Map<String,Object> map_d = new HashMap<String,Object>();
 								map_d.put("pzId", pz.getId());
 								map_d.put("pzTitle", pz.getZlTitle());
-								String zlType = pz.getZlType();
-								map_d.put("pzType", pz.getZlType());
+								String zlType_db = pz.getZlType();
+								zlType = zlType_db;
+								map_d.put("pzType", zlType_db);
+								map_d.put("checkFlag", true);
 								String zlTypeChi = "";
-								if(zlType.equals("fm")){
+								if(zlType_db.equals("fm")){
 									zlTypeChi = "发明";
-								}else if(zlType.equals("syxx")){
+								}else if(zlType_db.equals("syxx")){
 									zlTypeChi = "实用新型";
-								}else if(zlType.equals("wg")){
+								}else if(zlType_db.equals("wg")){
 									zlTypeChi = "外观";
 								}
 								map_d.put("zlTypeChi", zlTypeChi);
 								map_d.put("pubInfo", pz.getApplyInfoTb().getAppName());
 								list_d.add(map_d);
-								msg = "success";
 							}
 						}
-					}
-					if(pzList.size() > 0){
+					}else{//增加
+						zlType = CommonTools.getFinalStr("zlType", request);
 						msg = "success";
-						for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
-							PubZlInfoTb pz = it.next();
-							Map<String,Object> map_d = new HashMap<String,Object>();
-							map_d.put("pzId", pz.getId());
-							map_d.put("pzTitle", pz.getZlTitle());
-							String zlType = pz.getZlType();
-							map_d.put("pzType", pz.getZlType());
-							String zlTypeChi = "";
-							if(zlType.equals("fm")){
-								zlTypeChi = "发明";
-							}else if(zlType.equals("syxx")){
-								zlTypeChi = "实用新型";
-							}else if(zlType.equals("wg")){
-								zlTypeChi = "外观";
+					}
+					if(msg.equals("success")){
+						List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt(cpyId, zlType);
+						if(pzList.size() > 0){
+							for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
+								PubZlInfoTb pz = it.next();
+								Map<String,Object> map_d = new HashMap<String,Object>();
+								map_d.put("pzId", pz.getId());
+								map_d.put("pzTitle", pz.getZlTitle());
+								String zlType_db = pz.getZlType();
+								map_d.put("pzType", zlType_db);
+								map_d.put("checkFlag", false);
+								String zlTypeChi = "";
+								if(zlType_db.equals("fm")){
+									zlTypeChi = "发明";
+								}else if(zlType_db.equals("syxx")){
+									zlTypeChi = "实用新型";
+								}else if(zlType_db.equals("wg")){
+									zlTypeChi = "外观";
+								}
+								map_d.put("zlTypeChi", zlTypeChi);
+								map_d.put("pubInfo", pz.getApplyInfoTb().getAppName());
+								list_d.add(map_d);
 							}
-							map_d.put("zlTypeChi", zlTypeChi);
-							map_d.put("pubInfo", pz.getApplyInfoTb().getAppName());
-							list_d.add(map_d);
-						}
-						map.put("pzInfo", list_d);
-					}else{
-						if(list_d.size() == 0){
-							msg = "noInfo";
+							map.put("pzInfo", list_d);
+						}else{
+							if(list_d.size() == 0){
+								msg = "noInfo";
+							}
 						}
 					}
+					
 				}
 			}
 		}

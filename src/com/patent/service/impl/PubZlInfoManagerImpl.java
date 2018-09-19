@@ -307,4 +307,21 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 		}
 	}
 
+	@Override
+	public List<PubZlInfoTb> listSpecInfoByOpt(Integer lqCpyId, String zlType)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return pzDao.findSpecInfoByOpt(sess, lqCpyId, zlType);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取当前代理机构指定专利类型的已领取未增加的专利任务列表信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

@@ -144,4 +144,16 @@ public interface PubZlInfoDao {
 	 * @param pzCzInfo 保存的专利领取/撤销信息实例
 	 */
 	void saveCz(Session sess,PubZlCzRecordTb pzCzInfo);
+	
+	/**
+	 * 获取当前代理机构指定专利类型的已领取未增加的专利任务列表
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-19 下午08:44:44
+	 * @param sess
+	 * @param lqCpyId 代理机构编号
+	 * @param zlType 专利任务类型(""表示全部)
+	 * @return
+	 */
+	List<PubZlInfoTb> findSpecInfoByOpt(Session sess,Integer lqCpyId,String zlType);
 }

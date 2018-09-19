@@ -173,4 +173,15 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 		sess.save(pzCzInfo);
 	}
 
+	@Override
+	public List<PubZlInfoTb> findSpecInfoByOpt(Session sess, Integer lqCpyId,
+			String zlType) {
+		// TODO Auto-generated method stub
+		String hql = " from PubZlInfoTb as pz where pz.lqCpyId = "+lqCpyId;
+		if(!zlType.equals("")){
+			hql += " and pz.zlType = '"+zlType+"'";
+		}
+		return sess.createQuery(hql).list();
+	}
+
 }

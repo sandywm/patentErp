@@ -1924,7 +1924,7 @@ public class ZlMainAction extends DispatchAction {
 									double lcNo = lcmx.getLcMxNo();
 									if(lcmx.getLcMxEDate().equals("")){
 										if(currUserId.equals(lcmx.getLcFzUserId())){
-											if(lcNo >= 3.0 && lcNo < 4.0){
+											if(lcNo >= 3.0 && lcNo < 4.0){//案件撰写/案件补正
 												
 											}
 										}else{

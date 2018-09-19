@@ -191,4 +191,16 @@ public interface PubZlInfoManager {
 	 * @throws WEBException
 	 */
 	Integer addPzCzInfo(Integer pubId,String addContent)throws WEBException ;
+
+	/**
+	 * 获取当前代理机构指定专利类型的已领取未增加的专利任务列表
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-9-19 下午08:42:05
+	 * @param lqCpyId 代理机构编号
+	 * @param zlType 专利任务类型(""表示全部)
+	 * @return
+	 * @throws WEBException
+	 */
+	List<PubZlInfoTb> listSpecInfoByOpt(Integer lqCpyId,String zlType)throws WEBException ;
 }
