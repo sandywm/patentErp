@@ -1554,6 +1554,7 @@ public class ZlMainAction extends DispatchAction {
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
+		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		String msg = "error";
 		Map<String,String> map = new HashMap<String,String>();
 		boolean abilityFlag = false;
@@ -1709,15 +1710,48 @@ public class ZlMainAction extends DispatchAction {
 						String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
 						Integer upUserId = -1;
 						String upFileDate = "";
+						String newAddFilePath = "";//多出来的技术底稿
 						if(!ajUpload.equals(zl.getAjUpload())){//上传资料发生变化
 							upUserId = currUserId;
 							upFileDate = CurrentTime.getStringDate();
+							String[] oldFileArr =  zl.getAjUpload().split(",");
+							String[] newFileArr =  ajUpload.split(",");
+							for(int i = 0 ; i < newFileArr.length ; i++){
+								boolean existFlag = false;
+								for(int j = 0 ; j < oldFileArr.length ; j++){
+									if(newFileArr[i].equals(oldFileArr[j])){
+										existFlag = true;
+										break;
+									}else{
+										existFlag = false;
+									}
+								}
+								if(!existFlag){
+									newAddFilePath += newFileArr[i] + ",";
+								}
+							}
+							if(!newAddFilePath.equals("")){
+								newAddFilePath = newAddFilePath.substring(0,newAddFilePath.length() - 1);
+							}
 						}
 						zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt, pubId, ajSqAddress, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0);
 						if(!ajUpload.equals(zlList.get(0).getAjUpload())){
 							List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz("专利案件录入");
 							if(lcList.size() > 0){
 								mxm.updateEdateById(lcList.get(0).getId(), -1, upUserId, ajUpload, upFileDate, "", "", "");
+								if(!newAddFilePath.equals("")){
+									String[] ajUploadArr = newAddFilePath.split(",");
+									String filePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\";
+									for(Integer i = 0 ; i < ajUploadArr.length ; i++){
+										String fileName = ajUploadArr[i].substring((ajUploadArr[i].lastIndexOf("\\") + 1));
+										Integer lastIndex = fileName.lastIndexOf("_");
+										String lastFjName = fileName.substring(lastIndex+1, fileName.length());
+										Integer lastIndex_1 = lastFjName.indexOf(".");
+										String fjVersion = lastFjName.substring(0, lastIndex_1);
+										String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
+										fjm.addFj(zlId, fileName, fjVersion, "技术底稿文件", fjGs, FileOpration.getFileSize(filePath + fileName), upUserId, upFileDate);
+									}
+								}
 							}
 						}
 					}
@@ -1929,6 +1963,7 @@ public class ZlMainAction extends DispatchAction {
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		String msg = "error";
 		String currDate = CurrentTime.getStringDate();
 		Map<String,String> map = new HashMap<String,String>();
@@ -1988,6 +2023,19 @@ public class ZlMainAction extends DispatchAction {
 												//修改撰写任务流程
 												if(upFlag){
 													mxm.updateEdateById(lcMxId, currUserId, currUserId, upZxFile, currDate, "", currDate, taskRemark);
+													String filePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\";
+													if(!upZxFile.equals("")){
+														String[] fjNameArr = upZxFile.split(",");
+														for(Integer i = 0 ; i < fjNameArr.length ; i++){
+															String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
+															Integer lastIndex = fileName.lastIndexOf("_");
+															String lastFjName = fileName.substring(lastIndex+1, fileName.length());
+															Integer lastIndex_1 = lastFjName.indexOf(".");
+															String fjVersion = lastFjName.substring(0, lastIndex_1);
+															String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
+															fjm.addFj(zlId, fileName, fjVersion, "撰稿文件", fjGs, FileOpration.getFileSize(filePath + fileName), currUserId, currDate);
+														}
+													}
 													lcNo += 1;
 												}else{
 													msg = "error";
@@ -2043,7 +2091,10 @@ public class ZlMainAction extends DispatchAction {
 														}
 													}
 												}
-											}else if(lcNo >= 6.0 && lcNo < 7.0){//案件定稿提交
+											}else if(lcNo == 6.0){//案件定稿提交
+												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//撰写附件（参数）
+												mxm.updateEdateById(lcMxId, zl.getTjUserId(), zl.getTjUserId(), upZxFile, currDate, "", currDate, taskRemark);
+												lcNo = 7;
 												
 											}
 										}else{
