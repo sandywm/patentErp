@@ -126,6 +126,23 @@ public class CommonTools {
 	}
 	
 	/**
+	 * 输入的数字类型转换成数据类型
+	 * @description
+	 * @author wm
+	 * @date 2017-4-21 上午11:16:34
+	 * @param inputData
+	 * @return
+	 */
+	public static Double getFinalDouble(String inputData,HttpServletRequest request){
+		inputData = String.valueOf(request.getParameter(inputData));
+		if(inputData.equals("") || inputData.equals("null")){
+			return 0d;
+		}else{
+			return Double.parseDouble(inputData);
+		}
+	}
+	
+	/**
      * 写入xss/sql注入攻击报告
      * @description
      * @author wm

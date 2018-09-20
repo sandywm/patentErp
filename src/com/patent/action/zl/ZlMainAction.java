@@ -469,7 +469,7 @@ public class ZlMainAction extends DispatchAction {
 						map.put("yqInfo", list_d);
 						map.put("upFile", zl.getAjUpload());//附件
 						map.put("stopStatus", zl.getAjStopStatus());//案件在终止状态下基本信息不能被修改
-						map.put("ajStatus", zl.getAjStatus());
+						map.put("ajStatus", zl.getAjStatus());//案件流程状态
 						String selJsFieldStr = zl.getAjFieldId();
 						String[] selJsFieldArr = selJsFieldStr.split(",");
 						List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, "");
@@ -1430,7 +1430,7 @@ public class ZlMainAction extends DispatchAction {
 										//增加专利撰写流程
 										Integer lcId_2 = 0;
 										if(zxUserId > 0){
-											lcId_2 = lcm.addLcInfo(zlId, "人员分配", "人员分配", sDate, sDate, sDate, sDate);
+											lcId_2 = lcm.addLcInfo(zlId, "人员分配", "人员分配", sDate, sDate, sDate, "");
 											mxm.addLcMx(lcId_2, zxUserId, "撰写任务分配", 2.0, sDate, sDate, "", 0, "", "", "");
 											
 											Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", sDate, cpyDate, "", "");
@@ -1857,6 +1857,10 @@ public class ZlMainAction extends DispatchAction {
 								if(lcmx.getLcMxEDate().equals("")){
 									if(currUserId.equals(lcmx.getLcFzUserId())){
 										msg = "success";
+									}else{
+										if(this.getLoginRoleName(request).equals("管理员")){//管理员可以操作任何环节
+											msg = "success";
+										}
 									}
 								}
 							}
@@ -1866,6 +1870,40 @@ public class ZlMainAction extends DispatchAction {
 			}
 		}
 		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取当前流程号
+	 * @description
+	 * @author Administrator
+	 * @date 2018-9-20 上午10:17:04
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCurrLcNo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		Integer zlId = CommonTools.getFinalInteger("zlId", request);
+		List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, 0);
+		Map<String,String> map = new HashMap<String,String>();
+		String ajStatus = "error";
+		if(zlList.size() > 0){
+			ZlajMainInfoTb zl = zlList.get(0);
+			//只有在案件状态正常时（0）
+			if(zl.getAjStopStatus().equals(0)){
+				ajStatus = zl.getAjStatus();
+			}else{
+				ajStatus = "stop";//案件已终止，不能获取
+			}
+		}
+		map.put("result", ajStatus);
 		this.getJsonPkg(map, response);
 		return null;
 	}
@@ -1896,6 +1934,7 @@ public class ZlMainAction extends DispatchAction {
 		Map<String,String> map = new HashMap<String,String>();
 		boolean abilityFlag = false;
 		String roleName = this.getLoginRoleName(request);
+		boolean upFlag = false;
 		if(this.getLoginType(request).equals("cpyUser")){
 			//判断权限
 			//获取当前用户是否有修改权限
@@ -1905,7 +1944,8 @@ public class ZlMainAction extends DispatchAction {
 				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//只有修改权限的员工才能进行流程处理
 			}
 			if(abilityFlag){
-				Integer zlId = CommonTools.getFinalInteger("zlId", request);
+				Integer zlId = CommonTools.getFinalInteger("zlId", request);//（公共参数）
+				Double ajStatus = CommonTools.getFinalDouble("ajStatus", request);//传递过来的案件流程号，目的是和当前实时获取的案件流程号进行对比，引起同时操作（公共参数）
 				Integer currUserId = this.getLoginUserId(request);
 				CpyUserInfo user = cum.getEntityById(currUserId);
 				if(user != null && zlId > 0){
@@ -1914,22 +1954,102 @@ public class ZlMainAction extends DispatchAction {
 						ZlajMainInfoTb zl = zlList.get(0);
 						//只有在案件状态正常时（0）
 						if(zl.getAjStopStatus().equals(0)){
-							String ajStatus = zl.getAjStatus();
 							//获取当前最后一个流程
 							List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
 							if(lcList.size() > 0){
 								List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcList.get(0).getId());
 								if(mxList.size() > 0){
 									ZlajLcMxInfoTb lcmx = mxList.get(0);
-									double lcNo = lcmx.getLcMxNo();
+									double lcNo = lcmx.getLcMxNo();//流程号
+									String cpyDate = lcList.get(0).getLcCpyDate();
 									if(lcmx.getLcMxEDate().equals("")){
 										if(currUserId.equals(lcmx.getLcFzUserId())){
+											if(ajStatus.equals(lcNo)){
+												msg = "success";
+											}else{
+												msg = "lcDiff";//流程已发生变化，请刷新后重试!
+											}
+										}else{
+											if(roleName.equals("管理员")){//管理员可以操作任何环节
+												if(ajStatus.equals(lcNo)){
+													msg = "success";
+												}else{
+													msg = "lcDiff";//流程已发生变化，请刷新后重试!
+												}
+											}
+										}
+										if(msg.equals("success")){
+											String taskRemark = Transcode.unescape_new1("taskRemark", request);//任务备注（公共参数）
+											Integer lcId = lcmx.getZlajLcInfoTb().getId();//流程编号
+											Integer lcMxId = lcmx.getId();//流程明细编号
+											upFlag = lcm.updateComInfoById(lcId, currDate);//修改流程完成时间
 											if(lcNo >= 3.0 && lcNo < 4.0){//案件撰写/案件补正
+												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//撰写附件（参数）
+												//修改撰写任务流程
+												if(upFlag){
+													mxm.updateEdateById(lcMxId, currUserId, currUserId, upZxFile, currDate, "", currDate, taskRemark);
+													lcNo += 1;
+												}else{
+													msg = "error";
+												}
+												if(msg.equals("success")){
+													//增加下一个流程
+													Integer nextLcId = lcm.addLcInfo(zlId, "技术审核", "技术审核", currDate, cpyDate, "", "");
+													if(nextLcId > 0){
+														mxm.addLcMx(nextLcId, zl.getCheckUserId(), "技术审核", lcNo, currDate, "", "", 0, "", "", "");
+														//修改案件状态
+														zlm.updateZlStatusById(zlId, String.valueOf(lcNo));
+														mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getCheckUserId(), "cpyUser", "新任务通知：专利审核", "专利["+zl.getAjTitle()+"]已完成撰写，请及时完成专利审核工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
+													}else{
+														msg = "error";
+													}
+												}
+											}else if(lcNo >= 4.0 && lcNo < 6.0){//案件审核、确认
+												Integer zxScore = CommonTools.getFinalInteger("zxScore", request);//员工撰写质量评分（0分表示审核失败）（参数）
+												if(zxScore.equals(0) || zxScore.equals(1) || zxScore.equals(2) || zxScore.equals(5)){
+													//修改流程详情
+													mxm.updateEdateById(lcMxId, currUserId, 0, "", "", "", currDate, taskRemark);
+													if(zxScore.equals(0)){//审核未通过
+														if(lcNo == 4.9){//不能再加
+															lcNo = lcNo - 1 ;
+														}else{
+															lcNo = lcNo - 1 + 0.1;
+														}
+														//增加撰稿修改环节
+														Integer nextLcId = lcm.addLcInfo(zlId, "撰稿修改", "撰稿修改", currDate, cpyDate, "", "");
+														if(nextLcId > 0){
+															mxm.addLcMx(nextLcId, zl.getZxUserId(), "撰稿修改", lcNo, currDate, "", "", 0, "", "", "");
+															//修改专利的案件状态
+															zlm.updateZlStatusById(zlId, String.valueOf(lcNo));
+															//发送邮件
+															mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getZxUserId(), "cpyUser", "新任务通知：撰稿修改", "专利["+zl.getAjTitle()+"]审核未通过，请及时完成专利撰稿修改工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
+														}else{
+															msg = "error";
+														}
+													}else{//审核通过
+														lcNo = 6;//4-5归为一类（审核+客户确认）
+														//增加下一个流程
+														Integer nextLcId = lcm.addLcInfo(zlId, "专利提交", "专利提交", currDate, cpyDate, "", "");
+														if(nextLcId > 0){
+															mxm.addLcMx(nextLcId, zl.getTjUserId(), "专利提交", lcNo, currDate, "", "", 0, "", "", "");
+															//修改专利的案件状态
+															zlm.updateZlStatusById(zlId, String.valueOf(lcNo));
+															//发送邮件
+															mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getTjUserId(), "cpyUser", "新任务通知：专利提交", "专利["+zl.getAjTitle()+"]审核已审核通过，请及时完成专利提交工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
+															//审核成功，增加撰写人经验、撰写数量
+															cum.updateInfoById(zl.getZxUserId(), 1, "", "", zxScore);
+														}else{
+															msg = "error";
+														}
+													}
+												}
+											}else if(lcNo >= 6.0 && lcNo < 7.0){//案件定稿提交
 												
 											}
 										}else{
 											msg = "fzrError";//当前操作用户和当前流程负责人不一致
 										}
+										
 									}
 								}
 							}

@@ -95,12 +95,15 @@ public class ReadExcelFile {
 //			}
 //		}
 //		System.out.println(CurrentTime.getCurrentTime());
-		String bb = "aa_V1.jpg";
-		Integer lastIndex = bb.lastIndexOf("_");
-		String last_1 = bb.substring(lastIndex+1,bb.length());
-		Integer lastIndex_1 = last_1.indexOf(".");
-		String version = last_1.substring(0, lastIndex_1);
-		String suffix = last_1.substring(lastIndex_1+1, last_1.length());
-		System.out.println(version + "       "+suffix);
+//		String bb = "aa_V1.jpg";
+//		Integer lastIndex = bb.lastIndexOf("_");
+//		String last_1 = bb.substring(lastIndex+1,bb.length());
+//		Integer lastIndex_1 = last_1.indexOf(".");
+//		String version = last_1.substring(0, lastIndex_1);
+//		String suffix = last_1.substring(lastIndex_1+1, last_1.length());
+//		System.out.println(version + "       "+suffix);
+		Double aa = 1.5;
+		Double bb = 1.51;
+		System.out.println(aa.equals(bb));
 	}
 }
