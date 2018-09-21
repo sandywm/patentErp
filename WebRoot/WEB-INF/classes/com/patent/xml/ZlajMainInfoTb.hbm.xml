@@ -60,6 +60,11 @@
                 <comment>案件联系人(可以多个，逗号隔开)</comment>
             </column>
         </property>
+        <property name="ajFjInfo" type="java.lang.Double">
+            <column name="aj_fj_info" precision="10" not-null="true">
+                <comment>案件费减明细（默认0.0）</comment>
+            </column>
+        </property>
         <property name="ajSqAddress" type="java.lang.String">
             <column name="aj_sq_address" length="20" not-null="true">
                 <comment>案件申请地区</comment>
@@ -93,6 +98,11 @@
         <property name="ajStatus" type="java.lang.String">
             <column name="aj_status" length="100" not-null="true">
                 <comment>案卷状态(由多个数字连接起来1-2-3)</comment>
+            </column>
+        </property>
+        <property name="ajStatusChi" type="java.lang.String">
+            <column name="aj_status_chi" length="40" not-null="true">
+                <comment>下个案件节点</comment>
             </column>
         </property>
         <property name="ajFaId" type="java.lang.Integer">

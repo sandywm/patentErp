@@ -59,4 +59,12 @@ public class ZlajFjInfoDaoImpl implements ZlajFjInfoDao{
 		return sess.createQuery(hql).setFirstResult(0).setMaxResults(1).list();
 	}
 
+	@Override
+	public List<ZlajFjInfoTb> findSpecInfoByOpt(Session sess, Integer ajId,
+			String fjType) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajFjInfoTb as fj where fj.zlajMainInfoTb.id = "+ajId + " and fj.fjType = '"+fjType+"'";
+		return sess.createQuery(hql).list();
+	}
+
 }

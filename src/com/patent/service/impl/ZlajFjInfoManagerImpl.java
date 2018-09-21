@@ -78,4 +78,54 @@ public class ZlajFjInfoManagerImpl implements ZlajFjInfoManager {
 		}
 	}
 
+	@Override
+	public List<ZlajFjInfoTb> listSpecInfoByOpt(Integer ajId, String fjType)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fjDao = (ZlajFjInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FJ_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fjDao.findSpecInfoByOpt(sess, ajId, fjType);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据案件编号、附件类型获取附件信息列表出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean delBatchFjInfo(String fjIdStr) throws WEBException {
+		// TODO Auto-generated method stub
+		if(!fjIdStr.equals("")){
+			try {
+				fjDao = (ZlajFjInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FJ_INFO);
+				Session sess = HibernateUtil.currentSession();
+				tran = sess.beginTransaction();
+				
+				String[] idArr = fjIdStr.split(",");
+				Integer idLen = idArr.length;
+				for(Integer i = 0 ; i < idLen ; i++){
+					fjDao.delete(sess, Integer.parseInt(idArr[i]));
+					if(i % 10 == 0){
+						sess.flush();
+						sess.clear();
+						tran.commit();
+						tran = sess.beginTransaction();
+					}
+				}
+				tran.commit();
+				return true;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw new WEBException("批量删除专利附件时出现异常!");
+			} finally{
+				HibernateUtil.closeSession();
+			}
+		}
+		return false;
+	}
+
 }

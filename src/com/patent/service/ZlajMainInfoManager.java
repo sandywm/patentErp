@@ -21,6 +21,7 @@ public interface ZlajMainInfoManager {
 	 * @param ajSqrId 申请人
 	 * @param ajFmrId 发明人
 	 * @param ajLxrId 联系人
+	 * @param ajFjInfo 案件费减明细
 	 * @param ajSqAddress 申请地区
 	 * @param ajYxqDetail 优先权
 	 * @param ajUpload 案件上传底稿
@@ -28,6 +29,7 @@ public interface ZlajMainInfoManager {
 	 * @param ajEwyqId 额外要求
 	 * @param ajApplyDate 申请日期
 	 * @param ajStatus 案件状态
+	 * @param ajStatusChi 下个案件节点
 	 * @param pubZlId 发布案件的编号
 	 * @param checkUserId 审查人员编号
 	 * @param cpyId 代理机构编号
@@ -44,9 +46,9 @@ public interface ZlajMainInfoManager {
 	 */
 	Integer addZL(String ajNo, String ajNoQt,String ajNoGf,
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
-			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqDetail,
+			String ajFmrId, String ajLxrId, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			String ajApplyDate, String ajStatus,Integer pubZlId,Integer checkUserId,Integer zxUserId,
+			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId,Integer checkUserId,Integer zxUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId) throws WEBException;
 	
 	/**
@@ -162,6 +164,7 @@ public interface ZlajMainInfoManager {
 	 * @param sqrId 申请人
 	 * @param fmrId 发明人
 	 * @param lxrId 联系人
+	 * @param ajFjInfo 案件费减明细
 	 * @param yxqDetail 优先权明细
 	 * @param upFile 技术底稿
 	 * @param remark 备注
@@ -172,7 +175,7 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateBasicInfoById(Integer zlId,String zlTitle,String zlNo,String zlNoQt,Integer pubId, String sqAddress,String zlType,String ajFieldId,
-			String sqrId,String fmrId,String lxrId,String yxqDetail,String upFile,String remark,String ewyq,String applyDate,Integer faId) throws WEBException;
+			String sqrId,String fmrId,String lxrId,Double ajFjInfo,String yxqDetail,String upFile,String remark,String ewyq,String applyDate,Integer faId) throws WEBException;
 	
 	/**
 	 * 更新专利申请/专利号
@@ -212,10 +215,11 @@ public interface ZlajMainInfoManager {
 	 * @author wm
 	 * @date 2018-9-6 上午09:06:32
 	 * @param zlStatus 专利状态
+	 * @param ajStatusChi 下个案件节点
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateZlStatusById(Integer id,String zlStatus) throws WEBException;
+	boolean updateZlStatusById(Integer id,String zlStatus,String ajStatusChi) throws WEBException;
 	
 	/**
 	 * 修改专利底稿路径
@@ -228,4 +232,20 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateZlUpFile_dg(Integer id,String zlUpFile) throws WEBException;
+	
+	/**
+	 * 根据主键修改专利的最终标题、申请人、发明人、联系人、费减
+	 * @description
+	 * @author Administrator
+	 * @date 2018-9-21 上午10:59:35
+	 * @param id 主键
+	 * @param zlTitle 专利标题（""不修改）
+	 * @param sqrId 申请人（""不修改）
+	 * @param fmrId 发明人（""不修改）
+	 * @param lxrId 联系人（""不修改）
+	 * @param ajFjInfo 费减（-1.0时不修改）
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateBasicInfoById(Integer id,String zlTitle,String sqrId,String fmrId,String lxrId,Double ajFjInfo) throws WEBException;
 }

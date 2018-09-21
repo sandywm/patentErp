@@ -136,7 +136,7 @@ public class CommonTools {
 	public static Double getFinalDouble(String inputData,HttpServletRequest request){
 		inputData = String.valueOf(request.getParameter(inputData));
 		if(inputData.equals("") || inputData.equals("null")){
-			return 0d;
+			return 0.0;
 		}else{
 			return Double.parseDouble(inputData);
 		}

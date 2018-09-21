@@ -23,9 +23,9 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	@Override
 	public Integer addZL(String ajNo, String ajNoQt, String ajNoGf,
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
-			String ajFmrId, String ajLxrId, String ajSqAddress, String ajYxqDetail,
+			String ajFmrId, String ajLxrId, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			String ajApplyDate, String ajStatus,Integer pubZlId, Integer checkUserId,Integer zxUserId,
+			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId, Integer checkUserId,Integer zxUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId)
 			throws WEBException {
 		// TODO Auto-generated method stub
@@ -35,8 +35,8 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
 			ZlajMainInfoTb zl = new ZlajMainInfoTb(cDao.get(sess, cpyId), ajNo, ajNoQt, ajNoGf,
-					ajTitle, ajType, ajFieldId, ajSqrId,ajFmrId, ajLxrId, ajSqAddress, ajYxqDetail,
-					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, 0,0,pubZlId,"","","",CurrentTime.getStringDate(),checkUserId,zxUserId,
+					ajTitle, ajType, ajFieldId, ajSqrId,ajFmrId, ajLxrId, ajFjInfo,ajSqAddress, ajYxqDetail,
+					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, ajStatusChi, 0,0,pubZlId,"","","",CurrentTime.getStringDate(),checkUserId,zxUserId,
 					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId);
 			zlDao.save(sess, zl);
 			tran.commit();
@@ -174,7 +174,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	@Override
 	public boolean updateBasicInfoById(Integer zlId, String zlTitle,String zlNo,
 			String zlNoQt,Integer pubId,String sqAddress, String zlType,
-			String ajFieldId, String sqrId, String fmrId, String lxrId,
+			String ajFieldId, String sqrId, String fmrId, String lxrId,Double ajFjInfo,
 			String yxqDetail, String upFile, String remark, String ewyq,
 			String applyDate, Integer faId) throws WEBException {
 		// TODO Auto-generated method stub
@@ -197,6 +197,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 				zl.setAjSqrId(sqrId);
 				zl.setAjFmrId(fmrId);
 				zl.setAjLxrId(lxrId);
+				zl.setAjFjInfo(ajFjInfo);
 				zl.setPubZlId(pubId);
 				zl.setAjYxqDetail(yxqDetail);
 				zl.setAjUpload(upFile);
@@ -296,7 +297,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	}
 
 	@Override
-	public boolean updateZlStatusById(Integer id,String zlStatus) throws WEBException {
+	public boolean updateZlStatusById(Integer id,String zlStatus,String ajStatusChi) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
@@ -306,6 +307,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			if(zl != null){
 				if(Integer.parseInt(zlStatus) >= 0){
 					zl.setAjStatus(zlStatus);
+					zl.setAjStatusChi(ajStatusChi);
 					zlDao.update(sess, zl);
 					tran.commit();
 					return true;
@@ -342,6 +344,46 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据专利底稿信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateBasicInfoById(Integer id, String zlTitle,
+			String sqrId, String fmrId, String lxrId, Double ajFjInfo)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajMainInfoTb zl = zlDao.get(sess, id);
+			if(zl != null){
+				if(!zlTitle.equals("")){
+					zl.setAjTitle(zlTitle);
+				}
+				if(!sqrId.equals("")){
+					zl.setAjSqrId(sqrId);
+				}
+				if(!fmrId.equals("")){
+					zl.setAjFmrId(fmrId);
+				}
+				if(!lxrId.equals("")){
+					zl.setAjLxrId(lxrId);
+				}
+				if(ajFjInfo == 0.70 || ajFjInfo == 0.85){
+					zl.setAjFjInfo(ajFjInfo);
+				}
+				zlDao.update(sess, zl);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键修改专利的最终标题、申请人、发明人、联系人、费减信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

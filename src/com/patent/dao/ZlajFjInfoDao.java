@@ -66,4 +66,16 @@ public interface ZlajFjInfoDao {
 	 * @return
 	 */
 	List<ZlajFjInfoTb> findLastInfoByAjId(Session sess,Integer ajId);
+	
+	/**
+	 * 根据案件编号、附件类型获取附件信息列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-9-21 上午08:54:41
+	 * @param sess
+	 * @param ajId 案件编号
+	 * @param fjType 附件类型
+	 * @return
+	 */
+	List<ZlajFjInfoTb> findSpecInfoByOpt(Session sess,Integer ajId,String fjType);
 }
