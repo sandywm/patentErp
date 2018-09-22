@@ -32,7 +32,7 @@ public class ReadZipFile {
 	 */
 	public static List<Object> readZipFile_new(String zipPath){
 		Charset gbk = Charset.forName("gbk");
-		zipPath = "E:\\实用新型-受理+交纳申请费通知书.zip";
+		zipPath = "E:\\实用新型-受理+费用减缓通知书.zip";
 		List<Object> list_d = new ArrayList<Object>();
         try {
 			ZipFile zf = new ZipFile(zipPath,gbk);
@@ -166,7 +166,11 @@ public class ReadZipFile {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		ReadZipFile.readZipFile_new("");
+		List<Object> objList = ReadZipFile.readZipFile_new("");
+		for(Iterator<Object> it = objList.iterator() ; it.hasNext();){
+			Object obj = it.next();
+			System.out.println(obj);
+		}
 	}
 
 }

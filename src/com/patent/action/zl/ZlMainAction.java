@@ -2192,8 +2192,13 @@ public class ZlMainAction extends DispatchAction {
 	public ActionForward dealTzsDetail(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String zipPath = Transcode.unescape_new1("zipPath", request);
-		Map<String,Object> map = ReadZipFile.readZipFile_new(zipPath);
-		
+//		List<Object>  rzList = ReadZipFile.readZipFile_new(zipPath);
+//		if(rzList.size() > 0){
+//			for(Iterator<Object> it = rzList.iterator() ; it.hasNext();){
+//				Object obj = it.next();
+//				
+//			}
+//		}
 		return null;
 	}
 	
