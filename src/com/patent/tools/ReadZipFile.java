@@ -30,10 +30,9 @@ public class ReadZipFile {
 	 * @date 2018-9-21 下午05:24:59
 	 * @param zipPath
 	 */
-	public static Map<String,Object> readZipFile_new(String zipPath){
+	public static List<Object> readZipFile_new(String zipPath){
 		Charset gbk = Charset.forName("gbk");
-		zipPath = "E:\\实用新型-受理+费用减缓通知书.zip";
-		Map<String,Object> map = new HashMap<String,Object>();
+		zipPath = "E:\\实用新型-受理+交纳申请费通知书.zip";
 		List<Object> list_d = new ArrayList<Object>();
         try {
 			ZipFile zf = new ZipFile(zipPath,gbk);
@@ -49,12 +48,18 @@ public class ReadZipFile {
 	        while((ze=zin.getNextEntry())!=null){
 	        	String tzsName = "";//通知书名称
 	    		String ajNoGf = "";//申请号或专利号
+	    		String fwSerial = "";//发文序列号--通过这个确定那个为先（小的为先）
 	    		String sqrName = "";//申请人
 	    		String applyDate = "";//申请日
+	    		String zlType = "";
+	    		String fjApplyDate = "";//费减请求日期
+	    		String fjRecord = "";//费减记录
+	    		String feeEdate = "";//缴费截止日期
+	    		String fjRate = "";//费减比率
 	            if(ze.isDirectory()){
 	                //为空的文件夹什么都不做
 	            }else{
-	            	Map<String,String> map_d = new HashMap<String,String>();
+	            	Map<String,Object> map_d = new HashMap<String,Object>();
 	            	String fileName = ze.getName();
 	            	if(fileName.endsWith("XML") || fileName.endsWith("xml")){
 	                    ZipEntry zip = zf.getEntry(ze.getName());
@@ -66,26 +71,79 @@ public class ReadZipFile {
 	        			Element root = doc.getRootElement();  
 	        			Element l1 = root.element("notice_name");
 	        			if(l1 != null){
-	        				tzsName = l1.getData().toString();//通知书名称
-	        				ajNoGf = root.element("application_number").getData().toString();//申请号或专利号
+	        				tzsName = l1.getTextTrim();//通知书名称
+	        				ajNoGf = root.element("application_number").getTextTrim();//申请号或专利号
 	        				Element l2 = root.element("application_date");
 	        				if(l2 != null){
-	        					applyDate = l2.getData().toString();//申请日
+	        					applyDate = CurrentTime.convertFormatDate(l2.getTextTrim());//申请日
 	        				}
 	        				Element l3 = root.element("applicant_info");
 	        				Element l4 = null;
 							for(@SuppressWarnings("unchecked")
 							Iterator<Element> it = l3.elementIterator("applicant_name") ; it.hasNext();){
 								l4 = it.next();
-								sqrName += l4.getData().toString() + ",";//申请人
+								sqrName += l4.getTextTrim() + ",";//申请人
 	        				}
 							if(!sqrName.equals("")){
 								sqrName = sqrName.substring(0, sqrName.length() - 1);
 							}
+							Element l5 = root.element("notice_sent");
+							if(l5 != null){
+								fwSerial = l5.element("notice_sent_serial").getTextTrim();
+							}
 							map_d.put("tzsName", tzsName);
 			            	map_d.put("ajNoGf", ajNoGf);
+			            	map_d.put("fwSerial", fwSerial);
 			            	map_d.put("applyDate", applyDate);
-			            	map_d.put("sqrName", sqrName);
+			            	if(tzsName.equals("专利申请受理通知书")){
+			            		map_d.put("sqrName", sqrName);
+			            		Element lType = root.element("file_list");
+			            		if(lType != null){
+			            			lType = lType.element("file_info");
+			            			if(lType != null){
+			            				for(@SuppressWarnings("unchecked")
+	        							Iterator<Element> it = lType.elementIterator("file"); it.hasNext();){
+			            					lType = it.next();
+			            					String zlTypeChi = lType.element("file_name").getTextTrim();
+			            					if(zlTypeChi.indexOf("实用新型") >= 0){
+			            						zlType = "syxx";
+			            					}else if(zlTypeChi.indexOf("发明专利") >= 0){
+			            						zlType = "fm";
+			            					}else if(zlTypeChi.indexOf("外观") >= 0){
+			            						zlType = "wg";
+			            					}
+	        								map_d.put("zlType", zlType);
+	        								break;
+	        	        				}
+			            			}
+			            		}
+			            	}
+			            	if(tzsName.equals("费用减缓审批通知书")){
+			            		fjApplyDate = CurrentTime.convertFormatDate(root.element("cost_slow_req_date").getTextTrim());
+			            		fjRecord = root.element("cost_slow_mes").getTextTrim();
+			            		feeEdate = CurrentTime.convertFormatDate(root.element("pay_deadline_date").getTextTrim());
+			            		fjRate = root.element("cost_slow_rate_annul").getTextTrim();
+			            		Element fee = root.element("fee_info_all");
+			            		Element feeDetail = null;
+			            		List<Object> list_f = new ArrayList<Object>();
+			            		if(fee != null){
+			            			map_d.put("feeTotal", fee.element("fee_total").getTextTrim());
+			            			fee = fee.element("fee_info");
+			            			for(@SuppressWarnings("unchecked")
+		    							Iterator<Element> it = fee.elementIterator("fee") ; it.hasNext();){
+			            				feeDetail = it.next();
+			            				Map<String,String> map_f = new HashMap<String,String>();
+			            				map_f.put("feeName", feeDetail.element("fee_name").getTextTrim());
+			            				map_f.put("feeAmount", feeDetail.element("fee_amount").getTextTrim());
+			            				list_f.add(map_f);
+			            			}
+			            			map_d.put("feeDetail", list_f);
+			            		}
+			            		map_d.put("fjApplyDate", fjApplyDate);
+			            		map_d.put("fjRecord", fjRecord);
+			            		map_d.put("feeEdate", feeEdate);
+			            		map_d.put("fjRate", fjRate);
+			            	}
 			            	list_d.add(map_d);
 	        			}
 	            	}
@@ -95,9 +153,8 @@ public class ReadZipFile {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        map.put("result", list_d);
-        System.out.println(map);
-        return map;
+        System.out.println(list_d);
+        return list_d;
 	}
 	
 	

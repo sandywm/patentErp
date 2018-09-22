@@ -454,6 +454,22 @@ public class CurrentTime {
 		}
 		return dateArray;
     }
+    
+    /**
+     * 将########日期转换成####-##-##
+     * @description
+     * @author Administrator
+     * @date 2018-9-22 上午09:56:01
+     * @param specStr
+     * @return
+     */
+    public static String convertFormatDate(String specStr){
+    	if(!specStr.equals("") && specStr.length() == 8){//########
+    		return specStr.substring(0, 4) + "-" + specStr.substring(4, 6) + "-" + specStr.substring(6, 8);
+    	}
+    	return "";
+    }
+    
 	public static void main(String args[]) throws Exception{
 //		System.out.println(CurrentTime.compareDate("2014-01-30", "2014-02-01"));
 //		float outPenalty = Float.parseFloat("0.1");
@@ -490,34 +506,35 @@ public class CurrentTime {
 		
 		
 		
-		SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-		Calendar calendar = Calendar.getInstance();
-		String dateArray = "";
-		for(int i = 1; i < 5 ; i++){
-			if(i == 1){
-				String dateStr1 = CurrentTime.getStringDate();
-				Date now = format1.parse(dateStr1);
-				calendar.setTime(now);
-				calendar.add(Calendar.MONTH, 3);
-				calendar.add(Calendar.DAY_OF_YEAR,-1);
-				String dateStr2 = format1.format(calendar.getTime());
-				dateArray = dateStr1 + "至"+ dateStr2;
-			}else{
-				calendar.add(Calendar.DAY_OF_YEAR,+1);
-				String dateStr3 = format1.format(calendar.getTime());
-				calendar.add(Calendar.MONTH, 3);
-				calendar.add(Calendar.DAY_OF_YEAR,-1);
-				String dateStr4 = format1.format(calendar.getTime());
-				dateArray += ":"+dateStr3 + "至"+ dateStr4;
-			}
-		}
-		//System.out.println(dateArray);
-		System.out.println(CurrentTime.getStepSpecialDate("2015-01-05"));
-		System.out.println(CurrentTime.compareDateTime("2016-04-08 10:55:20", "2016-04-08 10:55:10"));
-		System.out.println(CurrentTime.getFinalDate(2));
-		System.out.println(CurrentTime.getMonthOrOne());
-		System.out.println(Math.round(2.51));
-		System.out.println(CurrentTime.getMonthOrLast());
-		System.out.println(CurrentTime.getEndDayofMonth(2016,8));
+//		SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+//		Calendar calendar = Calendar.getInstance();
+//		String dateArray = "";
+//		for(int i = 1; i < 5 ; i++){
+//			if(i == 1){
+//				String dateStr1 = CurrentTime.getStringDate();
+//				Date now = format1.parse(dateStr1);
+//				calendar.setTime(now);
+//				calendar.add(Calendar.MONTH, 3);
+//				calendar.add(Calendar.DAY_OF_YEAR,-1);
+//				String dateStr2 = format1.format(calendar.getTime());
+//				dateArray = dateStr1 + "至"+ dateStr2;
+//			}else{
+//				calendar.add(Calendar.DAY_OF_YEAR,+1);
+//				String dateStr3 = format1.format(calendar.getTime());
+//				calendar.add(Calendar.MONTH, 3);
+//				calendar.add(Calendar.DAY_OF_YEAR,-1);
+//				String dateStr4 = format1.format(calendar.getTime());
+//				dateArray += ":"+dateStr3 + "至"+ dateStr4;
+//			}
+//		}
+//		//System.out.println(dateArray);
+//		System.out.println(CurrentTime.getStepSpecialDate("2015-01-05"));
+//		System.out.println(CurrentTime.compareDateTime("2016-04-08 10:55:20", "2016-04-08 10:55:10"));
+//		System.out.println(CurrentTime.getFinalDate(2));
+//		System.out.println(CurrentTime.getMonthOrOne());
+//		System.out.println(Math.round(2.51));
+//		System.out.println(CurrentTime.getMonthOrLast());
+//		System.out.println(CurrentTime.getEndDayofMonth(2016,8));
+		System.out.println(CurrentTime.convertFormatDate("20170709"));
 	}
 }

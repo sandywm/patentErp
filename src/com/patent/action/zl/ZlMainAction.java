@@ -60,6 +60,7 @@ import com.patent.tools.CommonTools;
 import com.patent.tools.Convert;
 import com.patent.tools.CurrentTime;
 import com.patent.tools.FileOpration;
+import com.patent.tools.ReadZipFile;
 import com.patent.util.Constants;
 import com.patent.web.Ability;
 
@@ -2173,6 +2174,26 @@ public class ZlMainAction extends DispatchAction {
 			}
 		}
 		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 处理通知书明细
+	 * @description
+	 * @author Administrator
+	 * @date 2018-9-22 上午09:32:42
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward dealTzsDetail(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String zipPath = Transcode.unescape_new1("zipPath", request);
+		Map<String,Object> map = ReadZipFile.readZipFile_new(zipPath);
+		
 		return null;
 	}
 	
