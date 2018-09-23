@@ -2,6 +2,8 @@ package com.patent.service;
 
 import java.util.List;
 
+import org.hibernate.Session;
+
 import com.patent.exception.WEBException;
 import com.patent.module.ZlajMainInfoTb;
 
@@ -18,9 +20,9 @@ public interface ZlajMainInfoManager {
 	 * @param ajTitle 案件标题
 	 * @param ajType 案件类型
 	 * @param ajFieldId 案件技术领域
-	 * @param ajSqrId 申请人
-	 * @param ajFmrId 发明人
-	 * @param ajLxrId 联系人
+	 * @param ajSqrName 申请人
+	 * @param ajFmrName 发明人
+	 * @param ajLxrName 联系人
 	 * @param ajFjInfo 案件费减明细
 	 * @param ajSqAddress 申请地区
 	 * @param ajYxqDetail 优先权
@@ -45,8 +47,8 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	Integer addZL(String ajNo, String ajNoQt,String ajNoGf,
-			String ajTitle, String ajType, String ajFieldId, String ajSqrId,
-			String ajFmrId, String ajLxrId, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
+			String ajTitle, String ajType, String ajFieldId, String ajSqrName,
+			String ajFmrName, String ajLxrName, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId,Integer checkUserId,Integer zxUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId) throws WEBException;
@@ -161,9 +163,9 @@ public interface ZlajMainInfoManager {
 	 * @param sqAddress 案件地区
 	 * @param zlType 案件类型
 	 * @param ajFieldId 案件技术领域
-	 * @param sqrId 申请人
-	 * @param fmrId 发明人
-	 * @param lxrId 联系人
+	 * @param sqrName 申请人
+	 * @param fmrName 发明人
+	 * @param lxrName 联系人
 	 * @param ajFjInfo 案件费减明细
 	 * @param yxqDetail 优先权明细
 	 * @param upFile 技术底稿
@@ -175,7 +177,7 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateBasicInfoById(Integer zlId,String zlTitle,String zlNo,String zlNoQt,Integer pubId, String sqAddress,String zlType,String ajFieldId,
-			String sqrId,String fmrId,String lxrId,Double ajFjInfo,String yxqDetail,String upFile,String remark,String ewyq,String applyDate,Integer faId) throws WEBException;
+			String sqrName,String fmrName,String lxrName,Double ajFjInfo,String yxqDetail,String upFile,String remark,String ewyq,String applyDate,Integer faId) throws WEBException;
 	
 	/**
 	 * 更新专利申请/专利号
@@ -240,12 +242,27 @@ public interface ZlajMainInfoManager {
 	 * @date 2018-9-21 上午10:59:35
 	 * @param id 主键
 	 * @param zlTitle 专利标题（""不修改）
-	 * @param sqrId 申请人（""不修改）
-	 * @param fmrId 发明人（""不修改）
-	 * @param lxrId 联系人（""不修改）
+	 * @param sqrName 申请人（""不修改）
+	 * @param fmrName 发明人（""不修改）
+	 * @param lxrName 联系人（""不修改）
 	 * @param ajFjInfo 费减（-1.0时不修改）
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateBasicInfoById(Integer id,String zlTitle,String sqrId,String fmrId,String lxrId,Double ajFjInfo) throws WEBException;
+	boolean updateBasicInfoById(Integer id,String zlTitle,String sqrName,String fmrName,String lxrName,Double ajFjInfo) throws WEBException;
+	
+	/**
+	 * 根据专利标题、专利申请人、专利类型获取专利（一般在导入受理通知书书时使用）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-9-23 上午09:39:30
+	 * @param sess
+	 * @param zlTitle 专利名称
+	 * @param sqrName 专利申请人
+	 * @param zlType 专利类型
+	 * @param cpyId 代理机构编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajMainInfoTb> listSpecInfoByOpt(String zlTitle,String sqrName, String zlType,Integer cpyId) throws WEBException;
 }

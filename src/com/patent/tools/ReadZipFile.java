@@ -19,6 +19,15 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.patent.action.base.IgnoreDTDEntityResolver;
+import com.patent.factory.AppFactory;
+import com.patent.module.ZlajLcInfoTb;
+import com.patent.module.ZlajLcMxInfoTb;
+import com.patent.module.ZlajMainInfoTb;
+import com.patent.service.ZlajFjInfoManager;
+import com.patent.service.ZlajLcInfoManager;
+import com.patent.service.ZlajLcMxInfoManager;
+import com.patent.service.ZlajMainInfoManager;
+import com.patent.util.Constants;
 
 public class ReadZipFile {
 
@@ -29,14 +38,21 @@ public class ReadZipFile {
 	 * @author Administrator
 	 * @date 2018-9-21 下午05:24:59
 	 * @param zipPath
+	 * @throws Exception 
 	 */
-	public static List<Object> readZipFile_new(String zipPath){
+	public static List<Object> readZipFile_new(String pathPre,String upZipPath,Integer currUserId,Integer cpyId) throws Exception{
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		Charset gbk = Charset.forName("gbk");
-		zipPath = "E:\\实用新型-受理+费用减缓通知书.zip";
+		String finalPath = pathPre + "\\" + upZipPath;
 		List<Object> list_d = new ArrayList<Object>();
+		String msg = "";
+		String currDate = CurrentTime.getStringDate();
         try {
-			ZipFile zf = new ZipFile(zipPath,gbk);
-			FileInputStream fileInputStream = new FileInputStream(zipPath);
+			ZipFile zf = new ZipFile(finalPath,gbk);
+			FileInputStream fileInputStream = new FileInputStream(finalPath);
 	        
 			CheckedInputStream check = new CheckedInputStream(fileInputStream, new CRC32());
 			
@@ -46,7 +62,9 @@ public class ReadZipFile {
 	        ZipEntry ze;
 	        
 	        while((ze=zin.getNextEntry())!=null){
+	        	msg = "";
 	        	String tzsName = "";//通知书名称
+	        	String zlName = "";//专利名称
 	    		String ajNoGf = "";//申请号或专利号
 	    		String fwSerial = "";//发文序列号--通过这个确定那个为先（小的为先）
 	    		String sqrName = "";//申请人
@@ -91,10 +109,16 @@ public class ReadZipFile {
 							if(l5 != null){
 								fwSerial = l5.element("notice_sent_serial").getTextTrim();
 							}
+							Element l6 = root.element("invention_title");
+							if(l6 != null){
+								zlName = l6.getTextTrim();
+							}
+							map_d.put("zlName", zlName);
 							map_d.put("tzsName", tzsName);
 			            	map_d.put("ajNoGf", ajNoGf);
 			            	map_d.put("fwSerial", fwSerial);
 			            	map_d.put("applyDate", applyDate);
+	            			
 			            	if(tzsName.equals("专利申请受理通知书")){
 			            		map_d.put("sqrName", sqrName);
 			            		Element lType = root.element("file_list");
@@ -118,11 +142,13 @@ public class ReadZipFile {
 			            			}
 			            		}
 			            	}
-			            	if(tzsName.equals("费用减缓审批通知书")){
-			            		fjApplyDate = CurrentTime.convertFormatDate(root.element("cost_slow_req_date").getTextTrim());
-			            		fjRecord = root.element("cost_slow_mes").getTextTrim();
+			            	if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
+			            		if(tzsName.equals("费用减缓审批通知书")){
+			            			fjApplyDate = CurrentTime.convertFormatDate(root.element("cost_slow_req_date").getTextTrim());
+				            		fjRecord = root.element("cost_slow_mes").getTextTrim();
+				            		fjRate = root.element("cost_slow_rate_annul").getTextTrim();
+			            		}
 			            		feeEdate = CurrentTime.convertFormatDate(root.element("pay_deadline_date").getTextTrim());
-			            		fjRate = root.element("cost_slow_rate_annul").getTextTrim();
 			            		Element fee = root.element("fee_info_all");
 			            		Element feeDetail = null;
 			            		List<Object> list_f = new ArrayList<Object>();
@@ -144,6 +170,61 @@ public class ReadZipFile {
 			            		map_d.put("feeEdate", feeEdate);
 			            		map_d.put("fjRate", fjRate);
 			            	}
+			            	
+			            	
+			            	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(ajNoGf);
+			            	//第一次导入，需要根据专利名称、申请人、专利类型获取系统专利
+			            	if(zlList.size() == 0){//说明系统中还没有该专利号的专利
+			            		if(tzsName.equals("专利申请受理通知书")){
+			            			zlList = zlm.listSpecInfoByOpt(zlName, sqrName, zlType,cpyId);
+			            		}
+			            	}
+			            	if(zlList.size() > 0){
+	            				if(zlList.size() == 1){
+	            					ZlajMainInfoTb zl = zlList.get(0);
+	            					//只有在案件状态正常时（0）
+	        						if(zl.getAjStopStatus().equals(0)){
+	        							//获取当前最后一个流程
+	        							List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zl.getId());
+	        							if(lcList.size() > 0){
+	        								Integer lcId = lcList.get(0).getId();
+	        								List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
+	        								if(mxList.size() > 0){
+	        									ZlajLcMxInfoTb lcmx = mxList.get(0);
+	        									double lcNo = lcmx.getLcMxNo();//流程号
+	        									if(lcmx.getLcMxEDate().equals("")){
+	        										if(currUserId.equals(lcmx.getLcFzUserId())){
+	        											if(tzsName.equals("专利申请受理通知书")){
+	        												if(lcNo == 7.0){
+		        												msg = "success";
+		        												lcm.updateComInfoById(lcId, currDate);//修改流程完成时间
+		        												mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZipPath, currDate, "", currDate, "");
+		        												lcNo = 7.1;
+		        												zlm.updateZlStatusById(zl.getId(), "7.1", "导入费用减缓审批/缴纳申请费通知书");
+		        											}else{
+		        												msg = "error";//当前只能导入受理通知书
+		        												map_d.put("currLcInfo", "当前任务环节为：["+lcmx.getLcMxName()+"],不能导入受理通知书");
+		        											}
+	        											}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
+	        												
+	        											}
+	        											
+	        										}else{
+	        											msg = "noAbility";
+	        										}
+	        									}
+	        								}
+	        							}
+	        						}else{
+	        							msg =  "zlStop";//专利终止条件下不能进行导入
+	        						}
+	            				}else{
+	            					
+	            				}
+	            			}else{//不存在
+	            				map_d.put("result", "noInfo");
+	            			}
+			            	
 			            	list_d.add(map_d);
 	        			}
 	            	}
@@ -163,14 +244,15 @@ public class ReadZipFile {
 	 * @author Administrator
 	 * @date 2018-9-21 下午05:23:40
 	 * @param args
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		List<Object> objList = ReadZipFile.readZipFile_new("");
-		for(Iterator<Object> it = objList.iterator() ; it.hasNext();){
-			Object obj = it.next();
-			System.out.println(obj);
-		}
+		ReadZipFile.readZipFile_new("E:\\","实用新型-受理+费用减缓通知书.zip",0,0);
+//		for(Iterator<Object> it = objList.iterator() ; it.hasNext();){
+//			Object obj = it.next();
+//			System.out.println(obj);
+//		}
 	}
 
 }

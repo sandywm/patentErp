@@ -114,4 +114,18 @@ public interface ZlajMainInfoDao {
 	 */
 	List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess,String ajNoGf);
 	
+	/**
+	 * 通过专利标题、申请人、专利类型获取专利信息(导入受理通知书时使用)
+	 * @description
+	 * @author Administrator
+	 * @date 2018-9-23 上午09:28:04
+	 * @param sess
+	 * @param zlTitle 专利标题
+	 * @param sqrName 申请人
+	 * @param zlType 专利类型
+	 * @param cpyId 代理机构编号
+	 * @return
+	 */
+	List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess,String zlTitle,String sqrName,String zlType,Integer cpyId);
+	
 }

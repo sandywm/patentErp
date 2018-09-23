@@ -242,50 +242,11 @@ public class ZlMainAction extends DispatchAction {
 						}
 					}				
 					map_d.put("ajFieldName", ajFieldName);
-					String sqrId = zl.getAjSqrId();//可以是公司也可以是个人
-					String sqrName = "";
-					if(!sqrId.equals("")){
-						String[] sqrIdArr = sqrId.split(",");
-						for(Integer k = 0 ; k < sqrIdArr.length ; k++){
-							List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[k]));
-							if(cList.size() > 0){
-								sqrName += cList.get(0).getCusName() + ",";
-							}
-						}
-						if(!sqrName.equals("")){
-							sqrName = sqrName.substring(0, sqrName.length() - 1);
-						}
-					}
+					String sqrName = zl.getAjSqrName();//可以是公司也可以是个人
 					map_d.put("sqrInfo", sqrName);
-					String fmrId = zl.getAjFmrId();
-					String fmrName = "";
-					if(!fmrId.equals("")){
-						String[] fmrIdArr = fmrId.split(",");
-						for(Integer i = 0 ; i < fmrIdArr.length ; i++){
-							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
-							if(cList.size() > 0){
-								fmrName += cList.get(0).getCusFmrName() + ",";
-							}
-						}
-						if(!fmrName.equals("")){
-							fmrName = fmrName.substring(0, fmrName.length() - 1);
-						}
-					}
+					String fmrName = zl.getAjFmrName();
 					map_d.put("fmrInfo", fmrName);
-					String lxrId = zl.getAjLxrId();
-					String lxrName = "";
-					if(!lxrId.equals("")){
-						String[] lxrIdArr = lxrId.split(",");
-						for(Integer j = 0 ; j < lxrIdArr.length ; j++){
-							List<CustomerLxrInfoTb> clList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
-							if(clList.size() > 0){
-								lxrName += clList.get(0).getCusLxrName() + ",";
-							}
-						}
-						if(!lxrName.equals("")){
-							lxrName = lxrName.substring(0, lxrName.length() - 1);
-						}
-					}
+					String lxrName = zl.getAjLxrName();
 					map_d.put("lxrInfo", lxrName);
 					map_d.put("ajFjInfo", zl.getAjFjInfo());
 					map_d.put("ajAddress", zl.getAjSqAddress());
@@ -396,50 +357,11 @@ public class ZlMainAction extends DispatchAction {
 						map.put("ajNoGf", zl.getAjNoGf());
 						map.put("ajAddress", zl.getAjSqAddress());
 						map.put("ajType", zl.getAjType());
-						String sqrId = zl.getAjSqrId();//可以是公司也可以是个人
-						String sqrName = "";
-						if(!sqrId.equals("")){
-							String[] sqrIdArr = sqrId.split(",");
-							for(Integer k = 0 ; k < sqrIdArr.length ; k++){
-								List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[k]));
-								if(cList.size() > 0){
-									sqrName += cList.get(0).getCusName() + ",";
-								}
-							}
-							if(!sqrName.equals("")){
-								sqrName = sqrName.substring(0, sqrName.length() - 1);
-							}
-						}
+						String sqrName = zl.getAjSqrName();//可以是公司也可以是个人
 						map.put("sqrInfo", sqrName);
-						String fmrId = zl.getAjFmrId();
-						String fmrName = "";
-						if(!fmrId.equals("")){
-							String[] fmrIdArr = fmrId.split(",");
-							for(Integer i = 0 ; i < fmrIdArr.length ; i++){
-								List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
-								if(cList.size() > 0){
-									fmrName += cList.get(0).getCusFmrName() + ",";
-								}
-							}
-							if(!fmrName.equals("")){
-								fmrName = fmrName.substring(0, fmrName.length() - 1);
-							}
-						}
+						String fmrName = zl.getAjFmrName();
 						map.put("fmrInfo", fmrName);
-						String lxrId = zl.getAjLxrId();
-						String lxrName = "";
-						if(!lxrId.equals("")){
-							String[] lxrIdArr = lxrId.split(",");
-							for(Integer j = 0 ; j < lxrIdArr.length ; j++){
-								List<CustomerLxrInfoTb> clList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
-								if(clList.size() > 0){
-									lxrName += clList.get(0).getCusLxrName() + ",";
-								}
-							}
-							if(!lxrName.equals("")){
-								lxrName = lxrName.substring(0, lxrName.length() - 1);
-							}
-						}
+						String lxrName = zl.getAjLxrName();
 						map.put("lxrInfo", lxrName);
 						map.put("ajFjInfo", zl.getAjFjInfo());
 						map.put("ajYxqDetail", zl.getAjYxqDetail());//格式为申请专利号,申请地区,申请日期:申请专利号,申请地区,申请日期........
@@ -1942,35 +1864,9 @@ public class ZlMainAction extends DispatchAction {
 				if(zl.getAjStopStatus().equals(0)){
 					ajStatus = zl.getAjStatus();
 					if(ajStatus.equals("6.0")){//到了案件提交环节
-						String sqrId = zl.getAjSqrId();//可以是公司也可以是个人
-						String sqrName = "";
-						if(!sqrId.equals("")){
-							String[] sqrIdArr = sqrId.split(",");
-							for(Integer k = 0 ; k < sqrIdArr.length ; k++){
-								List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[k]));
-								if(cList.size() > 0){
-									sqrName += cList.get(0).getCusName() + ",";
-								}
-							}
-							if(!sqrName.equals("")){
-								sqrName = sqrName.substring(0, sqrName.length() - 1);
-							}
-						}
+						String sqrName = zl.getAjSqrName();//可以是公司也可以是个人
 						map.put("sqrInfo", sqrName);//申请人信息
-						String fmrId = zl.getAjFmrId();
-						String fmrName = "";
-						if(!fmrId.equals("")){
-							String[] fmrIdArr = fmrId.split(",");
-							for(Integer i = 0 ; i < fmrIdArr.length ; i++){
-								List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
-								if(cList.size() > 0){
-									fmrName += cList.get(0).getCusFmrName() + ",";
-								}
-							}
-							if(!fmrName.equals("")){
-								fmrName = fmrName.substring(0, fmrName.length() - 1);
-							}
-						}
+						String fmrName = zl.getAjFmrName();
 						map.put("fmrInfo", fmrName);//发明人信息
 						map.put("ajFjInfo", String.valueOf(zl.getAjFjInfo()));
 					}
@@ -2151,11 +2047,14 @@ public class ZlMainAction extends DispatchAction {
 													mxm.updateEdateById(lcMxId, zl.getTjUserId(), zl.getTjUserId(), upZxFile, currDate, "", currDate, taskRemark);
 													//修改必须的信息
 													zlm.updateBasicInfoById(zlId, zlTitle, sqrId, fmrId, "", ajFjInfo);
-													lcNo = 7;
+													zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"撰稿修改");
+													lcNo = 7.0;
 													//增加下一个流程
-													Integer nextLcId = lcm.addLcInfo(zlId, "导入通知书", "导入通知书", currDate, CurrentTime.getFinalDate(currDate, 30), "", "");//导入通知书期限1个月
+													Integer nextLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理/缴费通知书", currDate, CurrentTime.getFinalDate(currDate, 30), "", "");//导入通知书期限1个月
 													if(nextLcId > 0){
-														mxm.addLcMx(nextLcId, zl.getTzsUserId(), "导入通知书", 7.0, currDate, "", "", 0, "", "", "");
+														mxm.addLcMx(nextLcId, zl.getTzsUserId(), "导入受理/缴费通知书", 7.0, currDate, "", "", 0, "", "", "");
+														//发送邮件
+														mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getTzsUserId(), "cpyUser", "新任务通知：导入受理/缴费通知书", "专利["+zl.getAjTitle()+"]审核已完成定稿提交，请及时完成导入受理/缴费通知书工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
 													}
 												}else{
 													msg = "inComInfo";//信息不完整

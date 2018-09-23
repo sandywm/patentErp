@@ -99,7 +99,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and zl.ajType = '"+ajType+"'";
 		}
 		if(!lxr.equals("")){
-			hql += " and zl.lxr = '"+lxr+"'";
+			hql += " and zl.ajLxrName = '"+lxr+"'";
 		}
 		if(!sDate.equals("")){
 			hql += " and SUBSTR(zl.ajAddDate,1,7) >= '"+sDate+"' and SUBSTR(zl.ajAddDate,1,7) <= '"+eDate+"'";
@@ -135,6 +135,13 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 	public List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess, String ajNoGf) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajMainInfoTb as zl where zl.ajNoGf = '"+ajNoGf+"'";
+		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess, String zlTitle,String sqrName, String zlType,Integer cpyId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajMainInfoTb as zl where zl.ajTitle = '"+zlTitle+"' and zl.ajSqrName = '"+sqrName+"' and zl.ajType = '"+zlType+"' and zl.cpyInfoTb.id = "+cpyId;
 		return sess.createQuery(hql).list();
 	}
 
