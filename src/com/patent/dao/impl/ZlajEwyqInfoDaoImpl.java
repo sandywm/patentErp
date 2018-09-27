@@ -39,11 +39,6 @@ public class ZlajEwyqInfoDaoImpl implements ZlajEwyqInfoDao{
 		// TODO Auto-generated method stub
 		String hql = " from ZlajEwyqInfoTb as yq";
 		if(!yqType.equals("")){
-//			if(yqType.indexOf(",") > 0){//说明是发明+实用新型
-//				hql += " where yq.yqType = '%"+yqType+"%'";
-//			}else{
-//				hql += " where yq.yqType = '"+yqType+"'";
-//			}
 			hql += " where yq.yqType like '%"+yqType+"%'";
 		}
 		return sess.createQuery(hql).list();
