@@ -41,6 +41,7 @@ public class ZlajEwyqInfoDaoImpl implements ZlajEwyqInfoDao{
 		if(!yqType.equals("")){
 			hql += " where yq.yqType like '%"+yqType+"%'";
 		}
+		//删除之前的
 		return sess.createQuery(hql).list();
 	}
 
