@@ -252,7 +252,8 @@ public class ZlajEwyqAction extends DispatchAction {
 		String msg = "noInfo";
 		Map<String,Object> map  = new HashMap<String,Object>();
 		List<Object> list_d = new ArrayList<Object>();
-		if(this.getLoginRoleName(request).equals("super")){
+		String roleName = this.getLoginRoleName(request);
+		if(roleName.equals("super") || roleName.equals("cpyUser")){
 			String yqType = CommonTools.getFinalStr(request.getParameter("yqType"));
 			List<ZlajEwyqInfoTb> yqList = yqm.listInfoByType(yqType);
 			if(yqList.size() > 0){
