@@ -182,55 +182,53 @@ public class ReadZipFile {
 			            	}else{//不是第一次导入
 			            		if(tzsName.equals("专利申请受理通知书")){
 			            			msg = "noInput";//该专利已被受理过，不需要再导入受理通知书
-			            		}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
-			            			//获取当前专利流程号
 			            		}
 			            	}
-//			            	if(zlList.size() > 0){
-//	            				if(zlList.size() == 1){
-//	            					ZlajMainInfoTb zl = zlList.get(0);
-//	            					//只有在案件状态正常时（0）
-//	        						if(zl.getAjStopStatus().equals(0)){
-//	        							//获取当前最后一个流程
-//	        							List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zl.getId());
-//	        							if(lcList.size() > 0){
-//	        								Integer lcId = lcList.get(0).getId();
-//	        								List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
-//	        								if(mxList.size() > 0){
-//	        									ZlajLcMxInfoTb lcmx = mxList.get(0);
-//	        									double lcNo = lcmx.getLcMxNo();//流程号
-//	        									if(lcmx.getLcMxEDate().equals("")){
-//	        										if(currUserId.equals(lcmx.getLcFzUserId())){
-//	        											if(tzsName.equals("专利申请受理通知书")){
-//	        												if(lcNo == 7.0){
-//		        												msg = "success";
-//		        												lcm.updateComInfoById(lcId, currDate);//修改流程完成时间
-//		        												mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZipPath, currDate, "", currDate, "");
-//		        												lcNo = 7.1;
-//		        												zlm.updateZlStatusById(zl.getId(), "7.1", "导入费用减缓审批/缴纳申请费通知书");
-//		        											}else{
-//		        												msg = "error";//当前只能导入受理通知书
-//		        												map_d.put("currLcInfo", "当前任务环节为：["+lcmx.getLcMxName()+"],不能导入受理通知书");
-//		        											}
-//	        											}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
-//	        												
-//	        											}
-//	        											
-//	        										}else{
-//	        											msg = "noAbility";
-//	        										}
-//	        									}
-//	        								}
-//	        							}
-//	        						}else{
-//	        							msg =  "zlStop";//专利终止条件下不能进行导入
-//	        						}
-//	            				}else{
-//	            					
-//	            				}
-//	            			}else{//不存在
-//	            				map_d.put("result", "noInfo");
-//	            			}
+			            	if(zlList.size() > 0){
+	            				if(zlList.size() == 1){
+	            					ZlajMainInfoTb zl = zlList.get(0);
+	            					//只有在案件状态正常时（0）
+	        						if(zl.getAjStopStatus().equals(0)){
+	        							//获取当前最后一个流程
+	        							List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zl.getId());
+	        							if(lcList.size() > 0){
+	        								Integer lcId = lcList.get(0).getId();
+	        								List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
+	        								if(mxList.size() > 0){
+	        									ZlajLcMxInfoTb lcmx = mxList.get(0);
+	        									double lcNo = lcmx.getLcMxNo();//流程号
+	        									if(lcmx.getLcMxEDate().equals("")){
+	        										if(currUserId.equals(lcmx.getLcFzUserId())){
+	        											if(tzsName.equals("专利申请受理通知书")){
+	        												if(lcNo == 7.0){
+		        												msg = "success";
+		        												lcm.updateComInfoById(lcId, currDate);//修改流程完成时间
+		        												mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZipPath, currDate, "", currDate, "");
+		        												lcNo = 7.1;
+		        												zlm.updateZlStatusById(zl.getId(), "7.1", "导入费用减缓审批/缴纳申请费通知书");
+		        											}else{
+		        												msg = "error";//当前只能导入受理通知书
+		        												map_d.put("currLcInfo", "当前任务环节为：["+lcmx.getLcMxName()+"],不能导入受理通知书");
+		        											}
+	        											}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
+	        												
+	        											}
+	        											
+	        										}else{
+	        											msg = "noAbility";
+	        										}
+	        									}
+	        								}
+	        							}
+	        						}else{
+	        							msg =  "zlStop";//专利终止条件下不能进行导入
+	        						}
+	            				}else{//获取到一个以上的专利信息
+	            					
+	            				}
+	            			}else{//不存在
+	            				map_d.put("result", "noInfo");
+	            			}
 			            	
 			            	list_d.add(map_d);
 	        			}
