@@ -1269,7 +1269,7 @@ public class ZlMainAction extends DispatchAction {
 				//获取当前的案例号--实时
 				String currYear = CurrentTime.getYear();
 				String ajType = CommonTools.getFinalStr("ajType", request);
-				Integer pubZlId = CommonTools.getFinalInteger("pubZlId", request);//发布专利的编号
+				Integer pubZlId = CommonTools.getFinalInteger("pubZlId", request);//发布专利任务的编号
 				//当案件类型是发明+新型时，就不会有发布专利编号
 				if(ajType.equals("fmxx")){
 					if(pubZlId > 0){
@@ -2059,9 +2059,9 @@ public class ZlMainAction extends DispatchAction {
 													zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"撰稿修改");
 													lcNo = 7.0;
 													//增加下一个流程
-													Integer nextLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理/缴费通知书", currDate, CurrentTime.getFinalDate(currDate, 30), "", "");//导入通知书期限1个月
+													Integer nextLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理通知书", currDate, CurrentTime.getFinalDate(currDate, 30), "", "");//导入通知书期限1个月
 													if(nextLcId > 0){
-														mxm.addLcMx(nextLcId, zl.getTzsUserId(), "导入受理/缴费通知书", 7.0, currDate, "", "", 0, "", "", "");
+														mxm.addLcMx(nextLcId, zl.getTzsUserId(), "导入受理通知书", 7.0, currDate, "", "", 0, "", "", "");
 														//发送邮件
 														mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getTzsUserId(), "cpyUser", "新任务通知：导入受理/缴费通知书", "专利["+zl.getAjTitle()+"]审核已完成定稿提交，请及时完成导入受理/缴费通知书工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
 													}

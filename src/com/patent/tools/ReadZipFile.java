@@ -203,16 +203,22 @@ public class ReadZipFile {
 	        												if(lcNo == 7.0){
 		        												msg = "success";
 		        												lcm.updateComInfoById(lcId, currDate);//修改流程完成时间
-		        												mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZipPath, currDate, "", currDate, "");
-		        												lcNo = 7.1;
+		        												mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZipPath, currDate, "", currDate, "成功导入"+tzsName);
 		        												zlm.updateZlStatusById(zl.getId(), "7.1", "导入费用减缓审批/缴纳申请费通知书");
+		        												Integer nextLcId = lcm.addLcInfo(zl.getId(), "导入通知书", "导入费用减缓审批/缴纳申请费通知书", currDate, lcList.get(0).getLcCpyDate(), "", "");
+		        												if(nextLcId > 0){
+		        													mxm.addLcMx(nextLcId, currUserId, "导入费用减缓审批/缴纳申请费通知书", 7.1, currDate, "", "", 0, "", "", "");
+		        												}
 		        											}else{
 		        												msg = "error";//当前只能导入受理通知书
 		        												map_d.put("currLcInfo", "当前任务环节为：["+lcmx.getLcMxName()+"],不能导入受理通知书");
 		        											}
 	        											}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
-	        												if(lcNo > 7.0 && lcNo < 8.0){
-//	        													lcm.addLcInfo(ajId, lcName, lcDetail, sDate, cpyDate, comDate, gfDate);
+	        												if(lcNo == 7.1){
+	        													msg = "success";
+	        													lcm.updateComInfoById(lcId, currDate);
+	        													mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZipPath, currDate, "", currDate, "成功导入"+tzsName);
+	        													zlm.updateZlStatusById(zl.getId(), "8.0", "受理、实质审查费催缴");
 	        												}
 	        											}
 	        											

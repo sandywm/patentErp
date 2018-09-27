@@ -108,15 +108,15 @@ public interface PubZlInfoManager {
 			String pubDate,Integer zlStatus) throws WEBException; 
 	
 	/**
-	 * 获取指定领取公司指定案件编号的发布专利信息
+	 * 获取指定领取公司指定主键编号的发布专利信息
 	 * @author Administrator
 	 * @date 2018-8-12 下午09:17:45
 	 * @ModifiedBy
 	 * @param lqCpyId 领取公司编号
-	 * @param ajId 案件编号
+	 * @param ajId 主键编号
 	 * @return
 	 */
-	List<PubZlInfoTb> listSpecInfoByOpt_1(Integer lqCpyId,Integer ajId)throws WEBException ;
+	List<PubZlInfoTb> listSpecInfoByOpt_1(Integer lqCpyId,Integer id)throws WEBException ;
 	
 	/**
 	 * 获取指定主键、指定发布人编号的专利发布信息

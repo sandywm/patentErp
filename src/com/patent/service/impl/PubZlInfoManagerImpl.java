@@ -177,16 +177,16 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 	}
 
 	@Override
-	public List<PubZlInfoTb> listSpecInfoByOpt_1(Integer lqCpyId, Integer ajId) throws WEBException {
+	public List<PubZlInfoTb> listSpecInfoByOpt_1(Integer lqCpyId, Integer id) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return pzDao.findSpecInfoByOpt_1(sess, lqCpyId, ajId);
+			return pzDao.findSpecInfoByOpt_1(sess, lqCpyId, id);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new WEBException("获取指定领取公司指定案件编号的发布专利信息时出现异常!");
+			throw new WEBException("获取指定领取公司指定主键编号的发布专利信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

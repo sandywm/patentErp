@@ -78,16 +78,16 @@ public interface PubZlInfoDao {
 			String pubDate,Integer zlStatus);
 	
 	/**
-	 * 获取指定领取公司指定案件编号的发布专利信息
+	 * 获取指定领取公司指定专利任务编号的发布专利信息
 	 * @author Administrator
 	 * @date 2018-8-11 下午10:01:17
 	 * @ModifiedBy
 	 * @param sess
 	 * @param lqCpyId 领取公司编号
-	 * @param ajIdS 案件编号
+	 * @param id 发布的专利任务编号
 	 * @return
 	 */
-	List<PubZlInfoTb> findSpecInfoByOpt_1(Session sess,Integer lqCpyId,Integer ajId);
+	List<PubZlInfoTb> findSpecInfoByOpt_1(Session sess,Integer lqCpyId,Integer id);
 	
 	/**
 	 * 获取指定主键、指定发布人编号的专利发布信息

@@ -101,11 +101,11 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 	}
 
 	@Override
-	public List<PubZlInfoTb> findSpecInfoByOpt_1(Session sess,Integer lqCpyId,Integer ajId){
+	public List<PubZlInfoTb> findSpecInfoByOpt_1(Session sess,Integer lqCpyId,Integer id){
 		// TODO Auto-generated method stub
 		String hql = " from PubZlInfoTb as pz where pz.lqCpyId = "+lqCpyId;
-		if(ajId > 0){
-			hql += " and pz.ajIdStr = "+ajId;
+		if(id > 0){
+			hql += " and pz.id = "+id;
 		}
 		return sess.createQuery(hql).list();
 	}
