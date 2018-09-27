@@ -212,7 +212,7 @@ public class ReadZipFile {
 		        											}
 	        											}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
 	        												if(lcNo > 7.0 && lcNo < 8.0){
-	        													
+//	        													lcm.addLcInfo(ajId, lcName, lcDetail, sDate, cpyDate, comDate, gfDate);
 	        												}
 	        											}
 	        											

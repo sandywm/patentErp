@@ -48,6 +48,19 @@ public class ZlajEwyqAction extends DispatchAction {
 	}
 	
 	/**
+	 * 获取session中的登录类型
+	 * @author Administrator
+	 * @date 2018-7-31 下午09:39:57
+	 * @ModifiedBy
+	 * @param request
+	 * @return
+	 */
+	private String getLoginType(HttpServletRequest request){
+        String loginType = (String)request.getSession(false).getAttribute(Constants.LOGIN_TYPE);
+        return loginType;
+	}
+	
+	/**
 	 * 封装json
 	*  @author  Administrator
 	*  @ModifiedBy  
@@ -253,7 +266,7 @@ public class ZlajEwyqAction extends DispatchAction {
 		Map<String,Object> map  = new HashMap<String,Object>();
 		List<Object> list_d = new ArrayList<Object>();
 		String roleName = this.getLoginRoleName(request);
-		if(roleName.equals("super") || roleName.equals("cpyUser")){
+		if(roleName.equals("super") || this.getLoginType(request).equals("cpyUser")){
 			String yqType = CommonTools.getFinalStr(request.getParameter("yqType"));
 			List<ZlajEwyqInfoTb> yqList = yqm.listInfoByType(yqType);
 			if(yqList.size() > 0){
