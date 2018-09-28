@@ -23,9 +23,10 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private String ajTitle;
 	private String ajType;
 	private String ajFieldId;
+	private String ajSqrId;
 	private String ajSqrName;
-	private String ajFmrName;
-	private String ajLxrName;
+	private String ajFmrId;
+	private String ajLxrId;
 	private Double ajFjInfo;
 	private String ajSqAddress;
 	private String ajYxqDetail;
@@ -64,8 +65,8 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	/** minimal constructor */
 	public ZlajMainInfoTb(CpyInfoTb cpyInfoTb, String ajNo, String ajNoQt,String ajNoGf,
-			String ajTitle, String ajType, String ajFieldId, String ajSqrName,
-			String ajFmrName, String ajLxrName, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
+			String ajTitle, String ajType, String ajFieldId, String ajSqrId,String ajSqrName,
+			String ajFmrId, String ajLxrId, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, String ajStatusChi,Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
 			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,
@@ -77,9 +78,10 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajTitle = ajTitle;
 		this.ajType = ajType;
 		this.ajFieldId = ajFieldId;
+		this.ajSqrId = ajSqrId;
 		this.ajSqrName = ajSqrName;
-		this.ajFmrName = ajFmrName;
-		this.ajLxrName = ajLxrName;
+		this.ajFmrId = ajFmrId;
+		this.ajLxrId = ajLxrId;
 		this.ajFjInfo = ajFjInfo;
 		this.ajSqAddress = ajSqAddress;
 		this.ajYxqDetail = ajYxqDetail;
@@ -109,8 +111,8 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	/** full constructor */
 	public ZlajMainInfoTb(Integer id,CpyInfoTb cpyInfoTb, String ajNo, String ajNoQt,String ajNoGf,
-			String ajTitle, String ajType, String ajFieldId, String ajSqrName,
-			String ajFmrName, String ajLxrName, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
+			String ajTitle, String ajType, String ajFieldId, String ajSqrId,String ajSqrName,
+			String ajFmrId, String ajLxrId, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, String ajStatusChi,Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
 			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,
@@ -123,9 +125,10 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajTitle = ajTitle;
 		this.ajType = ajType;
 		this.ajFieldId = ajFieldId;
+		this.ajSqrId = ajSqrId;
 		this.ajSqrName = ajSqrName;
-		this.ajFmrName = ajFmrName;
-		this.ajLxrName = ajLxrName;
+		this.ajFmrId = ajFmrId;
+		this.ajLxrId = ajLxrId;
 		this.ajFjInfo = ajFjInfo;
 		this.ajSqAddress = ajSqAddress;
 		this.ajYxqDetail = ajYxqDetail;
@@ -211,28 +214,28 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajFieldId = ajFieldId;
 	}
 
-	public String getAjSqrName() {
-		return this.ajSqrName;
+	public String getAjSqrId() {
+		return this.ajSqrId;
 	}
 
-	public void setAjSqrName(String ajSqrName) {
-		this.ajSqrName = ajSqrName;
+	public void setAjSqrId(String ajSqrId) {
+		this.ajSqrId = ajSqrId;
 	}
 
-	public String getAjFmrName() {
-		return this.ajFmrName;
+	public String getAjFmrId() {
+		return this.ajFmrId;
 	}
 
-	public void setAjFmrName(String ajFmrName) {
-		this.ajFmrName = ajFmrName;
+	public void setAjFmrId(String ajFmrId) {
+		this.ajFmrId = ajFmrId;
 	}
 
-	public String getAjLxrName() {
-		return this.ajLxrName;
+	public String getAjLxrId() {
+		return this.ajLxrId;
 	}
 
-	public void setAjLxrName(String ajLxrName) {
-		this.ajLxrName = ajLxrName;
+	public void setAjLxrId(String ajLxrId) {
+		this.ajLxrId = ajLxrId;
 	}
 
 	public String getAjSqAddress() {
@@ -473,6 +476,14 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	public void setAjFjInfo(Double ajFjInfo) {
 		this.ajFjInfo = ajFjInfo;
+	}
+
+	public String getAjSqrName() {
+		return ajSqrName;
+	}
+
+	public void setAjSqrName(String ajSqrName) {
+		this.ajSqrName = ajSqrName;
 	}
 
 

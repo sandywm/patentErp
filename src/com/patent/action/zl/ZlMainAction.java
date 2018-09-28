@@ -244,7 +244,7 @@ public class ZlMainAction extends DispatchAction {
 					map_d.put("ajFieldName", ajFieldName);
 					String sqrName = zl.getAjSqrName();//可以是公司也可以是个人
 					map_d.put("sqrInfo", sqrName);
-					String fmrName = zl.getAjFmrName();
+					String fmrName = zl.getAjFmrId();
 					map_d.put("fmrInfo", fmrName);
 					String lxrName = zl.getAjLxrName();
 					map_d.put("lxrInfo", lxrName);
@@ -1334,6 +1334,7 @@ public class ZlMainAction extends DispatchAction {
 								String ajTitle = Transcode.unescape_new("ajTitle", request);
 								String ajFieldId = CommonTools.getFinalStr("ajFieldId", request);
 								String ajSqrId  = CommonTools.getFinalStr("ajSqrId", request);
+								String sjSqrName = Transcode.unescape_new1("sjSqrName", request);
 								String ajFmrId  = CommonTools.getFinalStr("ajFmrId", request);
 								String ajLxrId = CommonTools.getFinalStr("ajLxrId", request);
 								String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
@@ -1349,7 +1350,7 @@ public class ZlMainAction extends DispatchAction {
 									ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);
 								}
 								String ajApplyDate = "";
-								Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, ajFjInfo,ajSqAddress, 
+								Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, sjSqrName,ajFmrId, ajLxrId, ajFjInfo,ajSqAddress, 
 										yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "2.0", "人员分配", pubZlId,cpyId,0,0,
 										0,0,0,0,0,0,currLoginUserId);
 								if(zlId > 0){
