@@ -22,8 +22,8 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	Transaction tran = null;
 	@Override
 	public Integer addZL(String ajNo, String ajNoQt, String ajNoGf,
-			String ajTitle, String ajType, String ajFieldId, String ajSqrName,
-			String ajFmrName, String ajLxrName, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
+			String ajTitle, String ajType, String ajFieldId, String ajSqrId,String ajSqrName,
+			String ajFmrId, String ajLxrId, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId, Integer checkUserId,Integer zxUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId)
@@ -35,7 +35,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
 			ZlajMainInfoTb zl = new ZlajMainInfoTb(cDao.get(sess, cpyId), ajNo, ajNoQt, ajNoGf,
-					ajTitle, ajType, ajFieldId, ajSqrName,ajFmrName, ajLxrName, ajFjInfo,ajSqAddress, ajYxqDetail,
+					ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, ajFjInfo,ajSqAddress, ajYxqDetail,
 					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, ajStatusChi, 0,0,pubZlId,"","","",CurrentTime.getStringDate(),checkUserId,zxUserId,
 					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId);
 			zlDao.save(sess, zl);
@@ -174,7 +174,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	@Override
 	public boolean updateBasicInfoById(Integer zlId, String zlTitle,String zlNo,
 			String zlNoQt,Integer pubId,String sqAddress, String zlType,
-			String ajFieldId, String sqrName, String fmrName, String lxrName,Double ajFjInfo,
+			String ajFieldId, String ajSqrId,String sqrName, String fmrId, String lxrId,Double ajFjInfo,
 			String yxqDetail, String upFile, String remark, String ewyq,
 			String applyDate, Integer faId) throws WEBException {
 		// TODO Auto-generated method stub
@@ -194,9 +194,10 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 				zl.setAjSqAddress(sqAddress);
 				zl.setAjType(zlType);
 				zl.setAjFieldId(ajFieldId);
+				zl.setAjSqrId(ajSqrId);
 				zl.setAjSqrName(sqrName);
-				zl.setAjFmrName(fmrName);
-				zl.setAjLxrName(lxrName);
+				zl.setAjFmrId(fmrId);
+				zl.setAjLxrId(lxrId);
 				zl.setAjFjInfo(ajFjInfo);
 				zl.setPubZlId(pubId);
 				zl.setAjYxqDetail(yxqDetail);
@@ -351,7 +352,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 
 	@Override
 	public boolean updateBasicInfoById(Integer id, String zlTitle,
-			String sqrName, String fmrName, String lxrName, Double ajFjInfo)
+			String sqrId,String sqrName, String fmrId, String lxrId, Double ajFjInfo)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -363,14 +364,17 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 				if(!zlTitle.equals("")){
 					zl.setAjTitle(zlTitle);
 				}
-				if(!sqrName.equals("")){
+				if(!sqrId.equals("")){
+					zl.setAjSqrId(sqrId);
+				}
+				if(sqrName.equals("")){
 					zl.setAjSqrName(sqrName);
 				}
-				if(!fmrName.equals("")){
-					zl.setAjFmrName(fmrName);
+				if(!fmrId.equals("")){
+					zl.setAjFmrId(fmrId);
 				}
-				if(!lxrName.equals("")){
-					zl.setAjLxrName(lxrName);
+				if(!lxrId.equals("")){
+					zl.setAjLxrId(lxrId);
 				}
 				if(ajFjInfo == 0.70 || ajFjInfo == 0.85){
 					zl.setAjFjInfo(ajFjInfo);

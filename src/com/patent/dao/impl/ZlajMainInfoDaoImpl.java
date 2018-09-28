@@ -62,7 +62,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and zl.ajType = '"+ajType+"'";
 		}
 		if(!lxr.equals("")){
-			hql += " and zl.lxr = '"+lxr+"'";
+//			hql += " and zl.lxr = '"+lxr+"'";
 		}
 		if(!sDate.equals("")){
 			hql += " and SUBSTR(zl.ajAddDate,1,7) >= '"+sDate+"' and SUBSTR(zl.ajAddDate,1,7) <= '"+eDate+"'";
@@ -99,7 +99,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and zl.ajType = '"+ajType+"'";
 		}
 		if(!lxr.equals("")){
-			hql += " and zl.ajLxrName = '"+lxr+"'";
+//			hql += " and zl.ajLxrName = '"+lxr+"'";
 		}
 		if(!sDate.equals("")){
 			hql += " and SUBSTR(zl.ajAddDate,1,7) >= '"+sDate+"' and SUBSTR(zl.ajAddDate,1,7) <= '"+eDate+"'";
