@@ -73,7 +73,9 @@ public class ReadZipFile {
 	    		String fjApplyDate = "";//费减请求日期
 	    		String fjRecord = "";//费减记录
 	    		String feeEdate = "";//缴费截止日期
-	    		String fjRate = "";//费减比率
+	    		String fjRate = "0.0";//费减比率
+	    		String jfDetail = "";//缴费详情
+	    		Double jfTotal = 0.0;//缴费总计
 	            if(ze.isDirectory()){
 	                //为空的文件夹什么都不做
 	            }else{
@@ -146,23 +148,30 @@ public class ReadZipFile {
 			            			fjApplyDate = CurrentTime.convertFormatDate(root.element("cost_slow_req_date").getTextTrim());
 				            		fjRecord = root.element("cost_slow_mes").getTextTrim();
 				            		fjRate = root.element("cost_slow_rate_annul").getTextTrim();
+				            		fjRate = "0."+fjRate.substring(0, fjRate.length() - 1);
 			            		}
 			            		feeEdate = CurrentTime.convertFormatDate(root.element("pay_deadline_date").getTextTrim());
 			            		Element fee = root.element("fee_info_all");
 			            		Element feeDetail = null;
 			            		List<Object> list_f = new ArrayList<Object>();
 			            		if(fee != null){
-			            			map_d.put("feeTotal", fee.element("fee_total").getTextTrim());
+			            			String feeTotalTxt = fee.element("fee_total").getTextTrim();
+			            			map_d.put("feeTotal", feeTotalTxt);
+			            			jfTotal = Double.parseDouble(feeTotalTxt);
 			            			fee = fee.element("fee_info");
 			            			for(@SuppressWarnings("unchecked")
 		    							Iterator<Element> it = fee.elementIterator("fee") ; it.hasNext();){
 			            				feeDetail = it.next();
 			            				Map<String,String> map_f = new HashMap<String,String>();
-			            				map_f.put("feeName", feeDetail.element("fee_name").getTextTrim());
-			            				map_f.put("feeAmount", feeDetail.element("fee_amount").getTextTrim());
+			            				String feeName = feeDetail.element("fee_name").getTextTrim();
+			            				String feeAmount = feeDetail.element("fee_amount").getTextTrim();
+			            				map_f.put("feeName", feeName);
+			            				map_f.put("feeAmount", feeAmount);
 			            				list_f.add(map_f);
+			            				jfDetail += feeName + "," + feeAmount + ":";
 			            			}
 			            			map_d.put("feeDetail", list_f);
+			            			jfDetail += feeTotalTxt;//最后是费用总计
 			            		}
 			            		map_d.put("fjApplyDate", fjApplyDate);
 			            		map_d.put("fjRecord", fjRecord);
@@ -187,10 +196,11 @@ public class ReadZipFile {
 			            	if(zlList.size() > 0){
 	            				if(zlList.size() == 1){
 	            					ZlajMainInfoTb zl = zlList.get(0);
+	            					Integer zlId = zl.getId();
 	            					//只有在案件状态正常时（0）
 	        						if(zl.getAjStopStatus().equals(0)){
 	        							//获取当前最后一个流程
-	        							List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zl.getId());
+	        							List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
 	        							if(lcList.size() > 0){
 	        								Integer lcId = lcList.get(0).getId();
 	        								List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcId);
@@ -204,11 +214,12 @@ public class ReadZipFile {
 		        												msg = "success";
 		        												lcm.updateComInfoById(lcId, currDate);//修改流程完成时间
 		        												mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZipPath, currDate, "", currDate, "成功导入"+tzsName);
-		        												zlm.updateZlStatusById(zl.getId(), "7.1", "导入费用减缓审批/缴纳申请费通知书");
-		        												Integer nextLcId = lcm.addLcInfo(zl.getId(), "导入通知书", "导入费用减缓审批/缴纳申请费通知书", currDate, lcList.get(0).getLcCpyDate(), "", "");
+		        												zlm.updateZlStatusById(zlId, "7.1", "导入费用减缓审批/缴纳申请费通知书");
+		        												Integer nextLcId = lcm.addLcInfo(zlId, "导入通知书", "导入费用减缓审批/缴纳申请费通知书", currDate, lcList.get(0).getLcCpyDate(), "", "");
 		        												if(nextLcId > 0){
 		        													mxm.addLcMx(nextLcId, currUserId, "导入费用减缓审批/缴纳申请费通知书", 7.1, currDate, "", "", 0, "", "", "");
 		        												}
+		        												zlm.updateAjNoGfById(zlId, applyDate);//修改专利申请日
 		        											}else{
 		        												msg = "error";//当前只能导入受理通知书
 		        												map_d.put("currLcInfo", "当前任务环节为：["+lcmx.getLcMxName()+"],不能导入受理通知书");
@@ -218,7 +229,20 @@ public class ReadZipFile {
 	        													msg = "success";
 	        													lcm.updateComInfoById(lcId, currDate);
 	        													mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZipPath, currDate, "", currDate, "成功导入"+tzsName);
-	        													zlm.updateZlStatusById(zl.getId(), "8.0", "受理、实质审查费催缴");
+	        													String lcName_next = "";
+	        													if(zl.getAjType().equals("fm")){
+	        														lcName_next = "受理、实质审查费催缴";
+	        													}else{
+	        														lcName_next = "受理费催缴";
+	        													}
+	        													zlm.updateZlStatusById(zlId, "8.0", lcName_next);
+	        													Integer nextLcId = lcm.addLcInfo(zlId, "费用催缴", lcName_next, currDate, CurrentTime.getFinalDate(zl.getAjApplyDate(), 45), "", feeEdate);
+		        												if(nextLcId > 0){
+		        													//将缴费明细计入流程明细备注
+		        													mxm.addLcMx(nextLcId, currUserId, lcName_next, 7.1, currDate, "", "", 0, "", "", jfDetail);
+		        												}
+		        												//修改专利费减明细
+		        												zlm.updateZlFjInfo(zlId, Double.parseDouble(fjRate));
 	        												}
 	        											}
 	        											

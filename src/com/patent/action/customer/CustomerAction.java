@@ -729,4 +729,61 @@ public class CustomerAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
+	
+	/**
+	 * 获取指定申请人（可以多个）下的发明人或者联系人
+	 * @description
+	 * @author Administrator
+	 * @date 2018-9-28 下午05:48:16
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCusFmOrLxrInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<Object> list_d = new ArrayList<Object>();
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+			Integer cpyId = cUser.getCpyInfoTb().getId();
+			String opt = CommonTools.getFinalStr("opt", request);//add:增加专利时，edit：修改专利
+			
+			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
+			String cusIdStr = CommonTools.getFinalStr(request.getParameter("cusIdStr"));
+			
+			List<CustomerInfoTb> cList = cm.listInfoById(cpyId, cusId);
+			if(cList.size() > 0){
+				List<CustomerFmrInfoTb> cfmrList = cm.listFmrInfoByCusId(cusId,cpyId);
+				if(cfmrList.size() > 0){
+					for(Iterator<CustomerFmrInfoTb> it = cfmrList.iterator() ; it.hasNext();){
+						CustomerFmrInfoTb fmr = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("fmrId", fmr.getId());
+						map_d.put("fmrName", fmr.getCusFmrName());
+						map_d.put("fmrTel", fmr.getCusFmrTel());
+						map_d.put("fmrEmail", fmr.getCusFxrEmail());
+						map_d.put("fmriCard", fmr.getCusFmrICard());
+						list_d.add(map_d);
+					}
+					map.put("result", "success");
+					map.put("fmrInfo", list_d);
+				}else{
+					map.put("result", "noInfo");
+				}
+			}else{
+				map.put("result", "error");
+			}
+		}else{
+			map.put("result", "error");
+		}
+		this.getJsonPkg(map, response);
+        return null;
+	}
 }

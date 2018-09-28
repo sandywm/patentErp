@@ -265,4 +265,28 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajMainInfoTb> listSpecInfoByOpt(String zlTitle,String sqrName, String zlType,Integer cpyId) throws WEBException;
+	
+	/**
+	 * 修改专利申请日(导入受理通知书时)
+	 * @description
+	 * @author Administrator
+	 * @date 2018-9-28 上午09:20:52
+	 * @param zlId 主键
+	 * @param applyDate 申请日
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateZlApplyDate(Integer zlId,String applyDate) throws WEBException;
+	
+	/**
+	 * 修改专利费减详情(发明专利有效)
+	 * @description
+	 * @author Administrator
+	 * @date 2018-9-28 上午10:44:03
+	 * @param zlId 专利编号
+	 * @param fjRate 费减详情
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateZlFjInfo(Integer zlId,Double fjRate) throws WEBException;
 }
