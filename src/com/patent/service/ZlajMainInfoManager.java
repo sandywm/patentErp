@@ -246,13 +246,13 @@ public interface ZlajMainInfoManager {
 	 * @param zlTitle 专利标题（""不修改）
 	 * @param sqrId 申请人（""不修改）
 	 * @param sqrName 申请人（""不修改）
-	 * @param fmrName 发明人（""不修改）
-	 * @param lxrName 联系人（""不修改）
+	 * @param fmrId 发明人（""不修改）
+	 * @param lxrId 联系人（""不修改）
 	 * @param ajFjInfo 费减（-1.0时不修改）
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateBasicInfoById(Integer id,String zlTitle,String sqrId,String sqrName,String fmrName,String lxrName,Double ajFjInfo) throws WEBException;
+	boolean updateBasicInfoById(Integer id,String zlTitle,String sqrId,String sqrName,String fmrId,String lxrId,Double ajFjInfo) throws WEBException;
 	
 	/**
 	 * 根据专利标题、专利申请人、专利类型获取专利（一般在导入受理通知书书时使用）

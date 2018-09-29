@@ -244,9 +244,35 @@ public class ZlMainAction extends DispatchAction {
 					map_d.put("ajFieldName", ajFieldName);
 					String sqrName = zl.getAjSqrName();//可以是公司也可以是个人
 					map_d.put("sqrInfo", sqrName);
-					String fmrName = zl.getAjFmrId();
+					String fmrId = zl.getAjFmrId();
+					String fmrName = "";
+ 					if(!fmrId.equals("")){
+ 						String[] fmrIdArr = fmrId.split(",");
+ 						for(Integer i = 0 ; i < fmrIdArr.length ; i++){
+ 							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
+ 							if(cList.size() > 0){
+ 								fmrName += cList.get(0).getCusFmrName() + ",";
+ 							}
+ 						}
+ 						if(!fmrName.equals("")){
+ 							fmrName = fmrName.substring(0, fmrName.length() - 1);
+ 						}
+ 					}
 					map_d.put("fmrInfo", fmrName);
-					String lxrName = zl.getAjLxrName();
+					String lxrId = zl.getAjLxrId();
+ 					String lxrName = "";
+ 					if(!lxrId.equals("")){
+ 						String[] lxrIdArr = lxrId.split(",");
+ 						for(Integer j = 0 ; j < lxrIdArr.length ; j++){
+ 							List<CustomerLxrInfoTb> clList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
+ 							if(clList.size() > 0){
+ 								lxrName += clList.get(0).getCusLxrName() + ",";
+ 							}
+ 						}
+ 						if(!lxrName.equals("")){
+ 							lxrName = lxrName.substring(0, lxrName.length() - 1);
+ 						}
+ 					}
 					map_d.put("lxrInfo", lxrName);
 					map_d.put("ajFjInfo", zl.getAjFjInfo());
 					map_d.put("ajAddress", zl.getAjSqAddress());
@@ -358,10 +384,38 @@ public class ZlMainAction extends DispatchAction {
 						map.put("ajAddress", zl.getAjSqAddress());
 						map.put("ajType", zl.getAjType());
 						String sqrName = zl.getAjSqrName();//可以是公司也可以是个人
-						map.put("sqrInfo", sqrName);
-						String fmrName = zl.getAjFmrName();
+						String sqrId = zl.getAjSqrId();
+						map.put("sqrId", sqrId);
+						map.put("sqrName", sqrName);
+						String fmrId = zl.getAjFmrId();
+						String fmrName = "";
+	 					if(!fmrId.equals("")){
+	 						String[] fmrIdArr = fmrId.split(",");
+	 						for(Integer i = 0 ; i < fmrIdArr.length ; i++){
+	 							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
+	 							if(cList.size() > 0){
+	 								fmrName += cList.get(0).getCusFmrName() + ",";
+	 							}
+	 						}
+	 						if(!fmrName.equals("")){
+	 							fmrName = fmrName.substring(0, fmrName.length() - 1);
+	 						}
+	 					}
 						map.put("fmrInfo", fmrName);
-						String lxrName = zl.getAjLxrName();
+						String lxrId = zl.getAjLxrId();
+	 					String lxrName = "";
+	 					if(!lxrId.equals("")){
+	 						String[] lxrIdArr = lxrId.split(",");
+	 						for(Integer j = 0 ; j < lxrIdArr.length ; j++){
+	 							List<CustomerLxrInfoTb> clList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
+	 							if(clList.size() > 0){
+	 								lxrName += clList.get(0).getCusLxrName() + ",";
+	 							}
+	 						}
+	 						if(!lxrName.equals("")){
+	 							lxrName = lxrName.substring(0, lxrName.length() - 1);
+	 						}
+	 					}
 						map.put("lxrInfo", lxrName);
 						map.put("ajFjInfo", zl.getAjFjInfo());
 						map.put("ajYxqDetail", zl.getAjYxqDetail());//格式为申请专利号,申请地区,申请日期:申请专利号,申请地区,申请日期........
@@ -1334,7 +1388,7 @@ public class ZlMainAction extends DispatchAction {
 								String ajTitle = Transcode.unescape_new("ajTitle", request);
 								String ajFieldId = CommonTools.getFinalStr("ajFieldId", request);
 								String ajSqrId  = CommonTools.getFinalStr("ajSqrId", request);
-								String sjSqrName = Transcode.unescape_new1("sjSqrName", request);
+								String ajSqrName = Transcode.unescape_new1("ajSqrName", request);
 								String ajFmrId  = CommonTools.getFinalStr("ajFmrId", request);
 								String ajLxrId = CommonTools.getFinalStr("ajLxrId", request);
 								String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
@@ -1350,7 +1404,7 @@ public class ZlMainAction extends DispatchAction {
 									ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);
 								}
 								String ajApplyDate = "";
-								Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, sjSqrName,ajFmrId, ajLxrId, ajFjInfo,ajSqAddress, 
+								Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, ajFjInfo,ajSqAddress, 
 										yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "2.0", "人员分配", pubZlId,cpyId,0,0,
 										0,0,0,0,0,0,currLoginUserId);
 								if(zlId > 0){
@@ -1636,6 +1690,7 @@ public class ZlMainAction extends DispatchAction {
 					if(msg.equals("success")){
 						String ajFieldId = CommonTools.getFinalStr("ajFieldId", request);
 						String ajSqrId  = CommonTools.getFinalStr("ajSqrId", request);
+						String ajSqrName = Transcode.unescape_new1("ajSqrName", request);
 						String ajFmrId  = CommonTools.getFinalStr("ajFmrId", request);
 						String ajLxrId = CommonTools.getFinalStr("ajLxrId", request);
 						String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
@@ -1653,7 +1708,7 @@ public class ZlMainAction extends DispatchAction {
 							upUserId = currUserId;
 							upFileDate = CurrentTime.getStringDate();
 						}
-						zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt, pubId, ajSqAddress, ajType, ajFieldId, ajSqrId, ajFmrId, ajLxrId, ajFjInfo,yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0);
+						zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt, pubId, ajSqAddress, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, ajFjInfo,yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0);
 						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz("专利案件录入");
 						if(lcList.size() > 0){
 							mxm.updateEdateById(lcList.get(0).getId(), -1, upUserId, ajUpload, upFileDate, "", upFileDate, "");
@@ -1875,9 +1930,41 @@ public class ZlMainAction extends DispatchAction {
 					ajStatus = zl.getAjStatus();
 					if(ajStatus.equals("6.0")){//到了案件提交环节
 						String sqrName = zl.getAjSqrName();//可以是公司也可以是个人
-						map.put("sqrInfo", sqrName);//申请人信息
-						String fmrName = zl.getAjFmrName();
-						map.put("fmrInfo", fmrName);//发明人信息
+						String sqrId = zl.getAjSqrId();
+						map.put("sqrName", sqrName);//申请人信息
+						map.put("sqrId", sqrId);//申请人信息
+						String fmrId = zl.getAjFmrId();
+	 					String fmrName = "";
+	 					if(!fmrId.equals("")){
+	 						String[] fmrIdArr = fmrId.split(",");
+	 						for(Integer i = 0 ; i < fmrIdArr.length ; i++){
+	 							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
+	 							if(cList.size() > 0){
+	 								fmrName += cList.get(0).getCusFmrName() + ",";
+	 							}
+	 						}
+	 						if(!fmrName.equals("")){
+	 							fmrName = fmrName.substring(0, fmrName.length() - 1);
+	 						}
+	 					}
+						map.put("fmrName", fmrName);//发明人信息
+						map.put("fmrId", fmrId);//发明人信息
+						String lxrId = zl.getAjLxrId();
+	 					String lxrName = "";
+	 					if(!lxrId.equals("")){
+	 						String[] lxrIdArr = lxrId.split(",");
+	 						for(Integer j = 0 ; j < lxrIdArr.length ; j++){
+	 							List<CustomerLxrInfoTb> clList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
+	 							if(clList.size() > 0){
+	 								lxrName += clList.get(0).getCusLxrName() + ",";
+	 							}
+	 						}
+	 						if(!lxrName.equals("")){
+	 							lxrName = lxrName.substring(0, lxrName.length() - 1);
+	 						}
+	 					}
+	 					map.put("lxrName", lxrName);//发明人信息
+						map.put("lxrId", lxrId);//发明人信息
 						map.put("ajFjInfo", String.valueOf(zl.getAjFjInfo()));
 					}
 				}else{
@@ -2051,12 +2138,13 @@ public class ZlMainAction extends DispatchAction {
 												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//撰写附件（参数）
 												String zlTitle = Transcode.unescape_new1("zlTitle", request);//定稿时提交的专利标题
 												String sqrId = CommonTools.getFinalStr("sqrId", request);//申请人
+												String sqrName = Transcode.unescape_new1("sqrName", request);
 												String fmrId = CommonTools.getFinalStr("fmrId", request);//发明人
 												Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减
 												if(!sqrId.equals("") && !fmrId.equals("")){
 													mxm.updateEdateById(lcMxId, zl.getTjUserId(), zl.getTjUserId(), upZxFile, currDate, "", currDate, taskRemark);
 													//修改必须的信息
-													zlm.updateBasicInfoById(zlId, zlTitle, sqrId, fmrId, "", ajFjInfo);
+													zlm.updateBasicInfoById(zlId, zlTitle, sqrId, sqrName, fmrId, "", ajFjInfo);
 													zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"撰稿修改");
 													lcNo = 7.0;
 													//增加下一个流程

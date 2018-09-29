@@ -1,7 +1,12 @@
 package com.patent.tools;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +23,9 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.patent.action.base.IgnoreDTDEntityResolver;
 import com.patent.factory.AppFactory;
 import com.patent.module.ZlajLcInfoTb;
@@ -236,10 +244,15 @@ public class ReadZipFile {
 	        														lcName_next = "受理费催缴";
 	        													}
 	        													zlm.updateZlStatusById(zlId, "8.0", lcName_next);
-	        													Integer nextLcId = lcm.addLcInfo(zlId, "费用催缴", lcName_next, currDate, CurrentTime.getFinalDate(zl.getAjApplyDate(), 45), "", feeEdate);
+	        													Integer nextLcId = lcm.addLcInfo(zlId, "费用催缴", lcName_next, currDate, CurrentTime.getFinalDate(zl.getAjApplyDate(), Constants.JF_SL_END_DATE_CPY), "", feeEdate);
 		        												if(nextLcId > 0){
 		        													//将缴费明细计入流程明细备注
-		        													mxm.addLcMx(nextLcId, currUserId, lcName_next, 7.1, currDate, "", "", 0, "", "", jfDetail);
+		        													mxm.addLcMx(nextLcId, currUserId, "受理费催缴", 7.1, currDate, "", "", 0, "", "", jfDetail);
+		        													if(zl.getAjType().equals("fm")){
+		        														double scFee_final  = Double.parseDouble(fjRate) * Constants.SC_FEE;
+			        													mxm.addLcMx(nextLcId, currUserId, "实质审查费催缴", 7.2, currDate, "", "", 0, "", "", "催缴实质审查费"+scFee_final);
+			        													//如果是发明专利，先交了受理费，如果此时没有交实质审查费，则修改流程最后期限和官方绝限，等到缴纳了实质审查费后才能修改完成时间
+		        													}
 		        												}
 		        												//修改专利费减明细
 		        												zlm.updateZlFjInfo(zlId, Double.parseDouble(fjRate));
@@ -275,6 +288,39 @@ public class ReadZipFile {
         return list_d;
 	}
 	
+	/**
+	 * 读取系统配置文件（实质审查费、到期警报天数）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-9-29 上午10:31:11
+	 * @param optVal
+	 * @return
+	 * @throws IOException
+	 */
+	public static String readConfigDetail(String optVal) throws IOException{
+		String configPath = "e:\\sysConfig.json";
+		File file = new File(configPath);
+		if(file != null){
+			InputStreamReader br = new InputStreamReader(new FileInputStream(file),"utf-8");//读取文件,同时指定编码
+			StringBuffer sb = new StringBuffer();
+	        char[] ch = new char[128];  //一次读取128个字符
+	        int len = 0;
+	        while((len = br.read(ch,0, ch.length)) != -1){
+	            sb.append(ch, 0, len);
+	        }
+	        String s = sb.toString();
+	        JSONObject dataJson = JSON.parseObject(s); 
+	        JSONArray features = dataJson.getJSONArray("opt");// 找到features json数组
+	        JSONObject json = features.getJSONObject(0);// 获取features数组的首个json对象
+	        if(optVal.equals("scFee")){
+	        	return json.getString("scFee");
+	        }else if(optVal.equals("alert")){
+	        	//截止日期比当前日期>=20天-绿色警告，10-20天内为黄色警告，<10天内为红色警告
+	        	return json.getString("yellowAlert") + "," + json.getString("greenAlert");//格式红,黄，绿
+	        }
+		}
+		return "";
+	}
 	
 	/**
 	 * @description
@@ -285,11 +331,12 @@ public class ReadZipFile {
 	 */
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		ReadZipFile.readZipFile_new("E:\\","实用新型-受理+费用减缓通知书.zip",0,0);
+//		ReadZipFile.readZipFile_new("E:\\","实用新型-受理+费用减缓通知书.zip",0,0);
 //		for(Iterator<Object> it = objList.iterator() ; it.hasNext();){
 //			Object obj = it.next();
 //			System.out.println(obj);
 //		}
+		System.out.println(ReadZipFile.readConfigDetail("alert"));
 	}
 
 }
