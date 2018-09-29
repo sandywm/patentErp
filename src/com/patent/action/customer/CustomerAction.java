@@ -749,39 +749,59 @@ public class CustomerAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		Integer currLoginUserId = this.getLoginUserId(request);
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<Object> list_d = new ArrayList<Object>();
+		
 		if(this.getLoginType(request).equals("cpyUser")){
 			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
 			Integer cpyId = cUser.getCpyInfoTb().getId();
 			String opt = CommonTools.getFinalStr("opt", request);//add:增加专利时，edit：修改专利
-			
-			Integer cusId = CommonTools.getFinalInteger(request.getParameter("cusId"));
+			String option = CommonTools.getFinalStr("option", request);//fmr:发明人，lxr:联系人
 			String cusIdStr = CommonTools.getFinalStr(request.getParameter("cusIdStr"));
-			
-			List<CustomerInfoTb> cList = cm.listInfoById(cpyId, cusId);
-			if(cList.size() > 0){
-				List<CustomerFmrInfoTb> cfmrList = cm.listFmrInfoByCusId(cusId,cpyId);
-				if(cfmrList.size() > 0){
-					for(Iterator<CustomerFmrInfoTb> it = cfmrList.iterator() ; it.hasNext();){
-						CustomerFmrInfoTb fmr = it.next();
-						Map<String,Object> map_d = new HashMap<String,Object>();
-						map_d.put("fmrId", fmr.getId());
-						map_d.put("fmrName", fmr.getCusFmrName());
-						map_d.put("fmrTel", fmr.getCusFmrTel());
-						map_d.put("fmrEmail", fmr.getCusFxrEmail());
-						map_d.put("fmriCard", fmr.getCusFmrICard());
-						list_d.add(map_d);
+			List<Object> list_final = new ArrayList<Object>();
+			if(!cusIdStr.equals("")){
+				String[] cusIdArr = cusIdStr.split(",");
+				for(Integer i = 0 ; i < cusIdArr.length ; i++){
+					Map<String,Object> map_a = new HashMap<String,Object>();
+					List<Object> list_d = new ArrayList<Object>();
+					Integer cusId = Integer.parseInt(cusIdArr[i]);
+					List<CustomerInfoTb> cList = cm.listInfoById(cpyId, cusId);
+					if(cList.size() > 0){
+						CustomerInfoTb cus = cList.get(0);
+						//申请人信息
+						map_a.put("sqrId", cus.getId());
+						map_a.put("sqrName", cus.getCusName());
+						if(option.equals("fmr")){
+							List<CustomerFmrInfoTb> cfmrList = cm.listFmrInfoByCusId(cusId,cpyId);
+							//发明人信息
+							if(cfmrList.size() > 0){
+								for(Iterator<CustomerFmrInfoTb> it = cfmrList.iterator() ; it.hasNext();){
+									CustomerFmrInfoTb fmr = it.next();
+									Map<String,Object> map_d = new HashMap<String,Object>();
+									map_d.put("fmrId", fmr.getId());
+									map_d.put("fmrName", fmr.getCusFmrName());
+									list_d.add(map_d);
+								}
+								map_a.put("result", "success");
+								map_a.put("fmrInfo", list_d);
+							}
+						}else if(option.equals("lxr")){
+							List<CustomerLxrInfoTb> lxrList = cm.listLxrInfoByOpt(cusId, cpyId);
+							if(lxrList.size() > 0){
+								for(Iterator<CustomerLxrInfoTb> it = lxrList.iterator() ; it.hasNext();){
+									CustomerLxrInfoTb lxr = it.next();
+									Map<String,Object> map_d = new HashMap<String,Object>();
+									map_d.put("lxrId", lxr.getId());
+									map_d.put("lxrName", lxr.getCusLxrName());
+									list_d.add(map_d);
+								}
+								map_a.put("result", "success");
+								map_a.put("lxrInfo", list_d);
+							}
+						}
+						list_final.add(map_a);
 					}
-					map.put("result", "success");
-					map.put("fmrInfo", list_d);
-				}else{
-					map.put("result", "noInfo");
 				}
-			}else{
-				map.put("result", "error");
+				map.put("result", list_final);
 			}
-		}else{
-			map.put("result", "error");
 		}
 		this.getJsonPkg(map, response);
         return null;

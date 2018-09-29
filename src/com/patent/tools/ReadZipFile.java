@@ -2,11 +2,9 @@ package com.patent.tools;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,14 +39,19 @@ public class ReadZipFile {
 
 	
 	/**
-	 * 读取压缩包内容
+	 * 读取上传的通知书内容
 	 * @description
 	 * @author Administrator
-	 * @date 2018-9-21 下午05:24:59
-	 * @param zipPath
-	 * @throws Exception 
+	 * @date 2018-9-29 下午04:44:44
+	 * @param pathPre 文件路径默认
+	 * @param upZipPath 上传的文件路径
+	 * @param currUserId 当前操作人员
+	 * @param cpyId 当前操作人员公司编号
+	 * @param specZlId 专利编号（统一上传时为0，大于0时表示对指定的专利上传）
+	 * @return
+	 * @throws Exception
 	 */
-	public static List<Object> readZipFile_new(String pathPre,String upZipPath,Integer currUserId,Integer cpyId) throws Exception{
+	public static List<Object> readZipFile_new(String pathPre,String upZipPath,Integer currUserId,Integer cpyId,Integer specZlId) throws Exception{
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
@@ -187,20 +190,25 @@ public class ReadZipFile {
 			            		map_d.put("fjRate", fjRate);
 			            	}
 			            	
-			            	
-			            	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(ajNoGf);
-			            	//第一次导入，需要根据专利名称、申请人、专利类型获取系统专利
-			            	if(zlList.size() == 0){//说明系统中还没有该专利号的专利
-			            		if(tzsName.equals("专利申请受理通知书")){
-			            			zlList = zlm.listSpecInfoByOpt(zlName, sqrName, zlType,cpyId);
-			            		}else{
-			            			msg = "noInfo";//没有这个专利
-			            		}
-			            	}else{//不是第一次导入
-			            		if(tzsName.equals("专利申请受理通知书")){
-			            			msg = "noInput";//该专利已被受理过，不需要再导入受理通知书
-			            		}
+			            	List<ZlajMainInfoTb> zlList = new ArrayList<ZlajMainInfoTb>();
+			            	if(specZlId.equals(0)){//统一导入
+			            		zlList = zlm.listSpecInfoByZlNo(ajNoGf);
+				            	//第一次导入，需要根据专利名称、申请人、专利类型获取系统专利
+				            	if(zlList.size() == 0){//说明系统中还没有该专利号的专利
+				            		if(tzsName.equals("专利申请受理通知书")){
+				            			zlList = zlm.listSpecInfoByOpt(zlName, sqrName, zlType,cpyId);
+				            		}else{
+				            			msg = "noInfo";//没有这个专利
+				            		}
+				            	}else{//不是第一次导入
+				            		if(tzsName.equals("专利申请受理通知书")){
+				            			msg = "noInput";//该专利已被受理过，不需要再导入受理通知书
+				            		}
+				            	}
+			            	}else if(specZlId > 0){//针对指定的专利导入
+			            		zlList = zlm.listSpecInfoById(specZlId, cpyId);
 			            	}
+			            	
 			            	if(zlList.size() > 0){
 	            				if(zlList.size() == 1){
 	            					ZlajMainInfoTb zl = zlList.get(0);
