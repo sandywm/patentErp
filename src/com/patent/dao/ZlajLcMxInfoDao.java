@@ -65,4 +65,28 @@ public interface ZlajLcMxInfoDao {
 	 * @return
 	 */
 	List<ZlajLcMxInfoTb> findFirstInfoByLcId(Session sess,Integer lcId);
+	
+	/**
+	 * 根据流程明细名称、流程号、流程主键编号获取未完成的流程明细列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-5 上午11:38:33
+	 * @param sess
+	 * @param lcMxName 流程明细名称
+	 * @param lcMxNo 流程号
+	 * @param lcId 流程主键编号
+	 * @return
+	 */
+	List<ZlajLcMxInfoTb> listUnComInfoByOpt(Session sess,String lcMxName,Double lcMxNo, Integer lcId);
+	
+	/**
+	 * 根据流程明细主键获取流程明细列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-6 上午10:00:17
+	 * @param sess
+	 * @param mxId 流程明细主键
+	 * @return
+	 */
+	List<ZlajLcMxInfoTb> findDetailInfoById(Session sess,Integer mxId);
 }

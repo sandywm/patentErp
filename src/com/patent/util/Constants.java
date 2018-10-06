@@ -21,6 +21,9 @@ public class Constants {
 	public static final Integer JF_SC_END_DATE_GF = 1095;//实质审查费官方期限
 	public static final Integer JF_SC_END_DATE_CPY = 1080;//实质审查费代理机构期限
 	
+	public static final String SYS_CONFIG_WJ = "e:\\sysConfig.json";//系统配置文件存放地
+	public static final Integer TD_RECEIVE_DAYS = 15;//推定收到日
+	
 	public static final Integer SC_FEE = 2500;//实质审查费
 	public static final Integer YELLOW_ALERT_DAYS = 10;//黄色警告截止天数
 	public static final Integer GREEN_ALERT_DAYS = 20;//绿色警告截止天数

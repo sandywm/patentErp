@@ -138,4 +138,37 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajLcMxInfoTb> listUnComInfoByOpt(String lcMxName,
+			Double lcMxNo, Integer lcId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return mxDao.findFirstInfoByLcId(sess, lcId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据流程明细名称、流程号、流程主键编号获取未完成的流程明细列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<ZlajLcMxInfoTb> listDetailInfoById(Integer mxId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return mxDao.findDetailInfoById(sess, mxId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据流程明细主键编号获取流程明细列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

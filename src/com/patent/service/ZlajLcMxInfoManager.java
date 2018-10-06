@@ -2,6 +2,8 @@ package com.patent.service;
 
 import java.util.List;
 
+import org.hibernate.Session;
+
 import com.patent.exception.WEBException;
 import com.patent.module.ZlajLcMxInfoTb;
 
@@ -80,4 +82,27 @@ public interface ZlajLcMxInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajLcMxInfoTb> listFirstInfoByLcId(Integer lcId) throws WEBException;
+	
+	/**
+	 * 根据流程明细名称、流程号、流程主键编号获取未完成的流程明细列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-5 上午11:36:31
+	 * @param lcMxName 流程明细名称
+	 * @param lcMxNo 流程号
+	 * @param lcId 流程主键编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajLcMxInfoTb> listUnComInfoByOpt(String lcMxName,Double lcMxNo,Integer lcId) throws WEBException;
+	
+	/**
+	 * 根据流程明细主键编号获取流程明细列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-6 上午10:01:50
+	 * @param mxId 流程明细主键
+	 * @return
+	 */
+	List<ZlajLcMxInfoTb> listDetailInfoById(Integer mxId) throws WEBException;
 }

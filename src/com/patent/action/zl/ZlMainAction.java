@@ -2009,6 +2009,7 @@ public class ZlMainAction extends DispatchAction {
 		boolean abilityFlag = false;
 		String roleName = this.getLoginRoleName(request);
 		boolean upFlag = false;
+		String filePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\";
 		if(this.getLoginType(request).equals("cpyUser")){
 			//判断权限
 			//获取当前用户是否有修改权限
@@ -2064,7 +2065,6 @@ public class ZlMainAction extends DispatchAction {
 												//修改撰写任务流程
 												if(upFlag){
 													mxm.updateEdateById(lcMxId, currUserId, currUserId, upZxFile, currDate, "", currDate, taskRemark);
-													String filePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\";
 													if(!upZxFile.equals("")){
 														String[] fjNameArr = upZxFile.split(",");
 														for(Integer i = 0 ; i < fjNameArr.length ; i++){
@@ -2087,7 +2087,7 @@ public class ZlMainAction extends DispatchAction {
 													if(nextLcId > 0){
 														mxm.addLcMx(nextLcId, zl.getCheckUserId(), "专利审核", lcNo, currDate, "", "", 0, "", "", "");
 														//修改案件状态
-														zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"专利审核");
+														zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待专利审核");
 														mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getCheckUserId(), "cpyUser", "新任务通知：专利审核", "专利["+zl.getAjTitle()+"]已完成撰写，请及时完成专利审核工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
 													}else{
 														msg = "error";
@@ -2097,7 +2097,7 @@ public class ZlMainAction extends DispatchAction {
 												Integer zxScore = CommonTools.getFinalInteger("zxScore", request);//员工撰写质量评分（0分表示审核失败）（参数）
 												if(zxScore.equals(0) || zxScore.equals(1) || zxScore.equals(2) || zxScore.equals(5)){
 													//修改流程详情
-													mxm.updateEdateById(lcMxId, currUserId, 0, "", "", "", currDate, taskRemark);
+													mxm.updateEdateById(lcMxId, currUserId, -1, "", "", "", currDate, taskRemark);
 													if(zxScore.equals(0)){//审核未通过
 														if(lcNo == 4.9){//不能再加
 															lcNo = lcNo - 1 ;
@@ -2122,7 +2122,7 @@ public class ZlMainAction extends DispatchAction {
 														if(nextLcId > 0){
 															mxm.addLcMx(nextLcId, zl.getTjUserId(), "定稿提交", lcNo, currDate, "", "", 0, "", "", "");
 															//修改专利的案件状态
-															zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"定稿提交");
+															zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待定稿提交");
 															//发送邮件
 															mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getTjUserId(), "cpyUser", "新任务通知：定稿提交", "专利["+zl.getAjTitle()+"]审核已审核通过，请及时完成专利提交工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
 															//审核成功，增加撰写人经验、撰写数量
@@ -2135,27 +2135,84 @@ public class ZlMainAction extends DispatchAction {
 											}else if(lcNo == 6.0){//案件定稿提交
 												//提交之前需要先判断专利的信息是否填写完成
 												upFlag = lcm.updateComInfoById(lcId, currDate);//修改流程完成时间
-												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//撰写附件（参数）
+												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//撰写附件（参数），可以在定稿时增加，也可以不增加
 												String zlTitle = Transcode.unescape_new1("zlTitle", request);//定稿时提交的专利标题
 												String sqrId = CommonTools.getFinalStr("sqrId", request);//申请人
 												String sqrName = Transcode.unescape_new1("sqrName", request);
 												String fmrId = CommonTools.getFinalStr("fmrId", request);//发明人
 												Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减
-												if(!sqrId.equals("") && !fmrId.equals("")){
+												if(!sqrId.equals("") && !fmrId.equals("") && !upZxFile.equals("")){
+													//增加附件信息
+													String[] fjNameArr = upZxFile.split(",");
+													for(Integer i = 0 ; i < fjNameArr.length ; i++){
+														String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
+														Integer lastIndex = fileName.lastIndexOf("_");
+														String lastFjName = fileName.substring(lastIndex+1, fileName.length());
+														Integer lastIndex_1 = lastFjName.indexOf(".");
+														String fjVersion = lastFjName.substring(0, lastIndex_1);
+														String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
+														fjm.addFj(zlId, fileName, fjVersion, "定稿文件", fjGs, FileOpration.getFileSize(filePath + fileName), currUserId, currDate);
+													}
 													mxm.updateEdateById(lcMxId, zl.getTjUserId(), zl.getTjUserId(), upZxFile, currDate, "", currDate, taskRemark);
 													//修改必须的信息
 													zlm.updateBasicInfoById(zlId, zlTitle, sqrId, sqrName, fmrId, "", ajFjInfo);
-													zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"撰稿修改");
 													lcNo = 7.0;
+													zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待导入受理/缴费通知书");
 													//增加下一个流程
 													Integer nextLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理通知书", currDate, CurrentTime.getFinalDate(currDate, 30), "", "");//导入通知书期限1个月
 													if(nextLcId > 0){
-														mxm.addLcMx(nextLcId, zl.getTzsUserId(), "导入受理通知书", 7.0, currDate, "", "", 0, "", "", "");
+														mxm.addLcMx(nextLcId, zl.getTzsUserId(), "导入受理通知书", lcNo, currDate, "", "", 0, "", "", "");
 														//发送邮件
 														mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getTzsUserId(), "cpyUser", "新任务通知：导入受理/缴费通知书", "专利["+zl.getAjTitle()+"]审核已完成定稿提交，请及时完成导入受理/缴费通知书工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
 													}
 												}else{
 													msg = "inComInfo";//信息不完整
+												}
+											}else if(lcNo == 8.1 || lcNo == 8.2){//缴纳受理费或者实质审查费
+												Double csFee = CommonTools.getFinalDouble("csFee", request);//初审费
+												Double ssFee = CommonTools.getFinalDouble("ssFee", request);//实审费（发明专利才有，其他专利为0.0）
+												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//缴费图片
+												List<ZlajLcMxInfoTb> mxList_1 = mxm.listUnComInfoByOpt("受理费催缴", 8.1, lcId);
+												if(mxList_1.size() > 0){
+													ZlajLcMxInfoTb mx_1 = mxList_1.get(0);
+													Double csFee_db = Double.parseDouble(mx_1.getLcMxRemark().split(":")[1]);
+													if(csFee_db.equals(csFee)){
+														mxm.updateEdateById(mx_1.getId(), currUserId, currUserId, upZxFile, currDate, "", currDate, "");
+														if(ssFee > 0){
+															List<ZlajLcMxInfoTb> mxList_2 = mxm.listUnComInfoByOpt("实质审查费催缴", 8.2, lcId);
+															if(mxList_2.size() > 0){
+																mxm.updateEdateById(mxList_2.get(0).getId(), currUserId, currUserId, upZxFile, currDate, "", currDate, "");
+																msg = "success";
+															}
+															//缴费完成，等待导入初步审查合格通知书或者补正/审查意见通知书
+															lcNo = 9.0;
+															zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待导入初审通知书");
+															//增加下一个流程
+															Integer nextLcId = lcm.addLcInfo(zlId, "导入通知书", "导入初审通知书", currDate, CurrentTime.getFinalDate(currDate, 30), "", "");//导入通知书期限1个月
+															if(nextLcId > 0){
+																mxm.addLcMx(nextLcId, zl.getTzsUserId(), "导入初审通知书", lcNo, currDate, "", "", 0, "", "", "");
+																//发送邮件
+																mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getTzsUserId(), "cpyUser", "新任务通知：导入初审通知书", "专利["+zl.getAjTitle()+"]已进入初审阶段，请及时完成导入初审通知书工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
+															}
+														}else{
+															msg = "success";
+														}
+														//上传缴费图
+														if(!upZxFile.equals("")){
+															String[] fjNameArr = upZxFile.split(",");
+															for(Integer i = 0 ; i < fjNameArr.length ; i++){
+																String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
+																Integer lastIndex = fileName.lastIndexOf("_");
+																String lastFjName = fileName.substring(lastIndex+1, fileName.length());
+																Integer lastIndex_1 = lastFjName.indexOf(".");
+																String fjVersion = lastFjName.substring(0, lastIndex_1);
+																String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
+																fjm.addFj(zlId, fileName, fjVersion, "缴费凭证", fjGs, FileOpration.getFileSize(filePath + fileName), currUserId, currDate);
+															}
+														}
+													}else{
+														msg = "feeError";//缴费错误
+													}
 												}
 											}
 										}else{

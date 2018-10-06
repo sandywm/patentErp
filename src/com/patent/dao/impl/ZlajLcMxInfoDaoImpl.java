@@ -55,4 +55,19 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 		return sess.createQuery(hql).setFirstResult(0).setMaxResults(1).list();
 	}
 
+	@Override
+	public List<ZlajLcMxInfoTb> listUnComInfoByOpt(Session sess,
+			String lcMxName, Double lcMxNo, Integer lcId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajLcMxInfoTb as lcmx where lcmx.zlajLcInfoTb.id = "+lcId + " and lcmx.lcMxName = '"+lcMxName+"' and lcmx.lcMxNo = "+lcMxNo + " and lcmx.lcMxEDate = ''";
+		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public List<ZlajLcMxInfoTb> findDetailInfoById(Session sess, Integer mxId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajLcMxInfoTb as lcmx where lcmx.id = "+mxId;
+		return sess.createQuery(hql).list();
+	}
+
 }
