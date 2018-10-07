@@ -191,16 +191,34 @@ public interface PubZlInfoManager {
 	 * @throws WEBException
 	 */
 	Integer addPzCzInfo(Integer pubId,String addContent)throws WEBException ;
-
+	
 	/**
-	 * 获取当前代理机构指定专利类型的已领取未增加的专利任务列表
-	 * @author  Administrator
-	 * @ModifiedBy  
-	 * @date  2018-9-19 下午08:42:05
+	 * 根据条件分页获取当前代理机构下已领取未增加的专利任务列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-7 上午08:17:40
 	 * @param lqCpyId 代理机构编号
 	 * @param zlType 专利任务类型(""表示全部)
+	 * @param zlTitle 专利标题(""表示全部)
+	 * @param pubUserId 发布人(0表示全部)
+	 * @param pageNo 页码
+	 * @param pageSize 
 	 * @return
 	 * @throws WEBException
 	 */
-	List<PubZlInfoTb> listSpecInfoByOpt(Integer lqCpyId,String zlType)throws WEBException ;
+	List<PubZlInfoTb> listPageSpecInfoByOpt(Integer lqCpyId,String zlType,String zlTitle,Integer pubUserId,Integer pageNo,Integer pageSize)throws WEBException ;
+	
+	/**
+	 * 根据条件获取当前代理机构下已领取未增加的专利任务记录条数
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-7 上午08:19:35
+	 * @param lqCpyId 代理机构编号
+	 * @param zlType 专利任务类型(""表示全部)
+	 * @param zlTitle 专利标题(""表示全部)
+	 * @param pubUserId 发布人(0表示全部)
+	 * @return
+	 * @throws WEBException
+	 */
+	Integer getCountByOpt(Integer lqCpyId,String zlType,String zlTitle,Integer pubUserId)throws WEBException ;
 }

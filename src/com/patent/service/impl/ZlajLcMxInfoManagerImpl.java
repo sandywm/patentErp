@@ -171,4 +171,21 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajLcMxInfoTb> listSpecInfoInfoByOpt(Integer zlId,
+			String lcmxName) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return mxDao.findSpecInfoInfoByOpt(sess, zlId, lcmxName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("查看指定专利、指定流程明细有无记录（批量导入时，如果出现先后顺序混乱时使用）时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

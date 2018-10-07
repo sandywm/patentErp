@@ -826,7 +826,6 @@ public class PubZlAction extends DispatchAction {
 			CpyUserInfo cUser = cum.getEntityById(this.getLoginUserId(request));
 			if(cUser != null){
 				Integer cpyId = cUser.getCpyInfoTb().getId();
-				Integer addStatus = CommonTools.getFinalInteger("addStatus", request);
 				String option = CommonTools.getFinalStr("option", request);//cpy:查看代理机构,yg:查看员工
 				String purpose = CommonTools.getFinalStr("purpose", request);//allInfo:用于浏览单位全部领取记录用,simpleInfo://用于增加专利时显示用
 				boolean pageFlag = false;
@@ -835,12 +834,13 @@ public class PubZlAction extends DispatchAction {
 				if(option.equals("yg")){
 					lqUserId = this.getLoginUserId(request);
 				}
-				Integer count = pzm.getCountByOpt_2(cpyId, lqUserId, addStatus);
+				pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+				pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
 				if(purpose.equals("allInfo")){//用于浏览单位全部领取记录用
 					pageFlag = true;
+					Integer addStatus = CommonTools.getFinalInteger("addStatus", request);
+					Integer count = pzm.getCountByOpt_2(cpyId, lqUserId, addStatus);
 					if(count > 0){
-						pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
-						pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
 						List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, lqUserId, addStatus, pageFlag, pageNo, pageSize);
 						msg = "success";
 						for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
@@ -883,6 +883,8 @@ public class PubZlAction extends DispatchAction {
 					//编辑时需要附带上该专利绑定的发布任务，增加时为0
 					//编辑是是专利编号，增加时不用传
 					Integer zlId = CommonTools.getFinalInteger("zlId", request);//代理机构增加的专利编号
+					String zlTitle = Transcode.unescape_new1("zlTile", request);//专利标题
+					Integer pubUserId = CommonTools.getFinalInteger("pubUserId", request);//发布人
 					if(zlId > 0){//编辑时默认获取同当前类型一致的专利任务
 						List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
 						if(zlList.size() > 0){
@@ -894,16 +896,14 @@ public class PubZlAction extends DispatchAction {
 								Map<String,Object> map_d = new HashMap<String,Object>();
 								map_d.put("pzId", pz.getId());
 								map_d.put("pzTitle", pz.getZlTitle());
-								String zlType_db = pz.getZlType();
-								zlType = zlType_db;
-								map_d.put("pzType", zlType_db);
+								map_d.put("pzType", zlType);
 								map_d.put("checkFlag", true);
 								String zlTypeChi = "";
-								if(zlType_db.equals("fm")){
+								if(zlType.equals("fm")){
 									zlTypeChi = "发明";
-								}else if(zlType_db.equals("syxx")){
+								}else if(zlType.equals("syxx")){
 									zlTypeChi = "实用新型";
-								}else if(zlType_db.equals("wg")){
+								}else if(zlType.equals("wg")){
 									zlTypeChi = "外观";
 								}
 								map_d.put("zlTypeChi", zlTypeChi);
@@ -916,8 +916,9 @@ public class PubZlAction extends DispatchAction {
 						msg = "success";
 					}
 					if(msg.equals("success")){
-						List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt(cpyId, zlType);
-						if(pzList.size() > 0){
+						Integer count = pzm.getCountByOpt(cpyId, zlType, zlTitle, pubUserId);
+						if(count > 0){
+							List<PubZlInfoTb> pzList = pzm.listPageSpecInfoByOpt(cpyId, zlType, zlTitle, pubUserId, pageNo, pageSize);
 							for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
 								PubZlInfoTb pz = it.next();
 								Map<String,Object> map_d = new HashMap<String,Object>();
@@ -938,14 +939,15 @@ public class PubZlAction extends DispatchAction {
 								map_d.put("pubInfo", pz.getApplyInfoTb().getAppName());
 								list_d.add(map_d);
 							}
-							map.put("pzInfo", list_d);
+							map.put("data", list_d);
+							map.put("count", count);
+							map.put("code", 0);
 						}else{
 							if(list_d.size() == 0){
 								msg = "noInfo";
 							}
 						}
 					}
-					
 				}
 			}
 		}

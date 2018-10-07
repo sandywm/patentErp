@@ -145,15 +145,37 @@ public interface PubZlInfoDao {
 	 */
 	void saveCz(Session sess,PubZlCzRecordTb pzCzInfo);
 	
+	
 	/**
-	 * 获取当前代理机构指定专利类型的已领取未增加的专利任务列表
-	 * @author  Administrator
-	 * @ModifiedBy  
-	 * @date  2018-9-19 下午08:44:44
+	 * 根据条件分页获取当前代理机构下已领取未增加的专利任务列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-7 上午08:23:01
 	 * @param sess
 	 * @param lqCpyId 代理机构编号
 	 * @param zlType 专利任务类型(""表示全部)
+	 * @param zlTitle 专利标题(""表示全部)
+	 * @param pubUserId 发布人(0表示全部)
+	 * @param pageNo
+	 * @param pageSize
 	 * @return
 	 */
-	List<PubZlInfoTb> findSpecInfoByOpt(Session sess,Integer lqCpyId,String zlType);
+	List<PubZlInfoTb> findtPageSpecInfoByOpt(Session sess,Integer lqCpyId,
+			String zlType, String zlTitle, Integer pubUserId, Integer pageNo,
+			Integer pageSize);
+	
+	/**
+	 * 根据条件获取当前代理机构下已领取未增加的专利任务记录条数
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-7 上午08:23:31
+	 * @param sess
+	 * @param lqCpyId 代理机构编号
+	 * @param zlType 专利任务类型(""表示全部)
+	 * @param zlTitle 专利标题(""表示全部)
+	 * @param pubUserId 发布人(0表示全部)
+	 * @return
+	 */
+	Integer getCountByOpt(Session sess,Integer lqCpyId,
+			String zlType, String zlTitle, Integer pubUserId);
 }

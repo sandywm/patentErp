@@ -89,4 +89,16 @@ public interface ZlajLcMxInfoDao {
 	 * @return
 	 */
 	List<ZlajLcMxInfoTb> findDetailInfoById(Session sess,Integer mxId);
+	
+	/**
+	 * 查看指定专利、指定流程明细有无记录（批量导入时，如果出现先后顺序混乱时使用）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-7 下午03:50:34
+	 * @param sess
+	 * @param zlId 专利编号
+	 * @param lcMxName 流程明细
+	 * @return
+	 */
+	List<ZlajLcMxInfoTb> findSpecInfoInfoByOpt(Session sess,Integer zlId,String lcMxName);
 }

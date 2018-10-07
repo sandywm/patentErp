@@ -308,17 +308,35 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 	}
 
 	@Override
-	public List<PubZlInfoTb> listSpecInfoByOpt(Integer lqCpyId, String zlType)
-			throws WEBException {
+	public List<PubZlInfoTb> listPageSpecInfoByOpt(Integer lqCpyId,
+			String zlType, String zlTitle, Integer pubUserId, Integer pageNo,
+			Integer pageSize) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return pzDao.findSpecInfoByOpt(sess, lqCpyId, zlType);
+			return pzDao.findtPageSpecInfoByOpt(sess, lqCpyId, zlType, zlTitle, pubUserId, pageNo, pageSize);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new WEBException("获取当前代理机构指定专利类型的已领取未增加的专利任务列表信息时出现异常!");
+			throw new WEBException("根据条件分页获取当前代理机构下已领取未增加的专利任务列表信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public Integer getCountByOpt(Integer lqCpyId, String zlType,
+			String zlTitle, Integer pubUserId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return pzDao.getCountByOpt(sess, lqCpyId, zlType, zlTitle, pubUserId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据条件获取当前代理机构下已领取未增加的专利任务记录条数信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

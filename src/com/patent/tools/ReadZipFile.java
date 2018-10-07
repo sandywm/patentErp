@@ -221,9 +221,9 @@ public class ReadZipFile {
 			            			msg = "noInfo";//没有这个专利
 			            		}
 			            	}else{//不是第一次导入
-			            		if(tzsName.equals("专利申请受理通知书")){
-			            			msg = "noInput";//该专利已被受理过，不需要再导入受理通知书
-			            		}
+//			            		if(tzsName.equals("专利申请受理通知书")){
+//			            			msg = "noInput";//该专利已被受理过，不需要再导入受理通知书
+//			            		}
 			            	}
 		            	}else if(specZlId > 0){//针对指定的专利导入
 		            		zlList = zlm.listSpecInfoById(specZlId, cpyId);
@@ -257,8 +257,25 @@ public class ReadZipFile {
 	        												}
 	        												zlm.updateAjNoGfById(zlId, applyDate);//修改专利申请日
 	        											}else{
-	        												msg = "error";//当前只能导入受理通知书
-	        												map_d.put("currLcInfo", "当前任务环节为：["+lcmx.getLcMxName()+"],不能导入受理通知书");
+	        												//查看之前有无导入受理通知书的记录，如果有，不执行任何操作，没有就增加上
+	        												List<ZlajLcMxInfoTb> mxList_temp = mxm.listSpecInfoInfoByOpt(zlId, "导入受理通知书");
+	        												if(mxList_temp.size() == 0){//不存在，说明之前没有增加初始记录
+	        													msg = "success";//弥补之前的
+	        													//增加下一个流程
+	        													Integer nextLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "");//导入通知书期限1个月
+	        													if(nextLcId > 0){
+	        														mxm.addLcMx(nextLcId, currUserId, "导入受理通知书", 7.0, currDate, currDate, upZipPath, currUserId, currDate, "", "成功导入："+tzsName);
+	        													}
+	        												}else{//存在，看是否完成
+	        													if(mxList_temp.get(0).getLcMxEDate().equals("")){//有记录，但是未完成
+	        														lcm.updateComInfoById(lcId, currDate);//修改流程完成时间
+	    	        												mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZipPath, currDate, "", currDate, "成功导入"+tzsName);
+	    	        												msg = "success";//修改之前未完成的
+	        													}else{
+	        														msg = "uploadExist";//之前已经上传过，无需再次上传
+	        														map_d.put("detailInfo", "之前已完成上传，无需再次导入："+tzsName);
+	        													}
+	        												}
 	        											}
         											}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
         												if(lcNo == 7.1){
@@ -286,12 +303,31 @@ public class ReadZipFile {
 	        												//修改专利费减明细
 	        												zlm.updateZlFjInfo(zlId, Double.parseDouble(fjRate));
         												}else{
-        													msg = "error";//当前只能导入费用减缓审批/缴纳申请费通知书
-	        												map_d.put("currLcInfo", "当前任务环节为：["+lcmx.getLcMxName()+"],不能导入缴费/费用减缓通知书");
+        													//查看之前有无导入费用减缓审批/缴纳申请费通知书的记录，如果有，不执行任何操作，没有就增加上
+        													List<ZlajLcMxInfoTb> mxList_temp = mxm.listSpecInfoInfoByOpt(zlId, "导入费用减缓审批/缴纳申请费通知书");
+	        												if(mxList_temp.size() == 0){//不存在，说明之前没有增加初始记录
+	        													msg = "success";//弥补之前的
+	        													//增加流程
+	        													Integer nextLcId = lcm.addLcInfo(zlId, "导入通知书", "导入费用减缓审批/缴纳申请费通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "");//导入通知书期限1个月
+	        													if(nextLcId > 0){
+	        														mxm.addLcMx(nextLcId, currUserId, "导入费用减缓审批/缴纳申请费通知书", 7.1, currDate, currDate, upZipPath, currUserId, currDate, "", "成功导入："+tzsName);
+	        													}
+	        													
+	        												}else{//存在，看是否完成
+	        													if(mxList_temp.get(0).getLcMxEDate().equals("")){//有记录，但是未完成
+	        														lcm.updateComInfoById(lcId, currDate);//修改流程完成时间
+	    	        												mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZipPath, currDate, "", currDate, "成功导入"+tzsName);
+	    	        												msg = "success";//修改之前未完成的
+	        													}else{
+	        														msg = "uploadExist";//之前已经上传过，无需再次上传
+	        														map_d.put("detailInfo", "之前已完成上传，无需再次导入："+tzsName);
+	        													}
+	        												}
         												}
         											}else if(tzsName.equals("补正通知书") || tzsName.contains("审查意见通知书") || tzsName.contains("初步审查合格通知书")){
         												//补正/审查意见通知书可能是初审中的，也可能是实审中的,都是审核不通过下发的通知书
         												String nextAjStatusChi = "";
+        												msg = "success";
         												if(lcNo >= 9.0 && lcNo < 10){//说明当前处于初审阶段
         													if(tzsName.contains("初步审查合格通知书")){//初审合格
         														if(zl.getAjType().equals("fm")){
@@ -301,13 +337,15 @@ public class ReadZipFile {
         																lcNo = 12.0;//发明专利进入费用催缴（缴纳实质审查费）
         																nextAjStatusChi = "等待缴纳实质审查费";
         															}else{
-        																lcNo = 13.0;//进入实审阶段
+        																lcNo = 12.1;//等待导入发明专利申请公布及进入实质审查通知书
         																nextAjStatusChi = "实审中";
         															}
+        															//增加费用催缴流程
         														}else{//其他专利
         															lcNo = 14.0;//其他专利需要等待导入授权和办理登记手续阶段
         															nextAjStatusChi = "等待导入授权和办理登记手续";
         														}
+        														
         													}else{//初审不合格
         														//进入案件提交(补正/审查答复阶段)
         														if(lcNo < 9.9){//如果流程到9.9，不再往上累加
@@ -315,6 +353,8 @@ public class ReadZipFile {
         														}
         														nextAjStatusChi = "等待补正/审查答复";
         													}
+        													zlm.updateZlStatusById(zlId, String.valueOf(lcNo), nextAjStatusChi);//修改专利主表
+        													mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZipPath, "", "", currDate, "成功导入："+tzsName);
         												}else if(lcNo >= 13.0 && lcNo < 14){//当前处于实审补正中
         													if(tzsName.equals("补正通知书") || tzsName.contains("审查意见通知书")){
         														if(lcNo < 13.9){
@@ -326,7 +366,7 @@ public class ReadZipFile {
         													msg = "error";//当前只能导入通知书错误
 	        												map_d.put("currLcInfo", "当前任务环节为：["+lcmx.getLcMxName()+"],不能导入"+tzsName);
         												}
-        											}else if(tzsName){
+        											}else if(tzsName.contains("实质审查阶段通知书")){
         												
         											}
         											

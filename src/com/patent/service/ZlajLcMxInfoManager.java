@@ -105,4 +105,16 @@ public interface ZlajLcMxInfoManager {
 	 * @return
 	 */
 	List<ZlajLcMxInfoTb> listDetailInfoById(Integer mxId) throws WEBException;
+	
+	/**
+	 * 查看指定专利、指定流程明细有无记录（批量导入时，如果出现先后顺序混乱时使用）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-7 下午03:54:45
+	 * @param zlId 专利编号
+	 * @param lcmxName 流程明细名称
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajLcMxInfoTb> listSpecInfoInfoByOpt(Integer zlId,String lcmxName) throws WEBException;
 }
