@@ -2232,6 +2232,37 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
+	 * 根据专利号获取申请地区和申请日（优先权时使用）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-9 上午09:07:45
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getSpecInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		String ajNoGf = Transcode.unescape_new1("ajNoGf", request);
+		List<ZlajMainInfoTb>  zmList = zlm.listSpecInfoByZlNo(ajNoGf);
+		String msg = "noInfo";
+		Map<String,String> map = new HashMap<String,String>();
+		if(zmList.size() > 0){
+			ZlajMainInfoTb zl = zmList.get(0);
+			msg = "success";
+			map.put("sqAddress", zl.getAjSqAddress());
+			map.put("sqDate", zl.getAjApplyDate());
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	
+	/**listSpecInfoByZlNo
 	 * 处理通知书明细
 	 * @description
 	 * @author Administrator

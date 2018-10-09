@@ -235,6 +235,16 @@ public class ReadZipFile {
             					Integer zlId = zl.getId();
             					//只有在案件状态正常时（0）
         						if(zl.getAjStopStatus().equals(0)){
+        							
+        							//-------------------------新修改S-----------------------------//
+        							if(currUserId.equals(zl.getTzsUserId())){//只有导入通知书的人员才能导入通知书
+        								
+        							}
+        							
+        							
+        							
+        							
+        							//-------------------------新修改E-----------------------------//
         							//获取当前最后一个流程
         							List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
         							if(lcList.size() > 0){
@@ -246,7 +256,7 @@ public class ReadZipFile {
         									if(lcmx.getLcMxEDate().equals("")){
         										if(currUserId.equals(lcmx.getLcFzUserId())){
         											if(tzsName.equals("专利申请受理通知书")){
-        												if(lcNo == 7.0){
+        												if(lcNo == 7.0){//正常顺序
 	        												msg = "success";
 	        												lcm.updateComInfoById(lcId, currDate);//修改流程完成时间
 	        												mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZipPath, currDate, "", currDate, "成功导入"+tzsName);
@@ -256,7 +266,7 @@ public class ReadZipFile {
 	        													mxm.addLcMx(nextLcId, currUserId, "导入费用减缓审批/缴纳申请费通知书", 7.1, currDate, "", "", 0, "", "", "");
 	        												}
 	        												zlm.updateAjNoGfById(zlId, applyDate);//修改专利申请日
-	        											}else{
+	        											}else{//不是当前流程
 	        												//查看之前有无导入受理通知书的记录，如果有，不执行任何操作，没有就增加上
 	        												List<ZlajLcMxInfoTb> mxList_temp = mxm.listSpecInfoInfoByOpt(zlId, "导入受理通知书");
 	        												if(mxList_temp.size() == 0){//不存在，说明之前没有增加初始记录
