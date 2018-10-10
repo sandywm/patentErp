@@ -17,7 +17,7 @@ public class Constants {
 	public static final String SYSTEM_EMAIL_ACCOUNT = "service_cus@163.com";// //邮箱账号
 	public static final String SYSTEM_EMAIL_PASS = "32011823wmk";// 您的邮箱授权码 
 	
-	public static final Integer JF_SL_END_DATE_CPY = 45;//代理机构缴受理费期限
+	public static final Integer JF_SL_END_DATE_CPY = -15;//代理机构缴受理费期限（为官方期限提前15天）
 	public static final Integer JF_SC_END_DATE_GF = 1095;//实质审查费官方期限
 	public static final Integer JF_SC_END_DATE_CPY = 1080;//实质审查费代理机构期限
 	

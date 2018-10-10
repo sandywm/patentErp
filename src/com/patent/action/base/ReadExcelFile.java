@@ -105,5 +105,11 @@ public class ReadExcelFile {
 		Double aa = 1.5;
 		Double bb = 1.51;
 		System.out.println(aa.equals(bb));
+		File file = new File("e:\\发明-补正通知书1.zip");
+		 if (file.exists()) { //文件存在时          
+			 System.out.println(true);
+		 }else{
+			 System.out.println(false);
+		 }
 	}
 }

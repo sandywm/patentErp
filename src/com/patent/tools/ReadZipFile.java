@@ -30,12 +30,14 @@ import com.patent.module.ZlajLcInfoTb;
 import com.patent.module.ZlajLcMxInfoTb;
 import com.patent.module.ZlajMainInfoTb;
 import com.patent.service.MailInfoManager;
+import com.patent.service.ZlajFeeInfoManager;
 import com.patent.service.ZlajFjInfoManager;
 import com.patent.service.ZlajLcInfoManager;
 import com.patent.service.ZlajLcMxInfoManager;
 import com.patent.service.ZlajMainInfoManager;
 import com.patent.service.ZlajTzsInfoManager;
 import com.patent.util.Constants;
+import com.patent.util.WebUrl;
 
 public class ReadZipFile {
 
@@ -60,6 +62,7 @@ public class ReadZipFile {
 		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		Charset gbk = Charset.forName("gbk");
 		String finalPath = pathPre + "\\" + upZipPath;
 		List<Object> list_d = new ArrayList<Object>();
@@ -168,7 +171,7 @@ public class ReadZipFile {
 				            		fjRate = root.element("cost_slow_rate_annul").getTextTrim();
 				            		fjRate = "0."+fjRate.substring(0, fjRate.length() - 1);
 			            		}
-			            		feeEdate = CurrentTime.convertFormatDate(root.element("pay_deadline_date").getTextTrim());
+			            		feeEdate = CurrentTime.convertFormatDate(root.element("pay_deadline_date").getTextTrim());//缴费截止日期-通知书
 			            		Element fee = root.element("fee_info_all");
 			            		Element feeDetail = null;
 			            		List<Object> list_f = new ArrayList<Object>();
@@ -265,13 +268,21 @@ public class ReadZipFile {
 													mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", "新任务通知：导入费用减缓审批/缴纳申请费通知书", "专利["+zl.getAjTitle()+"]已完成受理通知书导入，请及时完成导入费用减缓审批/缴纳申请费通知书工作");
 												}
 												zlm.updateAjNoGfById(zlId, applyDate);//修改专利申请日
+												if(zl.getAjType().equals("fm")){
+													List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴");
+													if(mxList.size() > 0){
+														ZlajLcMxInfoTb lcmx = mxList.get(0);
+														Integer lcId_temp = lcmx.getZlajLcInfoTb().getId();
+														Integer lcmxId = lcmx.getId();
+														if(mxList.get(0).getLcMxEDate().equals("")){//没有缴纳实审费
+															//修改日期期限，之前的期限是无，没有具体日期
+//															mxm.u
+														}
+													}
+												}
 												if(lcNo == 7.0){//说明是正常顺序
 													zlm.updateZlStatusById(zlId, "7.1", "等待导入费用减缓审批/缴纳申请费通知书");
 												}
-												if(specZlId == 0){//没有针对指定的专利导入，需要修改上传文件路径
-													
-												}
-												tzsm.addTzs(zlId, tzsName, fwDate, "", fwSerial,upZipPath);
         									}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
         										msg = "success";
         										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入费用减缓审批/缴纳申请费通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.2);//导入通知书期限1个月
@@ -281,30 +292,87 @@ public class ReadZipFile {
 													mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getFeeUserId(), "cpyUser", "新任务通知：费用催缴", "专利["+zl.getAjTitle()+"]已完成费用减缓审批/缴纳申请费通知书导入，请及时完成费用催缴工作");
 													
 													String lcName_next = "受理费";
-													Integer nextLcId = lcm.addLcInfo(zlId, "费用催缴", lcName_next+"催缴", currDate, CurrentTime.getFinalDate(zl.getAjApplyDate(), Constants.JF_SL_END_DATE_CPY), "", feeEdate,8.1);
+													Integer nextLcId = lcm.addLcInfo(zlId, "费用催缴", lcName_next+"催缴", currDate, CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), "", feeEdate,8.1);//代理机构缴费期限为官方期限提前15天
 													if(nextLcId > 0){
 														mxm.addLcMx(nextLcId, zl.getFeeUserId(), lcName_next+"催缴", 8.1, currDate, "", "", 0, "", "", jfTotal,"催缴受理费:"+jfDetail);
+														//增加未缴纳受理费的清单
+														Integer feeTypeId = 0;
+														if(zl.getAjType().equals("fm")){
+															feeTypeId = 1;//对应的是发明专利申请费
+														}else if(zl.getAjType().equals("syxx")){
+															feeTypeId = 4;//对应的是实用新型专利申请费
+														}else if(zl.getAjType().equals("wg")){
+															feeTypeId = 5;//对应的是外观设计专利申请费
+														}
+														fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, 0.0, CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), feeEdate, "", 0, cpyId, 0, "", "");
 													}
-													if(zl.getAjType().equals("fm")){
+//													不再增加实质审查费催缴流程，等申请日出现后自动结算实质审查费剩余期限（如果在缴申请费流程中一并交了实质审查费，这时候需要增加实质审查费缴费流程）
+													if(zl.getAjType().equals("fm")){//如果是受理费和实审费
 														lcName_next = "受理、实质审查费";
-														Integer nextLcId_1 = lcm.addLcInfo(zlId, "费用催缴", "实质审查费催缴", currDate, CurrentTime.getFinalDate(zl.getAjApplyDate(), Constants.JF_SL_END_DATE_CPY), "", feeEdate,8.2);
+														//实质审查费为申请日开始3年内为缴费期限--存在申请日期时才增加实质审查费催缴和
+														String applyDate_sys = zl.getAjApplyDate();
+														String feeEndDate_gf = "无";
+														String feeEndDate_cpy = "无";
+														//等有了专利申请日后再修改过来
+														if(!applyDate_sys.equals("")){//存在申请日期
+															feeEndDate_gf = CurrentTime.getFinalDate(applyDate_sys, Constants.JF_SC_END_DATE_GF);
+															feeEndDate_cpy = CurrentTime.getFinalDate(applyDate_sys, Constants.JF_SC_END_DATE_CPY);
+														}
+														Integer nextLcId_1 = lcm.addLcInfo(zlId, "费用催缴", "实质审查费催缴", currDate, feeEndDate_cpy, "", feeEndDate_gf,8.2);
 														if(nextLcId_1 > 0){
 															double scFee_final  = Double.parseDouble(fjRate) * Constants.SC_FEE;
-        													mxm.addLcMx(nextLcId, currUserId, "实质审查费催缴", 8.2, currDate, "", "", 0, "", "", scFee_final,"催缴实质审查费:"+scFee_final);
+        													mxm.addLcMx(nextLcId_1, currUserId, "实质审查费催缴", 8.2, currDate, "", "", 0, "", "", scFee_final,"催缴实质审查费:"+scFee_final);
+        													//增加未缴纳实质审查费的清单3--发明专利申请实质审查费（实质审查费在申请日三年之内缴纳）
+    														fm.addZLFee(zlId, zl.getFeeUserId(), 3, 0.0, feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 0, "", "");
 														}
 													}
 													if(lcNo == 7.1){//说明是正常顺序
 														zlm.updateZlStatusById(zlId, "8.0", "等待缴纳"+lcName_next);
 													}
-//													tzsm.addTzs(zlId, tzsName, fwDate, "", fwSerial);
 												}
         									}else if(tzsName.equals("补正通知书") || tzsName.contains("审查意见通知书") || tzsName.contains("初步审查合格通知书")){
-        										if(lcNo >= 9.0 && lcNo < 10){//说明当前处于初审阶段
-													if(tzsName.contains("初步审查合格通知书")){//初审合格
+        										if(tzsName.contains("初步审查合格通知书")){//初审合格
+        											msg = "success";
+	        										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入初步审查合格通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",10.0);//导入通知书期限1个月
+													if(currLcId > 0){
+														mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入初步审查合格通知书", 10.0, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+													}
+													if(lcNo == 9.0){//正常顺序（手动缴费后从8.0变成9.0,状态为等待初审中）
+														//查看有无缴纳实质审查费
+														if(zl.getAjType().equals("fm")){
+															List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴");
+															if(mxList.size() > 0){
+																if(!mxList.get(0).getLcMxEDate().equals("")){//已缴纳了实审费
+																	//状态进入实审中
+																	zlm.updateZlStatusById(zlId, "13.0", "实审中");
+																}else{//需要在三年内提交实审费才能进行
+																	zlm.updateZlStatusById(zlId, "12.0", "等待缴纳实审费");
+																}
+															}else{//没有实审费流程
+																zlm.updateZlStatusById(zlId, "12.0", "等待缴纳实审费");
+															}
+														}
 														
 													}
-        										}
+												}else{
+													if(lcNo >= 9.0 && lcNo < 10){//说明当前处于初审阶段
+														
+	        										}
+												}
         									}
+        									String upZipPath_new = upZipPath;
+        									if(specZlId == 0){//没有针对指定的专利导入，需要修改上传文件路径
+        										String oldPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath;//上传通知书的原绝对路径
+												upZipPath_new = "cpyUser\\"+zlId+"\\tzs\\"+upZipPath.substring((upZipPath.lastIndexOf("\\")+1));
+												String newPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath_new;
+												//也需要挪动到新的正确位置
+												File file = new File(newPath);
+												//复制上传通知书到正确位置
+												 if(!file.exists()){//不存在改文件，进行复制
+													 FileOpration.copyFile(oldPath, newPath);
+												 }
+											}
+											tzsm.addTzs(zlId, tzsName, fwDate, "", fwSerial,upZipPath_new);
         								}
     									
         							}

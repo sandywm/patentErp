@@ -884,38 +884,34 @@ public class PubZlAction extends DispatchAction {
 					//编辑是是专利编号，增加时不用传
 					Integer zlId = CommonTools.getFinalInteger("zlId", request);//代理机构增加的专利编号
 					String zlTitle = Transcode.unescape_new1("zlTile", request);//专利标题
+					Integer pubZlId = CommonTools.getFinalInteger("pubZlId", request);//已选择的发布专利任务编号
 					Integer pubUserId = CommonTools.getFinalInteger("pubUserId", request);//发布人
-					if(zlId > 0){//编辑时默认获取同当前类型一致的专利任务
-						List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
-						if(zlList.size() > 0){
-							List<PubZlInfoTb> pzList_1 = pzm.listSpecInfoByOpt(zlList.get(0).getPubZlId(), 0);
-							if(pzList_1.size() > 0){
-								msg = "success";
-								PubZlInfoTb pz = pzList_1.get(0);
-								zlType = pz.getZlType();
-								Map<String,Object> map_d = new HashMap<String,Object>();
-								map_d.put("pzId", pz.getId());
-								map_d.put("pzTitle", pz.getZlTitle());
-								map_d.put("pzType", zlType);
-								map_d.put("pubDate",pz.getZlNewDate());
-								map_d.put("lqDate",pz.getLqDate());
-								map_d.put("checkFlag", true);
-								String zlTypeChi = "";
-								if(zlType.equals("fm")){
-									zlTypeChi = "发明";
-								}else if(zlType.equals("syxx")){
-									zlTypeChi = "实用新型";
-								}else if(zlType.equals("wg")){
-									zlTypeChi = "外观";
-								}
-								map_d.put("zlTypeChi", zlTypeChi);
-								map_d.put("pubInfo", pz.getApplyInfoTb().getAppName());
-								list_d.add(map_d);
+					zlType = CommonTools.getFinalStr("zlType", request);
+					if(pubZlId > 0){//选择有专利任务(可能是增加，也可能是编辑)
+						List<PubZlInfoTb> pzList_1 = pzm.listSpecInfoByOpt(pubZlId, 0);
+						if(pzList_1.size() > 0){
+							msg = "success";
+							PubZlInfoTb pz = pzList_1.get(0);
+							zlType = pz.getZlType();
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("pzId", pz.getId());
+							map_d.put("pzTitle", pz.getZlTitle());
+							map_d.put("pzType", zlType);
+							map_d.put("pubDate",pz.getZlNewDate());
+							map_d.put("lqDate",pz.getLqDate());
+							map_d.put("checkFlag", true);
+							String zlTypeChi = "";
+							if(zlType.equals("fm")){
+								zlTypeChi = "发明";
+							}else if(zlType.equals("syxx")){
+								zlTypeChi = "实用新型";
+							}else if(zlType.equals("wg")){
+								zlTypeChi = "外观";
 							}
+							map_d.put("zlTypeChi", zlTypeChi);
+							map_d.put("pubInfo", pz.getApplyInfoTb().getAppName());
+							list_d.add(map_d);
 						}
-					}else{//增加
-						zlType = CommonTools.getFinalStr("zlType", request);
-						msg = "success";
 					}
 					if(msg.equals("success")){
 						Integer count = pzm.getCountByOpt(cpyId, zlType, zlTitle, pubUserId);

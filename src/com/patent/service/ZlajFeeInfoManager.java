@@ -41,4 +41,56 @@ public interface ZlajFeeInfoManager{
 	 * @throws WEBException
 	 */
 	List<FeeTypeInfoTb> listInfoByStatus(String feeStatus) throws WEBException;
+	
+	/**
+	 * 根据专利编号、费用类型获取专利案件缴费列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-10 上午11:07:01
+	 * @param zlId 专利编号
+	 * @param feeTypeId 费用类型
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajFeeInfoTb> listInfoByOpt(Integer zlId,Integer feeTypeId) throws WEBException;
+	
+	/**
+	 * 初始增加专利缴费信息
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-10 上午11:21:53
+	 * @param zlId 专利编号
+	 * @param appUserId 申请缴纳费用人员编号
+	 * @param geeTypeId 费用类型
+	 * @param feePrice 费用金额
+	 * @param feeEndDateCpy 费用期限(机构)
+	 * @param feeEndDateGf 官方期限
+	 * @param feeRemark 备注
+	 * @param feeStatus 费用缴纳状态（默认0未交，1：已交）
+	 * @param cpyId 所属公司
+	 * @param djStatus 是否代缴（默认0(自缴)，1(代缴)）
+	 * @param feeJnDate 缴费时间
+	 * @param feeUpZd 缴费账单
+	 * @return
+	 * @throws WEBException
+	 */
+	Integer addZLFee(Integer zlId,Integer appUserId,Integer geeTypeId,Double feePrice,String feeEndDateCpy,String feeEndDateGf,String feeRemark,Integer feeStatus,
+			Integer cpyId,Integer djStatus,String feeJnDate,String feeUpZd) throws WEBException;
+	
+	/**
+	 * 修改缴费信息
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-10 上午11:24:55
+	 * @param id
+	 * @param feePrice 费用金额
+	 * @param feeRemark 备注
+	 * @param feeStatus 费用缴纳状态（默认0未交，1：已交）
+	 * @param djStatus 是否代缴（默认0(自缴)，1(代缴)）
+	 * @param feeJnDate 缴费时间
+	 * @param feeUpZd 缴费账单
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateFeeInfoById(Integer id,Double feePrice,String feeRemark,Integer feeStatus,Integer djStatus,String feeJnDate,String feeUpZd) throws WEBException;
 }

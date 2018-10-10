@@ -58,5 +58,15 @@ public interface ZlajFeeInfoDao {
 	 */
 	List<ZlajFeeInfoTb> findInfoByOpt(Session sess,Integer zlId,String feeTypeStatus);
 	
-	
+	/**
+	 * 根据专利编号、费用类型编号获取专利案件缴费列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-10 上午11:16:24
+	 * @param sess
+	 * @param zlId 专利编号
+	 * @param feeTypeId 费用类型
+	 * @return
+	 */
+	List<ZlajFeeInfoTb> findInfoByOpt(Session sess,Integer zlId,Integer feeTypeId);
 }
