@@ -17,7 +17,9 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 	private ZlajMainInfoTb zlajMainInfoTb;
 	private String tzsName;
 	private String tzsFwr;
+	private String fwSerial;
 	private String tzsGfr;
+	private String tzsPath;
 
 	// Constructors
 
@@ -27,21 +29,24 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 
 	/** minimal constructor */
 	public ZlajTzsInfoTb(ZlajMainInfoTb zlajMainInfoTb, String tzsName,
-			String tzsFwr, String tzsGfr) {
+			String tzsFwr, String tzsGfr,String fwSerial,String tzsPath) {
 		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.tzsName = tzsName;
 		this.tzsFwr = tzsFwr;
 		this.tzsGfr = tzsGfr;
+		this.fwSerial = fwSerial;
+		this.tzsPath = tzsPath;
 	}
 
 	/** full constructor */
 	public ZlajTzsInfoTb(Integer id,ZlajMainInfoTb zlajMainInfoTb, String tzsName,
-			String tzsFwr, String tzsGfr) {
-		this.id = id;
+			String tzsFwr, String tzsGfr,String fwSerial,String tzsPath) {
 		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.tzsName = tzsName;
 		this.tzsFwr = tzsFwr;
 		this.tzsGfr = tzsGfr;
+		this.fwSerial = fwSerial;
+		this.tzsPath = tzsPath;
 	}
 
 	// Property accessors
@@ -84,6 +89,22 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 
 	public void setTzsGfr(String tzsGfr) {
 		this.tzsGfr = tzsGfr;
+	}
+
+	public String getFwSerial() {
+		return fwSerial;
+	}
+
+	public void setFwSerial(String fwSerial) {
+		this.fwSerial = fwSerial;
+	}
+
+	public String getTzsPath() {
+		return tzsPath;
+	}
+
+	public void setTzsPath(String tzsPath) {
+		this.tzsPath = tzsPath;
 	}
 
 }

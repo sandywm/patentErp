@@ -16,10 +16,12 @@ public interface ZlajTzsInfoManager {
 	 * @param tzsName 通知书名称
 	 * @param fwrDate 发文日
 	 * @param gfrDate 官方绝限日
+	 * @param fwSerial 发文序号
+	 * @param tzsPath 通知书上传路径
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addTzs(Integer zlId,String tzsName,String fwrDate,String gfrDate) throws WEBException;
+	Integer addTzs(Integer zlId,String tzsName,String fwrDate,String gfrDate,String fwSerial,String tzsPath) throws WEBException;
 	
 	/**
 	 * 根据案件编号获取所有的通知书信息列表
@@ -42,4 +44,16 @@ public interface ZlajTzsInfoManager {
 	 * @throws WEBException
 	 */
 	ZlajTzsInfoTb getEntityById(Integer id) throws WEBException;
+	
+	/**
+	 * 根据专利编号、通知书发文序号获取通知书信息列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-9 上午09:53:53
+	 * @param zlId 专利编号
+	 * @param fwSerial 发文序号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajTzsInfoTb> listInfoByOpt(Integer zlId,String fwSerial) throws WEBException;
 }

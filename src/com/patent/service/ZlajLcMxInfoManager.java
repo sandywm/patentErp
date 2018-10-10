@@ -24,12 +24,13 @@ public interface ZlajLcMxInfoManager {
 	 * @param lcMxUpUserId 上传人
 	 * @param lcMxUpDate 上传时间
 	 * @param lcMxUpSize  附件大小
+	 * @param lcMxFee 流程所需缴纳的费用
 	 * @param lcMxRemark 备注
 	 * @return
 	 * @throws WEBException
 	 */
 	Integer addLcMx(Integer lcId,Integer fzUserId,String lcMxName, Double lcMxNo, String lcMxSDate, String lcMxEDate,
-			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,String lcMxUpSize, String lcMxRemark) throws WEBException;
+			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,String lcMxUpSize,Double lcMxFee,String lcMxRemark) throws WEBException;
 	
 	/**
 	 * 修改流程负责人、完成时间、备注等（一般是领取）

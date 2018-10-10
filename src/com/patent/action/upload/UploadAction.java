@@ -33,8 +33,10 @@ import com.patent.module.ZlajFeeInfoTb;
 import com.patent.module.ZlajFjInfoTb;
 import com.patent.service.ZlajFeeInfoManager;
 import com.patent.service.ZlajFjInfoManager;
+import com.patent.service.ZlajTzsInfoManager;
 import com.patent.tools.CheckImage;
 import com.patent.tools.CommonTools;
+import com.patent.tools.CurrentTime;
 import com.patent.util.Constants;
 import com.patent.util.WebUrl;
 
@@ -134,6 +136,7 @@ public class UploadAction extends DispatchAction {
 //						userPath += "dg";
 //						absolutPath += "dg";
 						userPath += "u_"+currLoginUserId;//怕引起文件名重复，暂时将代理机构下人员上传的文件存在u_id下
+						absolutPath += "u_"+currLoginUserId;
 					}
 				}
 				while (iterator.hasNext()) {
@@ -157,6 +160,8 @@ public class UploadAction extends DispatchAction {
 							 List<ZlajFeeInfoTb> fList = fm.listInfoByOpt(ajId, "");
 							 nextVersion = "V" + (fList.size() + 1);
 							 filename = filePre + "_" + nextVersion + "." + suffix;
+						 }else if(fileType.equals("tzs")){
+							 filename = filePre + "_" + CurrentTime.getRadomTime() + "." + suffix;
 						 }
 					 }
 					CheckImage ci = new CheckImage();

@@ -55,4 +55,16 @@ public interface ZlajTzsInfoDao {
 	*  @return
 	 */
 	List<ZlajTzsInfoTb> findInfoByAjId(Session sess,Integer ajId);
+	
+	/**
+	 * 根据案件编号、通知书发文序号获取通知书信息
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-9 上午09:55:36
+	 * @param sess
+	 * @param ajId 案件编号
+	 * @param fwSerial 通知书发文序号
+	 * @return
+	 */
+	List<ZlajTzsInfoTb> findInfoByOpt(Session sess,Integer ajId,String fwSerial);
 }

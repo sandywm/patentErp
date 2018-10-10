@@ -60,6 +60,11 @@
                 <comment>附件大小</comment>
             </column>
         </property>
+         <property name="lcMxFee" type="java.lang.Double">
+            <column name="lc_mx_fee" precision="10" not-null="true">
+                <comment>缴纳费用</comment>
+            </column>
+        </property>
         <property name="lcMxRemark" type="java.lang.String">
             <column name="lc_mx_remark" length="100">
                 <comment>备注</comment>

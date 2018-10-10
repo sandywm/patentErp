@@ -23,7 +23,7 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 	Transaction tran = null;
 	@Override
 	public Integer addLcInfo(Integer ajId,String lcName,String lcDetail,String sDate,String cpyDate,
-			String comDate,String gfDate) throws WEBException {
+			String comDate,String gfDate,Double lcNo) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
@@ -31,7 +31,7 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 			uDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			ZlajLcInfoTb lc = new ZlajLcInfoTb(ajDao.get(sess, ajId),lcName, lcDetail, sDate,cpyDate, comDate, gfDate);
+			ZlajLcInfoTb lc = new ZlajLcInfoTb(ajDao.get(sess, ajId),lcName, lcDetail, sDate,cpyDate, comDate, gfDate,lcNo);
 			lcDao.save(sess, lc);
 			tran.commit();
 			return lc.getId();

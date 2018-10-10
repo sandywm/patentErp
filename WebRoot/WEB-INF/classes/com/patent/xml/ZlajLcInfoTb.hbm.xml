@@ -50,6 +50,11 @@
                 <comment>流程官方绝限</comment>
             </column>
         </property>
+        <property name="lcNo" type="java.lang.Double">
+            <column name="lc_no" precision="10" not-null="true">
+                <comment>流程数字</comment>
+            </column>
+        </property>
         <!--property name="lcUpInfo" type="java.lang.String">
             <column name="lc_up_info" length="100">
                 <comment>上传的附件</comment>

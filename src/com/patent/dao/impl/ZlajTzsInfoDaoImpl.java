@@ -52,4 +52,12 @@ public class ZlajTzsInfoDaoImpl implements ZlajTzsInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<ZlajTzsInfoTb> findInfoByOpt(Session sess, Integer ajId,
+			String fwSerial) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajTzsInfoTb as tzs where tzs.zlajMainInfoTb.id = "+ajId + " and tzs.fwSerial = '"+fwSerial+"'";
+		return sess.createQuery(hql).list();
+	}
+
 }

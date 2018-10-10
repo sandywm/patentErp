@@ -30,5 +30,15 @@
                 <comment>通知书官方绝限</comment>
             </column>
         </property>
+        <property name="fwSerial" type="java.lang.String">
+            <column name="fw_serial" length="30">
+                <comment>通知书发文序号</comment>
+            </column>
+        </property>
+        <property name="tzsPath" type="java.lang.String">
+            <column name="tzs_path" length="50">
+                <comment>通知书上传路径</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

@@ -521,7 +521,7 @@ public class PubZlAction extends DispatchAction {
 				lqUserName = cUser.getUserName();
 				lqCpyId = cUser.getCpyInfoTb().getId();
 				lqCpyName = cUser.getCpyInfoTb().getCpyName();
-				lqDate = CurrentTime.getCurrentTime();
+				lqDate = CurrentTime.getStringDate();
 				
 				pzList = pzm.listSpecInfoByOpt(pubId, 0);
 				if(pzList.size() > 0){//存在信息&& pzList.get(0).getZlStatus().equals(zlStatus)
@@ -897,6 +897,8 @@ public class PubZlAction extends DispatchAction {
 								map_d.put("pzId", pz.getId());
 								map_d.put("pzTitle", pz.getZlTitle());
 								map_d.put("pzType", zlType);
+								map_d.put("pubDate",pz.getZlNewDate());
+								map_d.put("lqDate",pz.getLqDate());
 								map_d.put("checkFlag", true);
 								String zlTypeChi = "";
 								if(zlType.equals("fm")){

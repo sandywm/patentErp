@@ -456,6 +456,17 @@ public class CurrentTime {
     }
     
     /**
+     * 获取随机数（时+分+秒+毫秒）
+     * @description
+     * @author Administrator
+     * @date 2018-10-9 下午04:42:50
+     * @return
+     */
+    public static String getRadomTime(){
+    	return getFormat("HH")+getFormat("mm")+getFormat("ss")+getFormat("SSS");
+    }
+    
+    /**
      * 将########日期转换成####-##-##
      * @description
      * @author Administrator
@@ -535,6 +546,6 @@ public class CurrentTime {
 //		System.out.println(Math.round(2.51));
 //		System.out.println(CurrentTime.getMonthOrLast());
 //		System.out.println(CurrentTime.getEndDayofMonth(2016,8));
-		System.out.println(CurrentTime.convertFormatDate("20170709"));
+		System.out.println(getFormat("HH")+getFormat("mm")+getFormat("ss")+getFormat("SSS"));
 	}
 }
