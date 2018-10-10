@@ -928,6 +928,8 @@ public class PubZlAction extends DispatchAction {
 								map_d.put("pzTitle", pz.getZlTitle());
 								String zlType_db = pz.getZlType();
 								map_d.put("pzType", zlType_db);
+								map_d.put("pubDate",pz.getZlNewDate());
+								map_d.put("lqDate",pz.getLqDate());
 								map_d.put("checkFlag", false);
 								String zlTypeChi = "";
 								if(zlType_db.equals("fm")){
