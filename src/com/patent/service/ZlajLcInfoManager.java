@@ -99,4 +99,18 @@ public interface ZlajLcInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajLcInfoTb> listLastInfoByAjId(Integer ajId) throws WEBException;
+	
+	/**
+	 * 修改指定流程的流程号
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-11 下午04:22:37
+	 * @param id
+	 * @param lcNo 流程号
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateLcNoInfoById(Integer id,Double lcNo) throws WEBException;
+	
+	
 }

@@ -118,4 +118,28 @@ public interface ZlajLcMxInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajLcMxInfoTb> listSpecInfoInfoByOpt(Integer zlId,String lcmxName) throws WEBException;
+	
+	/**
+	 * 修改流程明细名字（只有在之前导入缴费通知书的时候不知道申请日期，无法推算缴费截止日期时才会出现，等导入了受理通知书，将进行修改）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-11 上午09:46:46
+	 * @param id
+	 * @param lcMxName 流程明细名称
+	 * @return 
+	 * @throws WEBException
+	 */
+	boolean updateEdateById(Integer id,String lcMxName) throws WEBException;
+	
+	/**
+	 * 修改指定流程明细的流程号
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-11 下午04:17:56
+	 * @param id
+	 * @param mxNo 流程号
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateMxNoById(Integer id,Double mxNo) throws WEBException;
 }

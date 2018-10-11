@@ -93,4 +93,17 @@ public interface ZlajFeeInfoManager{
 	 * @throws WEBException
 	 */
 	boolean updateFeeInfoById(Integer id,Double feePrice,String feeRemark,Integer feeStatus,Integer djStatus,String feeJnDate,String feeUpZd) throws WEBException;
+	
+	/**
+	 * 根据主键修改费用期限
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-11 上午09:54:19
+	 * @param id
+	 * @param feeEndDateCpy 代理期限
+	 * @param feeEndDateGf 官方期限
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateFeeInfoById(Integer id,String feeEndDateCpy,String feeEndDateGf) throws WEBException;
 }

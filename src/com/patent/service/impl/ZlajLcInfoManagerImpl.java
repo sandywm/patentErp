@@ -177,4 +177,29 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 		}
 	}
 
+	@Override
+	public boolean updateLcNoInfoById(Integer id, Double lcNo)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajLcInfoTb lc = lcDao.get(sess, id);
+			if(lc != null){
+				lc.setLcNo(lcNo);
+				lcDao.update(sess, lc);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改制定编号的流程号信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

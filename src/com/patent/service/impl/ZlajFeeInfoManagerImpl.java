@@ -154,4 +154,30 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 		}
 	}
 
+	@Override
+	public boolean updateFeeInfoById(Integer id, String feeEndDateCpy,
+			String feeEndDateGf) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajFeeInfoTb zlFee = fDao.getFeeEntityById(sess, id);
+			if(zlFee != null){
+				zlFee.setFeeEndDateJj(feeEndDateCpy);
+				zlFee.setFeeEndDateGf(feeEndDateGf);
+				fDao.update(sess, zlFee);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改指定编号的费用期限的信息时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

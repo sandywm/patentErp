@@ -103,13 +103,14 @@ public class ReadExcelFile {
 //		String suffix = last_1.substring(lastIndex_1+1, last_1.length());
 //		System.out.println(version + "       "+suffix);
 		Double aa = 1.5;
-		Double bb = 1.51;
+		Double bb = 1.50;
 		System.out.println(aa.equals(bb));
-		File file = new File("e:\\发明-补正通知书1.zip");
-		 if (file.exists()) { //文件存在时          
-			 System.out.println(true);
-		 }else{
-			 System.out.println(false);
-		 }
+//		File file = new File("e:\\发明-补正通知书1.zip");
+//		 if (file.exists()) { //文件存在时          
+//			 System.out.println(true);
+//		 }else{
+//			 System.out.println(false);
+//		 }
+		 System.out.println(CurrentTime.compareDate("2018-09-19", "2018-11-19"));
 	}
 }

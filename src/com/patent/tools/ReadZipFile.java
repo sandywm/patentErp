@@ -26,6 +26,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.patent.action.base.IgnoreDTDEntityResolver;
 import com.patent.factory.AppFactory;
+import com.patent.module.ZlajFeeInfoTb;
 import com.patent.module.ZlajLcInfoTb;
 import com.patent.module.ZlajLcMxInfoTb;
 import com.patent.module.ZlajMainInfoTb;
@@ -269,14 +270,18 @@ public class ReadZipFile {
 												}
 												zlm.updateAjNoGfById(zlId, applyDate);//修改专利申请日
 												if(zl.getAjType().equals("fm")){
-													List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴");
-													if(mxList.size() > 0){
+													List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴-无申请日");
+													if(mxList.size() > 0){//之前因为不知道申请日出现的记录，需要进行修改
 														ZlajLcMxInfoTb lcmx = mxList.get(0);
 														Integer lcId_temp = lcmx.getZlajLcInfoTb().getId();
 														Integer lcmxId = lcmx.getId();
-														if(mxList.get(0).getLcMxEDate().equals("")){//没有缴纳实审费
-															//修改日期期限，之前的期限是无，没有具体日期
-//															mxm.u
+														mxm.updateEdateById(lcmxId, "实质审查费催缴");
+														String feeEndDate_gf = CurrentTime.getFinalDate(applyDate, Constants.JF_SC_END_DATE_GF);
+														String feeEndDate_cpy = CurrentTime.getFinalDate(applyDate, Constants.JF_SC_END_DATE_CPY);
+														lcm.updateLcBasicInfoById(lcId_temp, "", "", "", feeEndDate_cpy,feeEndDate_gf);
+														List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(zlId, 3);
+														if(feeList.size() > 0){
+															fm.updateFeeInfoById(feeList.get(0).getId(), feeEndDate_cpy, feeEndDate_gf);
 														}
 													}
 												}
@@ -316,17 +321,20 @@ public class ReadZipFile {
 														lcName_next = "受理、实质审查费";
 														//实质审查费为申请日开始3年内为缴费期限--存在申请日期时才增加实质审查费催缴和
 														String applyDate_sys = zl.getAjApplyDate();
-														String feeEndDate_gf = "无";
-														String feeEndDate_cpy = "无";
+														String feeEndDate_gf = "noDate";
+														String feeEndDate_cpy = "noDate";
+														String lcmxName = "实质审查费催缴";
 														//等有了专利申请日后再修改过来
 														if(!applyDate_sys.equals("")){//存在申请日期
 															feeEndDate_gf = CurrentTime.getFinalDate(applyDate_sys, Constants.JF_SC_END_DATE_GF);
 															feeEndDate_cpy = CurrentTime.getFinalDate(applyDate_sys, Constants.JF_SC_END_DATE_CPY);
+														}else{
+															lcmxName = "实质审查费催缴-无申请日";
 														}
 														Integer nextLcId_1 = lcm.addLcInfo(zlId, "费用催缴", "实质审查费催缴", currDate, feeEndDate_cpy, "", feeEndDate_gf,8.2);
 														if(nextLcId_1 > 0){
 															double scFee_final  = Double.parseDouble(fjRate) * Constants.SC_FEE;
-        													mxm.addLcMx(nextLcId_1, currUserId, "实质审查费催缴", 8.2, currDate, "", "", 0, "", "", scFee_final,"催缴实质审查费:"+scFee_final);
+        													mxm.addLcMx(nextLcId_1, currUserId, lcmxName, 8.2, currDate, "", "", 0, "", "", scFee_final,"催缴实质审查费:"+scFee_final);
         													//增加未缴纳实质审查费的清单3--发明专利申请实质审查费（实质审查费在申请日三年之内缴纳）
     														fm.addZLFee(zlId, zl.getFeeUserId(), 3, 0.0, feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 0, "", "");
 														}
@@ -342,26 +350,31 @@ public class ReadZipFile {
 													if(currLcId > 0){
 														mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入初步审查合格通知书", 10.0, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
 													}
-													if(lcNo == 9.0){//正常顺序（手动缴费后从8.0变成9.0,状态为等待初审中）
-														//查看有无缴纳实质审查费
-														if(zl.getAjType().equals("fm")){
+													if(zl.getAjType().equals("fm")){
+														if(lcNo < 13){//实审之前导入初步审查合格通知书
 															List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴");
 															if(mxList.size() > 0){
-																if(!mxList.get(0).getLcMxEDate().equals("")){//已缴纳了实审费
+																ZlajLcMxInfoTb mx = mxList.get(0);
+																boolean feeFlag = (mx.getLcMxEDate().equals("") || mx.getLcMxEDate().equals("noDate"));
+																if(!feeFlag){//已缴纳了实审费
 																	//状态进入实审中
 																	zlm.updateZlStatusById(zlId, "13.0", "实审中");
 																}else{//需要在三年内提交实审费才能进行
 																	zlm.updateZlStatusById(zlId, "12.0", "等待缴纳实审费");
 																}
-															}else{//没有实审费流程
-																zlm.updateZlStatusById(zlId, "12.0", "等待缴纳实审费");
 															}
 														}
-														
+													}else{//其他类型专利没有实审
+														zlm.updateZlStatusById(zlId, "14.0", "等待导入授权、办理登记手续通知书");
 													}
-												}else{
-													if(lcNo >= 9.0 && lcNo < 10){//说明当前处于初审阶段
-														
+												}else{//说明需要进行补正或者审查答复（可能是初审的补正/审查答复，也可能是实审的补正/审查答复）
+													if(lcNo >= 9.0 && lcNo < 10){//说明当前处于初审阶段（所有专利）
+														Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",10.0);//导入通知书期限1个月
+														if(currLcId > 0){
+															mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入初步审查合格通知书", 10.0, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+														}
+	        										}else if(lcNo >= 13.0 && lcNo < 14){//说明当前处于实审阶段（发明专利）
+	        											
 	        										}
 												}
         									}

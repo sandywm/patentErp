@@ -2171,7 +2171,7 @@ public class ZlMainAction extends DispatchAction {
 												}else{
 													msg = "inComInfo";//信息不完整
 												}
-											}else if(lcNo == 8.1 || lcNo == 8.2){//缴纳受理费或者实质审查费
+											}/**else if(lcNo == 8.1 || lcNo == 8.2){//缴纳受理费或者实质审查费(单独接口处理)
 												Double csFee = CommonTools.getFinalDouble("csFee", request);//初审费
 												Double ssFee = CommonTools.getFinalDouble("ssFee", request);//实审费（发明专利才有，其他专利为0.0）
 												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//缴费图片
@@ -2217,7 +2217,7 @@ public class ZlMainAction extends DispatchAction {
 														msg = "feeError";//缴费错误
 													}
 												}
-											}
+											}**/
 										}else{
 											msg = "fzrError";//当前操作用户和当前流程负责人不一致
 										}
@@ -2233,6 +2233,197 @@ public class ZlMainAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
+	
+	
+	/**
+	 * 缴纳所有费用
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-11 上午10:07:53
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward payFeeDetail(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		String msg = "error";
+		String currDate = CurrentTime.getStringDate();
+		Map<String,String> map = new HashMap<String,String>();
+		boolean abilityFlag = false;
+		String roleName = this.getLoginRoleName(request);
+		String filePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\";
+		String lcNo = "";//当前流程号
+		if(this.getLoginType(request).equals("cpyUser")){
+			//判断权限
+			//获取当前用户是否有修改权限
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//只有修改权限的员工才能进行流程处理
+			}
+			if(abilityFlag){
+				Integer zlId = CommonTools.getFinalInteger("zlId", request);//（公共参数）
+				String payFeeOpt = CommonTools.getFinalStr("payFeeOpt", request);//cs_fee(初审费),cs_ss_fee(初审、实审费一起缴纳),ss_fee(实审费)
+				Integer currUserId = this.getLoginUserId(request);
+				CpyUserInfo user = cum.getEntityById(currUserId);
+				if(user != null && zlId > 0){
+					List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, user.getCpyInfoTb().getId());
+					if(zlList.size() > 0){
+						ZlajMainInfoTb zl = zlList.get(0);
+						//只有在案件状态正常时（0）
+						if(zl.getAjStopStatus().equals(0)){
+							lcNo = zl.getAjStatus();
+							if(currUserId.equals(zl.getFeeUserId())){//只有缴费人员才能进行缴费
+
+								Integer feeTypeId = 0;
+								if(zl.getAjType().equals("fm")){
+									feeTypeId = 1;//对应的是发明专利申请费
+								}else if(zl.getAjType().equals("syxx")){
+									feeTypeId = 4;//对应的是实用新型专利申请费
+								}else if(zl.getAjType().equals("wg")){
+									feeTypeId = 5;//对应的是外观设计专利申请费
+								}
+								Double csFee = CommonTools.getFinalDouble("csFee", request);//初审费
+								Double ssFee = CommonTools.getFinalDouble("ssFee", request);//实审费（发明专利才有，其他专利为0.0）
+								Integer djStatus = CommonTools.getFinalInteger("djStatus", request);//代缴状态(0-自缴，1-代缴)
+								String upZxFile = CommonTools.getFinalStr("upZxFile", request);//缴费图片
+								if(payFeeOpt.equals("cs_fee")){
+									//获取是否存在受理费催缴的流程
+									List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "受理费催缴");//所有专利共有
+									if(mxList.size() > 0){//说明已经导入过费用减缓审批/缴纳申请费通知书
+										ZlajLcMxInfoTb lcmx = mxList.get(0);
+										if(!lcmx.getLcMxEDate().equals("")){//没有缴纳受理费
+											if(csFee.equals(lcmx.getLcMxFee())){//初审费数字正确
+												mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZxFile, currDate, "", currDate, "");
+												lcm.updateComInfoById(lcmx.getZlajLcInfoTb().getId(), currDate);
+												List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(zlId, feeTypeId);
+												if(feeList.size() > 0){
+													fm.updateFeeInfoById(feeList.get(0).getId(), ssFee, "缴纳受理费", 1, djStatus, currDate, upZxFile);
+												}
+												if(lcNo.equals("8.0")){//缴纳受理费
+													//正常顺序
+													zlm.updateZlStatusById(zlId, "9.0", "初审中");
+												}
+												msg = "success";
+											}else{
+												msg = "feeNoMatch";//费用不正确
+											}
+										}else{
+											msg = "feeExist";//费用已缴
+										}
+									}else{
+										msg = "noInputTzs";//需要导入受理、缴费通知书后才能进行缴费
+									}
+								}else if(payFeeOpt.equals("cs_ss_fee") && zl.getAjType().equals("fm")){//一起缴纳
+									//获取是否存在受理费催缴的流程
+									List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "受理费催缴");//所有专利共有
+									//获取是否存在实质审查费催缴的流程
+									List<ZlajLcMxInfoTb> mxList_1 = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴");//发明专利私有
+									if(mxList_1.size() == 0){//没缴
+										mxList_1 = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴-无申请日");//发明专利私有
+									}
+									if(mxList.size() > 0 && mxList_1.size() > 0){//说明已经导入过费用减缓审批/缴纳申请费通知书
+										ZlajLcMxInfoTb lcmx = mxList.get(0);
+										ZlajLcMxInfoTb lcmx_1 = mxList_1.get(0);
+										boolean ssFeeFlag = (lcmx_1.getLcMxEDate().equals("") || lcmx_1.getLcMxEDate().equals("noDate"));//未缴纳
+										if(!lcmx.getLcMxEDate().equals("") && ssFeeFlag){//没缴受理费和实审费
+											if(csFee.equals(lcmx.getLcMxFee()) && ssFee.equals(lcmx_1.getLcMxFee())){//初、实审费数字正确
+												mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZxFile, currDate, "", currDate, "");
+												lcm.updateComInfoById(lcmx.getZlajLcInfoTb().getId(), currDate);
+												List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(zlId, feeTypeId);
+												if(feeList.size() > 0){
+													fm.updateFeeInfoById(feeList.get(0).getId(), ssFee, "缴纳受理费", 1, djStatus, currDate, upZxFile);
+												}
+												mxm.updateEdateById(lcmx_1.getId(), currUserId, currUserId, upZxFile, currDate, "", currDate, "");
+												lcm.updateComInfoById(lcmx_1.getZlajLcInfoTb().getId(), currDate);
+												List<ZlajFeeInfoTb> feeList_1 = fm.listInfoByOpt(zlId, 3);//3对应的是实审费
+												if(feeList_1.size() > 0){
+													fm.updateFeeInfoById(feeList_1.get(0).getId(), ssFee, "缴纳实审费", 1, djStatus, currDate, upZxFile);
+												}
+												if(lcNo.equals("8.0")){//缴纳受理费、实质审查费
+													//正常顺序
+													zlm.updateZlStatusById(zlId, "9.0", "初审中");
+												}
+												msg = "success";
+											}else{
+												msg = "feeNoMatch";//费用不正确
+											}
+										}else{
+											msg = "feeExist";//费用已缴
+										}
+									}else{
+										msg = "noInputTzs";//需要导入受理、缴费通知书后才能进行缴费
+									}
+								}else if(payFeeOpt.equals("ss_fee") && zl.getAjType().equals("fm")){//缴纳实审费
+									//单独缴纳实质审查费
+									//获取是否存在实质审查费催缴的流程
+									List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴");//发明专利私有
+									if(mxList.size() == 0){
+										mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴-无申请日");//发明专利私有
+									}
+									if(mxList.size() > 0){
+										ZlajLcMxInfoTb lcmx = mxList.get(0);
+										boolean ssFeeFlag = (lcmx.getLcMxEDate().equals("") || lcmx.getLcMxEDate().equals("noDate"));//未缴纳
+										if(ssFeeFlag){
+											if(ssFee.equals(lcmx.getLcMxFee())){
+												mxm.updateEdateById(lcmx.getId(), currUserId, currUserId, upZxFile, currDate, "", currDate, "");
+												lcm.updateComInfoById(lcmx.getZlajLcInfoTb().getId(), currDate);
+												List<ZlajFeeInfoTb> feeList_1 = fm.listInfoByOpt(zlId, 3);//3对应的是实审费
+												if(feeList_1.size() > 0){
+													fm.updateFeeInfoById(feeList_1.get(0).getId(), ssFee, "缴纳实审费", 1, djStatus, currDate, upZxFile);
+												}
+												if(Double.parseDouble(lcNo) > 9.0){//如果是在初审后缴的实审费，统一归在费用催缴【缴纳实质审查费中】,否则归在8流程中
+													mxm.updateMxNoById(lcmx.getId(), 12.0);
+													lcm.updateLcNoInfoById(lcmx.getZlajLcInfoTb().getId(), 12.0);
+												}
+												if(lcNo.equals("12.0")){//如果是在这个环节缴纳实审费，需要修改下个环节状态为实审中
+													zlm.updateZlStatusById(zlId, "13.0", "实审中");
+												}
+												msg = "success";
+											}else{
+												msg = "feeNoMatch";//费用不正确
+											}
+										}else{
+											msg = "feeExist";//费用已缴
+										}
+									}else{
+										msg = "noInputTzs";//需要导入受理、缴费通知书后才能进行缴费
+									}
+								}
+								
+								
+								//上传缴费图
+								if(!upZxFile.equals("")){
+									String[] fjNameArr = upZxFile.split(",");
+									for(Integer i = 0 ; i < fjNameArr.length ; i++){
+										String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
+										Integer lastIndex = fileName.lastIndexOf("_");
+										String lastFjName = fileName.substring(lastIndex+1, fileName.length());
+										Integer lastIndex_1 = lastFjName.indexOf(".");
+										String fjVersion = lastFjName.substring(0, lastIndex_1);
+										String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
+										fjm.addFj(zlId, fileName, fjVersion, "缴费凭证", fjGs, FileOpration.getFileSize(filePath + fileName), currUserId, currDate);
+									}
+								}
+								
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	
 	/**
 	 * 根据专利号获取申请地区和申请日（优先权时使用）

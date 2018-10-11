@@ -188,4 +188,53 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 		}
 	}
 
+	@Override
+	public boolean updateEdateById(Integer id, String lcMxName)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajLcMxInfoTb mx = mxDao.get(sess, id);
+			if(mx != null){
+				mx.setLcMxName(lcMxName);
+				mxDao.update(sess, mx);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改流程明细名称时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateMxNoById(Integer id, Double mxNo) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajLcMxInfoTb mx = mxDao.get(sess, id);
+			if(mx != null){
+				mx.setLcMxNo(mxNo);
+				mxDao.update(sess, mx);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改指定流程明细的流程号时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }
