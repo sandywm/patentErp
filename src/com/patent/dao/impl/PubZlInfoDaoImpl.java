@@ -182,7 +182,7 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 			hql += " and pz.zlType = '"+zlType+"'";
 		}
 		if(pubZlId > 0){
-			hql += " and pz.applyInfoTb.id != "+pubZlId;
+			hql += " and pz.id != "+pubZlId;
 		}
 		if(!zlTitle.equals("")){
 			hql += " and pz.zlTitle like '%"+zlTitle+"%'";
@@ -199,7 +199,7 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 			hql += " and pz.zlType = '"+zlType+"'";
 		}
 		if(pubZlId > 0){
-			hql += " and pz.applyInfoTb.id != "+pubZlId;
+			hql += " and pz.id != "+pubZlId;
 		}
 		if(!zlTitle.equals("")){
 			hql += " and pz.zlTitle like '%"+zlTitle+"%'";
