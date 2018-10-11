@@ -174,9 +174,8 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 	}
 
 	@Override
-	public List<PubZlInfoTb> findtPageSpecInfoByOpt(Session sess,
-			Integer lqCpyId, String zlType, String zlTitle, Integer pubZlId,
-			Integer pageNo, Integer pageSize) {
+	public List<PubZlInfoTb> findSpecInfoByOpt(Session sess,
+			Integer lqCpyId, String zlType, String zlTitle, Integer pubZlId) {
 		// TODO Auto-generated method stub
 		String hql = " from PubZlInfoTb as pz where pz.lqCpyId = "+lqCpyId + " and pz.ajId = 0";
 		if(!zlType.equals("")){
@@ -188,11 +187,7 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 		if(!zlTitle.equals("")){
 			hql += " and pz.zlTitle like '%"+zlTitle+"%'";
 		}
-		int offset = (pageNo - 1) * pageSize;
-		if (offset < 0) {
-			offset = 0;
-		}
-		return sess.createQuery(hql).setFirstResult(offset).setMaxResults(pageSize).list();
+		return sess.createQuery(hql).list();
 	}
 
 	@Override

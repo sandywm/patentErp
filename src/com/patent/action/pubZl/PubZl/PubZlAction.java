@@ -834,13 +834,13 @@ public class PubZlAction extends DispatchAction {
 				if(option.equals("yg")){
 					lqUserId = this.getLoginUserId(request);
 				}
-				pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
-				pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
 				if(purpose.equals("allInfo")){//用于浏览单位全部领取记录用
 					pageFlag = true;
 					Integer addStatus = CommonTools.getFinalInteger("addStatus", request);
 					Integer count = pzm.getCountByOpt_2(cpyId, lqUserId, addStatus);
 					if(count > 0){
+						pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+						pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
 						List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt_2(cpyId, lqUserId, addStatus, pageFlag, pageNo, pageSize);
 						msg = "success";
 						for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
@@ -913,7 +913,7 @@ public class PubZlAction extends DispatchAction {
 					if(msg.equals("success")){
 						Integer count = pzm.getCountByOpt(cpyId, zlType, zlTitle, pubZlId);
 						if(count > 0){
-							List<PubZlInfoTb> pzList = pzm.listPageSpecInfoByOpt(cpyId, zlType, zlTitle, pubZlId, pageNo, pageSize);
+							List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt(cpyId, zlType, zlTitle, pubZlId);
 							for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
 								PubZlInfoTb pz = it.next();
 								Map<String,Object> map_d = new HashMap<String,Object>();

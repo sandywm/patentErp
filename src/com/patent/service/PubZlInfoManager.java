@@ -201,12 +201,10 @@ public interface PubZlInfoManager {
 	 * @param zlType 专利任务类型(""表示全部)
 	 * @param zlTitle 专利标题(""表示全部)
 	 * @param pubZlId 发布的专利任务编号(0表示全部,大于0时此专利除外)
-	 * @param pageNo 页码
-	 * @param pageSize 
 	 * @return
 	 * @throws WEBException
 	 */
-	List<PubZlInfoTb> listPageSpecInfoByOpt(Integer lqCpyId,String zlType,String zlTitle,Integer pubZlId,Integer pageNo,Integer pageSize)throws WEBException ;
+	List<PubZlInfoTb> listSpecInfoByOpt(Integer lqCpyId,String zlType,String zlTitle,Integer pubZlId)throws WEBException ;
 	
 	/**
 	 * 根据条件获取当前代理机构下已领取未增加的专利任务记录条数

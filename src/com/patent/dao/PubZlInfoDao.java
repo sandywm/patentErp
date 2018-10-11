@@ -147,7 +147,7 @@ public interface PubZlInfoDao {
 	
 	
 	/**
-	 * 根据条件分页获取当前代理机构下已领取未增加的专利任务列表
+	 * 根据条件获取当前代理机构下已领取未增加的专利任务列表
 	 * @description
 	 * @author Administrator
 	 * @date 2018-10-7 上午08:23:01
@@ -160,9 +160,8 @@ public interface PubZlInfoDao {
 	 * @param pageSize
 	 * @return
 	 */
-	List<PubZlInfoTb> findtPageSpecInfoByOpt(Session sess,Integer lqCpyId,
-			String zlType, String zlTitle, Integer pubZlId, Integer pageNo,
-			Integer pageSize);
+	List<PubZlInfoTb> findSpecInfoByOpt(Session sess,Integer lqCpyId,
+			String zlType, String zlTitle, Integer pubZlId);
 	
 	/**
 	 * 根据条件获取当前代理机构下已领取未增加的专利任务记录条数

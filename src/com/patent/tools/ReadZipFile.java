@@ -291,6 +291,11 @@ public class ReadZipFile {
 													//发送邮件
 													mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getFeeUserId(), "cpyUser", "新任务通知：费用催缴", "专利["+zl.getAjTitle()+"]已完成费用减缓审批/缴纳申请费通知书导入，请及时完成费用催缴工作");
 													
+													if(!fjRate.equals("0.0") && zl.getAjFjInfo() == 0.0){//通知书存在费减并且系统中不存在费减
+														//存在费减，修改
+														zlm.updateZlFjInfo(zlId, Double.parseDouble(fjRate));
+													}
+													
 													String lcName_next = "受理费";
 													Integer nextLcId = lcm.addLcInfo(zlId, "费用催缴", lcName_next+"催缴", currDate, CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), "", feeEdate,8.1);//代理机构缴费期限为官方期限提前15天
 													if(nextLcId > 0){
