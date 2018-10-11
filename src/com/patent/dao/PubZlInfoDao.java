@@ -155,13 +155,13 @@ public interface PubZlInfoDao {
 	 * @param lqCpyId 代理机构编号
 	 * @param zlType 专利任务类型(""表示全部)
 	 * @param zlTitle 专利标题(""表示全部)
-	 * @param pubUserId 发布人(0表示全部)
+	 * @param pubZlId 发布的专利任务编号(0表示全部,大于0时此专利除外)
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 */
 	List<PubZlInfoTb> findtPageSpecInfoByOpt(Session sess,Integer lqCpyId,
-			String zlType, String zlTitle, Integer pubUserId, Integer pageNo,
+			String zlType, String zlTitle, Integer pubZlId, Integer pageNo,
 			Integer pageSize);
 	
 	/**
@@ -173,9 +173,9 @@ public interface PubZlInfoDao {
 	 * @param lqCpyId 代理机构编号
 	 * @param zlType 专利任务类型(""表示全部)
 	 * @param zlTitle 专利标题(""表示全部)
-	 * @param pubUserId 发布人(0表示全部)
+	 * @param pubZlId 发布的专利任务编号(0表示全部,大于0时此专利除外)
 	 * @return
 	 */
 	Integer getCountByOpt(Session sess,Integer lqCpyId,
-			String zlType, String zlTitle, Integer pubUserId);
+			String zlType, String zlTitle, Integer pubZlId);
 }

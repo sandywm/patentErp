@@ -879,14 +879,11 @@ public class PubZlAction extends DispatchAction {
 						msg = "noInfo";
 					}
 				}else if(purpose.equals("simpleInfo")){//用于增加专利时显示用
-					String zlType = "";
 					//编辑时需要附带上该专利绑定的发布任务，增加时为0
 					//编辑是是专利编号，增加时不用传
-					Integer zlId = CommonTools.getFinalInteger("zlId", request);//代理机构增加的专利编号
-					String zlTitle = Transcode.unescape_new1("zlTile", request);//专利标题
+					String zlTitle = Transcode.unescape_new1("zlTitle", request);//专利标题
 					Integer pubZlId = CommonTools.getFinalInteger("pubZlId", request);//已选择的发布专利任务编号
-					Integer pubUserId = CommonTools.getFinalInteger("pubUserId", request);//发布人
-					zlType = CommonTools.getFinalStr("zlType", request);
+					String zlType = CommonTools.getFinalStr("zlType", request);
 					if(pubZlId > 0){//选择有专利任务(可能是增加，也可能是编辑)
 						List<PubZlInfoTb> pzList_1 = pzm.listSpecInfoByOpt(pubZlId, 0);
 						if(pzList_1.size() > 0){
@@ -914,9 +911,9 @@ public class PubZlAction extends DispatchAction {
 						}
 					}
 					if(msg.equals("success")){
-						Integer count = pzm.getCountByOpt(cpyId, zlType, zlTitle, pubUserId);
+						Integer count = pzm.getCountByOpt(cpyId, zlType, zlTitle, pubZlId);
 						if(count > 0){
-							List<PubZlInfoTb> pzList = pzm.listPageSpecInfoByOpt(cpyId, zlType, zlTitle, pubUserId, pageNo, pageSize);
+							List<PubZlInfoTb> pzList = pzm.listPageSpecInfoByOpt(cpyId, zlType, zlTitle, pubZlId, pageNo, pageSize);
 							for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
 								PubZlInfoTb pz = it.next();
 								Map<String,Object> map_d = new HashMap<String,Object>();

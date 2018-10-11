@@ -175,15 +175,15 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 
 	@Override
 	public List<PubZlInfoTb> findtPageSpecInfoByOpt(Session sess,
-			Integer lqCpyId, String zlType, String zlTitle, Integer pubUserId,
+			Integer lqCpyId, String zlType, String zlTitle, Integer pubZlId,
 			Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
 		String hql = " from PubZlInfoTb as pz where pz.lqCpyId = "+lqCpyId + " and pz.ajId = 0";
 		if(!zlType.equals("")){
 			hql += " and pz.zlType = '"+zlType+"'";
 		}
-		if(pubUserId > 0){
-			hql += " and pz.applyInfoTb.id = "+pubUserId;
+		if(pubZlId > 0){
+			hql += " and pz.applyInfoTb.id != "+pubZlId;
 		}
 		if(!zlTitle.equals("")){
 			hql += " and pz.zlTitle like '%"+zlTitle+"%'";
@@ -197,14 +197,14 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 
 	@Override
 	public Integer getCountByOpt(Session sess, Integer lqCpyId, String zlType,
-			String zlTitle, Integer pubUserId) {
+			String zlTitle, Integer pubZlId) {
 		// TODO Auto-generated method stub
 		String hql = "select count(pz.id) from PubZlInfoTb as pz where pz.lqCpyId = "+lqCpyId + " and pz.ajId = 0";
 		if(!zlType.equals("")){
 			hql += " and pz.zlType = '"+zlType+"'";
 		}
-		if(pubUserId > 0){
-			hql += " and pz.applyInfoTb.id = "+pubUserId;
+		if(pubZlId > 0){
+			hql += " and pz.applyInfoTb.id != "+pubZlId;
 		}
 		if(!zlTitle.equals("")){
 			hql += " and pz.zlTitle like '%"+zlTitle+"%'";
