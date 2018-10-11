@@ -909,6 +909,8 @@ public class PubZlAction extends DispatchAction {
 							map_d.put("pubInfo", pz.getApplyInfoTb().getAppName());
 							list_d.add(map_d);
 						}
+					}else{
+						msg = "success";
 					}
 					if(msg.equals("success")){
 						Integer count = pzm.getCountByOpt(cpyId, zlType, zlTitle, pubZlId);
