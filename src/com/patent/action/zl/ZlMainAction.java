@@ -2381,7 +2381,7 @@ public class ZlMainAction extends DispatchAction {
 												if(feeList_1.size() > 0){
 													fm.updateFeeInfoById(feeList_1.get(0).getId(), ssFee, "缴纳实审费", 1, djStatus, currDate, upZxFile);
 												}
-												if(Double.parseDouble(lcNo) > 9.0){//如果是在初审后缴的实审费，统一归在费用催缴【缴纳实质审查费中】,否则归在8流程中
+												if(Double.parseDouble(lcNo) >= 9.0){//如果是在初审后缴的实审费，统一归在费用催缴【缴纳实质审查费中】,否则归在8流程中
 													mxm.updateMxNoById(lcmx.getId(), 12.0);
 													lcm.updateLcNoInfoById(lcmx.getZlajLcInfoTb().getId(), 12.0);
 												}

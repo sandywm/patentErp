@@ -173,6 +173,7 @@ public class ReadZipFile {
 				            		fjRate = "0."+fjRate.substring(0, fjRate.length() - 1);
 			            		}
 			            		feeEdate = CurrentTime.convertFormatDate(root.element("pay_deadline_date").getTextTrim());//缴费截止日期-通知书
+			            		fwDate = CurrentTime.convertFormatDate(root.element("notice_sent").elementText("notice_sent_date"));//发文日
 			            		Element fee = root.element("fee_info_all");
 			            		Element feeDetail = null;
 			            		List<Object> list_f = new ArrayList<Object>();
@@ -212,9 +213,8 @@ public class ReadZipFile {
 	        						zlName = l2.elementText("FAMINGMC");
 	        						ajNoGf = l2.elementText("SHENQINGH");
 	        						fwSerial = root.element("FAWENXLH").getTextTrim();
-	        						Integer qx = Integer.parseInt(l2.elementText("QIXIAN") + Constants.TD_RECEIVE_DAYS);//补正期限+推定接收期限
 	        						fwDate = CurrentTime.convertFormatDate(l2.elementText("FAWENR"));
-	        						feeEdate = CurrentTime.getFinalDate(fwDate, qx);
+	        						feeEdate = CurrentTime.getFinalDate(fwDate, Constants.TD_RECEIVE_DAYS);
 	        						map_d.put("zlName", zlName);
 	    							map_d.put("tzsName", tzsName);
 	    			            	map_d.put("ajNoGf", ajNoGf);
@@ -248,6 +248,7 @@ public class ReadZipFile {
             				if(zlList.size() == 1){
             					ZlajMainInfoTb zl = zlList.get(0);
             					Integer zlId = zl.getId();
+            					zlType = zl.getAjType();
             					//只有在案件状态正常时（0）
         						if(zl.getAjStopStatus().equals(0)){
         							
@@ -269,7 +270,7 @@ public class ReadZipFile {
 													mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", "新任务通知：导入费用减缓审批/缴纳申请费通知书", "专利["+zl.getAjTitle()+"]已完成受理通知书导入，请及时完成导入费用减缓审批/缴纳申请费通知书工作");
 												}
 												zlm.updateAjNoGfById(zlId, applyDate);//修改专利申请日
-												if(zl.getAjType().equals("fm")){
+												if(zlType.equals("fm")){
 													List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴-无申请日");
 													if(mxList.size() > 0){//之前因为不知道申请日出现的记录，需要进行修改
 														ZlajLcMxInfoTb lcmx = mxList.get(0);
@@ -307,17 +308,17 @@ public class ReadZipFile {
 														mxm.addLcMx(nextLcId, zl.getFeeUserId(), lcName_next+"催缴", 8.1, currDate, "", "", 0, "", "", jfTotal,"催缴受理费:"+jfDetail);
 														//增加未缴纳受理费的清单
 														Integer feeTypeId = 0;
-														if(zl.getAjType().equals("fm")){
+														if(zlType.equals("fm")){
 															feeTypeId = 1;//对应的是发明专利申请费
-														}else if(zl.getAjType().equals("syxx")){
+														}else if(zlType.equals("syxx")){
 															feeTypeId = 4;//对应的是实用新型专利申请费
-														}else if(zl.getAjType().equals("wg")){
+														}else if(zlType.equals("wg")){
 															feeTypeId = 5;//对应的是外观设计专利申请费
 														}
 														fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, 0.0, CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), feeEdate, "", 0, cpyId, 0, "", "");
 													}
 //													不再增加实质审查费催缴流程，等申请日出现后自动结算实质审查费剩余期限（如果在缴申请费流程中一并交了实质审查费，这时候需要增加实质审查费缴费流程）
-													if(zl.getAjType().equals("fm")){//如果是受理费和实审费
+													if(zlType.equals("fm")){//如果是受理费和实审费
 														lcName_next = "受理、实质审查费";
 														//实质审查费为申请日开始3年内为缴费期限--存在申请日期时才增加实质审查费催缴和
 														String applyDate_sys = zl.getAjApplyDate();
@@ -346,11 +347,11 @@ public class ReadZipFile {
         									}else if(tzsName.equals("补正通知书") || tzsName.contains("审查意见通知书") || tzsName.contains("初步审查合格通知书")){
         										if(tzsName.contains("初步审查合格通知书")){//初审合格
         											msg = "success";
-	        										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入初步审查合格通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",10.0);//导入通知书期限1个月
+	        										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入初步审查合格通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",9.1);//导入通知书期限1个月
 													if(currLcId > 0){
-														mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入初步审查合格通知书", 10.0, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+														mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入初步审查合格通知书", 9.1, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
 													}
-													if(zl.getAjType().equals("fm")){
+													if(zlType.equals("fm")){
 														if(lcNo < 13){//实审之前导入初步审查合格通知书
 															List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴");
 															if(mxList.size() > 0){
@@ -368,15 +369,89 @@ public class ReadZipFile {
 														zlm.updateZlStatusById(zlId, "14.0", "等待导入授权、办理登记手续通知书");
 													}
 												}else{//说明需要进行补正或者审查答复（可能是初审的补正/审查答复，也可能是实审的补正/审查答复）
+													String finalDate = CurrentTime.getFinalDate(fwDate, Constants.TD_RECEIVE_DAYS);//推定收到日
+													String finalDate_cpy = "";//官方绝限提前15天
+													Integer addMonthes = 2;
 													if(lcNo >= 9.0 && lcNo < 10){//说明当前处于初审阶段（所有专利）
-														Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",10.0);//导入通知书期限1个月
-														if(currLcId > 0){
-															mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入初步审查合格通知书", 10.0, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+														if(tzsName.equals("第一次审查意见通知书")){
+															//发明专利的第一次审查意见通知书的答复期限是下发日+15天+4个月，其余都是2个月
+															if(zlType.equals("fm")){
+																addMonthes = 4;
+															}
 														}
-	        										}else if(lcNo >= 13.0 && lcNo < 14){//说明当前处于实审阶段（发明专利）
-	        											
+														if(lcNo < 9.9){
+															lcNo += 0.1;
+														}
+														finalDate = CurrentTime.getFinalDate_1(finalDate, addMonthes);
+														finalDate_cpy = CurrentTime.getFinalDate(finalDate,-Constants.JF_SL_END_DATE_CPY);
+														Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
+														if(currLcId > 0){
+															mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+														}
+														Double newLcNo = 0.0;
+														if(lcNo < 9.9){
+															newLcNo = lcNo + 0.1;
+														}
+														String lcName = "";
+														if(tzsName.contains("审查意见通知书")){//审查答复
+															lcName = "案件审查答复";
+														}else{//补正
+															lcName = "案件补正";
+														}
+														zlm.updateZlStatusById(zlId, String.valueOf(newLcNo), "等待"+lcName);
+														//增加案件补正/案件审查答复的环节（当前环节的下一个环节）
+														Integer nextLcId = lcm.addLcInfo(zlId, lcName, lcName, currDate, finalDate_cpy, "", finalDate,newLcNo);
+														if(nextLcId > 0){
+															mxm.addLcMx(nextLcId, zl.getBzUserId(), lcName, newLcNo, currDate, "", "", 0, "", "",  0.0, "等待"+lcName);
+														}
+	        										}else if(lcNo >= 13.0 && lcNo < 14 && zlType.equals("fm")){//说明当前处于实审阶段（发明专利）
+	        											if(tzsName.equals("第一次审查意见通知书")){
+															//发明专利的第一次审查意见通知书的答复期限是下发日+15天+4个月，其余都是2个月
+															if(zlType.equals("fm")){
+																addMonthes = 4;  
+															}
+														}
+	        											finalDate = CurrentTime.getFinalDate_1(finalDate, addMonthes);
+	        											finalDate_cpy = CurrentTime.getFinalDate(finalDate,-Constants.JF_SL_END_DATE_CPY);
+	        											if(lcNo < 13.9){
+															lcNo += 0.1;
+														}
+	        											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
+														if(currLcId > 0){
+															mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+														}
+														Double newLcNo = 0.0;
+														if(lcNo < 13.9){
+															newLcNo = lcNo + 0.1;
+														}
+														String lcName = "";
+														if(tzsName.contains("审查意见通知书")){//审查答复
+															lcName = "案件审查答复";
+														}else{//补正
+															lcName = "案件补正";
+														}
+														zlm.updateZlStatusById(zlId, String.valueOf(newLcNo), "等待"+lcName);
+														//增加案件补正/案件审查答复的环节（当前环节的下一个环节）
+														Integer nextLcId = lcm.addLcInfo(zlId, lcName, lcName, currDate, finalDate_cpy, "", finalDate,newLcNo);
+														if(nextLcId > 0){
+															mxm.addLcMx(nextLcId, zl.getBzUserId(), lcName, newLcNo, currDate, "", "", 0, "", "",  0.0, "等待"+lcName);
+														}
 	        										}
 												}
+        									}else if(tzsName.equals("驳回决定")){//专利被驳回，需要在收到该通知书后3个月内向专利复审委员会请求复审
+        										String finalDate = CurrentTime.getFinalDate(fwDate, Constants.TD_RECEIVE_DAYS);//推定收到日
+        										finalDate = CurrentTime.getFinalDate_1(finalDate, 3);//3个月内进行请求复审
+        										if(lcNo >= 9.0 && lcNo < 10.0){//初审补正/审查答复中被驳回
+        											
+        										}else if(lcNo >= 13.0 && lcNo < 14.0){//实审补正/审查答复中被驳回
+        											if(lcNo < 13.9){
+														lcNo += 0.1;
+													}
+        											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
+													if(currLcId > 0){
+														mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+													}
+        										}
         									}
         									String upZipPath_new = upZipPath;
         									if(specZlId == 0){//没有针对指定的专利导入，需要修改上传文件路径
@@ -611,7 +686,7 @@ public class ReadZipFile {
 	 */
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-//		ReadZipFile.readZipFile_new("E:\\","实用新型-受理+交纳申请费通知书.zip",0,0,0);
+		ReadZipFile.readZipFile_new("E:\\","实用新型-受理+交纳申请费通知书.zip",0,0,0);
 //		for(Iterator<Object> it = objList.iterator() ; it.hasNext();){
 //			Object obj = it.next();
 //			System.out.println(obj);
