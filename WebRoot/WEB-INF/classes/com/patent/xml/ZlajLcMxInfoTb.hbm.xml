@@ -20,7 +20,7 @@
                 <comment>流程明细名称</comment>
             </column>
         </property>
-         <property name="lcFzUserId" type="java.lang.String">
+         <property name="lcFzUserId" type="java.lang.Integer">
             <column name="lc_fz_user_id" not-null="true">
                 <comment>流程负责人(等同于(承办人))</comment>
             </column>
