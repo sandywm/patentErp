@@ -1351,6 +1351,8 @@ public class ZlMainAction extends DispatchAction {
 								msg = "typeDiff";//专利类型不一致
 							}
 						}
+					}else{
+						msg = "success";
 					}
 				}
 				
@@ -1414,8 +1416,7 @@ public class ZlMainAction extends DispatchAction {
 								}
 								String ajApplyDate = "";
 								Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, ajFjInfo,ajSqAddress, 
-										yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "2.0", "人员分配", pubZlId,cpyId,0,0,
-										0,0,0,0,0,0,currLoginUserId);
+										yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "2.0", "人员分配", pubZlId,0,0,0,0,0,0,0,0,cpyId,currLoginUserId);
 								if(zlId > 0){
 									pzm.updateAjIdById(pubZlId, zlId);
 									//增加流程

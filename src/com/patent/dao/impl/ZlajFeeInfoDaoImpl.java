@@ -68,4 +68,11 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<ZlajFeeInfoTb> findInfoByOpt(Session sess, Integer zlId,
+			String tzsArea, Integer feeStatus, Integer djStatus) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

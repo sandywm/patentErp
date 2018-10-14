@@ -307,22 +307,22 @@ public class ReadZipFile {
 													mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", "新任务通知：导入费用减缓审批/缴纳申请费通知书", "专利["+zl.getAjTitle()+"]已完成受理通知书导入，请及时完成导入费用减缓审批/缴纳申请费通知书工作");
 												}
 												zlm.updateAjNoGfById(zlId, applyDate);//修改专利申请日
-												if(zlType.equals("fm")){
-													List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴-无申请日");
-													if(mxList.size() > 0){//之前因为不知道申请日出现的记录，需要进行修改
-														ZlajLcMxInfoTb lcmx = mxList.get(0);
-														Integer lcId_temp = lcmx.getZlajLcInfoTb().getId();
-														Integer lcmxId = lcmx.getId();
-														mxm.updateEdateById(lcmxId, "实质审查费催缴");
-														String feeEndDate_gf = CurrentTime.getFinalDate(applyDate, Constants.JF_SC_END_DATE_GF);
-														String feeEndDate_cpy = CurrentTime.getFinalDate(applyDate, Constants.JF_SC_END_DATE_CPY);
-														lcm.updateLcBasicInfoById(lcId_temp, "", "", "", feeEndDate_cpy,feeEndDate_gf);
-														List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(zlId, 3);
-														if(feeList.size() > 0){
-															fm.updateFeeInfoById(feeList.get(0).getId(), feeEndDate_cpy, feeEndDate_gf);
-														}
-													}
-												}
+//												if(zlType.equals("fm")){
+//													List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴-无申请日");
+//													if(mxList.size() > 0){//之前因为不知道申请日出现的记录，需要进行修改
+//														ZlajLcMxInfoTb lcmx = mxList.get(0);
+//														Integer lcId_temp = lcmx.getZlajLcInfoTb().getId();
+//														Integer lcmxId = lcmx.getId();
+//														mxm.updateEdateById(lcmxId, "实质审查费催缴");
+//														String feeEndDate_gf = CurrentTime.getFinalDate(applyDate, Constants.JF_SC_END_DATE_GF);
+//														String feeEndDate_cpy = CurrentTime.getFinalDate(applyDate, Constants.JF_SC_END_DATE_CPY);
+//														lcm.updateLcBasicInfoById(lcId_temp, "", "", "", feeEndDate_cpy,feeEndDate_gf);
+//														List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(zlId, 3);
+//														if(feeList.size() > 0){
+//															fm.updateFeeInfoById(feeList.get(0).getId(), feeEndDate_cpy, feeEndDate_gf);
+//														}
+//													}
+//												}
 												if(lcNo == 7.0){//说明是正常顺序
 													zlm.updateZlStatusById(zlId, "7.1", "等待导入费用减缓审批/缴纳申请费通知书");
 												}
@@ -371,28 +371,33 @@ public class ReadZipFile {
 													}
 //													不再增加实质审查费催缴流程，等申请日出现后自动结算实质审查费剩余期限（如果在缴申请费流程中一并交了实质审查费，这时候需要增加实质审查费缴费流程）
 													if(zlType.equals("fm")){//如果是受理费和实审费
-														lcName_next = "受理、实质审查费";
-														//实质审查费为申请日开始3年内为缴费期限--存在申请日期时才增加实质审查费催缴和
-														String applyDate_sys = zl.getAjApplyDate();
-														String feeEndDate_gf = "noDate";
-														String feeEndDate_cpy = "noDate";
-														String lcmxName = "实质审查费催缴";
-														//等有了专利申请日后再修改过来
-														if(!applyDate_sys.equals("")){//存在申请日期
-															feeEndDate_gf = CurrentTime.getFinalDate(applyDate_sys, Constants.JF_SC_END_DATE_GF);
-															feeEndDate_cpy = CurrentTime.getFinalDate(applyDate_sys, Constants.JF_SC_END_DATE_CPY);
-														}else{
-															lcmxName = "实质审查费催缴-无申请日";
-														}
-														Integer nextLcId_1 = lcm.addLcInfo(zlId, "费用催缴", "实质审查费催缴", currDate, feeEndDate_cpy, "", feeEndDate_gf,8.2);
-														if(nextLcId_1 > 0){
-															double scFee_final  = Double.parseDouble(fjRate) * Constants.SC_FEE;
-        													mxm.addLcMx(nextLcId_1, currUserId, lcmxName, 8.2, currDate, "", "", 0, "", "", scFee_final,"催缴实质审查费:"+scFee_final);
-        													//增加未缴纳实质审查费的清单3--发明专利申请实质审查费（实质审查费在申请日三年之内缴纳）
-        													if(fm.listInfoByOpt(zlId, 3).size() == 0){//不存在该费用才增加
-        														fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 0, "", "",tzsName);
-        													}
-														}
+//														lcName_next = "受理、实质审查费";
+//														//实质审查费为申请日开始3年内为缴费期限--存在申请日期时才增加实质审查费催缴和
+//														String applyDate_sys = zl.getAjApplyDate();
+//														String feeEndDate_gf = "noDate";
+//														String feeEndDate_cpy = "noDate";
+//														String lcmxName = "实质审查费催缴";
+//														//等有了专利申请日后再修改过来
+//														if(!applyDate_sys.equals("")){//存在申请日期
+//															feeEndDate_gf = CurrentTime.getFinalDate(applyDate_sys, Constants.JF_SC_END_DATE_GF);
+//															feeEndDate_cpy = CurrentTime.getFinalDate(applyDate_sys, Constants.JF_SC_END_DATE_CPY);
+//														}else{
+//															lcmxName = "实质审查费催缴-无申请日";
+//														}
+//														Integer nextLcId_1 = lcm.addLcInfo(zlId, "费用催缴", "实质审查费催缴", currDate, feeEndDate_cpy, "", feeEndDate_gf,8.2);
+//														if(nextLcId_1 > 0){
+//															double scFee_final  = Double.parseDouble(fjRate) * Constants.SC_FEE;
+//        													mxm.addLcMx(nextLcId_1, currUserId, lcmxName, 8.2, currDate, "", "", 0, "", "", scFee_final,"催缴实质审查费:"+scFee_final);
+//        													//增加未缴纳实质审查费的清单3--发明专利申请实质审查费（实质审查费在申请日三年之内缴纳）
+//        													if(fm.listInfoByOpt(zlId, 3).size() == 0){//不存在该费用才增加
+//        														fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 0, "", "",tzsName);
+//        													}
+//														}
+														//增加未缴纳实质审查费的清单3--发明专利申请实质审查费（实质审查费在申请日三年之内缴纳）
+//    													if(fm.listInfoByOpt(zlId, 3).size() == 0){//不存在该费用才增加
+//    														double scFee_final  = Double.parseDouble(fjRate) * Constants.SC_FEE;
+//    														fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 0, "", "",tzsName);
+//    													}
 													}
 													if(lcNo == 7.1){//说明是正常顺序
 														zlm.updateZlStatusById(zlId, "8.0", "等待缴纳"+lcName_next);
