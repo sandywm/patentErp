@@ -1418,7 +1418,9 @@ public class ZlMainAction extends DispatchAction {
 								Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, ajFjInfo,ajSqAddress, 
 										yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "2.0", "人员分配", pubZlId,0,0,0,0,0,0,0,0,cpyId,currLoginUserId);
 								if(zlId > 0){
-									pzm.updateAjIdById(pubZlId, zlId);
+									if(pubZlId > 0){
+										pzm.updateAjIdById(pubZlId, zlId);
+									}
 									//增加流程
 									Integer lcId_1 = lcm.addLcInfo(zlId, "专利案件录入", "专利案件录入", sDate, cpyDate, sDate, "",1.0);
 									if(lcId_1 > 0){
