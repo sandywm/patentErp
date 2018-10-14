@@ -18,6 +18,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	private CpyInfoTb cpyInfoTb;
 	private ZlajMainInfoTb zlajMainInfoTb;
 	private Double feePrice;
+	private Double feeRate;
 	private String feeEndDateJj;
 	private String feeEndDateGf;
 	private String feeRemark;
@@ -25,6 +26,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	private Integer djStatus;
 	private String feeJnDate;
 	private String feeUpZd;
+	private String tzsArea;
 
 	// Constructors
 
@@ -34,14 +36,15 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	/** minimal constructor */
 	public ZlajFeeInfoTb(FeeTypeInfoTb feeTypeInfoTb, CpyUserInfo cpyUserInfo,
-			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, String feeEndDateJj,
+			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
-			Integer djStatus, String feeJnDate, String feeUpZd) {
+			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
 		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.feePrice = feePrice;
+		this.feeRate = feeRate;
 		this.feeEndDateJj = feeEndDateJj;
 		this.feeEndDateGf = feeEndDateGf;
 		this.feeRemark = feeRemark;
@@ -49,19 +52,20 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.djStatus = djStatus;
 		this.feeJnDate = feeJnDate;
 		this.feeUpZd = feeUpZd;
+		this.tzsArea = tzsArea;
 	}
 
 	/** full constructor */
 	public ZlajFeeInfoTb(Integer id,FeeTypeInfoTb feeTypeInfoTb, CpyUserInfo cpyUserInfo,
-			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, String feeEndDateJj,
+			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
-			Integer djStatus, String feeJnDate, String feeUpZd) {
-		this.id = id;
+			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
 		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.feePrice = feePrice;
+		this.feeRate = feeRate;
 		this.feeEndDateJj = feeEndDateJj;
 		this.feeEndDateGf = feeEndDateGf;
 		this.feeRemark = feeRemark;
@@ -69,6 +73,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.djStatus = djStatus;
 		this.feeJnDate = feeJnDate;
 		this.feeUpZd = feeUpZd;
+		this.tzsArea = tzsArea;
 	}
 
 	// Property accessors
@@ -175,6 +180,22 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	public void setZlajMainInfoTb(ZlajMainInfoTb zlajMainInfoTb) {
 		this.zlajMainInfoTb = zlajMainInfoTb;
+	}
+
+	public Double getFeeRate() {
+		return feeRate;
+	}
+
+	public void setFeeRate(Double feeRate) {
+		this.feeRate = feeRate;
+	}
+
+	public String getTzsArea() {
+		return tzsArea;
+	}
+
+	public void setTzsArea(String tzsArea) {
+		this.tzsArea = tzsArea;
 	}
 
 }

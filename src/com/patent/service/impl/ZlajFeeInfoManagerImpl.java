@@ -95,9 +95,9 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 
 	@Override
 	public Integer addZLFee(Integer zlId, Integer appUserId, Integer geeTypeId,
-			Double feePrice, String feeEndDateCpy, String feeEndDateGf,
+			Double feePrice, Double feeRate,String feeEndDateCpy, String feeEndDateGf,
 			String feeRemark, Integer feeStatus, Integer cpyId,
-			Integer djStatus, String feeJnDate, String feeUpZd)
+			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -109,8 +109,8 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
 			ZlajFeeInfoTb zlFee = new ZlajFeeInfoTb(ftDao.getTypeEntityById(sess, geeTypeId), uDao.get(sess, appUserId),
-					cDao.get(sess, cpyId), zlDao.get(sess, zlId), feePrice, feeEndDateCpy,
-					feeEndDateGf, feeRemark, feeStatus,djStatus, feeJnDate, feeUpZd);
+					cDao.get(sess, cpyId), zlDao.get(sess, zlId), feePrice, feeRate,feeEndDateCpy,
+					feeEndDateGf, feeRemark, feeStatus,djStatus, feeJnDate, feeUpZd,tzsArea);
 			fDao.save(sess, zlFee);
 			tran.commit();
 			return zlFee.getId();
@@ -179,5 +179,22 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			HibernateUtil.closeSession();
 		}
 	}
+
+	@Override
+	public List<FeeTypeInfoTb> listInfoByName(String feeName) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			ftDao = (FeeTypeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_FEE_TYPE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return ftDao.findInfoByName(sess, feeName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据费用名称获取费用类型信息列表时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 
 }

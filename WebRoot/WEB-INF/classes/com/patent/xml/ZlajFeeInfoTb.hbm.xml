@@ -35,6 +35,11 @@
                 <comment>费用金额</comment>
             </column>
         </property>
+        <property name="feeRate" type="java.lang.Double">
+            <column name="fee_rate" precision="10" not-null="true">
+                <comment>费减</comment>
+            </column>
+        </property>
         <property name="feeEndDateJj" type="java.lang.String">
             <column name="fee_endDate_jj" length="30" not-null="true">
                 <comment>费用期限(机构)</comment>
@@ -68,6 +73,11 @@
         <property name="feeUpZd" type="java.lang.String">
             <column name="fee_up_zd" length="100">
                 <comment>缴费账单</comment>
+            </column>
+        </property>
+        <property name="tzsArea" type="java.lang.String">
+            <column name="tzs_area" length="50">
+                <comment>属于哪个通知书的收费项目</comment>
             </column>
         </property>
     </class>

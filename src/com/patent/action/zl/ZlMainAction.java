@@ -365,7 +365,11 @@ public class ZlMainAction extends DispatchAction {
 		Integer cpyId = 0;
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(this.getLoginType(request).equals("cpyUser")){
-			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listZl");
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listZl");
+			}
 			if(abilityFlag){
 				CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
 				if(cpyUser != null){
@@ -1317,7 +1321,12 @@ public class ZlMainAction extends DispatchAction {
 		if(this.getLoginType(request).equals("cpyUser")){
 			//判断权限
 			//获取当前用户是否有修改权限
-			boolean abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");
+			boolean abilityFlag = false;
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");
+			}
 			if(abilityFlag){
 				cpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
 				//获取当前的案例号--实时

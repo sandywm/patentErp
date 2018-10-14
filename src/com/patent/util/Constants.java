@@ -29,6 +29,8 @@ public class Constants {
 	public static final Integer GREEN_ALERT_DAYS = 20;//绿色警告截止天数
 	//20天或者20天以上为绿色警告，10-20天内为黄色警告，少于10天为红色警告
 	
+	public static final Integer PUB_PRINT_FEE = 50;//公告印刷费
+	
 	//免费会员不能增加子公司
 	public static final Integer SUB_CPY_NUM_YP = 1;//银牌对应的子公司个数
 	public static final Integer SUB_CPY_NUM_JP = 3;//金牌对应的子公司个数

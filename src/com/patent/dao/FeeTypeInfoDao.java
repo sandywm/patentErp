@@ -26,4 +26,15 @@ public interface FeeTypeInfoDao {
 	 * @return
 	 */
 	List<FeeTypeInfoTb> findInfoByStatus(Session sess,String feeStatus);
+	
+	/**
+	 * 根据费用名称获取费用类型信息列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-14 上午09:29:36
+	 * @param sess
+	 * @param feeName 费用名称
+	 * @return
+	 */
+	List<FeeTypeInfoTb> findInfoByName(Session sess,String feeName);
 }

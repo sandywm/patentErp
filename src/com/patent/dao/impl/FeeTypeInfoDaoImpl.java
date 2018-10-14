@@ -31,4 +31,11 @@ public class FeeTypeInfoDaoImpl implements FeeTypeInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<FeeTypeInfoTb> findInfoByName(Session sess, String feeName) {
+		// TODO Auto-generated method stub
+		String hql = " from FeeTypeInfoTb as ft where ft.feeName = '"+feeName+"'";
+		return sess.createQuery(hql).list();
+	}
+
 }
