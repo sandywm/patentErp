@@ -15,14 +15,14 @@
                 <comment>流程编号</comment>
             </column>
         </many-to-one>
+        <many-to-one name="cpyUser" class="com.patent.module.CpyUserInfo" lazy="false">
+            <column name="lc_fz_user_id" not-null="true">
+                <comment>流程负责人(等同于(承办人))</comment>
+            </column>
+        </many-to-one>
         <property name="lcMxName" type="java.lang.String">
             <column name="lc_mx_name" length="50" not-null="true">
                 <comment>流程明细名称</comment>
-            </column>
-        </property>
-         <property name="lcFzUserId" type="java.lang.Integer">
-            <column name="lc_fz_user_id" not-null="true">
-                <comment>流程负责人(等同于(承办人))</comment>
             </column>
         </property>
         <property name="lcMxNo" type="java.lang.Double">

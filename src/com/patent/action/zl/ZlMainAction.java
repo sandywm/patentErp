@@ -574,8 +574,7 @@ public class ZlMainAction extends DispatchAction {
 									Map<String,Object> map_d = new HashMap<String,Object>();
 									map_d.put("mxId", mx.getId());
 									map_d.put("mxName", mx.getLcMxName());
-									Integer lcFzUserId = mx.getLcFzUserId();
-									CpyUserInfo user = cum.getEntityById(lcFzUserId);
+									CpyUserInfo user = mx.getCpyUser();
 									if(user != null){
 										map_d.put("fzUserName", user.getUserName());
 									}else{
@@ -1893,7 +1892,7 @@ public class ZlMainAction extends DispatchAction {
 							if(mxList.size() > 0){
 								ZlajLcMxInfoTb lcmx = mxList.get(0);
 								if(lcmx.getLcMxEDate().equals("")){
-									if(currUserId.equals(lcmx.getLcFzUserId())){
+									if(currUserId.equals(lcmx.getCpyUser().getId())){
 										msg = "success";
 									}else{
 										if(this.getLoginRoleName(request).equals("管理员")){//管理员可以操作任何环节
@@ -2051,7 +2050,7 @@ public class ZlMainAction extends DispatchAction {
 									double lcNo = lcmx.getLcMxNo();//流程号
 									String cpyDate = lcList.get(0).getLcCpyDate();
 									if(lcmx.getLcMxEDate().equals("")){
-										if(currUserId.equals(lcmx.getLcFzUserId())){
+										if(currUserId.equals(lcmx.getCpyUser().getId())){
 											if(ajStatus.equals(lcNo)){
 												msg = "success";
 											}else{
