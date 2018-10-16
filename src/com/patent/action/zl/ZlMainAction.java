@@ -135,6 +135,36 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
+	 * 获取当前用户有无指定的操作权限
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-16 上午09:27:36
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getAbilityFlag(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String actNameEng = CommonTools.getFinalStr("actNameEng", request);
+		boolean abilityFlag = false;
+		if(!actNameEng.equals("")){
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				//获取当前用户是否有修改权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), actNameEng);
+			}
+		}
+		Map<String,Boolean> map = new HashMap<String,Boolean>();
+		map.put("result", abilityFlag);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
 	 * 导向专利页面
 	 * @description
 	 * @author wm
@@ -186,7 +216,7 @@ public class ZlMainAction extends DispatchAction {
 		String lxr = CommonTools.getFinalStr("lxr", request);
 		String sDate = CommonTools.getFinalStr("sDate", request);
 		String eDate = CommonTools.getFinalStr("eDate", request);
-		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：撰写任务领取，1：专利任务）
+		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利任务，2：撰写任务领取）
 		//当任务条件为0时，撰写任务领取，这时需要强制stopStatus为正常（0）
 		if(lqStatus.equals(0)){//撰写任务领取时，专利任务必须时正常状态
 			stopStatus = 0;
@@ -198,7 +228,12 @@ public class ZlMainAction extends DispatchAction {
 			CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
 			if(cpyUser != null){
 				cpyId = cpyUser.getCpyInfoTb().getId();
-				abilityFlag = true;
+				if(this.getLoginRoleName(request).equals("管理员")){
+					abilityFlag = true;
+				}else{
+					//获取当前用户是否有修改权限
+					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listZl");
+				}
 			}
 		}else if(loginType.equals("spUser")){//平台用户
 			abilityFlag = true;
@@ -815,14 +850,9 @@ public class ZlMainAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		Map<String,Object> map = new HashMap<String,Object>();
 		String msg = "error";
-		boolean abilityFlag = false;
+		boolean abilityFlag = true;
 		if(this.getLoginType(request).equals("cpyUser")){//只针对代理机构下员工使用
 			Integer currLoginUserId = this.getLoginUserId(request);
-			if(this.getLoginRoleName(request).equals("管理员")){
-				abilityFlag = true;
-			}else{
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");
-			}
 			if(abilityFlag){//只针对具有修改权限的员工和管理员使用
 				CpyUserInfo user = cum.getEntityById(currLoginUserId);
 				if(user != null){
@@ -916,7 +946,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 流程移交操作--针对代理机构员工开放
+	 * 流程移交操作--针对代理机构员工开放(只有在流程分发人员分配任务后流程人员才能进行任务移交)
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-9-9 下午09:15:22
@@ -936,7 +966,7 @@ public class ZlMainAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
 		Map<String,String> map = new HashMap<String,String>();
-		boolean abilityFlag = false;
+		boolean abilityFlag = true;
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		String msg = "error";
 		boolean flag = false;
@@ -953,11 +983,6 @@ public class ZlMainAction extends DispatchAction {
 		if(zlId > 0){
 			if(this.getLoginType(request).equals("cpyUser")){
 				Integer currLoginUserId = this.getLoginUserId(request);
-				if(this.getLoginRoleName(request).equals("管理员")){
-					abilityFlag = true;
-				}else{
-					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");
-				}
 				if(abilityFlag){
 					Integer userId_yj = CommonTools.getFinalInteger("userId_yj", request);//准备接受移交任务的用户
 					//移交类型zx-撰写,sc-专利审核,dgtj-定稿提交,tzs-通知书,fycj-费用催缴,bz-补正,bzsh-补正审核,bh-驳回
@@ -1091,8 +1116,8 @@ public class ZlMainAction extends DispatchAction {
 			if(this.getLoginRoleName(request).equals("管理员")){
 				abilityFlag = true;
 			}else{
-				//获取当前用户是否拥有删除的权限--将分配专利操作人员的权限归类为流程人员分配权限
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "delZl");
+				//获取当前用户是否拥有流程任务分配的权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "fpZl");
 			}
 			if(abilityFlag){
 				Integer cpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
@@ -1510,7 +1535,7 @@ public class ZlMainAction extends DispatchAction {
 			if(this.getLoginRoleName(request).equals("管理员")){
 				abilityFlag = true;
 			}else{
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");//只有具有创建专利权限和管理员才有资格修改专利状态
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "stopZl");//只有具有创建专利权限和管理员才有资格修改专利状态
 			}
 			if(abilityFlag){
 				Integer zlId = CommonTools.getFinalInteger("zlId", request);
@@ -1571,7 +1596,7 @@ public class ZlMainAction extends DispatchAction {
 			if(this.getLoginRoleName(request).equals("管理员")){
 				abilityFlag = true;
 			}else{
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");//只有增加权限的员工才能修改专利基本信息
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");
 			}
 			if(abilityFlag){
 				Integer zlId = CommonTools.getFinalInteger("zlId", request);
@@ -1798,7 +1823,7 @@ public class ZlMainAction extends DispatchAction {
 			if(this.getLoginRoleName(request).equals("管理员")){
 				abilityFlag = true;
 			}else{
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//只有修改权限的员工才能领取任务
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "lqZl");//只有修改权限的员工才能领取任务
 			}
 			if(abilityFlag){
 				Integer zlId = CommonTools.getFinalInteger("zlId", request);
@@ -1808,30 +1833,23 @@ public class ZlMainAction extends DispatchAction {
 					List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, user.getCpyInfoTb().getId());
 					if(zlList.size() > 0){
 						ZlajMainInfoTb zl = zlList.get(0);
-						//只有在案件状态正常时（0）、案件状态（2.0）、案件撰写人（0）、流程期限未到（cpyDate）才能领取
+						//只有在案件状态正常时（0）、案件状态（2.0）、案件撰写人（0）、流程期限未到（cpyDate）并且在相关人员设置了其他流程人员年后才能领取
 						if(zl.getAjStopStatus().equals(0)){
 							if(zl.getAjStatus().equals("2.0") && zl.getCheckUserId().equals(0)){
-								List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz("人员分配");
-								if(lcList.size() > 0){
-									ZlajLcInfoTb lc = lcList.get(0);
-									Integer lcId = lc.getId();
-									Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(),lc.getLcCpyDate());
+								List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "等待撰写人员领取");
+								if(mxList.size() > 0){
+									ZlajLcMxInfoTb lcmx = mxList.get(0);
+									ZlajLcInfoTb lc = lcmx.getZlajLcInfoTb();
+									Integer diffDays = CurrentTime.compareDate(currDate,lc.getLcCpyDate());
 									if(diffDays > 0){//可以领取
-										List<ZlajLcMxInfoTb> mxList = mxm.listFirstInfoByLcId(lcId);//撰写任务领取肯定是第一个
-										if(mxList.size() > 0){
-											mxm.updateEdateById(mxList.get(0).getId(), currUserId, -1, "", "", "", currDate, "撰写任务已被领取");
-											List<ZlajLcInfoTb> lcList_f = lcm.listLcInfoByLcMz("专利案件录入");
-											if(lcList_f.size() > 0){
-												String cpyDate = lcList_f.get(0).getLcCpyDate();
-												Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", currDate, cpyDate, "", "",3.0);
-												mxm.addLcMx(lcId_3, currUserId, "新申请撰稿", 3.0, currDate, "", "", 0, "", "",  0.0, "");
-												//领取成功后把状态修改成3.0
-												zlm.updateZlStatusById(zlId, "3.0","新申请撰稿");//修改专利状态为3
-												//给当前撰写人发送邮件
-												mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", "新任务通知：专利撰写", "您已成功领取专利["+lc.getZlajMainInfoTb().getAjTitle()+"]任务，请您于["+cpyDate+"]之前完成专利撰写工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
-												msg = "success";
-											}
-										}
+										mxm.updateEdateById(mxList.get(0).getId(), currUserId, -1, "", "", "", currDate, "撰写任务已被领取");
+										Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", currDate, lc.getLcCpyDate(), "", "",3.0);
+										mxm.addLcMx(lcId_3, currUserId, "新申请撰稿", 3.0, currDate, "", "", 0, "", "",  0.0, "");
+										//领取成功后把状态修改成3.0
+										zlm.updateZlStatusById(zlId, "3.0","新申请撰稿");//修改专利状态为3
+										//给当前撰写人发送邮件
+										mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", "新任务通知：专利撰写", "您已成功领取专利["+lc.getZlajMainInfoTb().getAjTitle()+"]任务，请您于["+lc.getLcCpyDate()+"]之前完成专利撰写工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
+										msg = "success";
 									}else{
 										msg = "outDate";//期限已过，不能领取
 									}
@@ -2028,7 +2046,7 @@ public class ZlMainAction extends DispatchAction {
 			if(roleName.equals("管理员")){
 				abilityFlag = true;
 			}else{
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//只有修改权限的员工才能进行流程处理
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理
 			}
 			if(abilityFlag){
 				Integer zlId = CommonTools.getFinalInteger("zlId", request);//（公共参数）
@@ -2279,7 +2297,7 @@ public class ZlMainAction extends DispatchAction {
 			if(roleName.equals("管理员")){
 				abilityFlag = true;
 			}else{
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//只有修改权限的员工才能进行流程处理
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//只有具有专利流程处理权限的员工才能进行流程处理
 			}
 			if(abilityFlag){
 				Integer zlId = CommonTools.getFinalInteger("zlId", request);//（公共参数）

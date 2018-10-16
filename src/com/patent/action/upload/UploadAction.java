@@ -39,6 +39,7 @@ import com.patent.tools.CommonTools;
 import com.patent.tools.CurrentTime;
 import com.patent.util.Constants;
 import com.patent.util.WebUrl;
+import com.patent.web.Ability;
 
 /** 
  * MyEclipse Struts
@@ -89,7 +90,18 @@ public class UploadAction extends DispatchAction {
         pw.close();
 	}
 
+	/**
+	 * 获取session中的用户角色编号
+	 * @param request
+	 * @return
+	 */
+	private Integer getLoginRoleId(HttpServletRequest request){
+        Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ROLE_ID);
+        return userId;
+	}
+	
 	/** 
+	 * 上传文件
 	 * Method execute
 	 * @param mapping
 	 * @param form
@@ -111,108 +123,123 @@ public class UploadAction extends DispatchAction {
 		Map<String,Object> map = new HashMap<String,Object>();
 		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
-		if (ServletFileUpload.isMultipartContent(request)){// 判断是否是上传文件
-			DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();// 创建工厂对象
-			ServletFileUpload fileUpload = new ServletFileUpload(diskFileItemFactory); // 创建上传对象
-			try {
-				List<FileItem> filelist = fileUpload.parseRequest(request);
-				ListIterator<FileItem> iterator = filelist.listIterator();
-				String userPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + loginType + "\\";
-				String absolutPath = loginType + "\\";
-				if(loginType.equals("appUser")){
-					userPath += currLoginUserId;
-					absolutPath += currLoginUserId;
-					if(ajId > 0){
-						userPath +=  "\\" + ajId;
-						absolutPath +=  "\\" + ajId;
-					}
-				}else if(loginType.equals("cpyUser")){
-					if(ajId > 0){
-						userPath += ajId + "\\" + fileType;
-						absolutPath += ajId + "\\" + fileType;
-					}else{
-						//技术底稿
-						//之前放在外层，等待专利增加后，剪切到ajId下
-//						userPath += "dg";
-//						absolutPath += "dg";
-						userPath += "u_"+currLoginUserId;//怕引起文件名重复，暂时将代理机构下人员上传的文件存在u_id下
-						absolutPath += "u_"+currLoginUserId;
-					}
-				}
-				while (iterator.hasNext()) {
-					FileItem fileItem = iterator.next();// 获取文件对象
-					// 处理文件上传
-					String filename = fileItem.getName();// 获取名字
-					Integer lastIndex = filename.lastIndexOf(".");
-					String suffix = filename.substring(lastIndex+1);
-					if(loginType.equals("cpyUser")){
-						String filePre = filename.substring(0, lastIndex);
-						 Integer nextNum = 1;
-						 String nextVersion = "";
-						 if(fileType.equals("fj")){
-							List<ZlajFjInfoTb> fjList = fjm.listLastInfoByAjId(ajId);
-							if(fjList.size() > 0){
-								nextNum = Integer.parseInt(fjList.get(0).getFjVersion()) + 1;
-							}
-							nextVersion = "V"+nextNum;
-							filename = filePre + "_" + nextVersion + "." + suffix;
-						 }else if(fileType.equals("pj")){
-							 List<ZlajFeeInfoTb> fList = fm.listInfoByOpt(ajId, "");
-							 nextVersion = "V" + (fList.size() + 1);
-							 filename = filePre + "_" + nextVersion + "." + suffix;
-						 }else if(fileType.equals("tzs")){
-							 filename = filePre + "_" + CurrentTime.getRadomTime() + "." + suffix;
-						 }
-					 }
-					CheckImage ci = new CheckImage();
-					//doc,docx,wps,xls,xlsx,txt,pdf,pptx,ppt,zip,rar,dwg,eml,jpg,png,bmp,gif,vsd,vsdx如果文件格式不在上述范围内请压缩成zip格式后上传
-					String checkFileSuffixInfo = ci.getUpFileStuffix(suffix);
-					if(checkFileSuffixInfo.equals("img")){//图片限制5M
-						upFlag = ci.checkItemSize(fileItem, 5 * 1024 * 1024);
-						if(!upFlag){
-							msg = "outSize";
-						}
-					}else if(checkFileSuffixInfo.equals("file")){//文件限制10M
-						upFlag = ci.checkItemSize(fileItem, 10 * 1024 * 1024);
-						if(!upFlag){
-							msg = "outSize";
-						}
-					}else{
-						msg = "suffixError";
-					}
-					if(upFlag){
-						byte[] data = fileItem.get();// 获取数据
-						//没有该文件夹先创建文件夹
-			    		File file = new File(userPath);
-			    		if(!file.exists()){
-			    			file.mkdirs();
-			    		}
-			    		FileOutputStream fileOutputStream = new FileOutputStream(userPath + "/" + filename);
-						fileOutputStream.write(data);// 写入文件
-						fileOutputStream.close();// 关闭文件流
-						msg = "success";
-						fileUrl +=  absolutPath  + "\\" + filename + ",";
-					}
-				}
-				map.put("code", 0);
-				map.put("msg", msg);
-				if(!fileUrl.equals("")){
-					fileUrl = fileUrl.substring(0, fileUrl.length() - 1);
-				}
-				List<Object> list_f = new ArrayList<Object>();
-				Map<String,String> map_f = new HashMap<String,String>();
-				map_f.put("src", fileUrl);
-				list_f.add(map_f);
-				map.put("data", list_f);
-				this.getJsonPkg(map, response);
-			}catch (FileUploadException e) {
-				e.printStackTrace();
-			}catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}catch (IOException e) {
-				e.printStackTrace();
-			}
+		//通知书、票据、附件需要具有专利流程处理权限的才能上传
+		boolean abilityFlag = false;
+		if(fileType.equals("dg")){
+			boolean abilityFlag_1 = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");//增加专利的能上传
+			boolean abilityFlag_2 = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//修改专利的能上传
+			abilityFlag = abilityFlag_1 || abilityFlag_2;
+		}else{
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理
 		}
+		if(abilityFlag){
+			if (ServletFileUpload.isMultipartContent(request)){// 判断是否是上传文件
+				DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();// 创建工厂对象
+				ServletFileUpload fileUpload = new ServletFileUpload(diskFileItemFactory); // 创建上传对象
+				try {
+					List<FileItem> filelist = fileUpload.parseRequest(request);
+					ListIterator<FileItem> iterator = filelist.listIterator();
+					String userPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + loginType + "\\";
+					String absolutPath = loginType + "\\";
+					if(loginType.equals("appUser")){
+						userPath += currLoginUserId;
+						absolutPath += currLoginUserId;
+						if(ajId > 0){
+							userPath +=  "\\" + ajId;
+							absolutPath +=  "\\" + ajId;
+						}
+					}else if(loginType.equals("cpyUser")){
+						if(ajId > 0){
+							userPath += ajId + "\\" + fileType;
+							absolutPath += ajId + "\\" + fileType;
+						}else{
+							//技术底稿
+							//之前放在外层，等待专利增加后，剪切到ajId下
+//							userPath += "dg";
+//							absolutPath += "dg";
+							userPath += "u_"+currLoginUserId;//怕引起文件名重复，暂时将代理机构下人员上传的文件存在u_id下
+							absolutPath += "u_"+currLoginUserId;
+						}
+					}
+					while (iterator.hasNext()) {
+						FileItem fileItem = iterator.next();// 获取文件对象
+						// 处理文件上传
+						String filename = fileItem.getName();// 获取名字
+						Integer lastIndex = filename.lastIndexOf(".");
+						String suffix = filename.substring(lastIndex+1);
+						if(loginType.equals("cpyUser")){
+							String filePre = filename.substring(0, lastIndex);
+							 Integer nextNum = 1;
+							 String nextVersion = "";
+							 if(fileType.equals("fj")){
+								List<ZlajFjInfoTb> fjList = fjm.listLastInfoByAjId(ajId);
+								if(fjList.size() > 0){
+									nextNum = Integer.parseInt(fjList.get(0).getFjVersion()) + 1;
+								}
+								nextVersion = "V"+nextNum;
+								filename = filePre + "_" + nextVersion + "." + suffix;
+							 }else if(fileType.equals("pj")){
+								 List<ZlajFeeInfoTb> fList = fm.listInfoByOpt(ajId, "");
+								 nextVersion = "V" + (fList.size() + 1);
+								 filename = filePre + "_" + nextVersion + "." + suffix;
+							 }else if(fileType.equals("tzs")){
+								 filename = filePre + "_" + CurrentTime.getRadomTime() + "." + suffix;
+							 }
+						 }
+						CheckImage ci = new CheckImage();
+						//doc,docx,wps,xls,xlsx,txt,pdf,pptx,ppt,zip,rar,dwg,eml,jpg,png,bmp,gif,vsd,vsdx如果文件格式不在上述范围内请压缩成zip格式后上传
+						String checkFileSuffixInfo = ci.getUpFileStuffix(suffix);
+						if(checkFileSuffixInfo.equals("img")){//图片限制5M
+							upFlag = ci.checkItemSize(fileItem, 5 * 1024 * 1024);
+							if(!upFlag){
+								msg = "outSize";
+							}
+						}else if(checkFileSuffixInfo.equals("file")){//文件限制10M
+							upFlag = ci.checkItemSize(fileItem, 10 * 1024 * 1024);
+							if(!upFlag){
+								msg = "outSize";
+							}
+						}else{
+							msg = "suffixError";
+						}
+						if(upFlag){
+							byte[] data = fileItem.get();// 获取数据
+							//没有该文件夹先创建文件夹
+				    		File file = new File(userPath);
+				    		if(!file.exists()){
+				    			file.mkdirs();
+				    		}
+				    		FileOutputStream fileOutputStream = new FileOutputStream(userPath + "/" + filename);
+							fileOutputStream.write(data);// 写入文件
+							fileOutputStream.close();// 关闭文件流
+							msg = "success";
+							fileUrl +=  absolutPath  + "\\" + filename + ",";
+						}
+					}
+					map.put("code", 0);
+					map.put("msg", msg);
+					if(!fileUrl.equals("")){
+						fileUrl = fileUrl.substring(0, fileUrl.length() - 1);
+					}
+					List<Object> list_f = new ArrayList<Object>();
+					Map<String,String> map_f = new HashMap<String,String>();
+					map_f.put("src", fileUrl);
+					list_f.add(map_f);
+					map.put("data", list_f);
+					this.getJsonPkg(map, response);
+				}catch (FileUploadException e) {
+					e.printStackTrace();
+				}catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}else{
+			map.put("msg", "noAbility");
+			this.getJsonPkg(map, response);
+		}
+		
 		return null;
 	}
 }

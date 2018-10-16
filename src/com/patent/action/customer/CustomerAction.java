@@ -144,44 +144,56 @@ public class CustomerAction extends DispatchAction {
 		Integer currLoginUserId = this.getLoginUserId(request);
 		Map<String,Object> map = new HashMap<String,Object>();
 		List<Object> list_d = new ArrayList<Object>();
+		boolean abilityFlag = false;
 		if(this.getLoginType(request).equals("cpyUser")){
-			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
-			Integer cpyId = cUser.getCpyInfoTb().getId();
-			String cusName = Transcode.unescape(request.getParameter("cusName"), request);
-			Integer count = cm.getCountByOpt(cpyId, cusName);
-			if(count > 0){
-				Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
-				Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
-				List<CustomerInfoTb> cList = cm.listPageInfoByOpt(cpyId, cusName, pageNo, pageSize);
-				for(Iterator<CustomerInfoTb> it = cList.iterator() ; it.hasNext();){
-					CustomerInfoTb cus = it.next();
-					Map<String,Object> map_d = new HashMap<String,Object>();
-					map_d.put("id", cus.getId());
-					String cusType = cus.getCusType();
-					String cusTypeChi = "gr";
-					if(cusType.equals("dzyx")){
-						cusTypeChi = "大专院校";
-					}else if(cusType.equals("kydw")){
-						cusTypeChi = "科研单位";
-					}else if(cusType.equals("gkqy")){
-						cusTypeChi = "工矿企业";
-					}else if(cusType.equals("sydw")){
-						cusTypeChi = "事业单位";
-					}
-					map_d.put("cusType", cusTypeChi);
-					map_d.put("cusName", cus.getCusName());
-					map_d.put("cusICard", cus.getCusICard());
-					map_d.put("cusAddress", cus.getCusAddress());
-					map_d.put("cusZip", cus.getCusZip());
-					list_d.add(map_d);
-				}
-				map.put("msg", "success");
-				map.put("data", list_d);
-				map.put("count", count);
-				map.put("code", 0);
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
 			}else{
-				map.put("msg", "noInfo");
+				//需要查看当前用户有无增加权限111
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listCus");
 			}
+			if(abilityFlag){
+				CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
+				Integer cpyId = cUser.getCpyInfoTb().getId();
+				String cusName = Transcode.unescape(request.getParameter("cusName"), request);
+				Integer count = cm.getCountByOpt(cpyId, cusName);
+				if(count > 0){
+					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+					Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
+					List<CustomerInfoTb> cList = cm.listPageInfoByOpt(cpyId, cusName, pageNo, pageSize);
+					for(Iterator<CustomerInfoTb> it = cList.iterator() ; it.hasNext();){
+						CustomerInfoTb cus = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("id", cus.getId());
+						String cusType = cus.getCusType();
+						String cusTypeChi = "gr";
+						if(cusType.equals("dzyx")){
+							cusTypeChi = "大专院校";
+						}else if(cusType.equals("kydw")){
+							cusTypeChi = "科研单位";
+						}else if(cusType.equals("gkqy")){
+							cusTypeChi = "工矿企业";
+						}else if(cusType.equals("sydw")){
+							cusTypeChi = "事业单位";
+						}
+						map_d.put("cusType", cusTypeChi);
+						map_d.put("cusName", cus.getCusName());
+						map_d.put("cusICard", cus.getCusICard());
+						map_d.put("cusAddress", cus.getCusAddress());
+						map_d.put("cusZip", cus.getCusZip());
+						list_d.add(map_d);
+					}
+					map.put("msg", "success");
+					map.put("data", list_d);
+					map.put("count", count);
+					map.put("code", 0);
+				}else{
+					map.put("msg", "noInfo");
+				}
+			}else{
+				map.put("msg", "noAbility");
+			}
+			
 		}else{
 			map.put("msg", "error");
 		}

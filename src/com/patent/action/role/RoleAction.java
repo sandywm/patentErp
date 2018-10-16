@@ -259,18 +259,29 @@ public class RoleAction extends DispatchAction {
 		CpyUserInfo cUser = cum.getEntityById(userId);
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(cUser != null){
+			boolean abilityFlag = false;
 			Integer cpyId = cUser.getCpyInfoTb().getId();
-			List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cpyId);
-			List<Object> list_d = new ArrayList<Object>();
-			for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
-				CpyRoleInfoTb cr = it.next();
-				Map<String,Object> map_d = new HashMap<String,Object>();
-				map_d.put("id", cr.getId());
-				map_d.put("roleName", cr.getRoleName());
-				map_d.put("roleProfile", cr.getRoleProfile());
-				list_d.add(map_d);
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				//获取当前用户有无增加角色的权限，如果是管理员直接跳过（管理员直接拥有权限）
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upRole");
 			}
-			map.put("roleList", list_d);
+			if(abilityFlag){
+				List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cpyId);
+				List<Object> list_d = new ArrayList<Object>();
+				for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
+					CpyRoleInfoTb cr = it.next();
+					Map<String,Object> map_d = new HashMap<String,Object>();
+					map_d.put("id", cr.getId());
+					map_d.put("roleName", cr.getRoleName());
+					map_d.put("roleProfile", cr.getRoleProfile());
+					list_d.add(map_d);
+				}
+				map.put("roleList", list_d);
+			}else{
+				map.put("roleList", new ArrayList<Object>());
+			}
 		}else{
 			map.put("roleList", new ArrayList<Object>());
 		}

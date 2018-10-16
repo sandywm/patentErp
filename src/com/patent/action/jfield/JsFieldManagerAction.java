@@ -177,32 +177,44 @@ public class JsFieldManagerAction extends DispatchAction {
 		CpyUserInfo cUser = cum.getEntityById(loginUserId);
 		String msg = "";
 		Map<String,Object> map = new HashMap<String,Object>();
-		if(cUser != null){
-			Integer cpyId = cUser.getCpyInfoTb().getId();
-			Integer count = jsm.getCountByCpyId(cpyId);
-			if(count > 0){
-				Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
-				Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
-				List<JsFiledInfoTb> jfList = jsm.listPageInfoByCpyId(cpyId, pageNo, pageSize);
-				List<Object> list_d = new ArrayList<Object>();
-				for(Iterator<JsFiledInfoTb> it = jfList.iterator() ; it.hasNext();){
-					JsFiledInfoTb jf = it.next();
-					Map<String,Object> map_d = new HashMap<String,Object>();
-					map_d.put("id", jf.getId());
-					map_d.put("zyName", jf.getZyName());
-					map_d.put("zyProfile", jf.getZyProfile() == "" ? "暂无简介" : jf.getZyProfile());
-					list_d.add(map_d);
+		boolean abilityFlag = false;
+		if(this.getLoginRoleName(request).equals("管理员")){
+			abilityFlag = true;
+		}else{
+			//需要查看当前用户有无增加权限111
+			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listJf");
+		}
+		if(abilityFlag){
+			if(cUser != null){
+				Integer cpyId = cUser.getCpyInfoTb().getId();
+				Integer count = jsm.getCountByCpyId(cpyId);
+				if(count > 0){
+					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+					Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
+					List<JsFiledInfoTb> jfList = jsm.listPageInfoByCpyId(cpyId, pageNo, pageSize);
+					List<Object> list_d = new ArrayList<Object>();
+					for(Iterator<JsFiledInfoTb> it = jfList.iterator() ; it.hasNext();){
+						JsFiledInfoTb jf = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("id", jf.getId());
+						map_d.put("zyName", jf.getZyName());
+						map_d.put("zyProfile", jf.getZyProfile() == "" ? "暂无简介" : jf.getZyProfile());
+						list_d.add(map_d);
+					}
+					msg = "success";
+					map.put("data", list_d);
+					map.put("count", count);
+					map.put("code", 0);
+				}else{
+					msg = "noInfo";
 				}
-				msg = "success";
-				map.put("data", list_d);
-				map.put("count", count);
-				map.put("code", 0);
 			}else{
-				msg = "noInfo";
+				msg = "fail";
 			}
 		}else{
-			msg = "fail";
+			msg = "noAbility";
 		}
+		
 		map.put("msg", msg);
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  

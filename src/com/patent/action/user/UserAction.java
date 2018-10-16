@@ -588,86 +588,93 @@ public class UserAction extends DispatchAction {
 		if(this.getLoginType(request).equals("cpyUser")){
 			CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
 			Integer cpyId = 0;
+			boolean abilityFlag = false;
 			if(cUser != null){
 				cpyId = cUser.getCpyInfoTb().getId();
-				Integer userLzStatus = Integer.parseInt(request.getParameter("userLzStatus"));
-				Integer userYxStatus = Integer.parseInt(request.getParameter("userYxStatus"));
-				Integer roleId = Integer.parseInt(request.getParameter("roleId"));
-				String userNamePy = request.getParameter("userNamePy");
-				Integer count = cum.getCountByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy);
-				if(count > 0){
-					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
-					Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
-					List<CpyUserInfo> cUserList = cum.listPageInfoByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy, pageNo, pageSize);
-					List<Object> list_u = new ArrayList<Object>();
-					for(Iterator<CpyUserInfo> it = cUserList.iterator() ; it.hasNext();){
-						CpyUserInfo cUser_a = it.next();
-						Map<String,Object> map_u = new HashMap<String,Object>();
-						map_u.put("userId", cUser_a.getId());
-						map_u.put("name", cUser_a.getUserName());
-						map_u.put("namePy", cUser_a.getUserNamePy());
-						map_u.put("account", cUser_a.getUserAccount());
-						map_u.put("sex", cUser_a.getUserSex());
-						map_u.put("email", cUser_a.getUserEmail());
-						map_u.put("inDate", cUser_a.getUserInDate());
-						map_u.put("outDate", cUser_a.getUserOutDate());
-						if(cUser_a.getId().equals(currLoginUserId)){
-							map_u.put("selfFlag",true);
-						}else{
-							map_u.put("selfFlag",false);
-						}
-						Integer lzStatus = cUser_a.getUserLzStatus();
-						String lzStatusChi = "在职";
-						if(lzStatus.equals(0)){
-							lzStatusChi = "离职";
-						}
-						map_u.put("lzStatus", lzStatusChi);
-						Integer yxStatus = cUser_a.getUserYxStatus();
-						String yxStatusChi = "有效";
-						if(yxStatus.equals(0)){
-							yxStatusChi = "无效";
-						}
-						map_u.put("yxStatus", yxStatusChi);
-						map_u.put("zxNum", cUser_a.getUserZxNum());
-						String userScField = cUser_a.getUserScFiledId() == null ? "" : cUser_a.getUserScFiledId();
-						String scFiledName = "";
-						if(!userScField.equals("")){
-							List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField);
-							for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
-								JsFiledInfoTb js = it_1.next();
-								scFiledName += js.getZyName() + ",";
+				if(this.getLoginRoleName(request).equals("管理员")){
+					abilityFlag = true;
+				}else{//不是管理员，就需要查看是否有增加的权限
+					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addUser");
+				}
+				if(abilityFlag){
+					cpyId = cUser.getCpyInfoTb().getId();
+					Integer userLzStatus = Integer.parseInt(request.getParameter("userLzStatus"));
+					Integer userYxStatus = Integer.parseInt(request.getParameter("userYxStatus"));
+					Integer roleId = Integer.parseInt(request.getParameter("roleId"));
+					String userNamePy = request.getParameter("userNamePy");
+					Integer count = cum.getCountByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy);
+					if(count > 0){
+						Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+						Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
+						List<CpyUserInfo> cUserList = cum.listPageInfoByOpt(cpyId, userLzStatus, userYxStatus, roleId, userNamePy, pageNo, pageSize);
+						List<Object> list_u = new ArrayList<Object>();
+						for(Iterator<CpyUserInfo> it = cUserList.iterator() ; it.hasNext();){
+							CpyUserInfo cUser_a = it.next();
+							Map<String,Object> map_u = new HashMap<String,Object>();
+							map_u.put("userId", cUser_a.getId());
+							map_u.put("name", cUser_a.getUserName());
+							map_u.put("namePy", cUser_a.getUserNamePy());
+							map_u.put("account", cUser_a.getUserAccount());
+							map_u.put("sex", cUser_a.getUserSex());
+							map_u.put("email", cUser_a.getUserEmail());
+							map_u.put("inDate", cUser_a.getUserInDate());
+							map_u.put("outDate", cUser_a.getUserOutDate());
+							if(cUser_a.getId().equals(currLoginUserId)){
+								map_u.put("selfFlag",true);
+							}else{
+								map_u.put("selfFlag",false);
 							}
-							if(!scFiledName.equals("")){
-								scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+							Integer lzStatus = cUser_a.getUserLzStatus();
+							String lzStatusChi = "在职";
+							if(lzStatus.equals(0)){
+								lzStatusChi = "离职";
 							}
+							map_u.put("lzStatus", lzStatusChi);
+							Integer yxStatus = cUser_a.getUserYxStatus();
+							String yxStatusChi = "有效";
+							if(yxStatus.equals(0)){
+								yxStatusChi = "无效";
+							}
+							map_u.put("yxStatus", yxStatusChi);
+							map_u.put("zxNum", cUser_a.getUserZxNum());
+							String userScField = cUser_a.getUserScFiledId() == null ? "" : cUser_a.getUserScFiledId();
+							String scFiledName = "";
+							if(!userScField.equals("")){
+								List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField);
+								for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
+									JsFiledInfoTb js = it_1.next();
+									scFiledName += js.getZyName() + ",";
+								}
+								if(!scFiledName.equals("")){
+									scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+								}
+							}
+							map_u.put("scFiledName", scFiledName);
+							map_u.put("exper", cUser_a.getUserExper());
+							//获取用户角色
+							List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(cUser_a.getId());
+							String roleName = "";
+							for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
+								CpyRoleUserInfoTb ru = it_1.next();
+								roleName += ru.getCpyRoleInfoTb().getRoleName() + ",";
+							}
+							if(!roleName.equals("")){
+								roleName = roleName.substring(0, roleName.length() - 1);
+							}
+							map_u.put("roleName", roleName);
+							list_u.add(map_u);
 						}
-						map_u.put("scFiledName", scFiledName);
-						map_u.put("exper", cUser_a.getUserExper());
-						//获取用户角色
-						List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(cUser_a.getId());
-						String roleName = "";
-						for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
-							CpyRoleUserInfoTb ru = it_1.next();
-							roleName += ru.getCpyRoleInfoTb().getRoleName() + ",";
-						}
-						if(!roleName.equals("")){
-							roleName = roleName.substring(0, roleName.length() - 1);
-						}
-						map_u.put("roleName", roleName);
-						list_u.add(map_u);
+						map.put("msg", "success");
+						map.put("data", list_u);
+						map.put("count", count);
+						map.put("code", 0);
+					}else{
+						map.put("msg", "noInfo");
 					}
-//					map.put("result", "success");
-//					map.put("uInfo", list_u);
-					map.put("msg", "success");
-					map.put("data", list_u);
-					map.put("count", count);
-					map.put("code", 0);
 				}else{
-//					map.put("result", "noInfo");
-					map.put("msg", "noInfo");
+					map.put("msg", "noAbility");
 				}
 			}else{
-//				map.put("result", "fail");
 				map.put("msg", "fail");
 			}
 		}
@@ -906,74 +913,86 @@ public class UserAction extends DispatchAction {
 		Map<String,Object> map = new HashMap<String,Object>();
 		Integer userId = CommonTools.getFinalInteger(request.getParameter("userId"));
 		if(loginType.equals("cpyUser")){//代理机构
-			CpyUserInfo cpyUser = cum.getEntityById(userId);
-			if(cpyUser != null){
-				Integer specUserCpyId = cpyUser.getCpyInfoTb().getId();
-				Integer currLoginUserCpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
-				if(specUserCpyId.equals(currLoginUserCpyId)){//只能查询自己代理机构的员工
-					//获取该代理机构下所有的角色列表
-					List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(currLoginUserCpyId);
-					List<Object> list_r = new ArrayList<Object>();
-					//获取用户角色
-					List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(cpyUser.getId());
-					for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
-						CpyRoleInfoTb cr = it.next();
-						Map<String,Object> map_r = new HashMap<String,Object>();
-						map_r.put("roleId", cr.getId());
-						map_r.put("roleName", cr.getRoleName());
-						if(ruList.size() == 0){
-							map_r.put("checked", false);
-						}else{
-							for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
-								CpyRoleUserInfoTb cru = it_1.next();
-								if(cru.getCpyRoleInfoTb().getId().equals(cr.getId())){
-									map_r.put("checked", true);
-									break;
-								}else{
-									map_r.put("checked", false);
+			boolean abilityFlag = false;
+			if(this.getLoginRoleName(request).equals("管理员")){//如果是管理员直接跳过（管理员直接拥有权限）
+				abilityFlag = true;
+			}else{
+				//获取当前用户是否有修改权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upUser");
+			}
+			if(abilityFlag){
+				CpyUserInfo cpyUser = cum.getEntityById(userId);
+				if(cpyUser != null){
+					Integer specUserCpyId = cpyUser.getCpyInfoTb().getId();
+					Integer currLoginUserCpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
+					if(specUserCpyId.equals(currLoginUserCpyId)){//只能查询自己代理机构的员工
+						//获取该代理机构下所有的角色列表
+						List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(currLoginUserCpyId);
+						List<Object> list_r = new ArrayList<Object>();
+						//获取用户角色
+						List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(cpyUser.getId());
+						for(Iterator<CpyRoleInfoTb> it = crList.iterator() ; it.hasNext();){
+							CpyRoleInfoTb cr = it.next();
+							Map<String,Object> map_r = new HashMap<String,Object>();
+							map_r.put("roleId", cr.getId());
+							map_r.put("roleName", cr.getRoleName());
+							if(ruList.size() == 0){
+								map_r.put("checked", false);
+							}else{
+								for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
+									CpyRoleUserInfoTb cru = it_1.next();
+									if(cru.getCpyRoleInfoTb().getId().equals(cr.getId())){
+										map_r.put("checked", true);
+										break;
+									}else{
+										map_r.put("checked", false);
+									}
 								}
 							}
+							list_r.add(map_r);
 						}
-						list_r.add(map_r);
+						map.put("result", "success");
+						map.put("id", cpyUser.getId());
+						map.put("name", cpyUser.getUserName());
+						map.put("namePy", cpyUser.getUserNamePy());
+						map.put("account", cpyUser.getUserAccount());
+						map.put("sex", cpyUser.getUserSex());
+						map.put("email", cpyUser.getUserEmail());
+						map.put("tel", cpyUser.getUserTel());
+						map.put("inDate", cpyUser.getUserInDate());
+						map.put("outDate", cpyUser.getUserOutDate());
+						map.put("lzStatus", cpyUser.getUserLzStatus());
+						map.put("yxStatus", cpyUser.getUserYxStatus());
+						map.put("roleNameInfo", list_r);
+						map.put("zxNum", cpyUser.getUserZxNum());
+						map.put("scFiled", cpyUser.getUserScFiledId());
+						Integer cpyId = cum.getEntityById(userId).getCpyInfoTb().getId();
+						String userScFieldId = cpyUser.getUserScFiledId();
+						String scFiledName = "";
+						if(!userScFieldId.equals("")){
+							List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScFieldId);
+							for(Iterator<JsFiledInfoTb> it = jsList.iterator() ; it.hasNext();){
+								JsFiledInfoTb js = it.next();
+								scFiledName += js.getZyName() + ",";
+							}
+							if(!scFiledName.equals("")){
+								scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+							}
+						}
+						map.put("scFiledName", scFiledName);
+						map.put("useExp", cpyUser.getUserExper());
+						map.put("lastLoginDate", cpyUser.getLastLoginDate());
+					}else{
+						map.put("result", "noUser");//查无此人
 					}
-					map.put("result", "success");
-					map.put("id", cpyUser.getId());
-					map.put("name", cpyUser.getUserName());
-					map.put("namePy", cpyUser.getUserNamePy());
-					map.put("account", cpyUser.getUserAccount());
-					map.put("sex", cpyUser.getUserSex());
-					map.put("email", cpyUser.getUserEmail());
-					map.put("tel", cpyUser.getUserTel());
-					map.put("inDate", cpyUser.getUserInDate());
-					map.put("outDate", cpyUser.getUserOutDate());
-					map.put("lzStatus", cpyUser.getUserLzStatus());
-					map.put("yxStatus", cpyUser.getUserYxStatus());
-					map.put("roleNameInfo", list_r);
-					map.put("zxNum", cpyUser.getUserZxNum());
-					map.put("scFiled", cpyUser.getUserScFiledId());
-					Integer cpyId = cum.getEntityById(userId).getCpyInfoTb().getId();
-					String userScFieldId = cpyUser.getUserScFiledId();
-					String scFiledName = "";
-					if(!userScFieldId.equals("")){
-						List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScFieldId);
-						for(Iterator<JsFiledInfoTb> it = jsList.iterator() ; it.hasNext();){
-							JsFiledInfoTb js = it.next();
-							scFiledName += js.getZyName() + ",";
-						}
-						if(!scFiledName.equals("")){
-							scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
-						}
-					}
-					map.put("scFiledName", scFiledName);
-					map.put("useExp", cpyUser.getUserExper());
-					map.put("lastLoginDate", cpyUser.getLastLoginDate());
+					
 				}else{
 					map.put("result", "noUser");//查无此人
 				}
-				
 			}else{
-				map.put("result", "noUser");//查无此人
+				map.put("result", "noAbility");//查无此人
 			}
+
 		}else if(loginType.equals("spUser")){//平台用户
 			List<SuperUser> suList = sum.listInfoById(userId);
 			if(suList.size() > 0){
@@ -1085,7 +1104,7 @@ public class UserAction extends DispatchAction {
 				abilityFlag = true;
 			}else{
 				//获取当前用户是否有修改权限
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upUser");
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "bindUser");
 			}
 			if(abilityFlag){
 				Integer currLoginUserCpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();

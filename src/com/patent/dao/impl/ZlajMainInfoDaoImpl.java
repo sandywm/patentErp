@@ -71,6 +71,8 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and zl.zxUserId = 0";
 		}else if(lqStatus.equals(1)){
 			hql += " and zl.zxUserId > 0";
+		}else if(lqStatus.equals(2)){
+			hql += " and zl.zxUserId = 0 and zl.tzsUserId > 0";
 		}
 		hql += " order by zl.id desc";
 		return sess.createQuery(hql).setFirstResult(offset).setMaxResults(pageSize).list();
@@ -108,6 +110,8 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and zl.zxUserId = 0";
 		}else if(lqStatus.equals(1)){
 			hql += " and zl.zxUserId > 0";
+		}else if(lqStatus.equals(2)){
+			hql += " and zl.zxUserId = 0 and zl.tzsUserId > 0";
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);

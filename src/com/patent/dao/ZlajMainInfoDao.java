@@ -49,7 +49,7 @@ public interface ZlajMainInfoDao {
 	 * @param lxr 案件联系人（""表示全部）
 	 * @param sDate 开始时间(####-##)确定要月份（""表示全部）
 	 * @param eDate 结束时间(####-##)确定要月份（""表示全部）
-	 * @param lqStatus 任务条件（0：撰写任务领取，1：专利任务）
+	 * @param lqStatus 任务条件（0：流程任务分配，1：专利任务，2：撰写任务领取）
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
@@ -72,7 +72,7 @@ public interface ZlajMainInfoDao {
 	 * @param lxr 案件联系人（""表示全部）
 	 * @param sDate 开始时间(####-##)确定要月份（""表示全部）
 	 * @param eDate 结束时间(####-##)确定要月份（""表示全部）
-	 * @param lqStatus 任务条件（0：撰写任务领取，1：专利任务）
+	 * @param lqStatus 任务条件（0：流程任务分配，1：专利任务，2：撰写任务领取）
 	 * @return
 	 */
 	Integer getCountByOpt(Session sess,Integer cpyId,Integer stopStatus,String sqAddress,

@@ -69,7 +69,7 @@ public interface ZlajMainInfoManager {
 	 * @param lxr 联系人（""时表示全部）
 	 * @param sDate 开始日期（""时表示全部）
 	 * @param eDate 结束日期（""时表示全部）
-	 * @param lqStatus 任务条件（0：撰写任务领取，1：专利任务）
+	 * @param lqStatus 任务条件（0：流程任务分配，1：专利任务，2：撰写任务领取）
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
@@ -94,7 +94,7 @@ public interface ZlajMainInfoManager {
 	 * @param lxr 联系人（""时表示全部）
 	 * @param sDate 开始日期（""时表示全部）
 	 * @param eDate 结束日期（""时表示全部）
-	 * @param lqStatus 任务条件（0：撰写任务领取，1：专利任务）
+	 * @param lqStatus 任务条件（0：流程任务分配，1：专利任务，2：撰写任务领取）
 	 * @return
 	 * @throws WEBException
 	 */

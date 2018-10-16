@@ -36,7 +36,7 @@
             </column>
         </property>
         <property name="actNameEng" type="java.lang.String">
-            <column name="act_name_eng" length="20" not-null="true">
+            <column name="act_name_eng" length="20" not-null="false">
                 <comment>模块英文简称</comment>
             </column>
         </property>

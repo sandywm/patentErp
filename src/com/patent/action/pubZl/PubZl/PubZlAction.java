@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -60,26 +59,6 @@ public class PubZlAction extends DispatchAction {
 	private Integer getLoginUserId(HttpServletRequest request){
         Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ID);
         return userId;
-	}
-
-	/**
-	 * 获取session中的用户角色编号
-	 * @param request
-	 * @return
-	 */
-	private Integer getLoginRoleId(HttpServletRequest request){
-        Integer userId = (Integer)request.getSession(false).getAttribute(Constants.LOGIN_USER_ROLE_ID);
-        return userId;
-	}
-	
-	/**
-	 * 获取session中的用户角色名称
-	 * @param request
-	 * @return
-	 */
-	private String getLoginRoleName(HttpServletRequest request){
-        String roleName = (String)request.getSession(false).getAttribute(Constants.LOGIN_USER_ROLE_NAME);
-        return roleName;
 	}
 	
 	/**
