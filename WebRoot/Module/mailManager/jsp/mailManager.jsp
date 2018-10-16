@@ -93,14 +93,17 @@
  			    	page.data.mailType = 'taskM';
  			    	page.data.elem = 'laypageTask';
  			    	$('#mailTypeInp').val('taskM');
+ 			    	page.data.tmpPageNum_task = 1;
  			    }else if(tabIndex == 1){
  			    	page.data.mailType = 'endM';
  			    	page.data.elem = 'laypageEndDate';
  			    	$('#mailTypeInp').val('endM');
+ 			    	page.data.tmpPageNum_end = 1;
  			    }else if(tabIndex == 2){
  			    	page.data.mailType = 'buyM';
  			    	page.data.elem = 'laypageBuyM';
  			    	$('#mailTypeInp').val('buyM');
+ 			    	page.data.tmpPageNum_buy = 1;
  			    }
  			    //点击tab导航恢复initLoad
  			    page.data.opts = 'initLoad';
@@ -132,6 +135,10 @@
   				bindEvent : function(){
   					var _this = this;
   					$('#queryBtn').on('click',function(){
+  						//点击查询初始化页数
+  						page.data.tmpPageNum_task = 1;
+  						page.data.tmpPageNum_end = 1;
+  						page.data.tmpPageNum_buy = 1;
   						_this.data.opts = 'queryLoad';
   						_this.loadEmailList('queryLoad','taskM');
   						_this.initLayPage();

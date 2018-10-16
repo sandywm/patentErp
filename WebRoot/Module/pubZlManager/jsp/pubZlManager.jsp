@@ -21,6 +21,7 @@
   					<div class="layui-card-header posRel">
   						<span id="zlNavTit"></span>
   						<a id="addPubZlBtn" class="posAbs newAddBtn" opts="addZlOpts" href="javascript:void(0)"><i class="layui-icon" style="font-size:20px;">&#xe609;</i>发布专利任务</a>
+  						<a id="viewLqHisBtn" class="posAbs newAddBtn" opts="addZlOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-search" style="font-size:20px;"></i>查看领取记录</a>
   					</div>
   					<div class="layui-card-body" pad15>
   						<!-- 查询层 -->
@@ -37,7 +38,7 @@
 	  								 </select> 
 	  							</div>
 	  						</div>
-	  						<div class="itemDiv fl">
+	  						<div class="lqZlStatusBox itemDiv fl">
 	  							<div class="layui-input-inline">
 	  								<input id="zlStatusInp" type="hidden" value="-1"/>
 	  								<select id="zlStatusSel" lay-filter="zlStatusSel">
@@ -98,8 +99,10 @@
 				onLoad : function(){
 					if(loginType == 'appUser'){
 						$('#addPubZlBtn').show();
+						$('.lqZlStatusBox').show();
 						$('#zlNavTit').html('专利任务发布');
 					}else{
+						$('#viewLqHisBtn').show();
 						$('#zlNavTit').html('专利任务列表');
 					}
 				},
@@ -129,6 +132,26 @@
 							layer.msg('抱歉，您暂无权限增加新专利', {icon:5,anim:6,time:1000});
 						}
 					});
+					//查看领取记录
+					$('#viewLqHisBtn').on('click',function(){
+						viewZlFlag = false;
+						var fullScreenIndex = layer.open({
+							title:false,
+							type: 2,
+						  	area: ['700px', '500px'],
+						  	fixed: false, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	closeBtn: 0,
+						  	content : '/Module/pubZlManager/jsp/zlTaskLqHistory.jsp',
+						  	end : function(){
+						  		if(viewZlFlag){
+						  			loadQueryZlList('initLoad');
+						  		}
+						  	}
+						});	
+						layer.full(fullScreenIndex);
+					});
 					//查询
 					$('#queryBtn').on('click',function(){
 						loadQueryZlList('queryLoad');
@@ -138,10 +161,14 @@
 			//获取已发布专利的list
 			function loadQueryZlList(opts){
 				if(opts == 'initLoad'){//初始加载
-					var field = {zlTitle : '',zlNo : '',zlType : '',pubDate : '', zlStatus : -1};
+					if(loginType == 'appUser'){
+						var field = {zlTitle : '',zlNo : '',zlType : '',pubDate : '', zlStatus : -1};
+					}else{
+						var field = {zlTitle : '',zlNo : '',zlType : '',pubDate : '', zlStatus : 0};
+					}
 				}else{//查询 queryLoad
 					var zlTypeInp = $('#zlTypeInp').val(),
-						zlStatusInp = $('#zlStatusInp').val(),
+						zlStatusInp = loginType == 'appUser' ? $('#zlStatusInp').val() : 0,
 						pubDateInp = $('#pubDateInp').val(),
 						zlNoInp = $.trim($('#zlNoInp').val()),
 						zlTitleInp = $.trim($('#zlTitleInp').val());

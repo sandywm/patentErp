@@ -47,7 +47,7 @@
 			var page = {
 				data : {
 					inpMainModName_cn : '',
-					inpMainModName_eng : '',
+					//inpMainModName_eng : '',
 					inpMainModUrl : '',
 					inpMainModOrderNo : 0,
 					mainModLevelInp : 0,
@@ -158,7 +158,7 @@
         					var addEditMainModCon = '';
         					addEditMainModCon += '<div class="addEditMainModWrap layui-form">';
         					addEditMainModCon += '<div class="comAddEditDiv"><span class="fl">模块中文名字：</span><input id="inpMainModName_cn" type="text" placeholder="请输入模块中文名字(15字以内)" maxlength="15"></div>';
-        					addEditMainModCon += '<div class="comAddEditDiv"><span class="fl">模块英文名字：</span><input id="inpMainModName_eng" type="text" placeholder="请输入模块英文名字"></div>';
+        					//addEditMainModCon += '<div class="comAddEditDiv"><span class="fl">模块英文名字：</span><input id="inpMainModName_eng" type="text" placeholder="请输入模块英文名字"></div>';
         					addEditMainModCon += '<div class="comAddEditDiv"><span class="margLSpan_url fl">模块动作Url：</span><input id="inpMainModUrl" type="text" placeholder="请输入模块动作url"></div>';
         					//addEditMainModCon += '<div class="comAddEditDiv"><span class="margLSpan_order fl">模块序列号：</span><input id="inpMainModOrderNo" type="text" placeholder="模块排列序列号(大于0的正整数)"></div>';
         					addEditMainModCon += '<div class="comAddEditDiv"><span class="margLSpan_level fl">模块权限等级：</span>';
@@ -179,7 +179,7 @@
     	        				type: 1,
     	        				skin:'layui-layer-molv', //样式类名
     	        				closeBtn: 0, //不显示关闭按钮
-    	        				area : ['500px','330px'],
+    	        				area : ['500px','300px'],
     	        			  	content: addEditMainModCon,
     	        			  	btn : ['确定','取消'],
     	        			  	btnAlign:'c',
@@ -207,7 +207,7 @@
 	        				type: 2,
 	        				skin:'layui-layer-molv', //样式类名
 	        				closeBtn: 1, //不显示关闭按钮
-	        				area : ['500px','390px'],
+	        				area : ['500px','330px'],
 	        				btn : ['确定','取消'],
 	        			  	btnAlign:'c',
 	        				content: '/Module/modManager/jsp/editMainModName.html',
@@ -215,7 +215,7 @@
 	        					var body = layer.getChildFrame('body', index);
 	        					if(body.find('#isHasData').val() == 1){//表示有数据
 	        						_this.data.inpMainModName_cn = body.find('#inpMainModName_cn').val();
-		        					_this.data.inpMainModName_eng = body.find('#inpMainModName_eng').val();
+		        					//_this.data.inpMainModName_eng = body.find('#inpMainModName_eng').val();
 		        					_this.data.inpMainModUrl = body.find('#inpMainModUrl').val();
 		        					_this.data.inpMainModOrderNo = body.find('#inpMainModOrderNo').val();
 		        					_this.data.mainModLevelInp = body.find('#mainModLevelInp').val();
@@ -228,14 +228,37 @@
 	        			});
 						
 					});
-					//编辑子模块内容
-					$('.editSonModName').on('click',function(){
-						var maId = $(this).attr('maId'),
-							actNameChi = $(this).attr('actNameChi'),actNameEng = $(this).attr('actNameEng'),editThis = $(this);
+					//增加子模块
+					$('.addSonModBtn').on('click',function(){
+						var modId = $(this).attr('modId');
+						var sonModNameStr = '';
+						sonModNameStr += '<div class="editSonModNameCon">';
+						sonModNameStr += '<div class="comEditDiv"><span class="fl">子模块中文名：</span><input id="sonModChiNameInp" type="text" placeholder="请输入子模块中文名" maxlength="10"/></div>';
+						sonModNameStr += '<div class="comEditDiv"><span class="fl">子模块英文名：</span><input id="sonModEngNameInp" type="text" placeholder="请输入子模块英文名" maxlength="20"></div>';
+						sonModNameStr += '</div>';
+						_this.data.globalIndex = layer.open({
+   	        				title : '增加子模块',
+   	        				type : 1, 
+   	        				closeBtn: 0, //不显示关闭按钮
+   	        				area : ['400px','200px'],
+   	        				skin:'layui-layer-molv',
+   	        			  	content: sonModNameStr,
+   	        			  	btn : ['确定','取消'],
+   	        			  	btnAlign:'c',
+   	        			  	yes: function(index, layero){
+   	        			  		_this.addEditSonModName('addSonModOpt',modId,'','');
+   	        				}
+   	        			});
+					});
+					//编辑子模块内容 editSpanBtn
+					$('.editSpanBtn').on('click',function(){
+						var parent = $(this).parent();
+						var maId = parent.attr('maId'),
+							actNameChi = parent.attr('actNameChi'),actNameEng = parent.attr('actNameEng'),editThis = parent;
 						var editSonModCon = '';
 						editSonModCon += '<div class="editSonModNameCon">';
-						editSonModCon += '<div class="comEditDiv"><span class="fl">子模块中文名：</span><input type="text" value="'+ actNameChi +'" disabled></div>';
-						editSonModCon += '<div class="comEditDiv"><span class="fl">子模块英文名：</span><input id="sonModEngName" type="text" placeholder="英文名须以add,del,list,up开头" maxlength="20"></div>';
+						editSonModCon += '<div class="comEditDiv"><span class="fl">子模块中文名：</span><input id="sonModChiNameInp" type="text" value="'+ actNameChi +'"></div>';
+						editSonModCon += '<div class="comEditDiv"><span class="fl">子模块英文名：</span><input id="sonModEngNameInp" value="'+ actNameEng +'" type="text" placeholder="请输入模块英文名" maxlength="20"></div>';
 						editSonModCon += '</div>';
 						_this.data.globalIndex = layer.open({
    	        				title : '编辑子模块——' + actNameChi + '('+ actNameEng + ')',
@@ -247,10 +270,41 @@
    	        			  	btn : ['确定','取消'],
    	        			  	btnAlign:'c',
    	        			  	yes: function(index, layero){
-   	        			  		var sonModEngName = $('#sonModEngName').val();
-   	        			  		_this.editSonModName(maId,actNameChi,sonModEngName,editThis);
+   	        			  		_this.addEditSonModName('editSonModOpt','',maId,editThis);
    	        				}
    	        			});
+					});
+					//删除子模块内容
+					$('.delSpanBtn').on('click',function(){
+						var parent = $(this).parent();
+						var maId = parent.attr('maId');
+						layer.confirm('确认要删除当前子模块吗？', {
+						  title:'提示',
+						  skin: 'layui-layer-molv',
+						  btn: ['确定','取消'] //按钮
+						},function(index){
+							$.ajax({
+       	  						type:"post",
+       					        async:false,
+       					        dataType:"json",
+       					        data:{maId:maId},
+       					        url:"/modM.do?action=delModAct",
+       					        success:function (json){
+       					        	if(json["result"] == "success"){
+       					        		layer.msg("删除成功",{icon:1,time:1000},function(){
+	    				        			parent.parent().remove();
+	    				        			layer.close(index);
+	    				        		});
+       					        	}else if(json["result"] == "exist"){
+       					        		layer.msg("该子模块存在角色权限绑定信息，不能删除", {icon:5,anim:6,time:1000});
+       					        	}else if(json["result"] == "error"){
+       					        		layer.msg("系统错误，请重试", {icon:5,anim:6,time:1000});
+       					        	}else if(json["result"] == "noAbility"){
+       					        		layer.msg("对不起，您暂无权限删除该主模块", {icon:5,anim:6,time:1000});
+       					        	}
+       					        }
+       	  					});
+						});
 					});
 					//删除主模块
 					$('.delMainModName').on('click',function(){
@@ -265,7 +319,7 @@
        					        async:false,
        					        dataType:"json",
        					        data:{modId:modId},
-       					        url:"modM.do?action=delModule",
+       					        url:"/modM.do?action=delModule",
        					        success:function (json){
        					        	if(json["result"] == "success"){
        					        		layer.msg("删除成功",{icon:1,time:1000},function(){
@@ -290,7 +344,7 @@
 					var _this = this,
 						modId = modId,
 						inpMainModName_cn = globalOpts == 'addBtn' ? $.trim($('#inpMainModName_cn').val()) : _this.data.inpMainModName_cn,
-						inpMainModName_eng = globalOpts == 'addBtn' ? $.trim($('#inpMainModName_eng').val()) : _this.data.inpMainModName_eng,
+						//inpMainModName_eng = globalOpts == 'addBtn' ? $.trim($('#inpMainModName_eng').val()) : _this.data.inpMainModName_eng,
 						inpMainModUrl = globalOpts == 'addBtn' ? $.trim($('#inpMainModUrl').val()) : _this.data.inpMainModUrl,
 						inpMainModOrderNo = globalOpts == 'addBtn' ? "" : _this.data.inpMainModOrderNo,
 						mainModLevelInp = globalOpts == 'addBtn' ? $('#mainModLevelInp').val() : _this.data.mainModLevelInp,
@@ -300,18 +354,18 @@
 						regNum = /^[1-9]\d*$/;
 					if(inpMainModName_cn == ''){
 						layer.msg('模块中文名字不能为空', {icon:5,anim:6,time:1000});
-					}else if(inpMainModName_eng == ''){
+					}/*else if(inpMainModName_eng == ''){
 						layer.msg('模块英文名字不能为空', {icon:5,anim:6,time:1000});
-					}else if(inpMainModUrl == ''){
+					}*/else if(inpMainModUrl == ''){
 						layer.msg('模块动作Url不能为空', {icon:5,anim:6,time:1000});
 					}else if(inpMainModOrderNo == ''  && globalOpts == 'editBtn'){
 						layer.msg('模块序列号不能为空', {icon:5,anim:6,time:1000});
 					}else{
 						if(!regCN.test(inpMainModName_cn)){
 							layer.msg('模块中文名字应为汉字', {icon:5,anim:6,time:1000});
-						}else if(!regEN.test(inpMainModName_eng)){
+						}/*else if(!regEN.test(inpMainModName_eng)){
 							layer.msg('模块英文名字应为英语', {icon:5,anim:6,time:1000});
-						}else if(regCN.test(inpMainModUrl)){
+						}*/else if(regCN.test(inpMainModUrl)){
 							layer.msg('模块动作Url不能含有汉字', {icon:5,anim:6,time:1000});
 						}else if(!regNum.test(inpMainModOrderNo) && globalOpts == 'editBtn'){
 							layer.msg('模块序列号应为大于0的正整数', {icon:5,anim:6,time:1000});
@@ -320,10 +374,10 @@
 							var url = '';
 							if(globalOpts == 'addBtn'){//表示增加主模块
 								url = 'modM.do?action=addModule';
-								var field = {modName:inpMainModName_cn,actNameEng:inpMainModName_eng,resUrl:inpMainModUrl,modLevel:mainModLevelInp,showStatus:mainModShowInp};
+								var field = {modName:inpMainModName_cn,/*actNameEng:inpMainModName_eng,*/resUrl:inpMainModUrl,modLevel:mainModLevelInp,showStatus:mainModShowInp};
 							}else if(globalOpts == 'editBtn'){//表示编辑主模块
 								url = 'modM.do?action=upModule';
-								var field = {modId : modId,modName:inpMainModName_cn,actNameEng:inpMainModName_eng,resUrl:inpMainModUrl,orderNo:inpMainModOrderNo,modLevel:mainModLevelInp,showStatus:mainModShowInp};;
+								var field = {modId : modId,modName:inpMainModName_cn,/*actNameEng:inpMainModName_eng,*/resUrl:inpMainModUrl,orderNo:inpMainModOrderNo,modLevel:mainModLevelInp,showStatus:mainModShowInp};;
 							}
 							layer.load('1');
 							$.ajax({
@@ -335,21 +389,21 @@
 	    				        success:function (json){
 	    				        	layer.closeAll("loading");
 	    				        	if(json["result"] == "success"){
+	    				        		var strTxt = '';
 	    				        		if(globalOpts == "addBtn"){//表示增加主模块
-	    				        			layer.msg("添加成功",{icon:1,time:1000},function(){
-	    				        				_this.loadModuleList();
-		    				        			_this.bindEvent_multi();
-		    				        			layer.close(_this.data.globalIndex);
-		    				        			_this.data.globalIndex = 0;
-		    				        		});
+	    				        			strTxt = '添加成功1';
 	    				        		}else if(globalOpts == "editBtn"){//表示编辑主模块
-	    				        			layer.msg("编辑成功",{icon:1,time:1000},function(){
+	    				        			strTxt = '编辑成功2';
+	    				        		}
+	    				        		function callBackSuccess(){
+	    				        			layer.msg(strTxt,{icon:1,time:1000},function(){
 	    				        				_this.loadModuleList();
 		    				        			_this.bindEvent_multi();
 		    				        			layer.close(_this.data.globalIndex);
 		    				        			_this.data.globalIndex = 0;
 		    				        		});
 	    				        		}
+	    				        		callBackSuccess(strTxt);
 	    				        	}else if(json["result"] == "exist"){//模块名字已存在
 	    				        		layer.msg("该模块已存在", {icon:5,anim:6,time:1000});
 	    				        	}else if(json["result"] == "error"){//系统错误
@@ -362,43 +416,71 @@
 						}
 					}
 				}, 
-				//编辑子模块名字
-				editSonModName : function(maId,actNameChi,sonModEngName,editThis){
-					var _this = this;
-					if(sonModEngName == ''){
-						layer.msg('子模块英文名不能为空', {icon:5,anim:6,time:1000});
-					}else{
-						var reg = /^[a-zA-Z]+$/;
-						if(!reg.test(sonModEngName)){
-							layer.msg('子模块必须是英文,(须以add,del,list,up开头)', {icon:5,anim:6,time:1000});
-						}else{
-							layer.load("1");
-							$.ajax({
-			   					type:"post",
-			   			        async:false,
-			   			        dataType:"json",
-			   			        data:{maId:maId,actNameChi:escape(actNameChi),actNameEng:sonModEngName},
-			   			        url:"modM.do?action=upModAct",
-			   			        success:function (json){
-			   			        	layer.closeAll("loading");
-			   			        	if(json["result"] == "success"){
-			   			        		layer.msg("修改成功",{icon:1,time:1000},function(){
-			   			        			editThis.prev().html(actNameChi + '(' + sonModEngName + ')');
-			   			        			editThis.attr('actNameEng',sonModEngName);
-			   			        			layer.close(_this.data.globalIndex);
-			   			        			_this.data.globalIndex = 0;
-			   			        		});
-			   			        	}else if(json["result"] == "exist"){
-			   			        		layer.msg("该模块名字已存在，请重新输入", {icon:5,anim:6,time:1000});
-			   			        	}else if(json["result"] == "noAbility"){
-			   			        		layer.msg("抱歉，您暂无权限修改子模块", {icon:5,anim:6,time:1000});
-			   			        	}else if(json["result"] == "startError"){
-			   			        		layer.msg("英文名字必须以add,del,list,up开头", {icon:5,anim:6,time:1000});
-			   			        	}
-			   			        }
-			   				});
-						}
+				//添加 编辑 子模块
+				addEditSonModName : function(opts,modId,maId,editThis){
+					var _this = this,url='';
+					var sonModChiNameInp = $.trim($('#sonModChiNameInp').val()),
+		  			sonModEngNameInp = $.trim($('#sonModEngNameInp').val()),
+		  			regCN = /^[\u4E00-\u9FA5]+$/,
+					regEN =  /^[a-zA-Z]+$/;
+					if(opts == 'addSonModOpt'){
+						//增加子模块
+						url = '/modM.do?action=addModAct';
+						var field = {modId:modId,actNameChi:escape(sonModChiNameInp),actNameEng:sonModEngNameInp};
+					}else{//编辑子模块
+						url = '/modM.do?action=upModAct';
+						var field = {maId:maId,actNameChi:escape(sonModChiNameInp),actNameEng:sonModEngNameInp};
 					}
+					//alert(maId + "--" + editThis.html());
+			  		if(sonModChiNameInp == ''){
+			  			layer.msg('子模块中文名字不能为空', {icon:5,anim:6,time:1000});
+			  		}else if(sonModEngNameInp == ''){
+			  			layer.msg('子模块英文名字不能为空', {icon:5,anim:6,time:1000});
+			  		}else{
+			  			if(!regCN.test(sonModChiNameInp)){
+			  				layer.msg('子模块中文名字应为汉字', {icon:5,anim:6,time:1000});
+			  			}else if(!regEN.test(sonModEngNameInp)){
+			  				layer.msg('子模块英文名字应为英语', {icon:5,anim:6,time:1000});
+			  			}else{
+   			  			$.ajax({
+      	  						type:"post",
+      					        async:false,
+      					        dataType:"json",
+      					        data:field,
+      					        url:url,
+      					        success:function (json){
+      					        	if(json["result"] == "success"){
+      					        		if(opts == 'addSonModOpt'){
+      					        			layer.msg("添加子模块成功",{icon:1,time:1000},function(){
+    	      					        		_this.loadModuleList();
+    					        				_this.bindEvent_multi();
+    					        				layer.close(_this.data.globalIndex);
+    					        				_this.data.globalIndex = 0;
+    	    				        		});
+  					        			}else{
+  					        				layer.msg("编辑子模块成功",{icon:1,time:1000},function(){
+  		      					        		/*_this.loadModuleList();
+  						        				_this.bindEvent_multi();
+  						        				_this.data.globalIndex = 0;
+  						        				layer.close(index);*/
+  						        				editThis.prev().html(sonModChiNameInp + '(' + sonModEngNameInp + ')');
+  				   			        			editThis.attr('actNameEng',sonModEngNameInp);
+  				   			        			layer.close(_this.data.globalIndex);
+  				   			        			_this.data.globalIndex = 0;
+  		    				        		});
+  					        			}
+      					        		
+      					        	}else if(json["result"] == "exist"){
+      					        		layer.msg("该子模块已存在，请重新填写", {icon:5,anim:6,time:1000});
+      					        	}else if(json["result"] == "error"){
+      					        		layer.msg("系统错误，请重试", {icon:5,anim:6,time:1000});
+      					        	}else if(json["result"] == "noAbility"){
+      					        		layer.msg("对不起，您暂无权限添加/编辑子模块", {icon:5,anim:6,time:1000});
+      					        	}
+      					        }
+      	  					});
+			  			}
+			  		}
 				}
 			};
 			//全选动作、左侧主模块选择选动作、右侧所有子模块选择动作（页面初始化就加载一次，然后每次选择身份后会加载一次）
@@ -513,12 +595,12 @@
 					strHtml += '<li class="orderNumWid">序号</li>';
 				}else if(loginType = 'cpyUser'){
 					strHtml += '<ul id="modTit" class="hasSelAll modListTit clearfix">';
-					strHtml +='<li class="selAllModWid">';
+					strHtml +='<li class="selAllModWid" style="height:40px;">';
 					if(allBindFlag && $('#roleIdInp').val() != 0 && endFlag){//表示当前选择的某个身份下的所有子模块全部选中后全选呈现的状态
-						strHtml += '<span class="likeCheckSpan hasActive"><b class="layui-icon layui-icon-ok" style="margin-left:1px;"></b></span>';
+						strHtml += '<span class="likeCheckSpan hasActive" style="margin:11px auto 0;"><b class="layui-icon layui-icon-ok" style="margin-left:1px;"></b></span>';
 						strHtml +='<input type="checkbox" id="selAllModInp" class="inpRadCheck" checked/></li>';
 					}else{
-						strHtml += '<span class="likeCheckSpan"><b class="layui-icon layui-icon-ok" style="margin-left:1px;"></b></span>';
+						strHtml += '<span class="likeCheckSpan" style="margin:11px auto 0;"><b class="layui-icon layui-icon-ok" style="margin-left:1px;"></b></span>';
 						strHtml +='<input type="checkbox" id="selAllModInp" class="inpRadCheck"/></li>';
 					}
 				}
@@ -533,46 +615,46 @@
 					strHtml += '<ul class="clearfix">';
 					if(loginType == 'spUser'){//增加序号
 						if(modList[i].modLevel == 0){
-							strHtml += '<li class="orderNumWid tongpaiColor">'+ modList[i].orderNo +'</li>';
+							strHtml += '<li class="orderNumWid hasPosAbso posL tongpaiColor flexBox">'+ modList[i].orderNo +'</li>';
 						}else if(modList[i].modLevel == 1){
-							strHtml += '<li class="orderNumWid yinpaiColor">'+ modList[i].orderNo +'</li>';
+							strHtml += '<li class="orderNumWid hasPosAbso posL yinpaiColor flexBox">'+ modList[i].orderNo +'</li>';
 						}else if(modList[i].modLevel == 2){
-							strHtml += '<li class="orderNumWid jinpaiColor">'+ modList[i].orderNo +'</li>';
+							strHtml += '<li class="orderNumWid hasPosAbso posL jinpaiColor flexBox">'+ modList[i].orderNo +'</li>';
 						}else if(modList[i].modLevel == 3){
-							strHtml += '<li class="orderNumWid zuanshiColor">'+ modList[i].orderNo +'</li>';
+							strHtml += '<li class="orderNumWid hasPosAbso posL zuanshiColor flexBox">'+ modList[i].orderNo +'</li>';
 						}
 					}else if(loginType == 'cpyUser'){//当为代理机构管理员的时候增加全选功能
 						if(modList[i].useFlag){//右侧主模块
 							if(modList[i].mainBindFlag && $('#roleIdInp').val() != 0){
-								strHtml += '<li class="selAllModWid">';
+								strHtml += '<li class="selAllModWid hasPosAbso posL flexBox">';
 								strHtml += '<span class="likeCheckSpan hasActive"><b class="layui-icon layui-icon-ok"></b></span>';
 								strHtml += '<input type="checkbox" value="'+ i +'" name="singleRowSelAllMod_'+ modList[i].useFlag +'" canUseFlag="'+ modList[i].useFlag +'" class="singleRowSelInp inpRadCheck comModInp" checked/></li>';
 							}else{
-								strHtml += '<li class="selAllModWid">';
+								strHtml += '<li class="selAllModWid hasPosAbso posL flexBox">';
 								strHtml += '<span class="likeCheckSpan"><b class="layui-icon layui-icon-ok"></b></span>';
 								strHtml += '<input type="checkbox" value="'+ i +'" name="singleRowSelAllMod_'+ modList[i].useFlag +'" canUseFlag="'+ modList[i].useFlag +'" class="singleRowSelInp inpRadCheck comModInp" ></li>';
 							}
 						}else{
 							if(modList[i].mainBindFlag && $('#roleIdInp').val() != 0){
-								strHtml += '<li class="selAllModWid">';
+								strHtml += '<li class="selAllModWid hasPosAbso posL flexBox">';
 								strHtml += '<span class="likeCheckSpan hasActive"><b class="layui-icon layui-icon-ok"></b></span>';
 								strHtml += '<input type="checkbox" value="'+ i +'" name="singleRowSelAllMod_'+ modList[i].useFlag +'" canUseFlag="'+ modList[i].useFlag +'" class="singleRowSelInp inpRadCheck comModInp" checked disabled/></li>';
 							}else{
-								strHtml += '<li class="selAllModWid">';
+								strHtml += '<li class="selAllModWid hasPosAbso posL flexBox">';
 								strHtml += '<span class="likeCheckSpan"><b class="layui-icon layui-icon-ok"></b></span>';
 								strHtml += '<input type="checkbox" value="'+ i +'" name="singleRowSelAllMod_'+ modList[i].useFlag +'" canUseFlag="'+ modList[i].useFlag +'" class="singleRowSelInp inpRadCheck comModInp" disabled/></li>';
 							}
 						}
 					}
 					//主模块名字
-					strHtml += '<li class="mainModWid posRel hasAlign"><span class="modMainNameSpan ellip">'+ modList[i].modName +'</span>';
+					strHtml += '<li class="mainModWid hasAlign hasPosAbso posL1"><span class="modMainNameSpan flexBox"><b class="ellip">'+ modList[i].modName +'</b></span>';
 					if(loginType == 'spUser'){//当为平台用户的时候进行编辑和删除
-						strHtml += '<div class="setMainMod posAbs"><i class="layui-icon layui-icon-edit editMainModName" opts="editBtn" modId="'+ modList[i].modId +'"></i>';
+						strHtml += '<div class="setMainMod posAbs"><i class="layui-icon layui-icon-add-1 addSonModBtn" modId="'+ modList[i].modId +'"></i><i class="layui-icon layui-icon-edit editMainModName" opts="editBtn" modId="'+ modList[i].modId +'"></i>';
 						strHtml += '<i class="layui-icon layui-icon-delete delMainModName" modId="'+ modList[i].modId +'"></i></div>';
 					}
 					strHtml += '</li>';
 					//模块等级
-					strHtml += '<li class="modLevelWid">';
+					strHtml += '<li class="modLevelWid hasPosAbso posL2 flexBox">';
 					if(modList[i].modLevel == 0){//铜牌
 						strHtml += '<svg class="icon-svg" aria-hidden="true"><use xlink:href="#icon-svg-tongpai-N"></use></svg><span class="fl">铜牌</span>';
 					}else if(modList[i].modLevel == 1){//银牌
@@ -584,7 +666,7 @@
 					}
 					strHtml += '</li>';
 					//子模块名
-					strHtml += '<li class="sonModWid sonModNames">';
+					strHtml += '<li class="sonModWid sonModNames hasMargL">';
 					for(var j=0;j<modList[i].modActInfo.length;j++){
 						if(loginType == 'spUser'){
 							strHtml += '<p class="hasTxtAlign">';
@@ -593,7 +675,7 @@
 						}
 						if(loginType == 'spUser'){//没有checkbox
 							strHtml += '<span>'+ modList[i].modActInfo[j].actNameChi+'('+modList[i].modActInfo[j].actNameEng +')</span>';
-							strHtml += '<a href="javascript:void(0)" class="seSonMod posAbs editSonModName" maId="'+ modList[i].modActInfo[j].maId +'" actNameChi="'+ modList[i].modActInfo[j].actNameChi +'" actNameEng="'+ modList[i].modActInfo[j].actNameEng +'"><i class="layui-icon layui-icon-edit"></i></a>';
+							strHtml += '<a href="javascript:void(0)" class="seSonMod posAbs editSonModName" maId="'+ modList[i].modActInfo[j].maId +'" actNameChi="'+ modList[i].modActInfo[j].actNameChi +'" actNameEng="'+ modList[i].modActInfo[j].actNameEng +'"><b title="编辑" class="editDelSpanBtn editSpanBtn"><i class="layui-icon layui-icon-edit"></i></b><b title="删除" class="editDelSpanBtn delSpanBtn"><i class="layui-icon layui-icon-delete"></i></b></a>';
 						}else if(loginType == 'cpyUser'){//存在checkbox 左侧子模块
 							if(modList[i].modActInfo[j].bindFlag){
 								strHtml += '<span class="likeCheckSpan hasActive"><b class="layui-icon layui-icon-ok"></b></span>';

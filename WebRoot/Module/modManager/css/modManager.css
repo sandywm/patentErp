@@ -36,7 +36,7 @@ body{
 .jinpaiColor{color:#e1c100;}
 .zuanshiColor{color:#27c7f2;}
 .noSelAll li.mainModWid{
-	width:15%;
+	width:20%;
 	border-right:1px solid #eee;
 }
 .noSelAll li.modLevelWid{
@@ -44,16 +44,15 @@ body{
 	border-right:1px solid #eee;
 }
 .noSelAll li.sonModWid{
-	width:70%;
+	width:65%;
 }
-
 .hasSelAll li.selAllModWid{
 	width:5%;
 	border-right:1px solid #eee;
-	height:40px;
+	/*height:40px;*/
 }
 .hasSelAll li.mainModWid{
-	width:15%;
+	width:20%;
 	border-right:1px solid #eee;
 }
 .hasSelAll li.modLevelWid{
@@ -61,7 +60,7 @@ body{
 	border-right:1px solid #eee;
 }
 .hasSelAll li.sonModWid{
-	width:70%;
+	width:65%;
 }
 #listModCon{
 	border-left:1px solid #eee;
@@ -69,21 +68,55 @@ body{
 }
 #listModCon ul{
 	border-bottom:1px solid #eee;
+	position:relative;
 }
 #listModCon li{
-	height:40px;
+	/*height:40px;*/
 	float:left;
-	line-height:40px;
+	/*line-height:40px;*/
 	/*text-align:center;*/
 	box-sizing:border-box;
-	position:relative;
+	/*position:relative;*/
+}
+.hasPosAbso{
+	height:100%;
+	position:absolute;
+	top:0px;
+}
+.flexBox{
+	display:-webkit-flex;
+	-webkit-justify-content:center;
+	-webkit-align-items:center;
+	display:-moz-flex;
+	-moz-justify-content:center;
+	-moz-align-items:center;
+	display:-ms-flex;
+	-ms-justify-content:center;
+	-ms-align-items:center;
+	display:flex;
+	justify-content:center;
+	align-items:center;
+}
+.posL{
+	left:0px;
+}
+.posL1{
+	left:5%;
+}
+.posL2{
+	left:25%;
+}
+.hasMargL{
+	margin-left:35%;
+	min-height:40px;
 }
 #listModCon li p{
 	float:left;
 	width:25%;
 	height:40px;
+	line-height:40px;
 	box-sizing:border-box;
-	border-right:1px solid #eee;
+	/*border-right:1px solid #eee;*/
 	overflow:hidden;
 	position:relative;
 }
@@ -95,38 +128,60 @@ body{
 }
 #listModCon li span.modMainNameSpan{
 	height:100%;
-	display:block;
 } 
 .noSelAll li span.modMainNameSpan{
-	width:72%;
-	max-width:72%;
+	width:70%;
+}
+.noSelAll li span.modMainNameSpan b,
+.hasSelAll li span.modMainNameSpan b{
+	display:block;
+	width:100%;
+	max-width:100%;
+	font-weight:normal;
 }
 #listModCon li i.layui-icon-edit,
-#listModCon li i.layui-icon-delete{
+#listModCon li i.layui-icon-delete,
+#listModCon li i.layui-icon-add-1{
 	font-size:22px;
 	cursor:pointer;
 	color:#666;
 }
-#listModCon li i.layui-icon-edit:hover{
+#listModCon li i.layui-icon-edit:hover,
+#listModCon li i.layui-icon-add-1:hover{
 	color:#009688;
 }
 #listModCon li i.layui-icon-delete:hover{
 	color:#f00;
 }
 #listModCon li .setMainMod{
-	top:0px;
-	right:5px;
+	top:50%;
+	height:22px;
+	margin-top:-11px;
+	right:0px;
 }
 .noSelAll li .seSonMod{
 	width:100%;
 	height:100%;
 	left:0;
 	top:0px;
-	background:rgba(0,150,136,.6);
 	display:none;
 }
 .noSelAll li p:hover .seSonMod{
 	display:block;
+}
+.editDelSpanBtn{
+	width:50%;
+	height:100%;
+	line-height:40px;
+	display:block;
+	float:left;
+	text-align:center;
+}
+.editSpanBtn{
+	background:rgba(0,150,136,.7);
+}
+.delSpanBtn{
+	background:rgba(225,52,48,.7);
 }
 #listModCon li .seSonMod i{
 	color:#fff;
@@ -143,11 +198,11 @@ body{
    font-size:28px;
    float:left;
    margin-top:6px;
-   margin-left:25%;
+  /* margin-left:25%;*/
 }
 .specZuan{
 	font-size:24px;
-	margin:8px 3px 0 25%;
+	margin-top:1px;
 }
 /* 编辑子模块 */
 .editSonModNameCon .comEditDiv{
@@ -222,10 +277,6 @@ body{
 #listModCon li p span.likeCheckSpan{
 	margin:11px 0 0 10px;
 	float:left;
-}
-.hasSelAll li.selAllModWid span.likeCheckSpan,
-.selAllModWid span.likeCheckSpan{
-	margin:11px auto 0;
 }
 #listModCon li p span.likeCheckSpan b,
 .hasSelAll li.selAllModWid span.likeCheckSpan b,

@@ -18,7 +18,7 @@
 	
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var pubId = parent.globalPubId,loginType = parent.loginType;
+		var pubId = parent.globalPubId,loginType = parent.loginType,outDateFlag=false;
 		layui.use(['layer','jquery','form','upload'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
@@ -43,13 +43,15 @@
 	   			        success:function (json){
 	   			        	layer.closeAll('loading');
 	   			        	if(json['result'] == 'success'){
-	   			        		_this.renderViewPubZlDetail(json);
-	   			        		_this.bindEvent();
+	   			        		
 	   			        	}else if(json['result'] == 'outDate'){
-	   			        		var outDateHtml = '<div class="innerOutDate"><i class="layui-icon layui-icon-face-cry"></i><span>抱歉，您当前的会员已经到期，暂不能查看任务详情!</span></div>';
-	   			        		$('#outDate').html(outDateHtml);
-	   			        		$('#viewZlTaskUl').hide();
+	   			        		//var outDateHtml = '<div class="innerOutDate"><i class="layui-icon layui-icon-face-cry"></i><span>抱歉，您当前的会员已经到期，暂不能查看任务详情!</span></div>';
+	   			        		//$('#outDate').html(outDateHtml);
+	   			        		//$('#viewZlTaskUl').hide();
+	   			        		outDateFlag = true;
 	   			        	}
+	   			        	_this.renderViewPubZlDetail(json);
+	   			        	_this.bindEvent();
 	   			        }
 	   				});
 				},
@@ -110,7 +112,11 @@
 				//渲染任务详情结构
 				renderViewPubZlDetail : function(json){
 					var strHtml = '',receiveHisHtml='';
-					strHtml += '<li class="taskTitDetail">'+ json.zlTitle +'</li>';
+					if(outDateFlag){
+						strHtml += '<li class="taskTitDetail">'+ json.zlTitle +'<span>(您的会员已到期,部分详情将无法查看)<span></li>';
+					}else{
+						strHtml += '<li class="taskTitDetail">'+ json.zlTitle +'</li>';
+					}
 					strHtml += '<li><div class="innerPar"><p>发布者</p><p>'+ json.pubInfo +'</p></div>';
 					strHtml += '<div class="innerPar"><p>发布日期</p><p>'+ json.pubDate +'</p></div></li>';
 					strHtml += '<li><div class="innerPar"><p>专利类型</p><p>'+ json.typeChi +'</p></div>';

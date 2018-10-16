@@ -20,6 +20,7 @@
   				<div class="layui-card">
   					<div class="layui-card-header posRel">
   						<span>专利领取记录</span>
+  						<a class="closeBtns" href="javascript:void(0)"><i class="layui-icon layui-icon-close"></i></a>
   					</div>
   					<div class="layui-card-body" pad15>
   						<div class="layui-form searchForm clearfix">
@@ -72,6 +73,11 @@
 					//查询
 					$('#queryBtn').on('click',function(){
 						loadZlLqHisList('queryLoad');
+					});
+					//关闭
+					$('.closeBtns').on('click',function(){
+						var index= parent.layer.getFrameIndex(window.name);
+        				parent.layer.close(index);
 					});
 				}
 			};
@@ -139,6 +145,8 @@
 			        		}else{
 			        			$('.noData').html("<i class='iconfont layui-extend-noData'></i><p>暂无查询记录</p>");
 			        		}
+						}else if(res.result == 'error'){
+							layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1500});
 						}
 					}
 				});
@@ -188,7 +196,10 @@
 		   			        	layer.closeAll('loading');
 		   			        	if(json['result'] == 'success'){
 		   			        		layer.msg(changeTit,{icon:1,time:1000},function(){
+		   			        			//var index= parent.layer.getFrameIndex(window.name);
+		   		        				parent.viewZlFlag = true;
 		   			        			loadZlLqHisList('initLoad');
+		   			        			//parent.layer.close(index);
 					        		});
 		   			        	}else if(json['result'] == 'lowLevel'){
 		   			        		layer.msg('抱歉，您当前的会员已经到期或当前等级不够，暂不能领取', {icon:5,anim:6,time:2500});

@@ -68,7 +68,7 @@
 								title:'添加子公司',
 								type: 2,
 							  	area: ['700px', '500px'],
-							  	fixed: false, //不固定
+							  	fixed: true, //不固定
 							  	maxmin: true,
 							  	shadeClose :false,
 							  	content: '/Module/subParCpyManager/jsp/addSubCpy.html',
