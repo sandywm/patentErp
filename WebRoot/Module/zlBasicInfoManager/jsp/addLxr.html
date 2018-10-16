@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlBasicInfoManager/css/zlBasicInfoManager.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+  	<title>添加联系人</title>
+</head>
+<body style="background:#fff;">
+	<div>
+		<div class="commonListBox_lxFmr clearfix">
+			<div class="lxrListBox fl"></div>
+			<div class="hasSelLxrFmrList fr">
+				<div class="tipInfo">
+					<i class="layui-icon layui-icon-list"></i>
+					<p class="tipInfoSpan">点击左侧选择联系人/发明人</p>
+				</div>
+			</div>
+		</div>
+		<div class="botSaveBox">
+			<button type="button" id="saveZlBtn" class="layui-btn">保存</button>
+			<!--  button type="button" class="layui-btn layui-btn-normal addLxrFmrBtn">增加新联系人</button-->
+		</div>
+	</div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var tmpLxrFmrId=[],tmpLxrFmrTxt=[],tmpLxrFmrOpts = parent.tmpLxrFmrOpts,lxrFmrText='';
+		layui.use(['layer','form','jquery'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form;
+			var page = {
+				data : {
+					isClickInpFlag : false //用来检测进来时是否点击了增加新联系人/新发明人然后用来匹配当点击inp但未保存input选中的匹配
+				},
+				init : function(){
+					this.onLoad();
+					this.bindEvent();
+				},
+				onLoad : function(){
+					this.loadLxrFmrList();
+				},
+				bindEvent : function(){
+					var _this = this;
+					var sqrLxrFmrName = '',lxrFmrTxt='';
+					if(tmpLxrFmrOpts == 'addLxrOpts'){
+						//表示添加联系人
+						sqrLxrFmrName = 'sqrLxr';
+						lxrFmrTxt = '联系人';
+					}else{
+						//表示添加发明人
+						sqrLxrFmrName = 'sqrFmr';
+						lxrFmrTxt = '发明人';
+					}
+					//保存已添加的联系人或发明人
+					$('#saveZlBtn').on('click',function(){
+						var sqrIdArray = parent.sqrIdArray;
+						var strHtml = '',tmpLxrIdArray=[],tmpSqrId=[],tmpLxrTxtArray=[],tmpFmrIdArray=[],tmpFmrTxtArray=[];
+						var index= parent.layer.getFrameIndex(window.name);
+						for(var i=0;i<sqrIdArray.length;i++){
+							$('#sqr_'+sqrIdArray[i]).attr('hasCheckedLen',$('#sqr_'+sqrIdArray[i]).find('input[name='+ sqrLxrFmrName +']:checked').length);
+							var hasCheckedLen = parseInt($('#sqr_'+sqrIdArray[i]).attr('hasCheckedLen'));
+							/*if(hasCheckedLen == 0){
+								layer.msg('申请人(公司)下的' + lxrFmrText + '不能为空', {icon:5,anim:6,time:2000});
+								return;
+							}else */if(hasCheckedLen > 10){
+								layer.msg('抱歉，每个申请人(公司)下的'+ lxrFmrTxt +'最多可以选择10个', {icon:5,anim:6,time:2000});
+								return;
+							}
+						}
+						tmpSqrId.length = 0;
+						if(tmpLxrFmrOpts == 'addLxrOpts'){
+							parent.lxrIdArray.length = 0;
+							parent.lxrIdNum.length = 0;
+							$('.listP').each(function(i){
+								tmpLxrIdArray.push($('.listP').eq(i).attr('lxrFmrId'));
+								tmpLxrTxtArray.push($('.listP').eq(i).find('strong').html());
+								tmpSqrId.push($('.listP').eq(i).attr('parSqrId'));
+								//parent.sqrTxtArray.push($('.listP').eq(i).find('strong').html());
+								parent.lxrIdArray.push('lxrId_'+$('.listP').eq(i).attr('lxrFmrId'));
+								parent.lxrIdNum.push($('.listP').eq(i).attr('lxrFmrId'));
+								//parent.sqrIdArray.push($('.listP').eq(i).attr('sqrIdNum'));
+							});
+							for(var i=0;i<tmpLxrTxtArray.length;i++){
+								strHtml += '<p id="lxrId_'+ tmpLxrIdArray[i] +'" lxrIdAttr="'+ tmpLxrIdArray[i] +'" sqrIds="'+ tmpSqrId[i].split('_')[1] +'" class="lxFmTag delLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="'+ tmpSqrId[i] +'"/><span>'+ tmpLxrTxtArray[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+							}
+							parent.$('#lxrBox').html(strHtml);
+							parent.delHasAddMethod('delLxrBtn','delLxrOpt');
+						}else{
+							parent.fmrIdArray.length = 0;
+							parent.fmrIdNum.length = 0;
+							$('.listP').each(function(i){
+								tmpFmrIdArray.push($('.listP').eq(i).attr('lxrFmrId'));
+								tmpFmrTxtArray.push($('.listP').eq(i).find('strong').html());
+								tmpSqrId.push($('.listP').eq(i).attr('parSqrId'));
+								parent.fmrIdArray.push('fmrId_'+$('.listP').eq(i).attr('lxrFmrId'));
+								parent.fmrIdNum.push($('.listP').eq(i).attr('lxrFmrId'));
+							});
+							for(var i=0;i<tmpFmrTxtArray.length;i++){
+								strHtml += '<p id="fmrId_'+ tmpFmrIdArray[i] +'" fmrIdAttr="'+ tmpFmrIdArray[i] +'" sqrIds="'+ tmpSqrId[i].split('_')[1] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="'+ tmpSqrId[i] +'"/><span>'+ tmpFmrTxtArray[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+							}
+							parent.$('#fmrBox').html(strHtml);
+							
+							parent.delHasAddMethod('delFmrBtn','delFmrOpt');
+						}
+						parent.layer.close(index);
+					});
+				},
+				inputClickEvent : function(){
+					var _this = this;
+					var sqrLxrFmrName = '',lxrFmrTxt='';
+					if(tmpLxrFmrOpts == 'addLxrOpts'){
+						//表示添加联系人
+						sqrLxrFmrName = 'sqrLxr';
+						lxrFmrTxt = '联系人';
+					}else{
+						//表示添加发明人
+						sqrLxrFmrName = 'sqrFmr';
+						lxrFmrTxt = '发明人';
+					}
+					$('input[name='+ sqrLxrFmrName +']').on('click',function(){
+						var lxrFmrName = '',strHtml = '';
+						var checkStatus = this.checked,hasCheckId = $(this).val(),sqrId = $(this).attr('sqrId');
+						if(tmpLxrFmrOpts == 'addLxrOpts'){
+							lxrFmrName = $(this).attr('lxrName');
+						}else{
+							lxrFmrName = $(this).attr('fmrName');
+						}
+						if(checkStatus){
+							$('.tipInfo').hide();
+							$(this).prev().addClass('hasActive');
+							strHtml += '<p id="hasSelP_'+ hasCheckId +'" lxrFmrId="'+ hasCheckId +'" parSqrId="myParSqr_'+ sqrId +'" class="listP"><strong class="ellip">'+ lxrFmrName +'</strong>';
+							strHtml += '<a class="moveUpDown fl"></a>';
+							strHtml += '<i id="'+ hasCheckId +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
+							$('.hasSelLxrFmrList').append(strHtml);
+						}else{
+							$('#hasSelP_'+hasCheckId).remove();
+							if($('.listP').length == 0){
+								$('.tipInfo').show();
+							}
+							$(this).prev().removeClass('hasActive');
+						}
+						_this.lxrFmrOrder();
+						_this.delSelLxrFmr();
+					});
+				},
+				//排序方法
+				lxrFmrOrder : function(){
+					var hasSelSqrLen = $('.listP').length;
+					var _this = this;
+					$('.listP').each(function (i, obj) {
+						var index = i+1;
+						//添加操作按钮
+						if (index==1) {
+							$(this).find('.moveUpDown').html('<span class="triSpan topTriSpan moveDown" title="下移"></span>');
+						}else if (index == hasSelSqrLen) {
+							$(this).find('.moveUpDown').html('<span class="triSpan botTriSpan moveUp" title="上移"></span>');
+						}else{
+							$(this).find('.moveUpDown').html('<span class="triSpan topTriSpan moveDown" title="下移"></span><span class="triSpan botTriSpan moveUp" title="上移"></span>');
+						}
+					});
+					_this.lxrFmrMoveDown();
+					_this.lxrFmrMoveUp();
+				},
+				//联系人发明人降序排列
+				lxrFmrMoveDown : function(){
+					var _this = this;
+					$('.moveDown').on('click',function(){
+						var currSqr = $(this).parents('.listP');
+						if($(currSqr).index() == $('.listP').last().index()) {
+							return ;
+						}
+						var next = $(this).parents('.listP').next();
+						$(currSqr).before(next);
+						_this.lxrFmrOrder();
+					});
+				},
+				//联系人发明人升序排列
+				lxrFmrMoveUp : function(){
+					var _this = this;
+					$('.moveUp').on('click',function(){
+						var currSqr = $(this).parents('.listP');
+						if($(currSqr).index()==0) {
+							return ;
+						}
+						var prev = $(this).parents('.listP').prev();
+						$(currSqr).after(prev);
+						_this.lxrFmrOrder();
+					});
+				},
+				//删除已经选中的联系人或发明人
+				delSelLxrFmr : function(){
+					var _this = this;
+					$('.delSelBtn').on('click',function(){
+						var id = $(this).attr('id');
+						//alert(id)
+						$('#hasSelP_'+id).remove();
+						if(tmpLxrFmrOpts == 'addLxrOpts'){
+							$('#lxrId_'+id).attr('checked',false);
+							$('#lxrId_'+id).prev().removeClass('hasActive');
+						}else{
+							$('#fmrId_'+id).attr('checked',false);
+							$('#fmrId_'+id).prev().removeClass('hasActive');
+						}
+						if($('.listP').length == 0){
+							$('.tipInfo').show();
+							return;
+						}
+						_this.lxrFmrOrder();
+					});
+				},
+				loadLxrFmrList : function(){
+					var _this = this;
+					//alert(parent.sqrIdArray)
+					var cusIdStr = parent.sqrIdArray.join(','),option = '';
+					if(tmpLxrFmrOpts == 'addLxrOpts'){//添加联系人
+						option = 'lxr'; 
+					}else{
+						option = 'fmr';
+					}
+					layer.load('1');
+					$.ajax({
+  						type:"post",
+				        async:false,
+				        dataType:"json",
+				        data : {option : option,cusIdStr : cusIdStr},
+				        url:'/customer.do?action=getCusFmOrLxrInfo',
+				        success:function (json){
+				        	layer.closeAll('loading');	
+				        	var listData = json.result; 
+				        	_this.renderLxrOrFmrList(listData);
+				        }
+  					});
+				},
+				//获取专业技术领域列表
+				renderLxrOrFmrList : function(listData){
+					var strHtml = '';
+					for(var i=0;i<listData.length;i++){
+						strHtml += '<div class="lxFmrBox">';
+						if(tmpLxrFmrOpts == 'addLxrOpts'){
+							strHtml += '<strong class="titleStrong">['+ listData[i].sqrName +']的联系人<span class="addNewBtn" sqrId="'+ listData[i].sqrId +'" opts="addLxrBtnOpts" addFmrLxrOpt="addLxrOpts"><i class="layui-icon layui-icon-add-1"></i>增加联系人</span></strong>';
+						}else{
+							strHtml += '<strong class="titleStrong">['+ listData[i].sqrName +']的发明人<span class="addNewBtn" sqrId="'+ listData[i].sqrId +'" opts="addFmrBtnOpts" addFmrLxrOpt="addFmrOpts"><i class="layui-icon layui-icon-add-1"></i>增加发明人</span></strong>';
+						}
+						strHtml += '<div id="sqr_'+ listData[i].sqrId +'" hasCheckedLen="0" class="innerLxFmrBox clearfix">';
+						if(tmpLxrFmrOpts == 'addLxrOpts'){
+							if(listData[i].lxrInfo != undefined){
+								for(var j=0;j<listData[i].lxrInfo.length;j++){
+									strHtml += '<label class="labelMod"><span class="likeCheckSpan"><b class="layui-icon layui-icon-ok"></b></span>';
+									strHtml += '<input type="checkbox" name="sqrLxr" sqrId="'+ listData[i].sqrId +'" class="inpRadCheck comCheckInp lxrInp" lxrName="'+ listData[i].lxrInfo[j].lxrName +'" id="lxrId_'+ listData[i].lxrInfo[j].lxrId +'"  value="'+ listData[i].lxrInfo[j].lxrId +'">';
+									strHtml += '<strong>'+ listData[i].lxrInfo[j].lxrName +'</strong></label>';
+								}
+							}else{
+								strHtml += '<span class="noAddInfo"><i class="layui-icon layui-icon-face-cry"></i>该申请人(公司)暂未添加联系人！</span>';
+							}
+						}else{
+							if(listData[i].fmrInfo != undefined){
+								for(var j=0;j<listData[i].fmrInfo.length;j++){
+									strHtml += '<label class="labelMod"><span class="likeCheckSpan"><b class="layui-icon layui-icon-ok"></b></span>';
+									strHtml += '<input type="checkbox" name="sqrFmr" sqrId="'+ listData[i].sqrId +'" class="inpRadCheck comCheckInp fmrInp" fmrName="'+ listData[i].fmrInfo[j].fmrName +'" id="fmrId_'+ listData[i].fmrInfo[j].fmrId +'" value="'+ listData[i].fmrInfo[j].fmrId +'">';
+									strHtml += '<strong>'+ listData[i].fmrInfo[j].fmrName +'</strong>';
+								}
+							}else{
+								strHtml += '<span class="noAddInfo"><i class="layui-icon layui-icon-face-cry"></i>该申请人(公司)暂未添加发明人！</span>';
+							}
+						}
+						strHtml += '</div></div>';
+					}
+					$('.lxrListBox').html(strHtml);
+					this.activeCheckInp();
+					if(tmpLxrFmrOpts == 'addLxrOpts'){
+						if(parent.lxrIdArray.length != 0 && this.data.isClickInpFlag == false){//表示之前已经添加了部分技术领域
+							//进行匹配
+							var strHtmlHasSel = '';
+							var tmpArray = parent.lxrIdArray,tmpSqrIdArray=[],tmpLxrName=[];
+							$('.tipInfo').hide();
+							for(var j=0;j<tmpArray.length;j++){
+								$('.lxrInp').each(function(i){
+									if($('.lxrInp').eq(i).attr('id') == tmpArray[j]){
+										$('.lxrInp').eq(i).attr('checked',true);
+										$('.lxrInp').eq(i).prev().addClass('hasActive');
+										tmpLxrName.push($('.lxrInp').eq(i).attr('lxrName'));
+										tmpSqrIdArray.push($('.lxrInp').eq(i).attr('sqrId'));
+										return false;
+									}
+								});
+								strHtmlHasSel += '<p id="hasSelP_'+ parent.lxrIdNum[j] +'" lxrFmrId="'+ parent.lxrIdNum[j] +'" parSqrId="myParSqr_'+ tmpSqrIdArray[j] +'" class="listP"><strong class="ellip">'+ tmpLxrName[j] +'</strong>';
+								strHtmlHasSel += '<a class="moveUpDown fl"></a>';
+								strHtmlHasSel += '<i id="'+ parent.lxrIdNum[j] +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
+							}
+							$('.hasSelLxrFmrList').append(strHtmlHasSel);
+							this.lxrFmrOrder();
+							this.delSelLxrFmr();
+						}else{
+							//表示此时未点击保存按钮
+							if(this.data.isClickInpFlag){
+								//点击了增加新联系人或申请人下进行一个之前选中为保存的匹配
+								$('.listP').each(function(i){
+									$('.comCheckInp').each(function(j){
+										if($('.comCheckInp').eq(j).val() == $('.listP').eq(i).attr('lxrFmrId')){
+											$('.comCheckInp').eq(j).attr('checked',true);
+											$('.comCheckInp').eq(j).prev().addClass('hasActive');
+											return false;
+										}
+									});
+								});
+							}
+						}
+					}else{
+						if(parent.fmrIdArray.length != 0 && this.data.isClickInpFlag == false){//表示之前已经添加了部分技术领域
+							//进行匹配
+							var strHtmlHasSel = '';
+							var tmpArray = parent.fmrIdArray,tmpSqrIdArray=[],tmpFmrName=[];
+							$('.tipInfo').hide();
+							for(var j=0;j<tmpArray.length;j++){
+								$('.fmrInp').each(function(i){
+									if($('.fmrInp').eq(i).attr('id') == tmpArray[j]){
+										$('.fmrInp').eq(i).attr('checked',true);
+										$('.fmrInp').eq(i).prev().addClass('hasActive');
+										tmpFmrName.push($('.fmrInp').eq(i).attr('fmrName'));
+										tmpSqrIdArray.push($('.fmrInp').eq(i).attr('sqrId'));
+										return false;
+									}
+								});
+								strHtmlHasSel += '<p id="hasSelP_'+ parent.fmrIdNum[j] +'" lxrFmrId="'+ parent.fmrIdNum[j] +'" parSqrId="myParSqr_'+ tmpSqrIdArray[j] +'" class="listP"><strong class="ellip">'+ tmpFmrName[j] +'</strong>';
+								strHtmlHasSel += '<a class="moveUpDown fl"></a>';
+								strHtmlHasSel += '<i id="'+ parent.fmrIdNum[j] +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
+							}
+							$('.hasSelLxrFmrList').append(strHtmlHasSel);
+							this.lxrFmrOrder();
+							this.delSelLxrFmr();
+						}else{
+							//表示此时未点击保存按钮
+							if(this.data.isClickInpFlag){
+								//点击了增加新联系人或申请人下进行一个之前选中为保存的匹配
+								$('.listP').each(function(i){
+									$('.comCheckInp').each(function(j){
+										if($('.comCheckInp').eq(j).val() == $('.listP').eq(i).attr('lxrFmrId')){
+											$('.comCheckInp').eq(j).attr('checked',true);
+											$('.comCheckInp').eq(j).prev().addClass('hasActive');
+											return false;
+										}
+									});
+								});
+							}
+						}
+					}
+					
+				},
+				//发明人和联系人模拟input复选框的click
+				activeCheckInp : function(){
+					var _this = this;
+					//添加新的发明人和联系人
+					$('.addNewBtn').on('click',function(){
+						var url = '';
+						var addBtnOpts = $(this).attr('opts');
+						parent.$('#sqrIdInp').val($(this).attr('sqrId'));
+						parent.addCustFlag = false;
+						if(addBtnOpts == 'addLxrBtnOpts'){//表示添加新联系人
+							url = '/Module/customerManager/jsp/addEditLxr.html';
+							var height = '300px',title='添加新联系人';
+						}else{
+							url = '/Module/customerManager/jsp/addEditFmr.html';
+							var height = '350px',title='添加新发明人';
+						}
+						parent.layer.open({
+							title:title,
+							type: 2,
+						  	area: ['500px', height],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	content: url,
+						  	end:function(){
+						  		if(parent.addCustFlag){
+						  			_this.data.isClickInpFlag = true; // 表示此时单击了新增联系人或发明人但是未点击底部保存按钮
+						  			_this.loadLxrFmrList();
+						  		}
+						  	}
+						});
+					});
+					this.inputClickEvent();
+				}
+			};
+			$(function(){
+				page.init();				
+			});
+		});
+	</script>
+</body> 
+</html>
