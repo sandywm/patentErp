@@ -50,7 +50,7 @@
     <script type="text/javascript">
 	    var delFlag = "${ requestScope.delFlag }",
 			upFlag = "${ requestScope.upFlag }",
-			addFlag = "${ requestScope.addFlag }",addEditCusOpts='',addEditLxrOpts='',addEditFmrOpts='',addCustFlag = false,globalCusId=0;
+			addFlag = "${ requestScope.addFlag }",addEditCusOpts='',addEditLxrOpts='',addEditFmrOpts='',addCustFlag = false,globalCusId=0,isZlAddFmLxFlag=false;
     	layui.use(['layer','jquery','form','table'],function(){
     		var layer = layui.layer,
     			form = layui.form,
@@ -133,6 +133,8 @@
 			        		}else{
 			        			$('.noData').html("<i class='iconfont layui-extend-noData'></i><p>暂无查询记录</p>");
 			        		}
+						}else if(res.msg == 'error'){
+							layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
 						}
 					}
     			});
@@ -147,7 +149,7 @@
 						title:'客户['+ cusName +']信息',
 						type: 2,
 					  	area: ['700px', '500px'],
-					  	fixed: false, //不固定
+					  	fixed: true, //不固定
 					  	maxmin: false,
 					  	shadeClose :false,
 					  	content: '/Module/customerManager/jsp/viewCustomerDetail.html'
@@ -186,7 +188,7 @@
 							title:'编辑客户['+ cusName +']信息',
 							type: 2,
 						  	area: ['700px', '500px'],
-						  	fixed: false, //不固定
+						  	fixed: true, //不固定
 						  	maxmin: false,
 						  	shadeClose :false,
 						  	content: '/Module/customerManager/jsp/editCustomerAll.html',
@@ -206,7 +208,7 @@
 						title:'客户 ['+ cusName +'] 添加' + addTitle,
 						type: 2,
 					  	area: ['500px', height],
-					  	fixed: false, //不固定
+					  	fixed: true, //不固定
 					  	maxmin: false,
 					  	shadeClose :false,
 					  	content: url

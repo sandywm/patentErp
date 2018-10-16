@@ -1,0 +1,532 @@
+@import url("../../../css/common.css");
+@import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
+body{
+	background:#f2f2f2;
+	color:#666;
+}
+.noData{
+	display:none;
+}
+.layui-form-item{
+	margin-top:15px;
+}
+.layui-form-label{
+	width:125px;
+}
+.layui-form-label span{
+	color:red;
+	margin-right:2px;
+}
+.layui-form-radio{
+	padding-right:4px;
+}
+.layui-input-block input[type='text'],
+.layui-input-block textarea{
+	width:94%;
+}
+.layui-input-block textarea{
+	padding:11px 10px;
+}
+.itemDiv{
+	width:50%;
+	float:left;
+	position:relative;
+}
+.itemDiv .layui-input-inline{
+	width:70.5%;
+}
+.selZlTaskSp{
+	position:absolute;
+	right:7%;
+	top:5px;
+	cursor:pointer;
+}
+.selZlTaskSp i{
+	font-size:25px;
+	color:#666;
+}
+.resetSp{
+	position:absolute;
+	right:0px;
+	top:7px;
+	cursor:pointer;
+}
+.resetSp i{
+	font-size:24px;
+	color:#999;
+}
+.selZlTaskSp:hover i,
+.resetSp:hover i{
+	color:#F47837;
+}
+.fixHeiDiv{
+	height:38px;
+}
+.fixHeiDiv .multiBox{
+	margin-right:10px;
+}
+.fixHeiDiv .multiBox p{
+	height:22px;
+	line-height:22px;
+	padding:0 8px;
+	float:left;
+	display:block;
+	background:rgba(32,160,255,.1);
+	border:1px solid rgba(32,160,255,.2);
+	color:#20a0ff;
+	margin-right:8px;
+	margin-top:8px;
+	border-radius:3px;
+	position:relative;
+	cursor:pointer;
+}
+.fixHeiDiv .multiBox p span{
+	float:left;
+}
+.fixHeiDiv .multiBox p i{
+	font-size:16px;
+	float:right;
+	margin-right:-5px;
+}
+.fixHeiDiv .multiBox p:hover i{
+	color:#F47837;
+}
+.fixHeiDiv .multiBox p:last-child{
+	margin-right:0px;
+}
+.fixHeiDiv .addSpan{
+	cursor:pointer;
+	color:#009688;
+	/*line-height:38px;*/
+	margin-top:9px;
+	display:block;
+}
+.fixHeiDiv .addSpan:hover{
+	color:#F47837;
+}
+.blockDiv{
+	margin-left:110px;
+	min-height:36px;
+}
+#yxqBox{
+	width:95%;
+	float:left;
+}
+.innerYxqBox{
+	width:100%;
+	height:38px;
+	position:relative;
+}
+.innerYxqBox input,
+.innerYxqBox .innerSelAddBox{
+	float:left;
+	margin-right:10px;
+}
+.innerYxqBox input{
+	width:200px;
+}
+.innerYxqBox .innerSelAddBox{
+	width:200px;
+}
+.innerYxqBox .innerSelAddBox .layui-form-select .layui-edge{
+	top:18px;
+}
+.delYxqIcon{
+	font-size:24px;
+	float:left;
+	margin-top:5px;
+	cursor:pointer;
+	color:red;
+	opacity:.8;
+}
+.layui-table{
+	width:98%;
+}
+#upListAction{
+	display:none;
+	position:absolute;
+	right:10%;
+	top:0;
+}
+.innerYxqBox{
+	margin-bottom:15px;
+}
+.innerYxqBox:last-child{
+	margin-bottom:0px;
+}
+.layui-input-block{
+	margin-left:156px;
+}
+/* 专利额外要求 */
+.noYqData{
+	height:100%;
+	line-height:38px;
+	color:red;
+	opacity:.7;
+}
+.noYqData i{
+	margin-right:5px;
+	font-size:16px;
+}
+/* 添加技术领域 */
+#addZyField{
+	height:100%;
+	position:relative;
+}
+.commonListBox,
+.commonListBox_lxFmr,
+.commonListBox_field{
+	padding:10px 10px 0;
+}
+.commonListBox_field{
+	height:190px;
+}
+.commonListBox_lxFmr{
+	height:260px;
+}
+.sqrListBox,
+.hasSelSqrList,
+.lxrListBox,
+.hasSelLxrFmrList{
+	overflow:hidden;
+	overflow-y:auto;
+}
+.sqrListBox{
+	width:419px;
+	height:235px;
+	border-right:1px solid #ccc;
+}
+.hasSelSqrList{
+	width:260px;
+	height:235px;
+	position:relative;
+}
+.lxrListBox{
+	width:480px;
+	height:260px;
+	border-right:1px solid #ccc;
+}
+.hasSelLxrFmrList{
+	width:200px;
+	height:260px;
+	position:relative;
+}
+.hasSelSqrList p.listP,
+.hasSelLxrFmrList p.listP{
+	height:35px;
+	line-height:35px;
+	border-bottom:1px dashed #ccc;
+	position:relative;
+}
+.hasSelSqrList p.listP strong,
+.hasSelLxrFmrList p.listP strong{
+	height:100%;
+	display:block;
+	font-weight:normal;
+	float:left;
+}
+.hasSelSqrList p.listP strong{
+	width:74%;
+	max-width:74%;
+}
+.hasSelLxrFmrList p.listP strong{
+	width:60%;
+	max-width:60%;
+}
+.hasSelSqrList div.tipInfo,
+.hasSelLxrFmrList div.tipInfo{
+	width:100%;
+	color:#999;
+	position:absolute;
+	text-align:center;
+}
+.hasSelSqrList div.tipInfo i,
+.hasSelLxrFmrList div.tipInfo i{
+	font-size:60px;
+}
+.hasSelSqrList p.listP span.triSpan,
+.hasSelLxrFmrList p.listP span.triSpan{
+	width:0px;
+	height:0px;
+	position:absolute;
+	cursor:pointer;
+}
+.hasSelSqrList p.listP a,
+.hasSelLxrFmrList p.listP a{
+	height:100%;
+	position:relative;
+}
+.hasSelSqrList p.listP a{
+	width:18%;
+}
+.hasSelLxrFmrList p.listP a{
+	width:30%;
+}
+.hasSelSqrList p.listP span.topTriSpan,
+.hasSelLxrFmrList p.listP span.topTriSpan{
+	border-color:#666 transparent transparent transparent;
+	border-style:solid dashed dashed dashed;
+	border-width:8px;
+	right:30px;
+	top:13px;
+}
+.hasSelSqrList p.listP span.botTriSpan,
+.hasSelLxrFmrList p.listP span.botTriSpan{
+	border-color:transparent transparent #666 transparent;
+	border-style:dashed dashed solid dashed;
+	border-width:8px;
+	right:10px;
+	top:5px;
+}
+.hasSelSqrList p.listP i,
+.hasSelLxrFmrList p.listP i{
+	position:absolute;
+	right:0;
+	top:0px;
+	font-size:22px;
+	color:red;
+	cursor:pointer;
+}
+.labelMod{
+	height:24px;
+	line-height:24px;
+	padding:0 6px;
+	display:block;
+	float:left;
+	position:relative;
+	margin:0 0px 10px 0;
+}
+.labelMod span.likeCheckSpan{
+	width:16px;
+	height:16px;
+	line-height:16px;
+	border:1px solid #d2d2d2;
+	border-radius:2px;
+	background:#fff;
+	-webkit-transition:.1s linear;
+	transition:.1s linear;
+	display:block;
+	margin:3px 6px 0 0px;
+	float:left;
+}
+.hasBorRad{
+	width:18px !important;
+	height:18px !important;
+	line-height:18px !important;
+	border-radius:50% !important;
+	margin-top:7px !important;
+	margin-left:6px !important;
+	border:1px solid #999 !important;
+}
+.labelMod span.likeCheckSpan b{
+	color:#fff;
+	font-size:12px;
+	margin-left:2px;
+}
+.labelMod span.hasActive{
+	border-color:#5FB878 !important;
+	background:#5FB878 !important;
+}
+.labelMod span.hasActive b{
+	color:#fff;
+}
+.labelMod strong{
+	font-weight:normal;
+	float:left;
+}
+.botSaveBox{
+	margin-top:10px;
+	width:100%;
+	text-align:center;
+	height:38px;
+	line-height:38px;
+}
+.botSaveBox button{
+	width:120px;
+	font-size:14px;
+	padding:0px;
+}
+.addFieldBtn_noData:hover{
+	color:#F47837 !important;
+}
+.addJfFieldBox{
+	width:100%;
+	height:277px;
+	background:rgba(255,255,255,.9);
+	position:absolute;
+	left:0;
+	top:-100%;
+	display:none;
+}
+.innerAddCon{
+	width: 320px;
+    height:40px;
+    line-height: 40px;
+    margin: 30px auto 0;
+}
+.innerAddCon:first-child{
+	margin-top:36px;
+}
+.innerAddCon input{
+	width: 245px;
+    height: 39px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    float: left;
+    line-height: 40px;
+    margin-left: 5px;
+}
+#addFieldLayer{
+	display:none;
+}
+/* 联系人层 */
+.innerLxrFmrBox{
+	width:98%;
+	min-height:38px;
+	background:#f2f2f2;
+	border-left:4px solid #009688;
+	margin-bottom:10px;
+}
+.innerLxrFmrBox strong{
+	width:100%;
+	font-size:14px;
+	font-weight:normal;
+	display:block;
+	text-indent:10px;
+	padding-top:8px;
+}
+.detailBox{
+	padding-bottom:8px;
+}
+.detailBox p:first-child{
+	margin-left:10px;
+}
+.layui-icon-group{
+	opacity:.8;
+}
+.lxFmrBox strong.titleStrong{
+	height:20px;
+	line-height:20px;
+	border-left:4px solid #009688;
+	display:block;
+	width:98%;
+	font-size:14px;
+	font-weight:normal;
+	text-indent:5px;
+	background:#f2f2f2;
+	padding:5px 0;
+	margin-bottom:8px;
+	position:relative;
+}
+.noAddInfo{
+	display:block;
+	margin-bottom:10px;
+	color:#999;
+}
+.addNewBtn{
+	width:78px;
+	height:30px;
+	line-height:30px;
+	position:absolute;
+	right:0;
+	top:0;
+	color:#009688;
+	padding-left:22px;
+	cursor:pointer;
+}
+.addNewBtn i{
+	font-size:20px;
+	position:absolute;
+	left:0;
+	top:0;
+}
+.addNewBtn:hover{
+	color:#F47837;
+}
+/* 选择已领取专利任务列表 */
+.searchPart{
+	width:100%;
+	height:38px;
+	margin:10px 0 5px 0;
+}
+.innerSearch{
+	height:100%;
+	float:left;
+	margin-left:15px;
+}
+.widSearch1{
+	width:150px;
+}
+.widSearch2{
+	width:230px;
+}
+.lqZlTaskTit,
+.lqZlTaskCon li{
+	width:100%;
+}
+.lqZlTaskTit{
+	height:35px;
+	background:#f1f1f1;
+}
+.lqZlTaskCon li{
+	height:35px;
+	cursor:pointer;
+}
+.lqZlTaskTit li,
+.lqZlTaskCon li p{
+	float:left;
+	text-align:center;
+}
+.lqZlTaskTit li{
+	font-weight:600;
+	line-height:35px;
+}
+.lqZlTaskCon li p{
+	line-height:35px;
+}
+.oneWidLi{
+	width:50px;
+}
+.twoWidLi{
+	width:220px;
+	max-width:220px;
+}
+.threeWidLi{
+	width:130px;
+}
+.fourWidLi{
+	width:160px;
+}
+.lqZlTaskCon{
+	height:325px;
+	overflow:hidden;
+	position:relative;
+}
+#lqZlTaskSon{
+	width:100%;
+	position:absolute;
+	left:0;
+	top:0;
+}
+.parentScroll,
+.scrollBar{
+	width: 5px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-radius: 20px;
+}
+.parentScroll{
+	height:100%;
+}
+.scrollBar{
+	height:50px;
+	background:#F47837;
+}
+.lqZlTaskCon li{
+	border-bottom:1px solid #ccc;
+}
+#saveLqZlBtn{
+	float:right;
+	margin-right:15px;
+}

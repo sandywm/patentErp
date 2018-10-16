@@ -121,7 +121,12 @@
 		  			}
 		  		}
 		  		if(addEditLxrOpts == 'addLxrOpts'){
-		  			url = '/customer.do?action=addLxrData&cusId='+cusId;
+		  			if(parent.isZlAddFmLxFlag){
+		  				var cusIds = parent.$('#sqrIdInp').val();
+		  				url = '/customer.do?action=addLxrData&cusId='+cusIds;
+		  			}else{
+		  				url = '/customer.do?action=addLxrData&cusId='+cusId;
+		  			}
 		  		}else{//编辑联系人
 		  			url = '/customer.do?action=upLxrData&lxrId='+lxrId;
 		  		}
@@ -144,6 +149,10 @@
    			        			layer.msg('添加联系人信息成功',{icon:1,time:1000},function(){
    			        				var index= parent.layer.getFrameIndex(window.name);
 		        					parent.layer.close(index);
+		        					if(parent.isZlAddFmLxFlag){
+		        						//用于代理机构下增加专利的时添加新的联系人
+		        						parent.addCustFlag = true;
+		        					}
    			        			});
    			        		}
 			        	}else if(json["result"] == 'noInfo'){
