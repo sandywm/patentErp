@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlBasicInfoManager/css/zlBasicInfoManager.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+  	<title>添加已领取专利</title>
+</head>
+<body style="background:#fff;">
+	<div class="lqZlTaskList">
+		<!-- 搜索  -->
+		<div class="searchPart layui-form">
+			<div class="innerSearch widSearch1">
+				<input id="zlTypeInp" type="hidden" value=""/>
+				<select id="zlTypeListSel" lay-filter="zlTypeListSel">
+				 	<option value="">请选择专利类型</option>
+				 	<option value="fm">发明</option>
+				 	<option value="syxx">实用新型</option>
+				 	<option value="wg">外观</option>
+				</select> 
+			</div>
+			<div class="innerSearch widSearch2">
+				<input id="lqZlTitleInp" type="text" placeholder="请输入领取专利标题" class="layui-input"/>
+			</div>
+			<div class="innerSearch">
+				<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search
+ "></i></button>
+			</div>
+		</div>
+		<ul class="lqZlTaskTit">
+			<li class="oneWidLi">&nbsp;</li>
+			<li class="twoWidLi">领取专利标题</li>
+			<li class="threeWidLi">专利类型</li>
+			<li class="threeWidLi">专利发布者</li>
+			<li class="fourWidLi">发布时间</li>
+			<li class="fourWidLi">领取时间</li>
+		</ul>
+		<div id="lqZlTaskPar" class="lqZlTaskCon">
+			<ul id="lqZlTaskSon"></ul>
+		</div>
+	</div>
+	<div class="botSaveBox">
+		<button type="button" id="saveLqZlBtn" class="layui-btn">保存</button>
+	</div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var zlType = parent.zlTypeInp;
+		layui.config({
+			base: '/plugins/frame/js/'
+		}).extend({ //设定组件别名
+		    common: 'common'// 表示模块文件的名字
+		}).use(['layer','form','jquery','common'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form,
+				common = layui.common;
+			var page = {
+				data : {
+					isCheckedFlag : false,
+					opts : 'initLoad',
+					lqZlId : 0,
+					lqZlText : '',
+					pzType : ''
+				},
+				init : function(){
+					this.onLoad();
+					this.bindEvent();
+				},
+				bindEvent : function(){
+					var _this = this;
+					$('#queryBtn').on('click',function(){
+						_this.data.opts = 'queryLoad';
+						_this.data.isCheckedFlag = false;
+  						_this.loadLqZlTask('queryLoad');
+					});
+					$('#saveLqZlBtn').on('click',function(){
+						var index= parent.layer.getFrameIndex(window.name);
+						if(_this.data.isCheckedFlag == false){
+							if(_this.data.lqZlText == ''){
+								layer.msg('请先选取已领取的专利', {icon:5,anim:6,time:1500});
+								return;
+							}
+							parent.$('#lqZlIdInp').val(_this.data.lqZlId);
+							parent.$('#lqZlIdInpText').val(_this.data.lqZlText);
+							parent.$('#lqZlTypeInp').val(_this.data.pzType);
+						}/*else{
+							//表示之前已经选择了一个，二次进来进行编辑但是未做任何改变直接保存
+						}*/
+						parent.addZlFlag = true;
+						parent.layer.close(index);
+					});
+				},
+				onLoad : function(){
+					this.loadLqZlTask('initLoad');
+				},
+				loadLqZlTask : function(opts){
+					var _this = this,noData='<div class="noData" style="display:block;"><i class="iconfont layui-extend-noData"></i><p>暂无领取专利记录<p></div>';
+					layer.load('1');
+					if(opts == 'initLoad'){
+						var field = {purpose:'simpleInfo',zlType:zlType,zlTitle:'',pubZlId:parent.$('#lqZlIdInp').val()};
+					}else{
+						//查询
+						var zlTtile = $.trim($('#lqZlTitleInp').val());
+						var zlType_inner = $('#zlTypeInp').val();
+						var field = {purpose:'simpleInfo',zlType:zlType_inner,zlTitle:escape(zlTtile),pubZlId:''};
+					}
+					$.ajax({
+  						type:'post',
+				        async:false,
+				        dataType:'json',
+				        data : field,
+				        url:'/pubZl.do?action=getLqPzListData',
+				        success:function (json){
+				        	layer.closeAll('loading');
+				        	if(json['result'] == 'success'){
+				        		$('.botSaveBox').show();
+				        		var listData = json.data; 
+				        		_this.renderLqZlTaskList(listData);
+				        	}else if(json['result'] == 'noInfo'){
+				        		$('.lqZlTaskCon ul').html(noData);
+				        		$('.botSaveBox').hide();
+				        		$('#scrollParent').remove();
+				        		$('#lqZlTaskSon').animate({'top':0});
+								common.getId('lqZlTaskPar').onmousewheel = function(){
+									return false;
+								};
+				        	}else if(json['result'] == 'error'){
+				        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1500});
+				        		$('.botSaveBox').hide();
+				        		$('#scrollParent').remove();
+				        	}
+				        }
+  					});
+				},
+				renderLqZlTaskList : function(listData){
+					var strHtml = '';
+					for(var i=0;i<listData.length;i++){
+						strHtml += '<li id="'+ listData[i].pzId +'" lqZlTitle="'+ listData[i].pzTitle +'" pzType="'+ listData[i].pzType +'">';
+						strHtml += '<p class="oneWidLi">';
+						strHtml += '<label class="labelMod">';
+						if(listData[i].checkFlag){
+							strHtml += '<span class="likeCheckSpan hasBorRad hasActive"><b class="layui-icon layui-icon-ok" style="margin-left:0px;"></b></span>';
+							strHtml += '<input type="checkbox" class="inpRadCheck zlLqTaskInp" checked/>';
+							this.data.isCheckedFlag = true;
+						}else{
+							strHtml += '<span class="likeCheckSpan hasBorRad"><b class="layui-icon layui-icon-ok" style="margin-left:0px;"></b></span>';
+							strHtml += '<input type="checkbox" class="inpRadCheck zlLqTaskInp"/>';
+						}
+						strHtml += '</label></p>';
+						strHtml += '<p class="ellip twoWidLi">'+ listData[i].pzTitle +'</p>';
+						strHtml += '<p class="threeWidLi">'+ listData[i].zlTypeChi +'</p>';
+						strHtml += '<p class="threeWidLi">'+ listData[i].pubInfo +'</p>';
+						strHtml += '<p class="fourWidLi">'+ listData[i].pubDate +'</p>';
+						strHtml += '<p class="fourWidLi">'+ listData[i].lqDate +'</p>';
+						strHtml += '</li>';
+					}
+					$('.lqZlTaskCon ul').html(strHtml);
+					$('.lqZlTaskCon li:odd').addClass('oddColor');
+					$('#scrollParent').remove();
+					this.addActScrollBar();
+					this.selectLqZl();
+				},
+				//检测高度动态给容器添加模拟滚动条
+				addActScrollBar : function(){
+					if($('#lqZlTaskPar').height() < $('#lqZlTaskSon').height()){
+						console.log("jinlailes")
+						var oScroll = '<div id="scrollParent" class="parentScroll"><div id="scrollSon" class="scrollBar"></div></div>';
+						//创建动态模拟滚动条
+						$('.lqZlTaskCon').append(oScroll);
+						common.scrollBar('lqZlTaskPar','lqZlTaskSon','scrollParent','scrollSon',25);
+					}else{
+						$('#lqZlTaskSon').animate({'top':0});
+						common.getId('lqZlTaskPar').onmousewheel = function(){
+							return false;
+						};
+					}
+				},
+				//点击选中想要的专利标题
+				selectLqZl : function(){
+					var _this = this;
+					$('.lqZlTaskCon li').on('click',function(){
+						$(this).siblings().find('.likeCheckSpan').removeClass('hasActive');
+						$(this).find('.likeCheckSpan').addClass('hasActive');
+						_this.data.isCheckedFlag = false;
+						_this.data.lqZlId = $(this).attr('id');
+						_this.data.lqZlText = $(this).attr('lqZlTitle');
+						_this.data.pzType = $(this).attr('pzType');
+					});
+				}
+			};
+			//form 监听选择专利类型
+			form.on('select(zlTypeListSel)', function(data){
+				var value = data.value;
+				value == '' ? $('#zlTypeInp').val('') : $('#zlTypeInp').val(value);
+				page.data.isCheckedFlag = false;
+			});
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>

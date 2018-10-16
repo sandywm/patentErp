@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlBasicInfoManager/css/zlBasicInfoManager.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+  	<title>添加专业领域</title>
+</head>
+<body style="background:#fff;">
+	<div>
+		<div class="fieldListBox commonListBox_field"></div>
+		<div class="botSaveBox">
+			<button type="button" id="saveZlBtn" class="layui-btn">保存</button>
+			<button type="button" class="layui-btn layui-btn-normal addFieldBtn">增加新技术领域</button>
+		</div>
+	</div>
+	<div class="addJfFieldBox">
+		<div id="addFieldLayer">
+			<div class="innerAddCon">
+				<span class="fl">专业名：</span>
+				<input type="text" id="zyNameInp" class="fl" placeholder="请输入专业名(8字以内)" autocomplete="off" maxlength="8"/>
+			</div>
+			<div class="innerAddCon">
+				<span class="fl">专业简介：</span>
+				<input type="text" id="zyProfile" class="fl" placeholder="请输入专业简介(20字以内)" autocomplete="off" maxlength="20"/>
+			</div>
+			<div class="innerAddCon" style="text-align:center;">
+				<button id="cancel_field" class="layui-btn layui-btn-primary">取消</button>
+				<button id="addBtn_field" class="layui-btn">保存技术领域</button>
+			</div>
+		</div>
+	</div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var noDataFlag = false,tmpJfFieldId=[],tmpJfFiedlTxt=[];
+		layui.use(['layer','form','jquery'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form;
+			var page = {
+				init : function(){
+					this.onLoad();
+					this.bindEvent();
+				},
+				onLoad : function(){
+					this.loadZyFieldList();
+				},
+				bindEvent : function(){
+					var _this = this;
+					//不存在技术领域时候的添加
+					$('.addFieldBtn').on('click',function(){
+						_this.showAddField();
+					});
+					$('#cancel_field').on('click',function(){
+						_this.hideField();
+					});
+					//保存新的技术领域
+					$('#addBtn_field').on('click',function(){
+						_this.addJfField();
+					});
+					if(noDataFlag == false){//表示存在数据
+						$('input[name=jfFieldInp]').on('click',function(){
+							var checkStatus = this.checked;
+							if(checkStatus){
+								$(this).prev().addClass('hasActive');
+							}else{
+								$(this).prev().removeClass('hasActive');
+							}
+						});
+					}
+					//保存已添加到新增专利的技术领域
+					$('#saveZlBtn').on('click',function(){
+						var hasCheckedLen = $('input[name=jfFieldInp]:checked').length;
+						if(noDataFlag){
+							layer.msg('请先添加技术领域', {icon:5,anim:6,time:1000});
+							return;
+						}
+						if(hasCheckedLen == 0){
+							layer.msg('请选择您要添加的技术领域', {icon:5,anim:6,time:2000});
+						}else if(hasCheckedLen > 5){
+							layer.msg('抱歉，技术领域最多可以选择5个', {icon:5,anim:6,time:2000});
+						}else{
+							var index= parent.layer.getFrameIndex(window.name);
+							tmpJfFieldId.length = 0;
+							tmpJfFiedlTxt.length = 0;
+							parent.fieldArray.length = 0;
+							$('.jfFieldInp').each(function(i){
+								var checkStatus = $('.jfFieldInp').eq(i).prop('checked');
+								if(checkStatus){
+									tmpJfFieldId.push($('.jfFieldInp').eq(i).val());
+									tmpJfFiedlTxt.push($('.jfFieldInp').eq(i).next().html());
+									parent.fieldArray.push('fieldId_'+$('.jfFieldInp').eq(i).val());
+								}
+							});
+							var strHtml = '';
+							for(var i=0;i<tmpJfFiedlTxt.length;i++){
+								strHtml += '<p id="fieldId_'+ tmpJfFieldId[i] +'" jfFieldAttrId="'+ tmpJfFieldId[i] +'" class="delFieldBtn"><span>'+ tmpJfFiedlTxt[i] +'</span><i class="layui-icon layui-icon-close"></i></p >';
+							}
+							parent.$('#fieldBox').html(strHtml);
+					        parent.layer.close(index);
+					        parent.delHasAddMethod('delFieldBtn','delFieldOpt');
+						}
+					});
+				},
+				showAddField : function(){
+					$(".addJfFieldBox").find("input").val("");
+					$(".addJfFieldBox").show().stop().animate({"top":0},function(){
+						$("#addFieldLayer").show();
+					});
+				},
+				//关闭添加角色/添加技术领域方法
+				hideField : function(){
+					$("#addFieldLayer").hide();
+					$(".addJfFieldBox").stop().animate({"top":"-100%"},function(){
+						$(".addJfFieldBox").hide();
+					});
+				},
+				loadZyFieldList : function(){
+					var _this = this;
+					layer.load('1');
+					$.ajax({
+  						type:"post",
+				        async:false,
+				        dataType:"json",
+				        url:'/jfm.do?action=getJfData',
+				        success:function (json){
+				        	layer.closeAll('loading');	
+				        	if(json["result"] == "success"){//代表加载数据成功
+				        		noDataFlag = false;
+					        	var jfFieldList = json.jsInfo;
+					        	_this.getTechFieldList(jfFieldList);
+				        	}else if(json["result"] == "fail"){
+				        		layer.msg("加载失败，请刷新重试", {icon:5,anim:6,time:1000});
+				        	}else if(json["result"] == "noInfo"){//表示没数据
+				        		noDataFlag = true;
+				        		$(".fieldListBox").html("<div class='noData' style='display:block;'><i class='iconfont layui-extend-noData'></i><p>暂无专业领域，<a href='javascript:void(0)' class='addFieldBtn'>请添加</a></p></div>");	
+				        	}
+				        }
+  					});
+				},
+				//获取专业技术领域列表
+				getTechFieldList : function(jfFieldList){
+					var strHtml = '';
+					for(var i=0;i<jfFieldList.length;i++){
+						strHtml += '<label class="labelMod"><span class="likeCheckSpan"><b class="layui-icon layui-icon-ok"></b></span>';
+						strHtml += '<input type="checkbox" name="jfFieldInp" id="fieldId_'+ jfFieldList[i].id +'" class="inpRadCheck jfFieldInp" value="'+ jfFieldList[i].id +'">';
+						strHtml += '<strong>'+ jfFieldList[i].zyName +'</strong></label>';
+					}
+					$('.fieldListBox').html(strHtml);
+					if(parent.fieldArray.length != 0){//表示之前已经添加了部分技术领域
+						//进行匹配
+						var tmpArray = parent.fieldArray;
+						$('.jfFieldInp').each(function(i){
+							for(var j=0;j<tmpArray.length;j++){
+								if($('.jfFieldInp').eq(i).attr('id') == tmpArray[j]){
+									$('.jfFieldInp').eq(i).attr('checked',true);
+									$('.jfFieldInp').eq(i).prev().addClass('hasActive');
+								}
+							}
+						});
+					}
+				},
+				//添加技术领域(插入数据库的)
+				addJfField : function(){
+					var _this = this;
+					var zyName = $.trim($("#zyNameInp").val()),
+        				zyProfile = $.trim($("#zyProfile").val());
+    				if(zyName == ""){
+	        			layer.msg("专业名称不能为空", {icon:5,anim:6,time:1000});
+	        			return;
+	        		}
+        			var reg = /^[\u4E00-\u9FA5]+$/; 
+        			if(!reg.test(zyName)){
+        				layer.msg("专业名应为汉字", {icon:5,anim:6,time:1000});
+        				return;
+        			}else if(zyProfile != ""){
+        				if(!reg.test(zyProfile)){
+        					layer.msg("专业简介应为汉字", {icon:5,anim:6,time:1000});
+        					return;
+        				}
+        			}
+        			$.ajax({
+     					type:"post",
+   				        async:false,
+   				        dataType:"json",
+   				        data :{zyName : escape(zyName),zyProfile : escape(zyProfile)},
+   				        url:"/jfm.do?action=addJf",
+   				        success:function (json){
+   				        	if(json["result"] == "success"){
+   				        		layer.msg("添加成功",{icon:1,time:1000},function(){
+   				        			_this.hideField();
+	    				        	_this.loadZyFieldList();
+	    				        	_this.bindEvent();
+   				        		});
+   				        	}else if(json["result"] == "exist"){
+   				        		layer.msg("专业名称已存在，请重新编辑", {icon:5,anim:6,time:1000});
+   				        	}else if(json["result"] == "error"){
+   				        		layer.msg("系统错误，请重试", {icon:5,anim:6,time:1000});
+   				        	}else if(json["result"] == "noAbility"){
+   				        		layer.msg("对不起，您暂无权限增加编辑", {icon:5,anim:6,time:1000});
+   				        	}else if(json["result"] == "fail"){
+   				        		layer.msg("添加失败，请重试", {icon:5,anim:6,time:1000});
+   				        	}
+   				        }
+     				});
+				}
+			};
+			$(function(){
+				page.init();				
+			});
+		});
+	</script>
+</body> 
+</html>
