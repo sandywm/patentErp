@@ -199,44 +199,45 @@ public class ModuleManagerAction extends DispatchAction {
 		for(Iterator<ModuleInfoTb> it = mList.iterator() ; it.hasNext();){
 			ModuleInfoTb mod = it.next();
 			Map<String,Object> map_1 = new HashMap<String,Object>();
-			map_1.put("modId", mod.getId());
-			map_1.put("modName", mod.getModName());
-			map_1.put("modUrl", mod.getResUrl());
-			map_1.put("modLevel", mod.getModLevel());
-			if(endFlag){//未过期
-				if(loginType.equals("cpyUser") && cpy != null){
-					if(cpy.getCpyLevel() >= mod.getModLevel()){
-						map_1.put("useFlag", true);
-					}else{
-						map_1.put("useFlag", false);
-					}
-				}
-			}else{//已过期
-				if(mod.getModLevel() > 0){//铜牌以上的模块--全部不能设置
-					map_1.put("useFlag", false);
-				}else{//铜牌的模块一直免费使用
-					map_1.put("useFlag", true);
-				}
-			}
-			String modLevelChi = "";
-			Integer modLevel = mod.getModLevel();
-			if(modLevel.equals(0)){
-				modLevelChi = "铜牌";
-			}else if(modLevel.equals(1)){
-				modLevelChi = "银牌";
-			}else if(modLevel.equals(2)){
-				modLevelChi = "金牌";
-			}else if(modLevel.equals(3)){
-				modLevelChi = "钻石";
-			}
-			map_1.put("modLevelChi", modLevelChi);
-			map_1.put("orderNo", mod.getOrderNo());
-			map_1.put("showStatus", mod.getShowStatus());
-			Integer mainModCheckStatus = 1;
 			//获取该模块下的模块动作列表
 			List<ModActInfoTb> maList = mam.listInfoByModId(mod.getId());
-			List<Object> list_ma = new ArrayList<Object>();
 			if(maList.size() > 0){
+				map_1.put("modId", mod.getId());
+				map_1.put("modName", mod.getModName());
+				map_1.put("modUrl", mod.getResUrl());
+				map_1.put("modLevel", mod.getModLevel());
+				if(endFlag){//未过期
+					if(loginType.equals("cpyUser") && cpy != null){
+						if(cpy.getCpyLevel() >= mod.getModLevel()){
+							map_1.put("useFlag", true);
+						}else{
+							map_1.put("useFlag", false);
+						}
+					}
+				}else{//已过期
+					if(mod.getModLevel() > 0){//铜牌以上的模块--全部不能设置
+						map_1.put("useFlag", false);
+					}else{//铜牌的模块一直免费使用
+						map_1.put("useFlag", true);
+					}
+				}
+				String modLevelChi = "";
+				Integer modLevel = mod.getModLevel();
+				if(modLevel.equals(0)){
+					modLevelChi = "铜牌";
+				}else if(modLevel.equals(1)){
+					modLevelChi = "银牌";
+				}else if(modLevel.equals(2)){
+					modLevelChi = "金牌";
+				}else if(modLevel.equals(3)){
+					modLevelChi = "钻石";
+				}
+				map_1.put("modLevelChi", modLevelChi);
+				map_1.put("orderNo", mod.getOrderNo());
+				map_1.put("showStatus", mod.getShowStatus());
+				Integer mainModCheckStatus = 1;
+				
+				List<Object> list_ma = new ArrayList<Object>();
 				for(Iterator<ModActInfoTb> it_1 = maList.iterator() ; it_1.hasNext();){
 					ModActInfoTb ma = it_1.next();
 					Map<String,Object> map_2 = new HashMap<String,Object>();
@@ -258,20 +259,18 @@ public class ModuleManagerAction extends DispatchAction {
 					}
 					list_ma.add(map_2);
 				}
-			}else{
-				mainModCheckStatus = 0;
-			}
-			map_1.put("modActInfo", list_ma);
-			if(loginType.equals("cpyUser")){
-				if(mainModCheckStatus.equals(1)){
-					map_1.put("mainBindFlag", true);
-				}else{
-					map_1.put("mainBindFlag", false);
+				map_1.put("modActInfo", list_ma);
+				if(loginType.equals("cpyUser")){
+					if(mainModCheckStatus.equals(1)){
+						map_1.put("mainBindFlag", true);
+					}else{
+						map_1.put("mainBindFlag", false);
+					}
+					allModCheckStatus *= mainModCheckStatus;
 				}
-				allModCheckStatus *= mainModCheckStatus;
+				
+				list_d.add(map_1);
 			}
-			
-			list_d.add(map_1);
 		}
 		map.put("result", list_d);
 		if(loginType.equals("cpyUser")){
