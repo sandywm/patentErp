@@ -179,10 +179,6 @@ public class ZlMainAction extends DispatchAction {
 	public ActionForward goZlPage(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
-		String[] myAbility = Ability.getAbilityInfo("addZl,upZl,delZl", this.getLoginType(request), this.getLoginRoleName(request), this.getLoginRoleId(request)).split(",");
-		request.setAttribute("delFlag", myAbility[0]);
-		request.setAttribute("upFlag", myAbility[1]);
-		request.setAttribute("addFlag", myAbility[2]);
 		return mapping.findForward("zlPage");
 	}
 	

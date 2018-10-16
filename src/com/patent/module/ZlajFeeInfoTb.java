@@ -27,6 +27,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	private String feeJnDate;
 	private String feeUpZd;
 	private String tzsArea;
+	private Integer lcMxId;
 
 	// Constructors
 
@@ -38,7 +39,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	public ZlajFeeInfoTb(FeeTypeInfoTb feeTypeInfoTb, CpyUserInfo cpyUserInfo,
 			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
-			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea) {
+			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer lcMxId) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -53,13 +54,14 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.feeJnDate = feeJnDate;
 		this.feeUpZd = feeUpZd;
 		this.tzsArea = tzsArea;
+		this.lcMxId = lcMxId;
 	}
 
 	/** full constructor */
 	public ZlajFeeInfoTb(Integer id,FeeTypeInfoTb feeTypeInfoTb, CpyUserInfo cpyUserInfo,
 			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
-			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea) {
+			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer lcMxId) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -74,6 +76,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.feeJnDate = feeJnDate;
 		this.feeUpZd = feeUpZd;
 		this.tzsArea = tzsArea;
+		this.lcMxId = lcMxId;
 	}
 
 	// Property accessors
@@ -196,6 +199,14 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	public void setTzsArea(String tzsArea) {
 		this.tzsArea = tzsArea;
+	}
+
+	public Integer getLcMxId() {
+		return lcMxId;
+	}
+
+	public void setLcMxId(Integer lcMxId) {
+		this.lcMxId = lcMxId;
 	}
 
 }

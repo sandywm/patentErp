@@ -80,5 +80,10 @@
                 <comment>属于哪个通知书的收费项目</comment>
             </column>
         </property>
+        <property name="lcMxId" type="java.lang.Integer">
+            <column name="lc_mx_id" not-null="true">
+                <comment>费用所属流程明细（默认为0）</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

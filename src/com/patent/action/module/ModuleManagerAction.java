@@ -236,26 +236,30 @@ public class ModuleManagerAction extends DispatchAction {
 			//获取该模块下的模块动作列表
 			List<ModActInfoTb> maList = mam.listInfoByModId(mod.getId());
 			List<Object> list_ma = new ArrayList<Object>();
-			for(Iterator<ModActInfoTb> it_1 = maList.iterator() ; it_1.hasNext();){
-				ModActInfoTb ma = it_1.next();
-				Map<String,Object> map_2 = new HashMap<String,Object>();
-				map_2.put("maId", ma.getId());
-				map_2.put("actNameChi", ma.getActNameChi());
-				map_2.put("actNameEng", ma.getActNameEng());
-				map_2.put("orderNo", ma.getOrderNo());
-				map_2.put("modId",mod.getId());
-				if(selRoleId > 0){
-					if(arm.listInfoByOpt(selRoleId, ma.getId()).size() == 0){
-						map_2.put("bindFlag",false);
-						mainModCheckStatus *= 0;
+			if(maList.size() > 0){
+				for(Iterator<ModActInfoTb> it_1 = maList.iterator() ; it_1.hasNext();){
+					ModActInfoTb ma = it_1.next();
+					Map<String,Object> map_2 = new HashMap<String,Object>();
+					map_2.put("maId", ma.getId());
+					map_2.put("actNameChi", ma.getActNameChi());
+					map_2.put("actNameEng", ma.getActNameEng());
+					map_2.put("orderNo", ma.getOrderNo());
+					map_2.put("modId",mod.getId());
+					if(selRoleId > 0){
+						if(arm.listInfoByOpt(selRoleId, ma.getId()).size() == 0){
+							map_2.put("bindFlag",false);
+							mainModCheckStatus *= 0;
+						}else{
+							map_2.put("bindFlag",true);
+							mainModCheckStatus *= 1;
+						}
 					}else{
-						map_2.put("bindFlag",true);
-						mainModCheckStatus *= 1;
+						map_2.put("bindFlag",false);
 					}
-				}else{
-					map_2.put("bindFlag",false);
+					list_ma.add(map_2);
 				}
-				list_ma.add(map_2);
+			}else{
+				mainModCheckStatus = 0;
 			}
 			map_1.put("modActInfo", list_ma);
 			if(loginType.equals("cpyUser")){

@@ -71,7 +71,7 @@ public interface ZlajFeeInfoDao {
 	List<ZlajFeeInfoTb> findInfoByOpt(Session sess,Integer zlId,Integer feeTypeId);
 	
 	/**
-	 * 根据专利编号、通知书名称、缴费状态、代缴状态获取缴费记录列表
+	 * 根据专利编号、通知书名称、缴费状态、代缴状态获取缴费记录列表（按专利分组）
 	 * @description
 	 * @author Administrator
 	 * @date 2018-10-14 上午11:58:45
