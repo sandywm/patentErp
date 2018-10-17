@@ -287,7 +287,7 @@ public class PubZlAction extends DispatchAction {
 						map_file.put("zlUpClPath", zlUpClArr[i]);
 						map_file.put("fileName", zlUpClName);
 						map_file.put("fileSize", zlUpClSize);
-						map_file.put("downFilePath", zlUpClArr[i].replaceAll("\\\\", "\\\\\\\\"));
+						map_file.put("downFilePath", zlUpClArr[i]);
 						list_file.add(map_file);
 					}
 				}

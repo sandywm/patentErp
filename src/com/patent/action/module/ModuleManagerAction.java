@@ -201,7 +201,17 @@ public class ModuleManagerAction extends DispatchAction {
 			Map<String,Object> map_1 = new HashMap<String,Object>();
 			//获取该模块下的模块动作列表
 			List<ModActInfoTb> maList = mam.listInfoByModId(mod.getId());
-			if(maList.size() > 0){
+			boolean flag = false;
+			if(loginType.equals("cpyUser")){
+				if(maList.size() == 0){
+					flag = false;
+				}else{
+					flag = true;
+				}
+			}else if(loginRoleName.equals("super")){
+				flag = true;
+			}
+			if(flag){
 				map_1.put("modId", mod.getId());
 				map_1.put("modName", mod.getModName());
 				map_1.put("modUrl", mod.getResUrl());

@@ -1,6 +1,8 @@
 package com.patent.action.base;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -47,7 +49,7 @@ public class ReadExcelFile {
         
 	}
 	
-	public static void main(String[] args){
+	public static void main(String[] args) throws FileNotFoundException{
 		//ReadExcelFile.readExcel();
 //		String aa = "2017-04-01 00:00:01";
 //		System.out.print(CurrentTime.stringConvertToTimestamp(aa));
@@ -112,5 +114,8 @@ public class ReadExcelFile {
 //			 System.out.println(false);
 //		 }
 		 System.out.println(CurrentTime.compareDate("2018-09-19", "2018-11-19"));
+		 File file = new File("D:\\Program Files\\Apache Software Foundation\\Tomcat 7.0\\webapps\\patentErp\\Module\\uploadFile\\appUser\\1\\1\\外观设计-受理+费用减缓你通知书.zip");
+		 System.out.println(file.getName());
+		 new FileInputStream(file);
 	}
 }

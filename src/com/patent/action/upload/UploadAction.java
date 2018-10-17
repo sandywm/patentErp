@@ -125,13 +125,18 @@ public class UploadAction extends DispatchAction {
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		//通知书、票据、附件需要具有专利流程处理权限的才能上传
 		boolean abilityFlag = false;
-		if(fileType.equals("dg")){
-			boolean abilityFlag_1 = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");//增加专利的能上传
-			boolean abilityFlag_2 = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//修改专利的能上传
-			abilityFlag = abilityFlag_1 || abilityFlag_2;
+		if(loginType.equals("cpyUser")){
+			if(fileType.equals("dg")){
+				boolean abilityFlag_1 = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");//增加专利的能上传
+				boolean abilityFlag_2 = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//修改专利的能上传
+				abilityFlag = abilityFlag_1 || abilityFlag_2;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理
+			}
 		}else{
-			abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理
+			abilityFlag = true;
 		}
+		
 		if(abilityFlag){
 			if (ServletFileUpload.isMultipartContent(request)){// 判断是否是上传文件
 				DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();// 创建工厂对象
