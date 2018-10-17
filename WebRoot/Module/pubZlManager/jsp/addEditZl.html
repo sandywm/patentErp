@@ -277,7 +277,7 @@
 				}
 				$('.downloadBtn').on('click',function(){
 					var downFilePath = $(this).attr('downFilePath');
-					window.location.href = "/zlm.do?action=downFile&fileUrl=" + downFilePath;
+					window.location.href = "/zlm.do?action=downFile&fileUrl=" + encodeURIComponent(encodeURIComponent(downFilePath));
 				});
 			}
 			$(function(){

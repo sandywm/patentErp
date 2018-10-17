@@ -1,5 +1,8 @@
 package com.patent.action.base;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.patent.tools.CommonTools;
@@ -239,5 +242,24 @@ public class Transcode {
                 outBuffer.append(aChar);
         }
         return outBuffer.toString();
+    }
+    
+    /**
+     * 页面encodeURI传递后台解析
+     * @description
+     * @author Administrator
+     * @date 2018-10-17 上午09:29:01
+     * @param src
+     * @param request
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public static String decode(String src,HttpServletRequest request) throws UnsupportedEncodingException{
+    	src = String.valueOf(request.getParameter(src));
+    	if(src.equals("null")){
+    		return "";
+    	}else{
+    		return URLDecoder.decode(src, "utf-8");
+    	}
     }
 }

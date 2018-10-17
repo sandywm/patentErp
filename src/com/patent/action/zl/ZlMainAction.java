@@ -2523,7 +2523,8 @@ public class ZlMainAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 //		String fileUrl = CommonTools.getFinalStr("fileUrl", request);
-		String fileUrl = Transcode.MyTranscodeUTF(request.getParameter("fileUrl"));
+//		String fileUrl = Transcode.MyTranscodeUTF(request.getParameter("fileUrl"));
+		String fileUrl = Transcode.decode("fileUrl", request);
 		String absoFilePath = "";//绝对地址
 		String fileName = "";
 		OutputStream fos = null;
