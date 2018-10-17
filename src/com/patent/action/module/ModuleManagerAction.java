@@ -202,13 +202,13 @@ public class ModuleManagerAction extends DispatchAction {
 			//获取该模块下的模块动作列表
 			List<ModActInfoTb> maList = mam.listInfoByModId(mod.getId());
 			boolean flag = false;
-			if(loginType.equals("cpyUser")){
+			if(loginType.equals("cpyUser")){//超管获取所有模块列表
 				if(maList.size() == 0){
 					flag = false;
 				}else{
 					flag = true;
 				}
-			}else if(loginRoleName.equals("super")){
+			}else if(loginRoleName.equals("super")){//
 				flag = true;
 			}
 			if(flag){
