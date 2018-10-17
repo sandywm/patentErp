@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlBasicInfoManager/css/zlBasicInfoManager.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+  	<title>添加申请人</title>
+</head>
+<body style="background:#fff;">
+	<div>
+		<div class="commonListBox clearfix">
+			<div class="sqrListBox fl"></div>
+			<div class="hasSelSqrList fr">
+				<div class="tipInfo">
+					<i class="layui-icon layui-icon-list"></i>
+					<p class="tipInfoSpan">请点击左侧选择申请人(客户)</p>
+				</div>
+			</div>
+		</div>
+		<div class="botSaveBox">
+			<button type="button" id="saveZlBtn" class="layui-btn">保存</button>
+			<button type="button" class="layui-btn layui-btn-normal addCusBtn">增加新申请人</button>
+		</div>
+	</div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var noDataFlag = false,tmpSqrId=[],tmpSqrTxt=[],addCustFlag=false;
+		layui.use(['layer','form','jquery'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form;
+			var page = {
+				data : {
+					isClickInpFlag : false //用来检测进来时是否点击了增加申请人然后用来匹配当点击inp但未保存input选中的匹配
+				},
+				init : function(){
+					this.onLoad();
+					this.bindEvent();
+				},
+				onLoad : function(){
+					this.loadSqrList();
+				},
+				bindEvent : function(){
+					var _this = this;
+					$('.addCusBtn').on('click',function(){
+						addCustFlag = false;
+						parent.layer.open({
+							title:'增加新申请人(客户)',
+							type: 2,
+						  	area: ['700px', '400px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	content: '/Module/customerManager/jsp/addEditCustomer.html',
+						  	end:function(){
+						  		if(parent.addCustFlag){
+						  			_this.data.isClickInpFlag = true;
+						  			_this.loadSqrList();
+						  			_this.bindEvent();
+						  		}
+						  	}
+						});	
+					});
+					if(noDataFlag == false){//表示存在数据
+						$('input[name=sqrInp]').on('click',function(){
+							var strHtml = '';
+							var checkStatus = this.checked;
+							var hasCheckId = $(this).val(),sqrNames = $(this).attr('sqrNames');
+							if(checkStatus){
+								$('.tipInfo').hide();
+								$(this).prev().addClass('hasActive');
+								strHtml += '<p id="hasSelP_'+ hasCheckId +'" sqrIdNum="'+ hasCheckId +'" class="listP"><strong class="ellip">'+ sqrNames +'</strong>';
+								strHtml += '<a class="moveUpDown fl"></a>';
+								strHtml += '<i id="'+ hasCheckId +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
+								$('.hasSelSqrList').append(strHtml);
+							
+							}else{
+								$('#hasSelP_'+hasCheckId).remove();
+								if($('.listP').length == 0){
+									$('.tipInfo').show();
+								}
+								$(this).prev().removeClass('hasActive');
+							}
+							_this.sqrOrder();
+							_this.delSelSqr();
+						});
+					}
+					//保存已添加到的新的申请人
+					$('#saveZlBtn').on('click',function(){
+						var hasCheckedLen = $('input[name=sqrInp]:checked').length;
+						if(noDataFlag){
+							layer.msg('请先添加申请人(客户)', {icon:5,anim:6,time:1000});
+							return;
+						}
+						if(hasCheckedLen == 0){
+							layer.msg('请选择您要添加的申请人(客户)', {icon:5,anim:6,time:2000});
+						}else if(hasCheckedLen > 5){
+							layer.msg('抱歉，申请人(客户)最多可以选择5个', {icon:5,anim:6,time:2000});
+						}else{
+							var index= parent.layer.getFrameIndex(window.name);
+							tmpSqrId.length = 0;
+							tmpSqrTxt.length = 0;
+							parent.sqrArray.length = 0;
+							parent.sqrIdArray.length = 0;
+							parent.sqrTxtArray.length = 0;
+							$('.listP').each(function(i){
+								tmpSqrId.push($('.listP').eq(i).attr('sqrIdNum'));
+								tmpSqrTxt.push($('.listP').eq(i).find('strong').html());
+								parent.sqrTxtArray.push($('.listP').eq(i).find('strong').html());
+								parent.sqrArray.push('sqrId_'+$('.listP').eq(i).attr('sqrIdNum'));
+								parent.sqrIdArray.push($('.listP').eq(i).attr('sqrIdNum'));
+							});
+							var strHtml = '';
+							for(var i=0;i<tmpSqrTxt.length;i++){
+								strHtml += '<p id="sqrId_'+ tmpSqrId[i] +'" sqrAttrId="'+ tmpSqrId[i] +'" class="delSqrBtn"><span>'+ tmpSqrTxt[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+							}
+							/*if(parent.lxrIdArray.length != 0 || parent.fmrIdArray.length != 0){
+								//alert(tmpSqrId)
+								var newStrHtml = '';
+								parent.$('.lxFmTag').each(function(j){
+									for(var i=0;i<tmpSqrId.length;i++){
+										if(parent.$('.lxFmTag').eq(j).attr('sqrids') != tmpSqrId[i]){
+											//alert(parent.$('.lxFmTag').eq(j).html())
+											//parent.$('#lxrBox').html();
+											//console.log(parent.$('.lxrFmrInpHid').eq(j).parent().html())
+											//parent.$('#lxrBox').html(parent.$('.lxFmTag').eq(j).html());
+											//parent.$('.lxFmTag').eq(j).remove();
+											//console.log(parent.$('.lxrFmrInpHid').eq(j).parent().attr('id'));
+											//parent.$('.lxrFmrInpHid').eq(j).parent().remove();
+											//parent.$('input[name=myParSqr_'+ tmpSqrId[i] +']').parent().remove();
+											//return false;
+											//console.log(parent.$('.lxrFmrInpHid').eq(j).html())
+											//newStrHtml += '<p></p>';
+										}
+									}
+									//alert(parent.$('.lxrFmrInpHid').eq(j).attr('name').split('_')[1] + "--input")
+									
+								});		
+								
+							}*/
+							parent.$('#sqrBox').html(strHtml);
+					        parent.layer.close(index);
+					        parent.delHasAddMethod('delSqrBtn','delSqrOpt');
+						}
+					});
+				},
+				//删除已选择的、
+				delSelSqr : function(){
+					var _this = this;
+					$('.delSelBtn').on('click',function(){
+						var id = $(this).attr('id');
+						$('#hasSelP_'+id).remove();
+						$('#sqrId_'+id).attr('checked',false);
+						$('#sqrId_'+id).prev().removeClass('hasActive');
+						if($('.listP').length == 0){
+							$('.tipInfo').show();
+							return;
+						}
+						_this.sqrOrder();
+					});
+				},
+				//排序方法
+				sqrOrder : function(){
+					var hasSelSqrLen = $('.listP').length;
+					var _this = this;
+					$('.listP').each(function (i, obj) {
+						var index = i+1;
+						//添加操作按钮
+						if (index==1) {
+							$(this).find('.moveUpDown').html('<span class="triSpan topTriSpan moveDown" title="下移"></span>');
+						}else if (index == hasSelSqrLen) {
+							$(this).find('.moveUpDown').html('<span class="triSpan botTriSpan moveUp" title="上移"></span>');
+						}else{
+							$(this).find('.moveUpDown').html('<span class="triSpan topTriSpan moveDown" title="下移"></span><span class="triSpan botTriSpan moveUp" title="上移"></span>');
+						}
+					});
+					_this.sqrMoveDown();
+					_this.sqrMoveUp();
+				},
+				sqrMoveDown : function(){
+					var _this = this;
+					$('.moveDown').on('click',function(){
+						var currSqr = $(this).parents('.listP');
+						if($(currSqr).index() == $('.listP').last().index()) {
+							return ;
+						}
+						var next = $(this).parents('.listP').next();
+						$(currSqr).before(next);
+						_this.sqrOrder();
+					});
+				},
+				sqrMoveUp : function(){
+					//上移
+					var _this = this;
+					$('.moveUp').on('click',function(){
+						var currSqr = $(this).parents('.listP');
+						if($(currSqr).index()==0) {
+							return ;
+						}
+						var prev = $(this).parents('.listP').prev();
+						$(currSqr).after(prev);
+						_this.sqrOrder();
+					});
+				},
+				loadSqrList : function(){
+					var _this = this;
+					layer.load('1');
+					$.ajax({
+  						type:"post",
+				        async:false,
+				        dataType:"json",
+				        data : {cusName : '',limit:1000},
+				        url:'/customer.do?action=getCusPageInfo',
+				        success:function (json){
+				        	layer.closeAll('loading');	
+				        	if(json["msg"] == "success"){//代表加载数据成功
+				        		noDataFlag = false;
+				        		//console.log(json.data)
+					        	var sqrList = json.data;
+					        	_this.getSqrList(sqrList);
+				        	}else if(json["msg"] == "error"){
+				        		layer.msg("系统错误，请稍后重试", {icon:5,anim:6,time:1000});
+				        	}else if(json["msg"] == "noInfo"){//表示没数据
+				        		noDataFlag = true;
+				        		$(".sqrListBox").html("<div class='noData' style='display:block;'><i class='iconfont layui-extend-noData'></i><p>暂无申请人(客户)信息，<a href='javascript:void(0)' class='addCusBtn'>请添加</a></p></div>");	
+				        	}
+				        }
+  					});
+				},
+				//获取申请人list
+				getSqrList : function(sqrList){
+					var strHtml = '';
+					for(var i=0;i<sqrList.length;i++){
+						strHtml += '<label class="labelMod"><span class="likeCheckSpan"><b class="layui-icon layui-icon-ok"></b></span>';
+						strHtml += '<input type="checkbox" name="sqrInp" id="sqrId_'+ sqrList[i].id +'" sqrNames="'+ sqrList[i].cusName +'" class="inpRadCheck sqrInp" value="'+ sqrList[i].id +'">';
+						strHtml += '<strong>'+ sqrList[i].cusName +'</strong></label>';
+					}
+					$('.sqrListBox').html(strHtml);
+					if(parent.sqrArray.length != 0 && this.data.isClickInpFlag == false){//表示之前已经添加了部分申请人
+						//进行匹配
+						$('.tipInfo').hide();
+						var tmpArray = parent.sqrArray,tmpSqrIdArray = parent.sqrIdArray;
+						var strHtml = '';
+						var tmpNum = 0;
+						for(var j=0;j<tmpArray.length;j++){
+							$('.sqrInp').each(function(i){
+								if($('.sqrInp').eq(i).attr('id') == tmpArray[j]){
+									$('.sqrInp').eq(i).attr('checked',true);
+									$('.sqrInp').eq(i).prev().addClass('hasActive');
+									return false;
+								}
+							});
+							strHtml += '<p id="hasSelP_'+ tmpSqrIdArray[j] +'" sqrIdNum="'+ tmpSqrIdArray[j] +'" class="listP"><strong class="ellip">'+ parent.sqrTxtArray[j] +'</strong>';
+							strHtml += '<a class="moveUpDown fl"></a>';
+							strHtml += '<i id="'+ tmpSqrIdArray[j] +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
+						}
+						$('.hasSelSqrList').html(strHtml);
+						this.sqrOrder();
+						this.delSelSqr();
+					}else{
+						//_this.data.isClickInpFlag
+						if(this.data.isClickInpFlag){
+							$('.listP').each(function(i){
+								$('.sqrInp').each(function(j){
+									if($('.sqrInp').eq(j).val() == $('.listP').eq(i).attr('sqrIdNum')){
+										$('.sqrInp').eq(j).attr('checked',true);
+										$('.sqrInp').eq(j).prev().addClass('hasActive');
+										return false;
+									}
+								});
+							});
+						}
+					}
+				}
+			};
+			$(function(){
+				page.init();				
+			});
+		});
+	</script>
+</body> 
+</html>
