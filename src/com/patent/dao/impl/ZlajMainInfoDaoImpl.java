@@ -39,7 +39,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 	public List<ZlajMainInfoTb> findPageInfoByOpt(Session sess, Integer cpyId,
 			Integer stopStatus, String sqAddress, String ajNoQt, String zlNo,
 			String ajTitle, String ajType, String lxr, String sDate,
-			String eDate,Integer lqStatus, Integer pageNo, Integer pageSize) {
+			String eDate,Integer lqStatus,Integer ajAddUserId, Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
 		int offset = (pageNo - 1) * pageSize;
 		if (offset < 0) {
@@ -73,6 +73,8 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and zl.zxUserId > 0";
 		}else if(lqStatus.equals(2)){
 			hql += " and zl.zxUserId = 0 and zl.tzsUserId > 0";
+		}else if(lqStatus.equals(3)){
+			hql += " and zl.ajAddUserId = "+ajAddUserId;
 		}
 		hql += " order by zl.id desc";
 		return sess.createQuery(hql).setFirstResult(offset).setMaxResults(pageSize).list();
@@ -82,7 +84,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 	public Integer getCountByOpt(Session sess, Integer cpyId,
 			Integer stopStatus, String sqAddress, String ajNoQt, String zlNo,
 			String ajTitle, String ajType, String lxr, String sDate,
-			String eDate,Integer lqStatus) {
+			String eDate,Integer lqStatus,Integer ajAddUserId) {
 		// TODO Auto-generated method stub
 		String hql = "select count(zl.id) from ZlajMainInfoTb as zl where 1=1";
 		if(cpyId > 0){
@@ -112,6 +114,8 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and zl.zxUserId > 0";
 		}else if(lqStatus.equals(2)){
 			hql += " and zl.zxUserId = 0 and zl.tzsUserId > 0";
+		}else if(lqStatus.equals(3)){
+			hql += " and zl.ajAddUserId = "+ajAddUserId;
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);

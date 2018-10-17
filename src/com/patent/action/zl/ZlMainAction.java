@@ -150,6 +150,7 @@ public class ZlMainAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String actNameEng = CommonTools.getFinalStr("actNameEng", request);
 		boolean abilityFlag = false;
+		String msg = "";
 		if(!actNameEng.equals("")){
 			if(this.getLoginRoleName(request).equals("管理员")){
 				abilityFlag = true;
@@ -158,8 +159,48 @@ public class ZlMainAction extends DispatchAction {
 				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), actNameEng);
 			}
 		}
-		Map<String,Boolean> map = new HashMap<String,Boolean>();
-		map.put("result", abilityFlag);
+		if(abilityFlag){
+			if(actNameEng.equals("dealZl")){//专利流程处理
+				//需要判断当前流程操作的人员是否和和原定的流程操作人员符合
+				CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+				ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+				String lcNameEng = CommonTools.getFinalStr("lcNameEng", request);//流程
+				Integer currLoginUserId = this.getLoginUserId(request);
+				Integer zlId = CommonTools.getFinalInteger("zlId", request);
+				Integer cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
+				List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
+				if(zlList.size() > 0){
+					ZlajMainInfoTb zl = zlList.get(0);
+					if(lcNameEng.equals("zx") && currLoginUserId.equals(zl.getZxUserId())){
+						msg = "ability";
+					}else if(lcNameEng.equals("sc") && currLoginUserId.equals(zl.getCheckUserId())){
+						msg = "ability";
+					}else if(lcNameEng.equals("dgtj") && currLoginUserId.equals(zl.getZxUserId())){
+						msg = "ability";
+					}else if(lcNameEng.equals("tzs") && currLoginUserId.equals(zl.getZxUserId())){
+						msg = "ability";
+					}else if(lcNameEng.equals("fycj") && currLoginUserId.equals(zl.getZxUserId())){
+						msg = "ability";
+					}else if(lcNameEng.equals("bz") && currLoginUserId.equals(zl.getZxUserId())){
+						msg = "ability";
+					}else if(lcNameEng.equals("bzsh") && currLoginUserId.equals(zl.getZxUserId())){
+						msg = "ability";
+					}else if(lcNameEng.equals("bh") && currLoginUserId.equals(zl.getZxUserId())){
+						msg = "ability";
+					}else{
+						msg = "noAbility";
+					}
+				}else{
+					msg = "error";
+				}
+			}else{
+				msg = "ability";
+			}
+		}else{
+			msg = "noAbility";
+		}
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("result", msg);
 		this.getJsonPkg(map, response);
 		return null;
 	}
@@ -212,7 +253,8 @@ public class ZlMainAction extends DispatchAction {
 		String lxr = CommonTools.getFinalStr("lxr", request);
 		String sDate = CommonTools.getFinalStr("sDate", request);
 		String eDate = CommonTools.getFinalStr("eDate", request);
-		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利任务，2：撰写任务领取）
+		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利任务，2：撰写任务领取,3：我的专利）
+		Integer currLoginUserId = this.getLoginUserId(request);
 		//当任务条件为0时，撰写任务领取，这时需要强制stopStatus为正常（0）
 		if(lqStatus.equals(0)){//撰写任务领取时，专利任务必须时正常状态
 			stopStatus = 0;
@@ -232,14 +274,15 @@ public class ZlMainAction extends DispatchAction {
 				}
 			}
 		}else if(loginType.equals("spUser")){//平台用户
+			lqStatus = -1;
 			abilityFlag = true;
 		}
 		if(abilityFlag){
-			Integer count = zlm.getCountByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate,lqStatus);
+			Integer count = zlm.getCountByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate,lqStatus,currLoginUserId);
 			if(count > 0){
 				Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
 				Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
-				List<ZlajMainInfoTb> zlList = zlm.listPageInfoByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, lqStatus, pageNo, pageSize);
+				List<ZlajMainInfoTb> zlList = zlm.listPageInfoByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, lqStatus, currLoginUserId,pageNo, pageSize);
 				List<Object> list_d = new ArrayList<Object>();
 				for(Iterator<ZlajMainInfoTb> it = zlList.iterator() ; it.hasNext();){
 					ZlajMainInfoTb zl = it.next();
@@ -630,7 +673,7 @@ public class ZlMainAction extends DispatchAction {
 											map_mx.put("upUserName", upUserName);
 											map_mx.put("upDate", upDate);
 											map_mx.put("upFileSize", upFileSize);
-											map_mx.put("downFilePath", upFileArr[i].replaceAll("\\\\", "\\\\\\\\"));
+											map_mx.put("downFilePath", upFileArr[i]);
 											list_mx_1.add(map_mx);
 										}
 										map_d.put("upFileDetail", list_mx_1);//附件明细（当上传文件存在时出现）
@@ -659,7 +702,7 @@ public class ZlMainAction extends DispatchAction {
 								map_d.put("tzsName", tzsName.substring(tzsName.lastIndexOf("\\")+1,tzsName.length()));
 								map_d.put("fwrDate", tzs.getTzsFwr());
 								map_d.put("gfrDate", tzs.getTzsGfr());
-								map_d.put("downFilePath", tzsName.replaceAll("\\\\", "\\\\\\\\"));
+								map_d.put("downFilePath", tzsName);
 								list_tzs.add(map_d);
 							}
 							map.put("tzsInfo", list_tzs);
@@ -683,7 +726,7 @@ public class ZlMainAction extends DispatchAction {
 								map_d.put("fjDx", fj.getFjDx());
 								map_d.put("upUserName", fj.getCpyUserInfo().getUserName());
 								map_d.put("upDate", fj.getFjUpDate());
-								map_d.put("downFilePath", fj.getFjUpDate().replaceAll("\\\\", "\\\\\\\\"));
+								map_d.put("downFilePath", fj.getFjUpDate());
 								list_fj.add(map_d);
 							}
 							map.put("fjInfo", list_fj);
