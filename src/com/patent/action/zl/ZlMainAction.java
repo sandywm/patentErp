@@ -35,6 +35,7 @@ import com.patent.module.CustomerFmrInfoTb;
 import com.patent.module.CustomerInfoTb;
 import com.patent.module.CustomerLxrInfoTb;
 import com.patent.module.JsFiledInfoTb;
+import com.patent.module.PubZlCzRecordTb;
 import com.patent.module.PubZlInfoTb;
 import com.patent.module.ZlajEwyqInfoTb;
 import com.patent.module.ZlajFeeInfoTb;
@@ -459,6 +460,7 @@ public class ZlMainAction extends DispatchAction {
 		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
 		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		ZlajFeeInfoManager zfm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		String opt = CommonTools.getFinalStr("opt", request);//basic(基本信息),lcfz(流程负责人员),lc(流程),tzs(通知书),fj(附件),fy(费用)-后续有的再加
 		Integer lcId = CommonTools.getFinalInteger("lcId", request);//当是lc环节时才传递这个值，也可以不传，其他环节不传
@@ -553,7 +555,16 @@ public class ZlMainAction extends DispatchAction {
 	 					}
 	 					map.put("jsLxrId", jsLxrId);
 	 					map.put("jsLxrName", jsLxrName);
-						map.put("pubZlId", zl.getPubZlId());//增加的领取的专利任务编号
+	 					Integer pubZlId = zl.getPubZlId();
+	 					String pubZlName = "";
+						map.put("pubZlId", pubZlId);//增加的领取的专利任务编号
+						if(pubZlId > 0){
+							List<PubZlInfoTb> pubZlList = pzm.listSpecInfoByOpt(pubZlId, 0);
+							if(pubZlList.size() > 0){
+								pubZlName = pubZlList.get(0).getZlTitle();
+							}
+						}
+						map.put("pubZlName", pubZlName);//增加的领取的专利任务名称
 						map.put("ajFjInfo", zl.getAjFjInfo());
 						map.put("ajYxqDetail", zl.getAjYxqDetail());//格式为申请专利号,申请地区,申请日期:申请专利号,申请地区,申请日期........
 						//获取当前专利类型的额外要求
