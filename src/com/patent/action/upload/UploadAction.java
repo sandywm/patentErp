@@ -51,6 +51,16 @@ import com.patent.web.Ability;
 public class UploadAction extends DispatchAction {
 	
 	/**
+	 * 获取session中的用户角色名称
+	 * @param request
+	 * @return
+	 */
+	private String getLoginRoleName(HttpServletRequest request){
+        String roleName = (String)request.getSession(false).getAttribute(Constants.LOGIN_USER_ROLE_NAME);
+        return roleName;
+	}
+	
+	/**
 	 * 获取session中的登录类型
 	 * @author Administrator
 	 * @date 2018-7-31 下午09:39:57
@@ -126,15 +136,23 @@ public class UploadAction extends DispatchAction {
 		//通知书、票据、附件需要具有专利流程处理权限的才能上传
 		boolean abilityFlag = false;
 		if(loginType.equals("cpyUser")){
-			if(fileType.equals("dg")){
-				boolean abilityFlag_1 = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");//增加专利的能上传
-				boolean abilityFlag_2 = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//修改专利的能上传
-				abilityFlag = abilityFlag_1 || abilityFlag_2;
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
 			}else{
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理
+				if(fileType.equals("dg")){
+					boolean abilityFlag_1 = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");//增加专利的能上传
+					boolean abilityFlag_2 = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//修改专利的能上传
+					abilityFlag = abilityFlag_1 || abilityFlag_2;
+				}else{
+					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理
+				}
 			}
 		}else{
-			abilityFlag = true;
+			if(fileType.equals("")){
+				abilityFlag = true;
+			}else{
+				abilityFlag = true;
+			}
 		}
 		
 		if(abilityFlag){
