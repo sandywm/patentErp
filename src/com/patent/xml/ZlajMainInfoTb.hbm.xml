@@ -46,12 +46,12 @@
             </column>
         </property>
         <property name="ajSqrId" type="java.lang.String">
-            <column name="aj_sqr_id" length="50" not-null="true">
+            <column name="aj_sqr_id" length="50">
                 <comment>案件申请人编号(可以多个，逗号隔开)</comment>
             </column>
         </property>
         <property name="ajSqrName" type="java.lang.String">
-            <column name="aj_sqr_name" length="200" not-null="true">
+            <column name="aj_sqr_name" length="200">
                 <comment>案件申请人名称(可以多个，逗号隔开)</comment>
             </column>
         </property>
@@ -61,8 +61,13 @@
             </column>
         </property>
         <property name="ajLxrId" type="java.lang.String">
-            <column name="aj_lxr_id" length="50">
+            <column name="aj_lxr_id" length="50"  not-null="true">
                 <comment>案件联系人(可以多个，逗号隔开)</comment>
+            </column>
+        </property>
+        <property name="jsLxrId" type="java.lang.String">
+            <column name="js_lxr_id" length="50" not-null="true">
+                <comment>技术联系人(可以多个，逗号隔开)</comment>
             </column>
         </property>
         <property name="ajFjInfo" type="java.lang.Double">

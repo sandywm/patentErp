@@ -2,7 +2,6 @@ package com.patent.service;
 
 import java.util.List;
 
-import org.hibernate.Session;
 
 import com.patent.exception.WEBException;
 import com.patent.module.ZlajMainInfoTb;
@@ -24,6 +23,7 @@ public interface ZlajMainInfoManager {
 	 * @param ajSqr 申请人姓名
 	 * @param ajFmrId 发明人
 	 * @param ajLxrId 联系人
+	 * @param jsLxrId 技术联系人
 	 * @param ajFjInfo 案件费减明细
 	 * @param ajSqAddress 申请地区
 	 * @param ajYxqDetail 优先权
@@ -49,7 +49,7 @@ public interface ZlajMainInfoManager {
 	 */
 	Integer addZL(String ajNo, String ajNoQt,String ajNoGf,
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,String ajSqrName,
-			String ajFmrId, String ajLxrId, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
+			String ajFmrId, String ajLxrId, String jsLxrId,Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId,Integer checkUserId,Integer zxUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId) throws WEBException;
@@ -170,6 +170,7 @@ public interface ZlajMainInfoManager {
 	 * @param sqrName 申请人姓名
 	 * @param fmrId 发明人
 	 * @param lxrId 联系人
+	 * @param jsLxrId 技术联系人
 	 * @param ajFjInfo 案件费减明细
 	 * @param yxqDetail 优先权明细
 	 * @param upFile 技术底稿
@@ -181,7 +182,7 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateBasicInfoById(Integer zlId,String zlTitle,String zlNo,String zlNoQt,Integer pubId, String sqAddress,String zlType,String ajFieldId,
-			String sqrId,String sqrName,String fmrId,String lxrId,Double ajFjInfo,String yxqDetail,String upFile,String remark,String ewyq,String applyDate,Integer faId) throws WEBException;
+			String sqrId,String sqrName,String fmrId,String lxrId,String jsLxrId,Double ajFjInfo,String yxqDetail,String upFile,String remark,String ewyq,String applyDate,Integer faId) throws WEBException;
 	
 	/**
 	 * 更新专利申请/专利号

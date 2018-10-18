@@ -27,6 +27,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private String ajSqrName;
 	private String ajFmrId;
 	private String ajLxrId;
+	private String jsLxrId;
 	private Double ajFjInfo;
 	private String ajSqAddress;
 	private String ajYxqDetail;
@@ -66,7 +67,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	/** minimal constructor */
 	public ZlajMainInfoTb(CpyInfoTb cpyInfoTb, String ajNo, String ajNoQt,String ajNoGf,
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,String ajSqrName,
-			String ajFmrId, String ajLxrId, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
+			String ajFmrId, String ajLxrId, String jsLxrId,Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, String ajStatusChi,Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
 			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,
@@ -82,6 +83,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajSqrName = ajSqrName;
 		this.ajFmrId = ajFmrId;
 		this.ajLxrId = ajLxrId;
+		this.jsLxrId = jsLxrId;
 		this.ajFjInfo = ajFjInfo;
 		this.ajSqAddress = ajSqAddress;
 		this.ajYxqDetail = ajYxqDetail;
@@ -112,7 +114,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	/** full constructor */
 	public ZlajMainInfoTb(Integer id,CpyInfoTb cpyInfoTb, String ajNo, String ajNoQt,String ajNoGf,
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,String ajSqrName,
-			String ajFmrId, String ajLxrId, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
+			String ajFmrId, String ajLxrId, String jsLxrId,Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, String ajStatusChi,Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
 			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,
@@ -129,6 +131,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajSqrName = ajSqrName;
 		this.ajFmrId = ajFmrId;
 		this.ajLxrId = ajLxrId;
+		this.jsLxrId = jsLxrId;
 		this.ajFjInfo = ajFjInfo;
 		this.ajSqAddress = ajSqAddress;
 		this.ajYxqDetail = ajYxqDetail;
@@ -484,6 +487,14 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	public void setAjSqrName(String ajSqrName) {
 		this.ajSqrName = ajSqrName;
+	}
+
+	public String getJsLxrId() {
+		return jsLxrId;
+	}
+
+	public void setJsLxrId(String jsLxrId) {
+		this.jsLxrId = jsLxrId;
 	}
 
 

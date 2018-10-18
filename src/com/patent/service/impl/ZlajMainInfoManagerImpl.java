@@ -23,7 +23,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	@Override
 	public Integer addZL(String ajNo, String ajNoQt, String ajNoGf,
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,String ajSqrName,
-			String ajFmrId, String ajLxrId, Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
+			String ajFmrId, String ajLxrId, String jsLxrId,Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId, Integer checkUserId,Integer zxUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId)
@@ -35,7 +35,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
 			ZlajMainInfoTb zl = new ZlajMainInfoTb(cDao.get(sess, cpyId), ajNo, ajNoQt, ajNoGf,
-					ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, ajFjInfo,ajSqAddress, ajYxqDetail,
+					ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, ajYxqDetail,
 					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, ajStatusChi, 0,0,pubZlId,"","","",CurrentTime.getStringDate(),checkUserId,zxUserId,
 					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId);
 			zlDao.save(sess, zl);
@@ -174,7 +174,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	@Override
 	public boolean updateBasicInfoById(Integer zlId, String zlTitle,String zlNo,
 			String zlNoQt,Integer pubId,String sqAddress, String zlType,
-			String ajFieldId, String ajSqrId,String sqrName, String fmrId, String lxrId,Double ajFjInfo,
+			String ajFieldId, String ajSqrId,String sqrName, String fmrId, String lxrId,String jsLxrId,Double ajFjInfo,
 			String yxqDetail, String upFile, String remark, String ewyq,
 			String applyDate, Integer faId) throws WEBException {
 		// TODO Auto-generated method stub
@@ -198,6 +198,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 				zl.setAjSqrName(sqrName);
 				zl.setAjFmrId(fmrId);
 				zl.setAjLxrId(lxrId);
+				zl.setJsLxrId(jsLxrId);
 				zl.setAjFjInfo(ajFjInfo);
 				zl.setPubZlId(pubId);
 				zl.setAjYxqDetail(yxqDetail);

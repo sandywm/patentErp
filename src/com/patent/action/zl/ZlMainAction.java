@@ -504,6 +504,7 @@ public class ZlMainAction extends DispatchAction {
 	 							fmrName = fmrName.substring(0, fmrName.length() - 1);
 	 						}
 	 					}
+	 					map.put("fmrId", fmrId);
 						map.put("fmrInfo", fmrName);
 						String lxrId = zl.getAjLxrId();
 	 					String lxrName = "";
@@ -519,7 +520,9 @@ public class ZlMainAction extends DispatchAction {
 	 							lxrName = lxrName.substring(0, lxrName.length() - 1);
 	 						}
 	 					}
+	 					map.put("lxrId", lxrId);
 						map.put("lxrInfo", lxrName);
+						map.put("pubZlId", zl.getPubZlId());//增加的领取的专利任务编号
 						map.put("ajFjInfo", zl.getAjFjInfo());
 						map.put("ajYxqDetail", zl.getAjYxqDetail());//格式为申请专利号,申请地区,申请日期:申请专利号,申请地区,申请日期........
 						//获取当前专利类型的额外要求
@@ -1490,6 +1493,7 @@ public class ZlMainAction extends DispatchAction {
 								String ajSqrName = Transcode.unescape_new1("ajSqrName", request);
 								String ajFmrId  = CommonTools.getFinalStr("ajFmrId", request);
 								String ajLxrId = CommonTools.getFinalStr("ajLxrId", request);
+								String jsLxrId = CommonTools.getFinalStr("jsLxrId", request);
 								String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
 								String yxqDetail = CommonTools.getFinalStr("yxqDetail", request);
 								String ajUpload = CommonTools.getFinalStr("ajUpload", request);
@@ -1503,7 +1507,7 @@ public class ZlMainAction extends DispatchAction {
 									ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);
 								}
 								String ajApplyDate = "";
-								Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, ajFjInfo,ajSqAddress, 
+								Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, 
 										yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "2.0", "人员分配", pubZlId,0,0,0,0,0,0,0,0,cpyId,currLoginUserId);
 								if(zlId > 0){
 									if(pubZlId > 0){
@@ -1794,6 +1798,7 @@ public class ZlMainAction extends DispatchAction {
 						String ajSqrName = Transcode.unescape_new1("ajSqrName", request);
 						String ajFmrId  = CommonTools.getFinalStr("ajFmrId", request);
 						String ajLxrId = CommonTools.getFinalStr("ajLxrId", request);
+						String jsLxrId = CommonTools.getFinalStr("jsLxrId", request);
 						String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
 						String yxqDetail = CommonTools.getFinalStr("yxqDetail", request);
 						String ajUpload = CommonTools.getFinalStr("ajUpload", request);
@@ -1809,7 +1814,7 @@ public class ZlMainAction extends DispatchAction {
 							upUserId = currUserId;
 							upFileDate = CurrentTime.getStringDate();
 						}
-						zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt, pubId, ajSqAddress, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, ajFjInfo,yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0);
+						zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt, pubId, ajSqAddress, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0);
 						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz("专利案件录入");
 						if(lcList.size() > 0){
 							mxm.updateEdateById(lcList.get(0).getId(), -1, upUserId, ajUpload, upFileDate, "", upFileDate, "");
