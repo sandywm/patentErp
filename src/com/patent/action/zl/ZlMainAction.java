@@ -361,6 +361,21 @@ public class ZlMainAction extends DispatchAction {
  						}
  					}
 					map_d.put("lxrInfo", lxrName);
+					String jsLxrId = zl.getJsLxrId();
+					String jsLxrName = "";
+ 					if(!jsLxrId.equals("")){
+ 						String[] jsLxrIdArr = jsLxrId.split(",");
+ 						for(Integer i = 0 ; i < jsLxrIdArr.length ; i++){
+ 							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(jsLxrIdArr[i]), cpyId);
+ 							if(cList.size() > 0){
+ 								jsLxrName += cList.get(0).getCusFmrName() + ",";
+ 							}
+ 						}
+ 						if(!jsLxrName.equals("")){
+ 							jsLxrName = jsLxrName.substring(0, jsLxrName.length() - 1);
+ 						}
+ 					}
+					map_d.put("jsLxrInfo", jsLxrName);
 					map_d.put("ajFjInfo", zl.getAjFjInfo());
 					map_d.put("ajAddress", zl.getAjSqAddress());
 					map_d.put("applyDate", zl.getAjApplyDate());
@@ -505,7 +520,7 @@ public class ZlMainAction extends DispatchAction {
 	 						}
 	 					}
 	 					map.put("fmrId", fmrId);
-						map.put("fmrInfo", fmrName);
+						map.put("fmrName", fmrName);
 						String lxrId = zl.getAjLxrId();
 	 					String lxrName = "";
 	 					if(!lxrId.equals("")){
@@ -521,7 +536,23 @@ public class ZlMainAction extends DispatchAction {
 	 						}
 	 					}
 	 					map.put("lxrId", lxrId);
-						map.put("lxrInfo", lxrName);
+						map.put("lxrName", lxrName);
+						String jsLxrId = zl.getJsLxrId();
+						String jsLxrName = "";
+	 					if(!jsLxrId.equals("")){
+	 						String[] jsLxrIdArr = jsLxrId.split(",");
+	 						for(Integer i = 0 ; i < jsLxrIdArr.length ; i++){
+	 							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(jsLxrIdArr[i]), cpyId);
+	 							if(cList.size() > 0){
+	 								jsLxrName += cList.get(0).getCusFmrName() + ",";
+	 							}
+	 						}
+	 						if(!jsLxrName.equals("")){
+	 							jsLxrName = jsLxrName.substring(0, jsLxrName.length() - 1);
+	 						}
+	 					}
+	 					map.put("jsLxrId", jsLxrId);
+	 					map.put("jsLxrName", jsLxrName);
 						map.put("pubZlId", zl.getPubZlId());//增加的领取的专利任务编号
 						map.put("ajFjInfo", zl.getAjFjInfo());
 						map.put("ajYxqDetail", zl.getAjYxqDetail());//格式为申请专利号,申请地区,申请日期:申请专利号,申请地区,申请日期........
