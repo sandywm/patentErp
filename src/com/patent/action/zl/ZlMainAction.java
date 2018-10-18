@@ -316,7 +316,20 @@ public class ZlMainAction extends DispatchAction {
 						}
 					}				
 					map_d.put("ajFieldName", ajFieldName);
-					String sqrName = zl.getAjSqrName();//可以是公司也可以是个人
+					String sqrId = zl.getAjSqrId();
+					String sqrName = "";//可以是公司也可以是个人
+					if(!sqrId.equals("")){
+ 						String[] sqrIdArr = sqrId.split(",");
+ 						for(Integer i = 0 ; i < sqrIdArr.length ; i++){
+ 							List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[i]));
+ 							if(cList.size() > 0){
+ 								sqrName += cList.get(0).getCusName() + ",";
+ 							}
+ 						}
+ 						if(!sqrName.equals("")){
+ 							sqrName = sqrName.substring(0, sqrName.length() - 1);
+ 						}
+ 					}
 					map_d.put("sqrInfo", sqrName);
 					String fmrId = zl.getAjFmrId();
 					String fmrName = "";
@@ -464,6 +477,18 @@ public class ZlMainAction extends DispatchAction {
 						String sqrName = zl.getAjSqrName();//可以是公司也可以是个人
 						String sqrId = zl.getAjSqrId();
 						map.put("sqrId", sqrId);
+						if(!sqrId.equals("")){
+	 						String[] sqrIdArr = sqrId.split(",");
+	 						for(Integer i = 0 ; i < sqrIdArr.length ; i++){
+	 							List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[i]));
+	 							if(cList.size() > 0){
+	 								sqrName += cList.get(0).getCusName() + ",";
+	 							}
+	 						}
+	 						if(!sqrName.equals("")){
+	 							sqrName = sqrName.substring(0, sqrName.length() - 1);
+	 						}
+	 					}
 						map.put("sqrName", sqrName);
 						String fmrId = zl.getAjFmrId();
 						String fmrName = "";
