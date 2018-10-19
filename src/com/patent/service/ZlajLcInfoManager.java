@@ -83,11 +83,12 @@ public interface ZlajLcInfoManager {
 	 * @description
 	 * @author wm
 	 * @date 2018-9-13 下午05:52:31
+	 * @param ajId 专利编号
 	 * @param lcTitle 流程名字
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajLcInfoTb> listLcInfoByLcMz(String lcTitle) throws WEBException;
+	List<ZlajLcInfoTb> listLcInfoByLcMz(Integer ajId,String lcTitle) throws WEBException;
 	
 	/**
 	 * 获取最后一个未完成的流程

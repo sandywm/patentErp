@@ -612,7 +612,24 @@ public class ZlMainAction extends DispatchAction {
 							}
 						}
 						map.put("yqInfo", list_d);
-						map.put("upFile", zl.getAjUpload());//附件
+						String upFile = zl.getAjUpload();
+						String upSize = "";
+						String upFileName = "";
+						List<Object> list_file = new ArrayList<Object>();
+						if(!upFile.equals("")){
+							String[] upFileArr = upFile.split(",");
+							for(Integer i = 0 ; i < upFileArr.length ; i++){
+								upFileName = upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
+								upSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upFileArr[i]);
+								Map<String,String> map_file = new HashMap<String,String>();
+								map_file.put("upPath", upFileArr[i]);
+								map_file.put("fileName", upFileName);
+								map_file.put("fileSize", upSize);
+								map_file.put("downFilePath", upFileArr[i]);
+								list_file.add(map_file);
+							}
+						}
+						map.put("upFile", list_file);
 						map.put("stopStatus", zl.getAjStopStatus());//案件在终止状态下基本信息不能被修改
 						map.put("ajStatus", zl.getAjStatus());//案件流程状态
 						String selJsFieldStr = zl.getAjFieldId();
@@ -639,6 +656,11 @@ public class ZlMainAction extends DispatchAction {
 							list_j.add(map_j);
 						}
 						map.put("jsFieldInfo", list_j);
+						map.put("ajRemark", zl.getAjRemark());
+						List<ZlajLcInfoTb> mxList = lcm.listLcInfoByLcMz(zl.getId(),"专利案件录入");
+						if(mxList.size() > 0){
+							map.put("cpyDate", mxList.get(0).getLcCpyDate());
+						}
 					}else if(opt.equals("lcfz")){//流程负责人信息
 						map = new HashMap<String,Object>();
 						msg = "success";
@@ -1176,7 +1198,7 @@ public class ZlMainAction extends DispatchAction {
 											}
 											if(flag){
 												//人员移交统一归纳到2.0（人员分配中来）
-												List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz("人员分配");
+												List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz(zl.getId(),"人员分配");
 												if(lcList.size() > 0){
 													Integer lcId = lcList.get(0).getId();
 													double currLcNo = 2.0;
@@ -1273,7 +1295,7 @@ public class ZlMainAction extends DispatchAction {
 							Integer bzshUserId_db = zl.getBzUserId();
 							Integer bhUserId_db = zl.getBhUserId();
 							//人员移交统一归纳到2.0（人员分配中来）
-							List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz("人员分配");
+							List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz(zl.getId(),"人员分配");
 							if(lcList.size() > 0){
 								Integer lcId = lcList.get(0).getId();
 								double currLcNo = 2.0;
@@ -1864,6 +1886,7 @@ public class ZlMainAction extends DispatchAction {
 						String ajUpload = CommonTools.getFinalStr("ajUpload", request);
 						String ajRemark = CommonTools.getFinalStr("ajRemark", request);
 						String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
+//						String cpyDate = CommonTools.getFinalStr("cpyDate", request);//代理机构从分配到定稿提交的期限
 						Double ajFjInfo = 0.0;
 						if(!ajSqrId.equals("")){//案件费减只有在申请人存在的条件下才能进行设置
 							ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);
@@ -1875,7 +1898,7 @@ public class ZlMainAction extends DispatchAction {
 							upFileDate = CurrentTime.getStringDate();
 						}
 						zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt, pubId, ajSqAddress, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0);
-						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz("专利案件录入");
+						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz(zl.getId(),"专利案件录入");
 						if(lcList.size() > 0){
 							mxm.updateEdateById(lcList.get(0).getId(), -1, upUserId, ajUpload, upFileDate, "", upFileDate, "");
 							String ajUpload_db = zlList.get(0).getAjUpload();
@@ -1964,7 +1987,7 @@ public class ZlMainAction extends DispatchAction {
 						ZlajMainInfoTb zl = zlList.get(0);
 						//只有在案件状态正常时（0）、案件状态（2.0）、案件撰写人（0）、流程期限未到（cpyDate）并且在相关人员设置了其他流程人员年后才能领取
 						if(zl.getAjStopStatus().equals(0)){
-							if(zl.getAjStatus().equals("2.0") && zl.getCheckUserId().equals(0)){
+							if(zl.getAjStatus().equals("2.0") && zl.getZxUserId().equals(0)){
 								List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "等待撰写人员领取");
 								if(mxList.size() > 0){
 									ZlajLcMxInfoTb lcmx = mxList.get(0);

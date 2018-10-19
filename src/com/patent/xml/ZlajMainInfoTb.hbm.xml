@@ -86,7 +86,7 @@
             </column>
         </property>
         <property name="ajUpload" type="java.lang.String">
-            <column name="aj_upload" length="200">
+            <column name="aj_upload" length="500">
                 <comment>案卷附件(多个逗号隔开)</comment>
             </column>
         </property>

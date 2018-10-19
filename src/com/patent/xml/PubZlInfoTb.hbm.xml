@@ -36,7 +36,7 @@
             </column>
         </property>
         <property name="zlUpCl" type="java.lang.String">
-            <column name="zl_up_cl" length="200" not-null="true">
+            <column name="zl_up_cl" length="500">
                 <comment>原始材料（发布专利的原始材料）</comment>
             </column>
         </property>

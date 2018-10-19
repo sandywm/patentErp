@@ -41,7 +41,7 @@
             </column>
         </property>
         <property name="lcMxUpFile" type="java.lang.String">
-            <column name="lc_mx_upFile" length="100">
+            <column name="lc_mx_upFile" length="500">
                 <comment>附件</comment>
             </column>
         </property>

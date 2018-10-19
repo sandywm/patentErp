@@ -49,9 +49,9 @@ public class ZlajLcInfoDaoImpl implements ZlajLcInfoDao{
 	}
 
 	@Override
-	public List<ZlajLcInfoTb> findInfoByLcMz(Session sess, String lcMz) {
+	public List<ZlajLcInfoTb> findInfoByLcMz(Session sess, Integer ajId, String lcMz) {
 		// TODO Auto-generated method stub
-		String hql = " from ZlajLcInfoTb as lc where lc.lcMz = '"+lcMz+"'";
+		String hql = " from ZlajLcInfoTb as lc where lc.zlajMainInfoTb.id = "+ajId + " and lc.lcMz = '"+lcMz+"'";
 		return sess.createQuery(hql).list();
 	}
 

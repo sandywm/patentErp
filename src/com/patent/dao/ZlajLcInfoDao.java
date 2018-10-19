@@ -61,10 +61,11 @@ public interface ZlajLcInfoDao {
 	 * @author wm
 	 * @date 2018-9-13 下午05:51:01
 	 * @param sess
+	 * @param ajId 专利编号
 	 * @param lcMz 流程名字
 	 * @return
 	 */
-	List<ZlajLcInfoTb> findInfoByLcMz(Session sess,String lcMz);
+	List<ZlajLcInfoTb> findInfoByLcMz(Session sess,Integer ajId,String lcMz);
 	
 	/**
 	 * 获取最后一个未完成的流程任务列表
