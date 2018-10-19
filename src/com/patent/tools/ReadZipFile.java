@@ -239,7 +239,7 @@ public class ReadZipFile {
 			            			map_d.put("fjRate", fjRate);
 			            		}
 			            	}else if(tzsName.equals("发明专利申请公布及进入实质审查通知书")){
-			            		
+			            		//获取公用的就可以了
 			            	}
 	        			}else{//里面不存在数据文件，需要从list.xml中获取
 	        				l1 = root.element("TONGZHISXJ");

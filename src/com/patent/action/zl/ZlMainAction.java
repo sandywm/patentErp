@@ -509,52 +509,70 @@ public class ZlMainAction extends DispatchAction {
 						map.put("sqrName", sqrName);
 						String fmrId = zl.getAjFmrId();
 						String fmrName = "";
+						String sqrFmrId = "";//发明人对应的申请人
 	 					if(!fmrId.equals("")){
 	 						String[] fmrIdArr = fmrId.split(",");
 	 						for(Integer i = 0 ; i < fmrIdArr.length ; i++){
 	 							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
 	 							if(cList.size() > 0){
-	 								fmrName += cList.get(0).getCusFmrName() + ",";
+	 								CustomerFmrInfoTb fmr = cList.get(0);
+	 								fmrName += fmr.getCusFmrName() + ",";
+	 								sqrFmrId += fmr.getCustomerInfoTb().getId() + ",";
 	 							}
 	 						}
 	 						if(!fmrName.equals("")){
 	 							fmrName = fmrName.substring(0, fmrName.length() - 1);
+	 							sqrFmrId = sqrFmrId.substring(0, sqrFmrId.length() - 1);
 	 						}
 	 					}
 	 					map.put("fmrId", fmrId);
 						map.put("fmrName", fmrName);
+						map.put("sqrFmrId", sqrFmrId);
+						
 						String lxrId = zl.getAjLxrId();
 	 					String lxrName = "";
+	 					String sqrLxrId = "";//联系人对应的申请人
 	 					if(!lxrId.equals("")){
 	 						String[] lxrIdArr = lxrId.split(",");
 	 						for(Integer j = 0 ; j < lxrIdArr.length ; j++){
 	 							List<CustomerLxrInfoTb> clList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
 	 							if(clList.size() > 0){
-	 								lxrName += clList.get(0).getCusLxrName() + ",";
+	 								CustomerLxrInfoTb lxr = clList.get(0);
+	 								lxrName += lxr.getCusLxrName() + ",";
+	 								sqrLxrId += lxr.getCustomerInfoTb().getId() + ",";
 	 							}
 	 						}
 	 						if(!lxrName.equals("")){
 	 							lxrName = lxrName.substring(0, lxrName.length() - 1);
+	 							sqrLxrId = sqrLxrId.substring(0, sqrLxrId.length() - 1);
 	 						}
 	 					}
 	 					map.put("lxrId", lxrId);
 						map.put("lxrName", lxrName);
+						map.put("sqrLxrId", sqrLxrId);
+						
 						String jsLxrId = zl.getJsLxrId();
 						String jsLxrName = "";
+						String sqrJsrId = "";//技术联系人对应的申请人
 	 					if(!jsLxrId.equals("")){
 	 						String[] jsLxrIdArr = jsLxrId.split(",");
 	 						for(Integer i = 0 ; i < jsLxrIdArr.length ; i++){
 	 							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(jsLxrIdArr[i]), cpyId);
 	 							if(cList.size() > 0){
-	 								jsLxrName += cList.get(0).getCusFmrName() + ",";
+	 								CustomerFmrInfoTb fmr = cList.get(0);
+	 								jsLxrName += fmr.getCusFmrName() + ",";
+	 								sqrJsrId += fmr.getCustomerInfoTb().getId() + ",";
 	 							}
 	 						}
 	 						if(!jsLxrName.equals("")){
 	 							jsLxrName = jsLxrName.substring(0, jsLxrName.length() - 1);
+	 							sqrJsrId = sqrJsrId.substring(0, sqrJsrId.length() - 1);
 	 						}
 	 					}
 	 					map.put("jsLxrId", jsLxrId);
 	 					map.put("jsLxrName", jsLxrName);
+	 					map.put("sqrJsrId", sqrJsrId);
+	 					
 	 					Integer pubZlId = zl.getPubZlId();
 	 					String pubZlName = "";
 						map.put("pubZlId", pubZlId);//增加的领取的专利任务编号
