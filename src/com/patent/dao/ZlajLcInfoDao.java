@@ -34,7 +34,7 @@ public interface ZlajLcInfoDao {
 	void update(Session sess,ZlajLcInfoTb lcInfo);
 	
 	/**
-	* 获取专利额外要求信息列表(按照流程编号降序排列)
+	* 获取专利额外要求信息列表(按照流程号降序排列)
 	*  @author  Administrator
 	*  @ModifiedBy  
 	*  @date  2018-8-21 下午09:14:17
@@ -68,7 +68,7 @@ public interface ZlajLcInfoDao {
 	List<ZlajLcInfoTb> findInfoByLcMz(Session sess,Integer ajId,String lcMz);
 	
 	/**
-	 * 获取最后一个未完成的流程任务列表
+	 * 获取最后一个未完成的流程任务列表(lcNo降序)
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-9-18 下午09:35:29

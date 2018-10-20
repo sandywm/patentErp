@@ -380,15 +380,17 @@ public class ZlMainAction extends DispatchAction {
 					map_d.put("ajFjInfo", zl.getAjFjInfo());
 					map_d.put("ajAddress", zl.getAjSqAddress());
 					map_d.put("applyDate", zl.getAjApplyDate());
-					map_d.put("ajStatus", zl.getAjStatus());
+					map_d.put("ajStatus", zl.getAjStatusChi());
 					map_d.put("ajStopStatus", zl.getAjStopStatus().equals(0) ? "正常":"终止");
 					map_d.put("ajStopDate", zl.getAjStopDate());
 					map_d.put("ajStopUser", zl.getAjStopUser());
 					String soptUserType = zl.getAjStopUserType();
-					if(soptUserType.equals("cpyUser")){
-						soptUserType = "机构员工";
-					}else{
-						soptUserType = "发布人员";
+					if(zl.getAjStopStatus().equals(1)){
+						if(soptUserType.equals("cpyUser")){
+							soptUserType = "机构员工";
+						}else{
+							soptUserType = "发布人员";
+						}
 					}
 					map_d.put("ajStopUserType", soptUserType);
 					map_d.put("ajAddDate", zl.getAjAddDate());
@@ -491,21 +493,9 @@ public class ZlMainAction extends DispatchAction {
 						map.put("ajNoGf", zl.getAjNoGf());
 						map.put("ajAddress", zl.getAjSqAddress());
 						map.put("ajType", zl.getAjType());
-						String sqrName = "";//可以是公司也可以是个人
+						String sqrName = zl.getAjSqrName();//可以是公司也可以是个人
 						String sqrId = zl.getAjSqrId();
 						map.put("sqrId", sqrId);
-						if(!sqrId.equals("")){
-	 						String[] sqrIdArr = sqrId.split(",");
-	 						for(Integer i = 0 ; i < sqrIdArr.length ; i++){
-	 							List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[i]));
-	 							if(cList.size() > 0){
-	 								sqrName += cList.get(0).getCusName() + ",";
-	 							}
-	 						}
-	 						if(!sqrName.equals("")){
-	 							sqrName = sqrName.substring(0, sqrName.length() - 1);
-	 						}
-	 					}
 						map.put("sqrName", sqrName);
 						String fmrId = zl.getAjFmrId();
 						String fmrName = "";
@@ -1261,6 +1251,7 @@ public class ZlMainAction extends DispatchAction {
 		Integer bhUserId = -1;
 		Integer checkUserId = -1;
 		String msg = "error";
+		boolean flag_final = false;
 		if(this.getLoginType(request).equals("cpyUser")){
 			if(this.getLoginRoleName(request).equals("管理员")){
 				abilityFlag = true;
@@ -1297,9 +1288,10 @@ public class ZlMainAction extends DispatchAction {
 							//人员移交统一归纳到2.0（人员分配中来）
 							List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz(zl.getId(),"人员分配");
 							if(lcList.size() > 0){
-								Integer lcId = lcList.get(0).getId();
+								ZlajLcInfoTb lc = lcList.get(0);
+								Integer lcId = lc.getId();
 								double currLcNo = 2.0;
-								String ajTitle = lcList.get(0).getZlajMainInfoTb().getAjTitle();
+								String ajTitle = lc.getZlajMainInfoTb().getAjTitle();
 								//案件
 								if(ajStatus < 7){
 									List<ZlajLcMxInfoTb> mxList = mxm.listFirstInfoByLcId(lcId);
@@ -1310,6 +1302,11 @@ public class ZlMainAction extends DispatchAction {
 											}else{
 												mxm.addLcMx(lcId, zxUserId, "撰写人员分配", currLcNo, currDate, currDate, "", 0, "", "", 0.0,"操作人员主动分配");
 											}
+											Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", currDate, lc.getLcCpyDate(), "", "",3.0);
+											mxm.addLcMx(lcId_3, zxUserId, "新申请撰稿", 3.0, currDate, "", "", 0, "", "",  0.0, "");
+											//领取成功后把状态修改成3.0
+											zlm.updateZlStatusById(zlId, "3.0","新申请撰稿");//修改专利状态为3
+											flag_final = true;//只有全部流程都分配完了才是完成
 											mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zxUserId, "cpyUser", "新任务通知：专利撰写", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成专利撰写工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
 										}else{//不指定撰写人，让撰写人自行领取
 											if(mxList.size() == 0){
@@ -1383,6 +1380,10 @@ public class ZlMainAction extends DispatchAction {
 									}
 								}
 								msg = "success";
+								//如果人员都分配了，修改人员分配流程完成
+								if(flag_final){
+									lcm.updateComInfoById(lcId, currDate);
+								}
 							}
 						}
 					}else{
@@ -1519,7 +1520,11 @@ public class ZlMainAction extends DispatchAction {
 						List<PubZlInfoTb> pubList = pzm.listSpecInfoByOpt_1(cpyId, pubZlId);
 						if(pubList.size() > 0){
 							if(pubList.get(0).getZlType().equals(ajType)){
-								msg = "success";
+								if(pubList.get(0).getAjId().equals(0)){//已领取未增加的才正确
+									msg = "success";
+								}else{
+									msg = "addError";//该专利任务已被其他专利占用
+								}
 							}else{
 								msg = "typeDiff";//专利类型不一致
 							}
@@ -1590,7 +1595,7 @@ public class ZlMainAction extends DispatchAction {
 								}
 								String ajApplyDate = "";
 								Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, 
-										yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "2.0", "人员分配", pubZlId,0,0,0,0,0,0,0,0,cpyId,currLoginUserId);
+										yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "2.0", "流程人员分配", pubZlId,0,0,0,0,0,0,0,0,cpyId,currLoginUserId);
 								if(zlId > 0){
 									if(pubZlId > 0){
 										pzm.updateAjIdById(pubZlId, zlId);
@@ -1770,24 +1775,32 @@ public class ZlMainAction extends DispatchAction {
 									if(pubId_base > 0){//原来存在专利任务编号
 										if(!pubId_base.equals(pubId)){//专利任务关联发生编号
 											if(pub.getZlType().equals(ajType)){//新变动的专利任务类型和选择的专利类型一致
-												//这时需要修改专利任务中的案件编号
-												//1:归0原来的专利任务中的案件编号
-												pzm.updateAjIdById(pubId_base, 0);
-												//2:修改新的专利任务中的案件编号
-												pzm.updateAjIdById(pubId, zlId);
-												msg = "success";
+												if(pub.getAjId().equals(0)){//新变更的专利任务没有被占用
+													//这时需要修改专利任务中的案件编号
+													//1:归0原来的专利任务中的案件编号
+													pzm.updateAjIdById(pubId_base, 0);
+													//2:修改新的专利任务中的案件编号
+													pzm.updateAjIdById(pubId, zlId);
+													msg = "success";
+												}else{
+													msg = "addError";//新变更的专利任务已被别的专利占用
+												}
 											}else{
-												msg = "typDiff";//选择的专利类型和专利任务类型不一致
+												msg = "typeDiff";//选择的专利类型和专利任务类型不一致
 											}
 										}else{//专利任务未发生变化（不可能出现这种情况--因为专利类型已经发生变化）
 											
 										}
 									}else{//原来不存在专利任务,新绑定的了专利任务
 										if(pub.getZlType().equals(ajType)){//新变动的专利任务类型和选择的专利类型一致
-											pzm.updateAjIdById(pubId, zlId);
-											msg = "success";
+											if(pub.getAjId().equals(0)){//新变更的专利任务没有被占用
+												pzm.updateAjIdById(pubId, zlId);
+												msg = "success";
+											}else{
+												msg = "addError";//新变更的专利任务已被别的专利占用
+											}
 										}else{
-											msg = "typDiff";//选择的专利类型和专利任务类型不一致
+											msg = "typeDiff";//选择的专利类型和专利任务类型不一致
 										}
 									}
 								}	
@@ -1836,14 +1849,18 @@ public class ZlMainAction extends DispatchAction {
 										PubZlInfoTb pub = pubList.get(0);
 										if(!pubId_base.equals(pubId)){//专利任务关联发生变化
 											if(pub.getZlType().equals(ajType)){//新变动的专利任务类型和选择的专利类型一致
-												//这时需要修改专利任务中的案件编号
-												//1:归0原来的专利任务中的案件编号
-												pzm.updateAjIdById(pubId_base, 0);
-												//2:修改新的专利任务中的案件编号
-												pzm.updateAjIdById(pubId, zlId);
-												msg = "success";
+												if(pub.getAjId().equals(0)){//新变更的专利任务没有被占用
+													//这时需要修改专利任务中的案件编号
+													//1:归0原来的专利任务中的案件编号
+													pzm.updateAjIdById(pubId_base, 0);
+													//2:修改新的专利任务中的案件编号
+													pzm.updateAjIdById(pubId, zlId);
+													msg = "success";
+												}else{
+													msg = "addError";//新变更的专利任务已被别的专利占用
+												}
 											}else{
-												msg = "typDiff";//选择的专利类型和专利任务类型不一致
+												msg = "typeDiff";//选择的专利类型和专利任务类型不一致
 											}
 										}else{//专利任务未发生变化（不可能出现这种情况--因为专利类型已经发生变化）
 											msg = "success";
@@ -1859,10 +1876,14 @@ public class ZlMainAction extends DispatchAction {
 									if(pubList.size() > 0){
 										PubZlInfoTb pub = pubList.get(0);
 										if(pub.getZlType().equals(ajType)){//新变动的专利任务类型和选择的专利类型一致
-											pzm.updateAjIdById(pubId, zlId);
-											msg = "success";
+											if(pub.getAjId().equals(0)){//新变更的专利任务没有被占用
+												pzm.updateAjIdById(pubId, zlId);
+												msg = "success";
+											}else{
+												msg = "addError";//新变更的专利任务已被别的专利占用
+											}
 										}else{
-											msg = "typDiff";//选择的专利类型和专利任务类型不一致
+											msg = "typeDiff";//选择的专利类型和专利任务类型不一致
 										}
 									}		
 								}else{//没有绑定专利任务
@@ -1886,7 +1907,7 @@ public class ZlMainAction extends DispatchAction {
 						String ajUpload = CommonTools.getFinalStr("ajUpload", request);
 						String ajRemark = Transcode.unescape_new("ajRemark", request);
 						String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
-//						String cpyDate = CommonTools.getFinalStr("cpyDate", request);//代理机构从分配到定稿提交的期限
+						String cpyDate = CommonTools.getFinalStr("cpyDate", request);//代理机构从分配到定稿提交的期限
 						Double ajFjInfo = 0.0;
 						if(!ajSqrId.equals("")){//案件费减只有在申请人存在的条件下才能进行设置
 							ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);
@@ -1994,7 +2015,9 @@ public class ZlMainAction extends DispatchAction {
 									ZlajLcInfoTb lc = lcmx.getZlajLcInfoTb();
 									Integer diffDays = CurrentTime.compareDate(currDate,lc.getLcCpyDate());
 									if(diffDays > 0){//可以领取
-										mxm.updateEdateById(mxList.get(0).getId(), currUserId, -1, "", "", "", currDate, "撰写任务已被领取");
+										mxm.updateEdateById(lcmx.getId(), currUserId, -1, "", "", "", currDate, "撰写任务已被领取");
+										//修改任务分配流程为完成状态
+										lcm.updateComInfoById(lc.getId(), currDate);
 										Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", currDate, lc.getLcCpyDate(), "", "",3.0);
 										mxm.addLcMx(lcId_3, currUserId, "新申请撰稿", 3.0, currDate, "", "", 0, "", "",  0.0, "");
 										//领取成功后把状态修改成3.0
@@ -2211,7 +2234,7 @@ public class ZlMainAction extends DispatchAction {
 						ZlajMainInfoTb zl = zlList.get(0);
 						//只有在案件状态正常时（0）
 						if(zl.getAjStopStatus().equals(0)){
-							//获取当前最后一个流程
+							//获取当前最后一个未完成的流程
 							List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
 							if(lcList.size() > 0){
 								List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcList.get(0).getId());

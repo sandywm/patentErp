@@ -844,6 +844,7 @@ public class PubZlAction extends DispatchAction {
 							map_d.put("addDate", pz.getZlNewDate());
 							map_d.put("lqr", pz.getLqUserName());
 							map_d.put("lqDate", pz.getLqDate());
+							map_d.put("ajId", pz.getAjId());
 							List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(pz.getAjId(), cpyId);
 							if(zlList.size() > 0){
 								zlNo = zlList.get(0).getAjNoQt();

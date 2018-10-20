@@ -113,7 +113,7 @@ public interface PubZlInfoManager {
 	 * @date 2018-8-12 下午09:17:45
 	 * @ModifiedBy
 	 * @param lqCpyId 领取公司编号
-	 * @param ajId 主键编号
+	 * @param id 主键编号
 	 * @return
 	 */
 	List<PubZlInfoTb> listSpecInfoByOpt_1(Integer lqCpyId,Integer id)throws WEBException ;
