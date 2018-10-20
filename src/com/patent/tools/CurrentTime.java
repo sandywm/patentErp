@@ -483,14 +483,14 @@ public class CurrentTime {
     }
     
     /**
-     * 获取随机数（时+分+秒+毫秒）
+     * 获取随机数（分+秒+毫秒）
      * @description
      * @author Administrator
      * @date 2018-10-9 下午04:42:50
      * @return
      */
     public static String getRadomTime(){
-    	return getFormat("HH")+getFormat("mm")+getFormat("ss")+getFormat("SSS");
+    	return getFormat("mm")+getFormat("ss")+getFormat("SSS");
     }
     
     /**

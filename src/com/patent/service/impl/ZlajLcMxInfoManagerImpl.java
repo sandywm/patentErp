@@ -61,8 +61,10 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 			ZlajLcMxInfoTb mx = mxDao.get(sess, id);
 			if(mx != null){
 				mx.setLcMxEDate(eDate);
-				mx.setCpyUser(uDao.get(sess, fzUserId));
-				if(!lcMxUpUserId.equals(-1)){
+				if(fzUserId > 0){
+					mx.setCpyUser(uDao.get(sess, fzUserId));
+				}
+				if(lcMxUpUserId > 0){
 					mx.setLcMxUpUserId(lcMxUpUserId);
 				}
 				if(!lcMxUpFile.equals("")){

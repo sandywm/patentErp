@@ -491,7 +491,7 @@ public class ZlMainAction extends DispatchAction {
 						map.put("ajNoGf", zl.getAjNoGf());
 						map.put("ajAddress", zl.getAjSqAddress());
 						map.put("ajType", zl.getAjType());
-						String sqrName = zl.getAjSqrName();//可以是公司也可以是个人
+						String sqrName = "";//可以是公司也可以是个人
 						String sqrId = zl.getAjSqrId();
 						map.put("sqrId", sqrId);
 						if(!sqrId.equals("")){
@@ -1757,7 +1757,7 @@ public class ZlMainAction extends DispatchAction {
 					String ajTitle = Transcode.unescape_new("ajTitle", request);
 					String ajType = CommonTools.getFinalStr("ajType", request);
 					//在专利定稿提交前且专利状态正常下可以进行专利基本信息修改
-					if(Integer.parseInt(zl.getAjStatus()) < 7 && zl.getAjStopStatus().equals(0)){
+					if(Double.parseDouble(zl.getAjStatus()) < 7 && zl.getAjStopStatus().equals(0)){
 						String varCon = "",nextNumStr = "";
 						String currYear = CurrentTime.getYear();
 						Integer pubId_base = zl.getPubZlId();//原先关联的专利任务
@@ -1884,7 +1884,7 @@ public class ZlMainAction extends DispatchAction {
 						String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
 						String yxqDetail = CommonTools.getFinalStr("yxqDetail", request);
 						String ajUpload = CommonTools.getFinalStr("ajUpload", request);
-						String ajRemark = CommonTools.getFinalStr("ajRemark", request);
+						String ajRemark = Transcode.unescape_new("ajRemark", request);
 						String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
 //						String cpyDate = CommonTools.getFinalStr("cpyDate", request);//代理机构从分配到定稿提交的期限
 						Double ajFjInfo = 0.0;

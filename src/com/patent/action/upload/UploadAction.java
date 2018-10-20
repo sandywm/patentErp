@@ -207,6 +207,8 @@ public class UploadAction extends DispatchAction {
 								 filename = filePre + "_" + nextVersion + "." + suffix;
 							 }else if(fileType.equals("tzs")){
 								 filename = filePre + "_" + CurrentTime.getRadomTime() + "." + suffix;
+							 }else if(fileType.equals("dg")){
+								 filename = filePre + "_" + CurrentTime.getRadomTime() + "." + suffix;
 							 }
 						 }
 						CheckImage ci = new CheckImage();
