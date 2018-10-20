@@ -59,7 +59,7 @@
   	</div>
   	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var loginType = parent.loginType,viewZlFlag=false;
+		var loginType = parent.loginType,viewZlFlag=false,globalWid=200;
 		layui.use(['layer','form','jquery','table','laydate'],function(){
 			var layer = layui.layer,
 				form = layui.form,
@@ -84,6 +84,7 @@
 			//form 监听获取查看领取记录
 			form.on('radio(lqRangeFilter)', function(data){
 				$('#lqZlHisInp').val(data.value);
+				data.value == 'yg' ? globalWid=200 : globalWid=120;
 				loadZlLqHisList('initLoad');
 			});      
 			form.on('select(addStatusSelFilter)', function(data){
@@ -124,7 +125,7 @@
 						{field : 'addDate', title: '发布日期', width:180 , align:'center'},
 						{field : 'lqr', title: '领取人', width:80 , align:'center'},
 						{field : 'lqDate', title: '领取日期', width:150 , align:'center'},
-						{field : '', title: '操作', fixed: 'right', width:200,templet : function(d){
+						{field : '', title: '操作', fixed: 'right', width:globalWid,templet : function(d){
 							if(option == 'yg'){
 								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.pzId +'" taskTit="'+ d.pzTitle +'"><i class="layui-icon layui-icon-search"></i>查看详情</a> <a class="btn layui-btn layui-btn-danger layui-btn-xs" lay-event="receiveZlTask" zlTitle="'+ d.pzTitle +'" pubId="'+ d.pzId +'">撤销此任务</a>';
 							}else{

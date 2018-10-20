@@ -50,12 +50,12 @@
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
-		    common: 'common'// 表示模块文件的名字
-		}).use(['layer','form','jquery','common'],function(){
+		    common: 'scrollBar'// 表示模块文件的名字
+		}).use(['layer','form','jquery','scrollBar'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
 				form = layui.form,
-				common = layui.common;
+				common = layui.scrollBar;
 			var page = {
 				data : {
 					isCheckedFlag : false,
@@ -165,7 +165,6 @@
 				//检测高度动态给容器添加模拟滚动条
 				addActScrollBar : function(){
 					if($('#lqZlTaskPar').height() < $('#lqZlTaskSon').height()){
-						console.log("jinlailes")
 						var oScroll = '<div id="scrollParent" class="parentScroll"><div id="scrollSon" class="scrollBar"></div></div>';
 						//创建动态模拟滚动条
 						$('.lqZlTaskCon').append(oScroll);

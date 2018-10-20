@@ -101,7 +101,7 @@
             return layui.use('upload',function(){
                 var upload = layui.upload;  
                 //执行实例
-                uploadListIns = upload.render(_this.options);  
+                uploadListIns = upload.render(_this.options);
             });
         }
     };

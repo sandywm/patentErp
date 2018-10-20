@@ -100,6 +100,16 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
+			<label class="layui-form-label"><span>*</span>技术联系人</label>
+			<div class="layui-input-block fixHeiDiv clearfix">
+				<input id="jsLxrIdInp" type="hidden" name="jsLxrIdInp"/>
+				<div class="multiBox fl" style="width:100%;">
+					<div id="techLxrBox" class="multiBox fl"></div>
+					<span id="addJsLxrBtn" opts="addJsLxrOpts" class="addSpan fl">添加/编辑技术联系人</span>
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
 			<label class="layui-form-label">优先权</label>
 			<div class="blockDiv fixHeiDiv clearfix">
 				<input id="yxqDetailInp" type="hidden" name="yxqDetail"/>
@@ -161,10 +171,7 @@
 	<script src="/plugins/layui/layui.js"></script>
 	<script src="/plugins/frame/js/upLoadFiles.js"></script>
 	<script type="text/javascript">
-		var delFlag = "${ requestScope.delFlag }",
-			upFlag = "${ requestScope.upFlag }",
-			addFlag = "${ requestScope.addFlag }";
-		var num=0,tmpEwyqIdArray=[],upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],addCustFlag=false,addEditLxrOpts='',addEditFmrOpts='',tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
+		var num=0,tmpEwyqIdArray=[],zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
 		layui.use(['layer','form','laydate'],function(){
 			var layer = layui.layer,
 				//$ = layui.jquery,
@@ -177,6 +184,28 @@
 				},
 				onLoad : function(){
 					if(addEditZlOpts == 'editZlOpts'){//表示编辑
+						var _this = this;
+						layer.load('1');
+						$.ajax({
+		   					type:'post',
+		   			        async:false,
+		   			        dataType:'json',
+		   			        data:{zlId : parent.globalZlId,opt:'basic'},
+		   			        url:'/zlm.do?action=getZlDetail',
+		   			        success:function (json){
+		   			        	layer.closeAll('loading');
+		   			        	if(json['result'] == 'success'){
+		   			        		zlId = json.ajId;
+		   			        		_this.renderZlBasicInfo(json);
+		   			        	}else if(json['result'] == 'error'){
+		   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
+		   			        	}else if(json['result'] == 'noAbility'){
+		   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
+		   			        	}else if(json['result'] == 'noInfo'){
+		   			        		layer.msg('暂无此专利信息', {icon:5,anim:6,time:1000});
+		   			        	}
+		   			        }
+		   				});
 						
 					}else{//表示增加 onload直接调用上传这个方法
 						selectFileUpload();
@@ -213,6 +242,9 @@
 									_this.getEwYqList(parent.$('#lqZlTypeInp').val());		
 									tmpEwyqIdArray.length = 0;		
 						  		}
+						  		if($('#pubZlIdInpTxt').val() != ''){//表示点击了保存按钮
+						  			parent.addZlFlag = true;//激活重置按钮
+						  		}
 						  	}
 						});	
 					});
@@ -228,12 +260,6 @@
 								parent.$('#lqZlIdInp').val('');
 								$('#pubZlIdInpTxt').val('');
 								parent.$('#lqZlIdInpText').val('');
-								$('#zlTypeInp').val('');
-								$('.zlTypeRad').each(function(i){
-									$('.zlTypeRad').eq(i).attr('checked',false);
-								});	
-								$('#ajNumInp').val('');
-								form.render();
 								layer.close(index);
 								parent.addZlFlag = false;
 							});
@@ -265,9 +291,9 @@
 					});
 					//添加联系人
 					$('#addlxrBtn').on('click',function(){
-						_this.commonLayerLxrFmr('添加联系人','addLxrOption');
+						_this.commonLayerLxrFmr('添加联系人');
 						addEditLxrOpts = tmpLxrFmrOpts = $(this).attr('opts');
-						if($('#lxrBox p').length > 0 && isHasLxrFlag){
+						if($('#lxrBox p').length > 0 /*&& isHasLxrFlag*/){
 							//表示已经创建了联系人，假如删除了某个申请人，此时应该从新匹配lxrIdArray lxrIdNum
 							lxrIdArray.length = 0;
 							lxrIdNum.length = 0;
@@ -279,16 +305,29 @@
 					});
 					//添加发明人
 					$('#addFmrBtn').on('click',function(){
-						addCustFlag = false;
-						_this.commonLayerLxrFmr('添加发明人','addFmrOption');
+						_this.commonLayerLxrFmr('添加发明人');
 						addEditFmrOpts = tmpLxrFmrOpts = $(this).attr('opts');
-						if($('#fmrBox p').length > 0 && isHasFmrFlag){
+						if($('#fmrBox p').length > 0 /*&& isHasFmrFlag*/){
 							//表示已经创建了发明人，假如删除了某个申请人，此时应该从新匹配fmrIdArray fmrIdNum
 							fmrIdArray.length = 0;
 							fmrIdNum.length = 0;
 							$('#fmrBox p').each(function(i){
 								fmrIdArray.push($('#fmrBox p').eq(i).attr('id'));
 								fmrIdNum.push($('#fmrBox p').eq(i).attr('id').split('_')[1]);
+							});
+						}
+					});
+					//添加技术联系人
+					$('#addJsLxrBtn').on('click',function(){
+						_this.commonLayerLxrFmr('添加技术联系人');
+						tmpLxrFmrOpts = $(this).attr('opts');
+						if($('#techLxrBox p').length > 0 /*&& isHasJsLxrFlag*/){
+							//表示已经创建了技术联系人，假如删除了某个申请人，此时应该从新匹配jsLxrIdArray jsLxrIdNum
+							jsLxrIdArray.length = 0;
+							jsLxrIdNum.length = 0;
+							$('#techLxrBox p').each(function(i){
+								jsLxrIdArray.push($('#techLxrBox p').eq(i).attr('id'));
+								jsLxrIdNum.push($('#techLxrBox p').eq(i).attr('id').split('_')[1]);
 							});
 						}
 					});
@@ -302,14 +341,14 @@
 						}
 						strHtml += '<div class="innerYxqBox">';
 						strHtml += '<input placeholder="请输入案件申请号/专利号" type="text" autocomplete="off" class="layui-input zlAjNumInp"/>';
-						strHtml += '<div class="innerSelAddBox"><select class="zlYxqAreaInp" lay-filter="ajsqAreaSel">';
+						strHtml += '<div class="innerSelAddBox"><select class="zlYxqAreaInp" lay-filter="selAreaFilter">';
 						strHtml += '<option value="">请选择申请地区</option>';
 						strHtml += '<option value="中国">中国[CN]</option>';
 						strHtml += '<option value="中国香港">中国香港[HK]</option>';
 						strHtml += '<option value="中国台湾">中国台湾[TW]</option>';
 						strHtml += '<option value="澳门">澳门[MO]</option>';
 						strHtml += '<option value="日本">日本[JP]</option></select></div>';
-						strHtml += '<input placeholder="请选择日期" type="text" name="" autocomplete="off" id="dateInp_'+ num +'" hasSelFlag="false" class="layui-input yxqInpDate"/>';
+						strHtml += '<input placeholder="请选择日期" type="text" name="" autocomplete="off" id="dateInp_'+ num +'" class="layui-input yxqInpDate"/>';
 						strHtml += '<i class="layui-icon layui-icon-delete delYxqIcon"  title="删除"></i>';
 						strHtml += '</div>';
 						$('#innerYxqBox').append(strHtml);
@@ -321,8 +360,7 @@
 					});
 					//保存增加的专利
 					$('#saveZlBtn').on('click',function(){
-						alert(addFlag)
-						var ajTitleVal = $.trim($('#ajTitleInp').val()),//案件标题
+						var sqrName='', ajTitleVal = $.trim($('#ajTitleInp').val()),//案件标题
 							//ajNumInpVal = $('#ajNumInp').val(),//案件编号
 							zlTypeInpVal = $('#zlTypeInp').val(),//专利类型
 							ajFieldIdVal = $('#ajFieldId').val(),//案件技术领域
@@ -330,6 +368,7 @@
 							ajSqrIdVal = $('#ajSqrId').val(),//案件申请人
 							ajLxrIdVal = $('#ajLxrId').val(),//案件联系人
 							ajFmrIdVal = $('#ajFmrId').val(),//案件发明人
+							jsLxrIdInpVal = $('#jsLxrIdInp').val(),//技术联系人
 							yxqDetailInpVal = $('#yxqDetailInp').val(),//案件优先权
 							//fujianInpVal = $('#fujianInp').val(),//案件附件
 							ajEwyqIdVal = $('#ajEwyqId').val(),//案件额外要求
@@ -340,8 +379,11 @@
 							
 						ajFieldIdVal = _this.getIdStr('delFieldBtn','jffieldattrid');
 						ajSqrIdVal = _this.getIdStr('delSqrBtn','sqrattrid');
+						sqrName = _this.getIdStr('delSqrBtn','sqrattrname');
 						ajLxrIdVal = _this.getIdStr('delLxrBtn','lxridattr');
 						ajFmrIdVal = _this.getIdStr('delFmrBtn','fmridattr');
+						ajJsLxrIdVal = _this.getIdStr('delJsLxrBtn','fmridattr');
+						//alert(ajFieldIdVal + "----" + ajSqrIdVal + "--" + ajLxrIdVal + "--" + ajFmrIdVal + "----@@" + ajJsLxrIdVal)
 						if(tmpEwyqIdArray.length != 0){
 							$('#tmpAjEwyqId').val(tmpEwyqIdArray.join(','));
 							ajEwyqIdVal = $('#tmpAjEwyqId').val();
@@ -358,8 +400,9 @@
 							layer.msg('请选择案件申请地区', {icon:5,anim:6,time:1000});
 						}else if(ajSqrIdVal == ''){
 							layer.msg('请添加申请人', {icon:5,anim:6,time:1000});
+						}else if(ajJsLxrIdVal == ''){
+							layer.msg('请添加技术联系人', {icon:5,anim:6,time:1000});
 						}else{
-							//alert(ajFieldIdVal + "----" + ajSqrIdVal + "--" + ajLxrIdVal + "--" + ajFmrIdVal)
 							if($('.innerYxqBox').length > 0){
 								var strResult = _this.getYxqId();
 								if(strResult != undefined){
@@ -395,46 +438,49 @@
 								}
 							}
 							if(addEditZlOpts == 'editZlOpts'){
-							
+								url = '/zlm.do?action=updateZlBasicInfo&zlId=' + zlId;
 							}else{
 								//表示增加专利
-								var field = {ajTitle:escape(ajTitleVal),
-												ajType:zlTypeInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:ajSqAddressVal,
-												ajSqrId:ajSqrIdVal,ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,
-												yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:ajRemarkVal,
-												ajUpload:$('#fujianInp').val(),cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal},
-									url = '/zlm.do?action=addZlData';
+								var url = '/zlm.do?action=addZlData';
 								//console.log(ajTitleVal + "--" +zlTypeInpVal + "-" + ajFieldIdVal + "-" + ajSqAddressVal + "--" + ajSqrIdVal + "-" + ajLxrIdVal+"-"+ajFmrIdVal+"-"+yxqDetailInpVal+"-"+ajEwyqIdVal+"-"+ajRemarkVal+"-"+$('#fujianInp').val()+"-"+cpyDateInpVal+"-"+pubZlIdInpVal)	
-								layer.load('1');
-								$.ajax({
-				   					type:'post',
-				   			        async:false,
-				   			        dataType:'json',
-				   			        data:field,
-				   			        url:url,
-				   			        success:function (json){
-				   			        	layer.closeAll('loading');
-				   			        	console.log(json)
-				   			        	if(json['result'] == 'success'){
-				   			        		function callBackSucc(){
-				   			        			var index= parent.layer.getFrameIndex(window.name);
-						        				parent.addZlFlag = true;
-						        				parent.layer.close(index);
-				   			        		}
-				   			        		if(addEditZlOpts == 'editZlOpts'){
-				   			        			layer.msg('编辑专利成功',{icon:1,time:1000},callBackSucc);
-				   			        		}else{
-				   			        			layer.msg('添加专利成功',{icon:1,time:1000},callBackSucc);
-				   			        		}
-				   			        	}else if(json['result'] == 'noAbility'){
-				   			        		layer.msg('抱歉，您暂无权限添加编辑专利', {icon:5,anim:6,time:1000});
-				   			        	}else if(json['result'] == 'error'){
-				   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
-				   			        	}
-				   			        }
-				   				});
 			   				}
-							
+			   				var field = {ajTitle:escape(ajTitleVal),
+												ajType:zlTypeInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+												ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
+												yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
+												ajUpload:$('#fujianInp').val(),cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal};
+			   				layer.load('1');
+							$.ajax({
+			   					type:'post',
+			   			        async:false,
+			   			        dataType:'json',
+			   			        data:field,
+			   			        url:url,
+			   			        success:function (json){
+			   			        	layer.closeAll('loading');
+			   			        	console.log(json)
+			   			        	if(json['result'] == 'success'){
+			   			        		function callBackSucc(){
+			   			        			var index= parent.layer.getFrameIndex(window.name);
+					        				parent.addZlFlag = true;
+					        				parent.layer.close(index);
+			   			        		}
+			   			        		if(addEditZlOpts == 'editZlOpts'){
+			   			        			layer.msg('编辑专利成功',{icon:1,time:1000},callBackSucc);
+			   			        		}else{
+			   			        			layer.msg('添加专利成功',{icon:1,time:1000},callBackSucc);
+			   			        		}
+			   			        	}else if(json['result'] == 'noAbility'){
+			   			        		layer.msg('抱歉，您暂无权限添加编辑专利', {icon:5,anim:6,time:1000});
+			   			        	}else if(json['result'] == 'error'){
+			   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
+			   			        	}else if(json['result'] == 'typDiff'){
+			   			        		layer.msg('选择的专利类型和专利任务类型不一致', {icon:5,anim:6,time:2200});
+			   			        	}else if(json['result'] == 'notUpdate'){
+			   			        		layer.msg('定稿以后或专利状态终止条件下不能修改', {icon:5,anim:6,time:2200});
+			   			        	}
+			   			        }
+			   				});
 						}
 					});
 				},
@@ -590,6 +636,270 @@
 					}
 					$('#ewyqBpx').html(strHtml);
 					form.render();
+				},
+				//编辑时渲染结构
+				renderZlBasicInfo : function(json){
+					console.log(json)
+					var strHtml = '';
+					//案件标题
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>案件标题</label><div class="layui-input-block">';
+					strHtml += '<input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)" maxlength="40" value="'+ json.ajTitle +'" autocomplete="off" class="layui-input"/></div></div>';
+					//案件编号 && 案件申请号/专利号
+					strHtml += '<div class="layui-form-item clearfix"><div class="itemDiv"><label class="layui-form-label">案件编号</label><div class="layui-input-inline">';
+					strHtml += '<input id="ajNumInp" type="text" disabled autocomplete="off" value="'+ json.ajNo +'" class="layui-input"/></div></div>';
+					strHtml += '<div class="itemDiv"><label class="layui-form-label">案件申请号/专利号</label><div class="layui-input-inline">';
+					strHtml += '<input id="ajSqZlNum" type="text" name="ajSqZlNum" disabled autocomplete="off" value="'+ json.ajNoGf +'" class="layui-input"/></div></div></div>';
+					//专利类型 && 已领取专利任务
+					strHtml += '<div class="layui-form-item clearfix">';
+					strHtml += '<div class="itemDiv"><label class="layui-form-label"><span>*</span>专利类型</label><input id="zlTypeInp" name="ajType" type="hidden" value="'+ json.ajType +'"/><div class="layui-input-inline">';
+					if(json.ajType == 'fm'){
+						strHtml += '<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明" checked/>';
+						strHtml += '<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>';
+					}else if(json.ajType == 'syxx'){
+						strHtml += '<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型" checked/>';
+						strHtml += '<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>';
+					}else if(json.ajType == 'wg'){
+						strHtml += '<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型"/>';
+						strHtml += '<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观" checked/>';
+					}
+					strHtml += '</div></div>';
+					//已领取专利任务
+					strHtml += '<div class="itemDiv"><label class="layui-form-label">已领取专利任务</label><div class="layui-input-inline">';
+					strHtml += '<input id="pubZlIdInp" type="hidden" value="'+ json.pubZlId +'" name="pubZlId"/>';
+					strHtml += '<input id="pubZlIdInpTxt" type="text" disabled autocomplete="off" value="'+ json.pubZlName +'" class="layui-input" style="width:94%"/>';
+					strHtml += '<span class="selZlTaskSp" title="选择"><i class="layui-icon layui-icon-more"></i></span>';
+					strHtml += '<span class="resetSp" title="重置"><i class="layui-icon layui-icon-delete"></i></span></div></div>';
+					strHtml += '</div>';
+					//案件技术领域
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>案件技术领域</label><div class="layui-input-block fixHeiDiv clearfix">';
+					strHtml += '<div id="fieldBox" class="multiBox fl">';
+					//var strJsId = '';
+					for(var i=0;i<json.jsFieldInfo.length;i++){
+						if(json.jsFieldInfo[i].checked){
+							strHtml += '<p id="fieldId_'+ json.jsFieldInfo[i].jsId +'" jffieldattrid="'+ json.jsFieldInfo[i].jsId +'" class="delFieldBtn"><span>'+ json.jsFieldInfo[i].jsName +'</span><i class="layui-icon layui-icon-close"></i></p>';	
+							//strJsId += json.jsFieldInfo[i].jsId;
+							fieldArray.push('fieldId_'+json.jsFieldInfo[i].jsId);
+						}
+					}
+					strHtml += '<input id="ajFieldId" type="hidden" name="ajFieldId"/></div>';
+					strHtml += '<span id="addFieldBtn" class="addSpan fl">添加技术领域</span></div></div>';
+					//案件申请地区
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>案件申请地区</label>';
+					strHtml += '<input id="ajSqAddress" type="hidden" name="ajSqAddress" value="'+ json.ajAddress +'"/><div class="layui-input-block fixHeiDiv clearfix">';
+					if(json.ajAddress == '中国'){
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国" title="中国[CN]" checked/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国香港" title="中国香港[HK]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国台湾" title="中国台湾[TW]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="澳门" title="澳门[MO]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="日本" title="日本[JP]"/>';
+					}else if(json.ajAddress == '中国香港'){
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国" title="中国[CN]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国香港" title="中国香港[HK]" checked/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国台湾" title="中国台湾[TW]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="澳门" title="澳门[MO]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="日本" title="日本[JP]"/>';
+					}else if(json.ajAddress == '中国台湾'){
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国" title="中国[CN]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国香港" title="中国香港[HK]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国台湾" title="中国台湾[TW]" checked/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="澳门" title="澳门[MO]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="日本" title="日本[JP]"/>';
+					}else if(json.ajAddress == '澳门'){
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国" title="中国[CN]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国香港" title="中国香港[HK]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国台湾" title="中国台湾[TW]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="澳门" title="澳门[MO]" checked/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="日本" title="日本[JP]"/>';
+					}else{
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国" title="中国[CN]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国香港" title="中国香港[HK]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国台湾" title="中国台湾[TW]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="澳门" title="澳门[MO]"/>';
+						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="日本" title="日本[JP]" checked/>';
+					}
+					strHtml += '</div></div>';
+					//申请人
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>申请人</label><input id="sqrIdInp" type="hidden"/>';
+					strHtml += '<div class="layui-input-block fixHeiDiv clearfix"><input id="ajSqrId" type="hidden" value="'+ json.sqrId +'" name="ajSqrId"/>'; 
+					strHtml += '<div id="sqrBox" class="multiBox fl">';
+					var tmpArraySqrId = json.sqrId.split(',');
+					var tmpArraySqrName = json.sqrName.split(',');
+					alert(tmpArraySqrName)
+					for(var i=0;i<tmpArraySqrName.length;i++){
+						strHtml += '<p id="sqrId_'+ tmpArraySqrId[i] +'" sqrattrid="'+ tmpArraySqrId[i] +'" class="delSqrBtn"><span>'+ tmpArraySqrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+						sqrArray.push('sqrId_'+tmpArraySqrId[i]);
+						sqrIdArray.push(tmpArraySqrId[i]);
+						sqrTxtArray.push(tmpArraySqrName[i]);
+					}
+					strHtml += '</div><span id="addSqrBtn" class="addSpan fl">添加/编辑申请人</span>';
+					strHtml += '</div></div>';
+					//联系人
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">联系人</label><div class="layui-input-block fixHeiDiv clearfix">';
+					strHtml += '<input id="ajLxrId" type="hidden" value="'+ json.lxrId +'" name="ajLxrId"/><div class="multiBox fl" style="width:100%;">';
+					strHtml += '<div id="lxrBox" class="multiBox fl">';
+					if(json.lxrId != ''){
+						var tmpArrayLxrId = json.lxrId.split(',');
+						var tmpArrayLxrName = json.lxrName.split(',');
+						var tmpArraySqrLxrId = json.sqrLxrId.split(',');
+						if(tmpArrayLxrId != 0){
+							for(var i=0;i<tmpArrayLxrName.length;i++){
+								strHtml += '<p id="lxrId_'+ tmpArrayLxrId[i] +'" lxridattr="'+ tmpArrayLxrId[i] +'" sqrids="'+ tmpArraySqrLxrId[i] +'" class="lxFmTag delLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrLxrId[i] +'"><span>'+ tmpArrayLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+							}
+						}
+					}
+					strHtml += '</div><span id="addlxrBtn" opts="addLxrOpts" class="addSpan fl">添加/编辑联系人</span></div>';
+					strHtml += '</div></div>';		
+					//发明人
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">发明人</label><div class="layui-input-block fixHeiDiv clearfix">';
+					strHtml += '<input id="ajFmrId" type="hidden" name="ajFmrId" value="'+ json.fmrId +'"/><div class="multiBox fl" style="width:100%;">';
+					strHtml += '<div id="fmrBox" class="multiBox fl">';	
+					if(json.fmrId != ''){
+						var tmpArrayFmrId = json.fmrId.split(',');
+						var tmpArrayFmrName = json.fmrName.split(',');
+						var tmpArraySqrFmrId = json.sqrFmrId.split(',');
+						for(var i=0;i<tmpArrayFmrName.length;i++){
+							strHtml += '<p id="fmrId_'+ tmpArrayFmrId[i] +'" fmridattr="'+ tmpArrayFmrId[i] +'" sqrids="'+ tmpArraySqrFmrId[i] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrFmrId[i] +'"><span>'+ tmpArrayFmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+						}	
+					}
+					strHtml += '</div><span id="addFmrBtn" opts="addFmrOpts" class="addSpan fl">添加/编辑发明人</span></div>';
+					strHtml += '</div></div>';
+					//技术联系人
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>技术联系人</label><div class="layui-input-block fixHeiDiv clearfix">';
+					strHtml += '<input id="jsLxrIdInp" type="hidden" value="'+ json.jsLxrId +'" name="jsLxrIdInp"/><div class="multiBox fl" style="width:100%;">';
+					strHtml += '<div id="techLxrBox" class="multiBox fl">';
+					if(json.jsLxrId != ''){
+						var tmpArrayJsLxrId = json.jsLxrId.split(',');
+						var tmpArrayJsLxrName = json.jsLxrName.split(',');
+						var tmpArraySqrJsLxrId = json.sqrJsrId.split(',');
+						for(var i=0;i<tmpArrayJsLxrName.length;i++){
+							strHtml += '<p id="fmrId_'+ tmpArrayJsLxrId[i] +'" fmridattr="'+ tmpArrayJsLxrId[i] +'" sqrids="'+ tmpArraySqrJsLxrId[i] +'" class="lxFmTag delJsLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrJsLxrId[i] +'"><span>'+ tmpArrayJsLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+						}
+					}
+					strHtml += '</div><span id="addJsLxrBtn" opts="addJsLxrOpts" class="addSpan fl">添加/编辑技术联系人</span></div>';
+					strHtml += '</div></div>';
+					//案件优先权
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">优先权</label><div class="blockDiv fixHeiDiv clearfix">';
+					strHtml += '<input id="yxqDetailInp" type="hidden" name="yxqDetail"/><div id="yxqBox"><div id="innerYxqBox">';
+					if(json.ajYxqDetail != ''){
+						var tmpYxqZlNum = json.ajYxqDetail.split(':')[0].split(',');
+						var tmpYxqSqArea = json.ajYxqDetail.split(':')[1].split(',');
+						var tmpYxqDate = json.ajYxqDetail.split(':')[2].split(',');
+						num = tmpYxqZlNum.length;
+						for(var i=0;i<tmpYxqZlNum.length;i++){
+							strHtml += '<div class="innerYxqBox">';
+							strHtml += '<input placeholder="请输入案件申请号/专利号" type="text" value="'+ tmpYxqZlNum[i] +'" autocomplete="off" class="layui-input zlAjNumInp"/>';
+							strHtml += '<div class="innerSelAddBox"><select class="zlYxqAreaInp" lay-filter="selAreaFilter">';
+							strHtml += '<option value="">请选择</option>';
+							if(tmpYxqSqArea[i] == '中国'){
+								strHtml += '<option value="中国" selected>中国[CN]</option>';
+								strHtml += '<option value="中国香港">中国香港[HK]</option>';
+								strHtml += '<option value="中国台湾">中国台湾[TW]</option>';
+								strHtml += '<option value="澳门">澳门[MO]</option>';
+								strHtml += '<option value="日本">日本[JP]</option>';
+							}else if(tmpYxqSqArea[i] == '中国香港'){
+								strHtml += '<option value="中国">中国[CN]</option>';
+								strHtml += '<option value="中国香港" selected>中国香港[HK]</option>';
+								strHtml += '<option value="中国台湾">中国台湾[TW]</option>';
+								strHtml += '<option value="澳门">澳门[MO]</option>';
+								strHtml += '<option value="日本">日本[JP]</option>';
+							}else if(tmpYxqSqArea[i] == '中国台湾'){
+								strHtml += '<option value="中国">中国[CN]</option>';
+								strHtml += '<option value="中国香港">中国香港[HK]</option>';
+								strHtml += '<option value="中国台湾" selected>中国台湾[TW]</option>';
+								strHtml += '<option value="澳门">澳门[MO]</option>';
+								strHtml += '<option value="日本">日本[JP]</option>';
+							}else if(tmpYxqSqArea[i] == '澳门'){
+								strHtml += '<option value="中国">中国[CN]</option>';
+								strHtml += '<option value="中国香港">中国香港[HK]</option>';
+								strHtml += '<option value="中国台湾">中国台湾[TW]</option>';
+								strHtml += '<option value="澳门" selected>澳门[MO]</option>';
+								strHtml += '<option value="日本">日本[JP]</option>';
+							}else if(tmpYxqSqArea[i] == '日本'){
+								strHtml += '<option value="中国">中国[CN]</option>';
+								strHtml += '<option value="中国香港">中国香港[HK]</option>';
+								strHtml += '<option value="中国台湾">中国台湾[TW]</option>';
+								strHtml += '<option value="澳门">澳门[MO]</option>';
+								strHtml += '<option value="日本" selected>日本[JP]</option>';
+							}
+							strHtml += '</select></div>';
+							strHtml += '<input placeholder="请选择日期" type="text" name="" autocomplete="off" id="dateInp_'+ (i+1) +'" value="'+ tmpYxqDate[i] +'" class="layui-input yxqInpDate"/>';
+							strHtml += '<i class="layui-icon layui-icon-delete delYxqIcon"  title="删除"></i>';
+							strHtml += '</div>';
+							laydate.render({
+								elem:'#dateInp_' + (i+1)
+							});
+						}
+					}
+					strHtml += '</div><span id="addYxqBtn" class="addSpan margLAddSp fl">添加优先权</span></div>';
+					strHtml += '</div></div>';
+					//案件额外要求
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">案件额外要求</label>';
+					strHtml += '<input id="ajEwyqId" type="hidden" name="ajEwyqId"/><input id="tmpAjEwyqId" type="hidden"/>';
+					strHtml += '<div id="ewyqBpx" class="layui-input-block">';
+					for(var i=0;i<json.yqInfo.length;i++){
+						if(json.yqInfo[i].checked){
+							strHtml += '<input type="checkbox" name="zlYqInfoInp" lay-filter="ewyqFilter" value="'+ json.yqInfo[i].yqId +'" title="'+ json.yqInfo[i].yaContent +'" lay-skin="primary" checked/>';
+							tmpEwyqIdArray.push(json.yqInfo[i].yqId);
+						}else{
+							strHtml += '<input type="checkbox" name="zlYqInfoInp" lay-filter="ewyqFilter" value="'+ json.yqInfo[i].yqId +'" title="'+ json.yqInfo[i].yaContent +'" lay-skin="primary"/>';	
+						}
+					}
+					strHtml += '</div></div>';
+					//案件备注
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">案件备注</label><div class="layui-input-block">';
+					strHtml += '<textarea id="ajRemark" name="ajRemark" placeholder="请输入案件备注(80字以内)" class="layui-textarea" maxlength="80">'+ json.ajRemark +'</textarea>';
+					strHtml += '</div></div>';
+					//定稿提交截至时间
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>定稿提交截止时间</label><div class="layui-input-inline">';
+					strHtml += '<input type="text" class="layui-input" id="cpyDateInp" value="'+ json.cpyDate +'" name="cpyDate"/></div><div class="layui-form-mid layui-word-aux">(系统默认一个月)</div></div>';
+					//案件附件
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">案件附件</label><div class="layui-input-block">';
+					strHtml += '<button type="button" class="layui-btn layui-btn-normal" id="selFileBtn">选择文件</button>';
+					strHtml += '  <span class="noticeSpan">注：附件中单个图片大小不能超过5M，单个文件大小不能超过10M (非必填项)</span>';
+					strHtml += '<button type="button" class="layui-btn" id="upListAction">上传附件</button></div></div>';
+					
+					strHtml += '<div class="layui-form-item"><input id="fujianInp" name="zlUpCl" type="hidden"/>';
+					strHtml += '<div class="layui-input-block"><table class="layui-table"><thead>';
+					strHtml += '<tr><th>附件名</th><th>大小</th><th>状态</th><th>操作</th></tr></thead>';
+					strHtml += '<tbody id="upLoadFileList">';
+					var zlUpClArray = json.upFile;
+					for(var i=0;i<zlUpClArray.length;i++){
+						strHtml += '<tr id="upload-'+ i +'">';
+						strHtml += '<td>'+ zlUpClArray[i].fileName +'</td>';
+						strHtml += '<td>'+ zlUpClArray[i].fileSize +'</td>';
+						strHtml += '<td><span style="color: #5FB878;">上传成功</span></td>';
+						strHtml += '<td>';
+						strHtml += '<input class="uploadInpHid" name="hasUpSuccInp" value="'+ zlUpClArray[i].upPath +'" type="hidden"/>';
+						strHtml += '<button class="layui-btn layui-btn-xs layui-btn-danger deleteBtn deleteBtn_edit">删除</button>';
+						strHtml += '<button class="layui-btn layui-btn-xs downloadBtn" downFilePath="'+ zlUpClArray[i].downFilePath +'">下载</button></td>';
+						strHtml += '</tr>';
+					}
+					strHtml += '</tbody></table>';
+					strHtml += '</div></div>';
+					//保存按钮
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"></label><div class="layui-input-block" style="width:75%;text-align:center;">';
+					strHtml += '<button type="button" id="saveZlBtn" class="layui-btn" style="width:120px;margin-left:0px;">保存专利</button></div></div>';
+					$('#addNewZl').html(strHtml);
+					form.render();
+					if(json.ajYxqDetail != ''){	
+						this.delYxq();
+					}
+					laydate.render({
+						elem: '#cpyDateInp'
+					});
+					selectFileUpload();//编辑时渲染结构完成调用上传方法
+					delHasAddMethod('delFieldBtn','delFieldOpt');
+					delHasAddMethod('delSqrBtn','delSqrOpt');
+					if(json.lxrId != ''){
+						delHasAddMethod('delLxrBtn','delLxrOpt');
+					}
+					if(json.fmrId != ''){
+						delHasAddMethod('delFmrBtn','delFmrOpt');
+					}
+					delHasAddMethod('delJsLxrBtn','delJsLxrOpt');
 				}
 			};
 			//专利类型form radio监听事件
@@ -599,18 +909,17 @@
 				tmpEwyqIdArray.length = 0;
 				if(value == 'fmxx'){
 					$('.selZlTaskSp').hide();
-					$('#pubZlIdInp').val('');
-					$('#pubZlIdInpTxt').val('');
 					parent.addZlFlag = false;
 				}else{
 					$('.selZlTaskSp').show();
+					if($('#pubZlIdInp').val() != ''){
+						parent.addZlFlag = false;
+					}
 				}
-				if(parent.addZlFlag){
-					$('#pubZlIdInp').val('');
-					parent.$('#lqZlIdInp').val('');
-					$('#pubZlIdInpTxt').val('');
-					parent.$('#lqZlIdInpText').val('');
-				}
+				$('#pubZlIdInp').val('');
+				parent.$('#lqZlIdInp').val('');
+				$('#pubZlIdInpTxt').val('');
+				parent.$('#lqZlIdInpText').val('');
 				page.getAjNum(value);
 				page.getEwYqList(value);
 			});
@@ -635,9 +944,8 @@
 			function selectFileUpload(){
 				var upLoadFileList = $('#upLoadFileList'),url = '';
 				if(addEditZlOpts == 'editZlOpts'){//编辑已增加的专利
-					url = '/upload.do?action=uploadFile&ajId=' + zlId;
+					url = '/upload.do?action=uploadFile&ajId=' + zlId + '&fileType=dg';
 				}else{//增加专利
-					console.log("nihao")
 					url = '/upload.do?action=uploadFile&ajId=0&fileType=dg';
 				}
 				$('#selFileBtn').upfile(url);
@@ -651,7 +959,7 @@
 				}
 				$('.downloadBtn').on('click',function(){
 					var downFilePath = $(this).attr('downFilePath');
-					window.location.href = "/zlm.do?action=downFile&fileUrl=" + downFilePath;
+					window.location.href = "/zlm.do?action=downFile&fileUrl=" + encodeURIComponent(encodeURIComponent(downFilePath));
 				});
 			}
 			$(function(){
@@ -662,7 +970,7 @@
 		function delHasAddMethod(obj,opts){
 			var tmpArray = [];
 			$('.'+ obj).on('click',function(){
-				var objId = $(this).attr('id'),lxrLen = $('#lxrBox p').length,fmrLen = $('#fmrBox p').length;
+				var objId = $(this).attr('id'),lxrLen = $('#lxrBox p').length,fmrLen = $('#fmrBox p').length,jsLxrLen = $('#techLxrBox p').length;
 				var objSqrId = '';
 				if(opts == 'delFieldOpt'){
 					tmpArray = fieldArray;
@@ -673,6 +981,8 @@
 					tmpArray = lxrIdArray;
 				}else if(opts == 'delFmrOpt'){
 					tmpArray = fmrIdArray;
+				}else if(opts == 'delJsLxrOpt'){
+					tmpArray = jsLxrIdArray;
 				}
 				for(var i=0;i<tmpArray.length;i++){
 					if(objId == tmpArray[i]){
@@ -686,25 +996,26 @@
 				$(this).remove();
 				if(opts == 'delSqrOpt'){
 					if(lxrLen > 0){
-						isHasLxrFlag = true;
 						$('input[name=myParSqr_'+ objSqrId +']').parent().remove();
 						//删除后还应该检测下当前下是否还存在lxr 假如不存在 应该将数组清空
 						if($('#lxrBox p').length == 0){
 							lxrIdArray.length = 0;
 							lxrIdNum.length = 0;
 						}
-					}else{
-						isHasLxrFlag = false;
 					}
 					if(fmrLen > 0){
-						isHasFmrFlag = true;
 						$('input[name=myParSqr_'+ objSqrId +']').parent().remove();
 						if($('#fmrBox p').length == 0){
 							fmrIdArray.length = 0;
 							fmrIdNum.length = 0;
 						}
-					}else{
-						isHasFmrFlag = false;
+					}
+					if(jsLxrLen > 0){
+						$('input[name=myParSqr_'+ objSqrId +']').parent().remove();
+						if($('#techLxrBox p').length == 0){
+							jsLxrIdArray.length = 0;
+							jsLxrIdNum.length = 0;
+						}
 					}
 				}
 			});

@@ -4,6 +4,12 @@ body{
 	background:#f2f2f2;
 	color:#666;
 }
+#addZlBtn{
+	height:40px;
+	line-height:40px;
+	z-index:10;
+	display:none;
+}
 .noData{
 	display:none;
 }
@@ -127,6 +133,18 @@ body{
 }
 .innerYxqBox .innerSelAddBox{
 	width:200px;
+	position:relative;
+}
+.innerSelAddBox span.showAreaSpan{
+	height:100%;
+	line-height:38px;
+	padding:0 10px;
+	background:pink;
+	position:absolute;
+	left:0;
+	top:0;
+	z-index:5;
+	color:#333;
 }
 .innerYxqBox .innerSelAddBox .layui-form-select .layui-edge{
 	top:18px;
@@ -529,4 +547,43 @@ body{
 #saveLqZlBtn{
 	float:right;
 	margin-right:15px;
+}
+.layui-table-page>div{
+	text-align:right;
+}
+.layui-extend-bangzhu{
+	font-size:18px;
+	position:absolute;
+	left:415px;
+	top:10px;
+	z-index:10;
+	cursor:pointer;
+	color:#009688;
+}
+.layui-extend-bangzhu:hover{
+	color:#F47837;
+}
+.blockSpan{
+	display:inline-block;
+	height:22px;
+	line-height:22px;
+	padding:0 5px;
+	background:#009688;
+	color:#fff;
+	margin-right:5px;
+	font-size:12px;
+}
+/* 使用说明 */
+.introPart{
+	padding:0 6px;
+}
+.introPart .layui-elem-quote{
+	padding:6px;
+	margin-bottom:0px;
+	font-weight:600;
+	color:#009688;
+	margin-top:8px;
+}
+.introPart p{
+	padding:6px 10px 0;
 }

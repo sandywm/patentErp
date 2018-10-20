@@ -329,6 +329,7 @@
   		  	                //首次不执行
   		  	                if(!first){
   		  	               		_this.loadEmailList(opts,mailType);
+  		  	               		_this.checkAllInpInit();
   		  	                }
   		  	            }
   	  	            });

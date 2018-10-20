@@ -49,15 +49,15 @@
 						//表示添加联系人
 						sqrLxrFmrName = 'sqrLxr';
 						lxrFmrTxt = '联系人';
-					}else{
+					}else if(tmpLxrFmrOpts == 'addFmrOpts' || tmpLxrFmrOpts == 'addJsLxrOpts'){
 						//表示添加发明人
 						sqrLxrFmrName = 'sqrFmr';
-						lxrFmrTxt = '发明人';
+						lxrFmrTxt = '发明人/技术联系人';
 					}
 					//保存已添加的联系人或发明人
 					$('#saveZlBtn').on('click',function(){
 						var sqrIdArray = parent.sqrIdArray;
-						var strHtml = '',tmpLxrIdArray=[],tmpSqrId=[],tmpLxrTxtArray=[],tmpFmrIdArray=[],tmpFmrTxtArray=[];
+						var strHtml = '',tmpLxrIdArray=[],tmpSqrId=[],tmpLxrTxtArray=[],tmpFmrIdArray=[],tmpFmrTxtArray=[],isMustFlag=false;
 						var index= parent.layer.getFrameIndex(window.name);
 						for(var i=0;i<sqrIdArray.length;i++){
 							$('#sqr_'+sqrIdArray[i]).attr('hasCheckedLen',$('#sqr_'+sqrIdArray[i]).find('input[name='+ sqrLxrFmrName +']:checked').length);
@@ -74,6 +74,7 @@
 						if(tmpLxrFmrOpts == 'addLxrOpts'){
 							parent.lxrIdArray.length = 0;
 							parent.lxrIdNum.length = 0;
+							isMustFlag = false;//表示不是必须要选项
 							$('.listP').each(function(i){
 								tmpLxrIdArray.push($('.listP').eq(i).attr('lxrFmrId'));
 								tmpLxrTxtArray.push($('.listP').eq(i).find('strong').html());
@@ -89,21 +90,45 @@
 							parent.$('#lxrBox').html(strHtml);
 							parent.delHasAddMethod('delLxrBtn','delLxrOpt');
 						}else{
-							parent.fmrIdArray.length = 0;
-							parent.fmrIdNum.length = 0;
+							var tmpFmrJslxrIdArray = [],tmpFmrJsLxrIdNum = [],delNameBtn='';
+							if(tmpLxrFmrOpts == 'addFmrOpts'){//发明人
+								tmpFmrJslxrIdArray = parent.fmrIdArray;
+								tmpFmrJsLxrIdNum = parent.fmrIdNum;
+								delNameBtn = 'delFmrBtn';
+								isMustFlag = false;//表示不是必须要选项
+							}else if(tmpLxrFmrOpts == 'addJsLxrOpts'){//技术联系人
+								tmpFmrJslxrIdArray = parent.jsLxrIdArray;
+								tmpFmrJsLxrIdNum = parent.jsLxrIdNum;
+								delNameBtn = 'delJsLxrBtn';
+								isMustFlag = true;//表示是必须要选项
+							}
+							if(isMustFlag){
+								if($('.listP').length == 0){
+									layer.msg('技术联系人不能为空，请选择', {icon:5,anim:6,time:2000});
+									return;
+								}
+							}
+							tmpFmrJslxrIdArray.length = 0;
+							tmpFmrJsLxrIdNum.length = 0;
 							$('.listP').each(function(i){
 								tmpFmrIdArray.push($('.listP').eq(i).attr('lxrFmrId'));
 								tmpFmrTxtArray.push($('.listP').eq(i).find('strong').html());
 								tmpSqrId.push($('.listP').eq(i).attr('parSqrId'));
-								parent.fmrIdArray.push('fmrId_'+$('.listP').eq(i).attr('lxrFmrId'));
-								parent.fmrIdNum.push($('.listP').eq(i).attr('lxrFmrId'));
+								//parent.fmrIdArray.push('fmrId_'+$('.listP').eq(i).attr('lxrFmrId'));
+								//parent.fmrIdNum.push($('.listP').eq(i).attr('lxrFmrId'));
+								tmpFmrJslxrIdArray.push('fmrId_'+$('.listP').eq(i).attr('lxrFmrId'));
+								tmpFmrJsLxrIdNum.push($('.listP').eq(i).attr('lxrFmrId'));
 							});
 							for(var i=0;i<tmpFmrTxtArray.length;i++){
-								strHtml += '<p id="fmrId_'+ tmpFmrIdArray[i] +'" fmrIdAttr="'+ tmpFmrIdArray[i] +'" sqrIds="'+ tmpSqrId[i].split('_')[1] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="'+ tmpSqrId[i] +'"/><span>'+ tmpFmrTxtArray[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+								strHtml += '<p id="fmrId_'+ tmpFmrIdArray[i] +'" fmrIdAttr="'+ tmpFmrIdArray[i] +'" sqrIds="'+ tmpSqrId[i].split('_')[1] +'" class="lxFmTag '+ delNameBtn +'"><input type="hidden" class="lxrFmrInpHid" name="'+ tmpSqrId[i] +'"/><span>'+ tmpFmrTxtArray[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 							}
-							parent.$('#fmrBox').html(strHtml);
-							
-							parent.delHasAddMethod('delFmrBtn','delFmrOpt');
+							if(tmpLxrFmrOpts == 'addFmrOpts'){//发明人
+								parent.$('#fmrBox').html(strHtml);
+								parent.delHasAddMethod('delFmrBtn','delFmrOpt');
+							}else if(tmpLxrFmrOpts == 'addJsLxrOpts'){
+								parent.$('#techLxrBox').html(strHtml);
+								parent.delHasAddMethod('delJsLxrBtn','delJsLxrOpt');
+							}
 						}
 						parent.layer.close(index);
 					});
@@ -118,7 +143,7 @@
 					}else{
 						//表示添加发明人
 						sqrLxrFmrName = 'sqrFmr';
-						lxrFmrTxt = '发明人';
+						lxrFmrTxt = '发明人/技术联系人';
 					}
 					$('input[name='+ sqrLxrFmrName +']').on('click',function(){
 						var lxrFmrName = '',strHtml = '';
@@ -200,10 +225,13 @@
 						if(tmpLxrFmrOpts == 'addLxrOpts'){
 							$('#lxrId_'+id).attr('checked',false);
 							$('#lxrId_'+id).prev().removeClass('hasActive');
-						}else{
+						}else if(tmpLxrFmrOpts == 'addFmrOpts' || tmpLxrFmrOpts == 'addJsLxrOpts'){
 							$('#fmrId_'+id).attr('checked',false);
 							$('#fmrId_'+id).prev().removeClass('hasActive');
-						}
+						}/*else if(tmpLxrFmrOpts == 'addJsLxrOpts'){
+							$('#jxLxrId_'+id).attr('checked',false);
+							$('#jxLxrId_'+id).prev().removeClass('hasActive');
+						}*/
 						if($('.listP').length == 0){
 							$('.tipInfo').show();
 							return;
@@ -217,7 +245,7 @@
 					var cusIdStr = parent.sqrIdArray.join(','),option = '';
 					if(tmpLxrFmrOpts == 'addLxrOpts'){//添加联系人
 						option = 'lxr'; 
-					}else{
+					}else if(tmpLxrFmrOpts == 'addFmrOpts' || tmpLxrFmrOpts == 'addJsLxrOpts'){
 						option = 'fmr';
 					}
 					layer.load('1');
@@ -234,16 +262,19 @@
 				        }
   					});
 				},
-				//获取专业技术领域列表
+				//获取联系人 发明人 技术联系人
 				renderLxrOrFmrList : function(listData){
+					console.log(listData);
 					var strHtml = '';
 					for(var i=0;i<listData.length;i++){
 						strHtml += '<div class="lxFmrBox">';
 						if(tmpLxrFmrOpts == 'addLxrOpts'){
 							strHtml += '<strong class="titleStrong">['+ listData[i].sqrName +']的联系人<span class="addNewBtn" sqrId="'+ listData[i].sqrId +'" opts="addLxrBtnOpts" addFmrLxrOpt="addLxrOpts"><i class="layui-icon layui-icon-add-1"></i>增加联系人</span></strong>';
-						}else{
+						}else if(tmpLxrFmrOpts == 'addFmrOpts' || tmpLxrFmrOpts == 'addJsLxrOpts'){
 							strHtml += '<strong class="titleStrong">['+ listData[i].sqrName +']的发明人<span class="addNewBtn" sqrId="'+ listData[i].sqrId +'" opts="addFmrBtnOpts" addFmrLxrOpt="addFmrOpts"><i class="layui-icon layui-icon-add-1"></i>增加发明人</span></strong>';
-						}
+						}/*else if(tmpLxrFmrOpts == 'addJsLxrOpts'){
+							strHtml += '<strong class="titleStrong">['+ listData[i].sqrName +']的发明人<span class="addNewBtn" sqrId="'+ listData[i].sqrId +'" opts="addFmrBtnOpts" addFmrLxrOpt="addFmrOpts"><i class="layui-icon layui-icon-add-1"></i>增加技术联系人</span></strong>';
+						}*/
 						strHtml += '<div id="sqr_'+ listData[i].sqrId +'" hasCheckedLen="0" class="innerLxFmrBox clearfix">';
 						if(tmpLxrFmrOpts == 'addLxrOpts'){
 							if(listData[i].lxrInfo != undefined){
@@ -263,7 +294,7 @@
 									strHtml += '<strong>'+ listData[i].fmrInfo[j].fmrName +'</strong>';
 								}
 							}else{
-								strHtml += '<span class="noAddInfo"><i class="layui-icon layui-icon-face-cry"></i>该申请人(公司)暂未添加发明人！</span>';
+								strHtml += '<span class="noAddInfo"><i class="layui-icon layui-icon-face-cry"></i>该申请人(公司)暂未添加发明人/技术联系人！</span>';
 							}
 						}
 						strHtml += '</div></div>';
@@ -271,7 +302,7 @@
 					$('.lxrListBox').html(strHtml);
 					this.activeCheckInp();
 					if(tmpLxrFmrOpts == 'addLxrOpts'){
-						if(parent.lxrIdArray.length != 0 && this.data.isClickInpFlag == false){//表示之前已经添加了部分技术领域
+						if(parent.lxrIdArray.length != 0 && this.data.isClickInpFlag == false){//表示之前已经添加了部分联系人
 							//进行匹配
 							var strHtmlHasSel = '';
 							var tmpArray = parent.lxrIdArray,tmpSqrIdArray=[],tmpLxrName=[];
@@ -309,14 +340,22 @@
 							}
 						}
 					}else{
-						if(parent.fmrIdArray.length != 0 && this.data.isClickInpFlag == false){//表示之前已经添加了部分技术领域
+						var tmpFmrJslxrIdArray = [],tmpFmrJsLxrIdNum = [];
+						if(tmpLxrFmrOpts == 'addFmrOpts'){
+							tmpFmrJslxrIdArray = parent.fmrIdArray;
+							tmpFmrJsLxrIdNum = parent.fmrIdNum;
+						}else if(tmpLxrFmrOpts == 'addJsLxrOpts'){
+							tmpFmrJslxrIdArray = parent.jsLxrIdArray;
+							tmpFmrJsLxrIdNum = parent.jsLxrIdNum;
+						}
+						if(tmpFmrJslxrIdArray.length != 0 && this.data.isClickInpFlag == false){//表示之前已经添加了部分发明人或技术联系人
 							//进行匹配
 							var strHtmlHasSel = '';
-							var tmpArray = parent.fmrIdArray,tmpSqrIdArray=[],tmpFmrName=[];
+							var tmpSqrIdArray=[],tmpFmrName=[];
 							$('.tipInfo').hide();
-							for(var j=0;j<tmpArray.length;j++){
+							for(var j=0;j<tmpFmrJslxrIdArray.length;j++){
 								$('.fmrInp').each(function(i){
-									if($('.fmrInp').eq(i).attr('id') == tmpArray[j]){
+									if($('.fmrInp').eq(i).attr('id') == tmpFmrJslxrIdArray[j]){
 										$('.fmrInp').eq(i).attr('checked',true);
 										$('.fmrInp').eq(i).prev().addClass('hasActive');
 										tmpFmrName.push($('.fmrInp').eq(i).attr('fmrName'));
@@ -324,9 +363,9 @@
 										return false;
 									}
 								});
-								strHtmlHasSel += '<p id="hasSelP_'+ parent.fmrIdNum[j] +'" lxrFmrId="'+ parent.fmrIdNum[j] +'" parSqrId="myParSqr_'+ tmpSqrIdArray[j] +'" class="listP"><strong class="ellip">'+ tmpFmrName[j] +'</strong>';
+								strHtmlHasSel += '<p id="hasSelP_'+ tmpFmrJsLxrIdNum[j] +'" lxrFmrId="'+ tmpFmrJsLxrIdNum[j] +'" parSqrId="myParSqr_'+ tmpSqrIdArray[j] +'" class="listP"><strong class="ellip">'+ tmpFmrName[j] +'</strong>';
 								strHtmlHasSel += '<a class="moveUpDown fl"></a>';
-								strHtmlHasSel += '<i id="'+ parent.fmrIdNum[j] +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
+								strHtmlHasSel += '<i id="'+ tmpFmrJsLxrIdNum[j] +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
 							}
 							$('.hasSelLxrFmrList').append(strHtmlHasSel);
 							this.lxrFmrOrder();
