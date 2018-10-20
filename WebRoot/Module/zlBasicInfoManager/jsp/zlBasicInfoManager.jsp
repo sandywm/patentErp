@@ -155,7 +155,7 @@
 				switchToArray : function(tmpArray){
 					var strHtml = '';
 					for(var i=0;i<tmpArray.length;i++){
-						strHtml += '<span class="blockSpan testSp">'+ tmpArray[i] +'</span>';
+						strHtml += '<span class="blockSpan">'+ tmpArray[i] +'</span>';
 					}
 					return strHtml;
 				}

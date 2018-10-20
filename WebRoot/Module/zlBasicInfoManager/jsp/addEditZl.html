@@ -441,15 +441,15 @@
 								url = '/zlm.do?action=updateZlBasicInfo&zlId=' + zlId;
 							}else{
 								//表示增加专利
-								var url = '/zlm.do?action=addZlData';
-								//console.log(ajTitleVal + "--" +zlTypeInpVal + "-" + ajFieldIdVal + "-" + ajSqAddressVal + "--" + ajSqrIdVal + "-" + ajLxrIdVal+"-"+ajFmrIdVal+"-"+yxqDetailInpVal+"-"+ajEwyqIdVal+"-"+ajRemarkVal+"-"+$('#fujianInp').val()+"-"+cpyDateInpVal+"-"+pubZlIdInpVal)	
+								var url = '/zlm.do?action=addZlData';	
 			   				}
+			   				console.log(ajTitleVal + "--" +zlTypeInpVal + "-" + ajFieldIdVal + "-" + ajSqAddressVal + "--" + ajSqrIdVal + "-" + ajLxrIdVal+"-"+ajFmrIdVal+"-"+yxqDetailInpVal+"-"+ajEwyqIdVal+"-"+ajRemarkVal+"-"+$('#fujianInp').val()+"-"+cpyDateInpVal+"-pubZlId=="+pubZlIdInpVal + "-----sqrNmme----" + sqrName)
 			   				var field = {ajTitle:escape(ajTitleVal),
 												ajType:zlTypeInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 												ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 												yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 												ajUpload:$('#fujianInp').val(),cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal};
-			   				layer.load('1');
+			   				//layer.load('1');
 							$.ajax({
 			   					type:'post',
 			   			        async:false,
@@ -457,7 +457,7 @@
 			   			        data:field,
 			   			        url:url,
 			   			        success:function (json){
-			   			        	layer.closeAll('loading');
+			   			        	//layer.closeAll('loading');
 			   			        	console.log(json)
 			   			        	if(json['result'] == 'success'){
 			   			        		function callBackSucc(){
@@ -680,7 +680,6 @@
 					for(var i=0;i<json.jsFieldInfo.length;i++){
 						if(json.jsFieldInfo[i].checked){
 							strHtml += '<p id="fieldId_'+ json.jsFieldInfo[i].jsId +'" jffieldattrid="'+ json.jsFieldInfo[i].jsId +'" class="delFieldBtn"><span>'+ json.jsFieldInfo[i].jsName +'</span><i class="layui-icon layui-icon-close"></i></p>';	
-							//strJsId += json.jsFieldInfo[i].jsId;
 							fieldArray.push('fieldId_'+json.jsFieldInfo[i].jsId);
 						}
 					}
@@ -727,9 +726,8 @@
 					strHtml += '<div id="sqrBox" class="multiBox fl">';
 					var tmpArraySqrId = json.sqrId.split(',');
 					var tmpArraySqrName = json.sqrName.split(',');
-					alert(tmpArraySqrName)
 					for(var i=0;i<tmpArraySqrName.length;i++){
-						strHtml += '<p id="sqrId_'+ tmpArraySqrId[i] +'" sqrattrid="'+ tmpArraySqrId[i] +'" class="delSqrBtn"><span>'+ tmpArraySqrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+						strHtml += '<p id="sqrId_'+ tmpArraySqrId[i] +'" sqrattrname="'+ tmpArraySqrName[i] +'" sqrattrid="'+ tmpArraySqrId[i] +'" class="delSqrBtn"><span>'+ tmpArraySqrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 						sqrArray.push('sqrId_'+tmpArraySqrId[i]);
 						sqrIdArray.push(tmpArraySqrId[i]);
 						sqrTxtArray.push(tmpArraySqrName[i]);
@@ -900,6 +898,10 @@
 						delHasAddMethod('delFmrBtn','delFmrOpt');
 					}
 					delHasAddMethod('delJsLxrBtn','delJsLxrOpt');
+					if(json.pubZlName != ''){//编辑首次进来页面判断是否存在已添加的专利任务存在激活重置
+						parent.$('#lqZlIdInp').val(json.pubZlId);//将已经存在数据库的pubZlId赋给父级用于弹窗页面的回显
+			  			parent.addZlFlag = true;//激活重置按钮
+			  		}
 				}
 			};
 			//专利类型form radio监听事件
@@ -960,14 +962,14 @@
 				$('.downloadBtn').on('click',function(){
 					var downFilePath = $(this).attr('downFilePath');
 					var form = $("<form>");   //定义一个form表单
-					form.attr('style', 'display:none');   //在form表单中添加查询参数
-		            form.attr('target', '');
-		            form.attr('method', 'post');
-		            form.attr('action', "/zlm.do?action=downFile");
+					form.attr('style', 'display:none'); //在form表单中添加查询参数
+					form.attr('target', '');
+ 					form.attr('method', 'post');
+					form.attr('action', "/zlm.do?action=downFile");
 					var input1 = $('<input>');
-		            input1.attr('type', 'hidden');
-		            input1.attr('name', 'fileUrl');
-		            input1.attr('value', escape(downFilePath));
+					input1.attr('type', 'hidden');
+					input1.attr('name', 'fileUrl');
+					input1.attr('value', escape(downFilePath));
 					$('body').append(form);  //将表单放置在web中 
 					form.append(input1);   //将查询参数控件提交到表单上
             		form.submit();
