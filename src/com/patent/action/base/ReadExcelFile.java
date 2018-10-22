@@ -113,11 +113,11 @@ public class ReadExcelFile {
 //		 }else{
 //			 System.out.println(false);
 //		 }
-		 System.out.println(CurrentTime.compareDate("2018-09-19", "2018-11-19"));
-		 File file = new File("D:\\Program Files\\Apache Software Foundation\\Tomcat 7.0\\webapps\\patentErp\\Module\\uploadFile\\appUser\\1\\1\\外观设计-受理+费用减缓你通知书.zip");
-		 System.out.println(file.getName());
-		 new FileInputStream(file);
-		 String aaa = "cpyUser\\12\\dg\\new 1.txt,cpyUser\\12\\dg\\download.zip,cpyUser\\12\\dg\\audio.txt,cpyUser\\12\\dg\\JavaScript笔记总结.docx";
-		 System.out.print(aaa.length());
+//		 System.out.println(CurrentTime.compareDate("2018-09-19", "2018-11-19"));
+//		 File file = new File("D:\\Program Files\\Apache Software Foundation\\Tomcat 7.0\\webapps\\patentErp\\Module\\uploadFile\\appUser\\1\\1\\外观设计-受理+费用减缓你通知书.zip");
+//		 System.out.println(file.getName());
+//		 new FileInputStream(file);
+		 String aaa = "2017301654572";
+		 System.out.print(aaa.substring(4, 5));
 	}
 }

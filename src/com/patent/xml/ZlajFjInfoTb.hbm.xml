@@ -21,7 +21,7 @@
             </column>
         </many-to-one>
         <property name="fjName" type="java.lang.String">
-            <column name="fj_name" length="50" not-null="true">
+            <column name="fj_name" length="100" not-null="true">
                 <comment>附件名称</comment>
             </column>
         </property>

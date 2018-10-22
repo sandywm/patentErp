@@ -273,11 +273,22 @@ public class ReadZipFile {
             		zlList = zlm.listSpecInfoByZlNo(ajNoGf);
 	            	//第一次导入，需要根据专利名称、申请人、专利类型获取系统专利
 	            	if(zlList.size() == 0){//说明系统中还没有该专利号的专利
-	            		if(tzsName.equals("专利申请受理通知书")){
-	            			zlList = zlm.listSpecInfoByOpt(zlName, sqrName, zlType,cpyId);
-	            		}else{
-	            			msg = "noInfo";//没有这个专利
-	            		}
+	            		if(zlType.equals("")){
+            				//需要通过专利号进行判定（专利号的规范####-#[专利类型编号]）（1：发明,2：实用新型，3：外观）--国内。（8：发明,9：实用新型，10：外观）--国外
+            				if(ajNoGf.length() == 13){
+            					String zlTypeNo = ajNoGf.substring(4, 5);
+            					if(zlTypeNo.equals("1")){
+            						zlType = "fm";
+            					}else if(zlTypeNo.equals("2") || zlTypeNo.equals("8")){
+            						zlType = "syxx";
+            					}else if(zlTypeNo.equals("3") || zlTypeNo.equals("9")){
+            						zlType = "wg";
+            					}
+            				}else if(ajNoGf.length() == 14){
+            					zlType = "wg";
+            				}
+            			}
+            			zlList = zlm.listSpecInfoByOpt(zlName, sqrName, zlType,cpyId);
 	            	}
             	}else if(specZlId > 0){//针对指定的专利导入
             		zlList = zlm.listSpecInfoById(specZlId, cpyId);
@@ -300,6 +311,7 @@ public class ReadZipFile {
 									//无需再增加
 									msg = "uploadExist";//之前已经上传过，无需再次上传
 									map.put("tzsName", tzsName);
+									map.put("zlId", zlId);
 									map.put("detailInfo", zlInfo+"之前已成功导入过["+tzsName+"] 无需再次导入");
 									map.put("result", msg);
 								}else{//未增加
@@ -633,14 +645,16 @@ public class ReadZipFile {
 								
 							}else{
 								map.put("tzsName", tzsName);
-								map.put("detailInfo", zlInfo + "导入人员出错,请更换导入人员重新导入当前通知书");
-								map.put("result", "userError");
+								map.put("zlId", zl.getId());
+								map.put("detailInfo", zlInfo + "当前导入人员不是系统指定人员,请更换导入人员重新导入当前通知书");
+								map.put("result", "tzsUserError");
 							}
 							//-------------------------新修改E-----------------------------//
 
 						}else{
 							msg =  "zlStop";//专利终止条件下不能进行导入
 							map.put("tzsName", tzsName);
+							map.put("zlId", zl.getId());
 							map.put("detailInfo", zlInfo+ "已终止，不能进行导入通知书操作");
 							map.put("result", msg);
 						}
@@ -653,11 +667,11 @@ public class ReadZipFile {
     						map_1.put("zlTitle", zl.getAjTitle());
     						map_1.put("zlSqrInfo", zl.getAjSqrName());
     						String zlTypeChi = "";
-    						if(zl.getAjType().equals("fm")){
+    						if(zlType.equals("fm")){
     							zlTypeChi = "发明";
-    						}else if(zl.getAjType().equals("syxx")){
+    						}else if(zlType.equals("syxx")){
     							zlTypeChi = "实用新型";
-    						}else if(zl.getAjType().equals("wg")){
+    						}else if(zlType.equals("wg")){
     							zlTypeChi = "外观";
     						}
     						map_1.put("zlType", zlTypeChi);
@@ -665,13 +679,15 @@ public class ReadZipFile {
     					}
     					map.put("result", "repeatInfo");
     					map.put("tzsName", tzsName);
-						map.put("detailInfo", "该通知书没有定位到指定专利，请选择一个专利进行重新匹配");
+						map.put("detailInfo", "该通知书匹配到两个以上的专利，请选择一个专利进行重新匹配");
     					map.put("zlList", list_r);
+    					//把通知书内容保存
+    					map.put("tzsInfo", list_d);
     				}
     			}else{//不存在
     				map.put("result", "noInfo");
     				map.put("tzsName", tzsName);
-					map.put("detailInfo", "该通知书没有定位到指定专利");
+					map.put("detailInfo", "该通知书没有匹配到专利");
     			}
 	        }else{
 	        	map.put("result", "tzsError");

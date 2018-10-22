@@ -1954,8 +1954,17 @@ public class ZlMainAction extends DispatchAction {
 								//修改案件的案件附件
 								zlm.updateZlUpFile_dg(zlId, ajUpload);
 							}
-							//获取定稿提交之前的最后一个未完成的流程
-//							lcm
+							if(cpyDate.equals(mxList.get(0).getZlajLcInfoTb().getLcCpyDate())){//如果期限被修改
+								//获取定稿提交之前的最后一个未完成的流程
+								List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
+								if(lcList.size() > 0){
+									//修改代理机构期限时间
+									lcm.updateLcBasicInfoById(lcList.get(0).getId(), "", "", "", cpyDate, "");
+								}
+//								zlm.up
+								11
+							}
+							
 						}
 					}
 				}

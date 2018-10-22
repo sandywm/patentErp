@@ -53,8 +53,9 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 			uDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			ZlajLcInfoTb lc = lcDao.get(sess, id);
-			if(lc != null){
+			List<ZlajLcInfoTb> lcList = lcDao.findInfoById(sess, id);
+			if(lcList.size() > 0){
+				ZlajLcInfoTb lc = lcList.get(0);
 				if(!lcName.equals("")){
 					lc.setLcMz(lcName);
 				}
