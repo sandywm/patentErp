@@ -131,4 +131,19 @@ public class CpyUserInfoDaoImpl implements CpyUserInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<CpyUserInfo> findValidInfoByOpt(Session sess, Integer cpyId, Integer jsId,
+			String userName) {
+		// TODO Auto-generated method stub
+		String hql = " from CpyUserInfo as cu where cu.cpyInfoTb.id = "+cpyId;
+		hql += " and cu.userLzStatus = 1 and cu.userYxStatus = 1";
+		if(!userName.equals("")){
+			hql += " and cu.userName like '%"+userName+"%'";
+		}
+		if(jsId > 0){
+			hql += " and FIND_IN_SET("+jsId+",cu.userScFiledId) > 0";
+		}
+		return sess.createQuery(hql).list();
+	}
+
 }

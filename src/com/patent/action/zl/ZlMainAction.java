@@ -1962,7 +1962,7 @@ public class ZlMainAction extends DispatchAction {
 									lcm.updateLcBasicInfoById(lcList.get(0).getId(), "", "", "", cpyDate, "");
 								}
 //								zlm.up
-								11
+//								11
 							}
 							
 						}

@@ -4,6 +4,7 @@
  */
 package com.patent.action.user;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,6 +90,23 @@ public class UserAction extends DispatchAction {
 	private String getLoginType(HttpServletRequest request){
         String loginType = (String)request.getSession(false).getAttribute(Constants.LOGIN_TYPE);
         return loginType;
+	}
+	
+	/**
+	 * 封装json
+	*  @author  Administrator
+	*  @ModifiedBy  
+	*  @date  2018-8-21 下午10:17:05
+	*  @param obj
+	*  @param response
+	*  @throws IOException
+	 */
+	private void getJsonPkg(Object obj,HttpServletResponse response) throws IOException{
+		String json = JSON.toJSONString(obj);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
 	}
 	
 	/**
@@ -1170,6 +1188,71 @@ public class UserAction extends DispatchAction {
         pw.write(json); 
         pw.flush();  
         pw.close();
+		return null;
+	}
+	
+	/**
+	 * 获取指定用户姓名、擅长区域，代理机构下所有未离职、有效的员工列表
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getValidUserData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		JsFiledInfoManager jsm = (JsFiledInfoManager) AppFactory.instance(null).getApp(Constants.WEB_JS_FIELD_INFO);
+		String userName = Transcode.unescape_new1("userName", request);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Integer jsId = CommonTools.getFinalInteger("jsId", request);
+		Integer cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
+		List<CpyUserInfo> userList = cum.listValidInfoByOpt(cpyId, jsId, userName);
+		String msg = "";
+		List<Object> list_d = new ArrayList<Object>();
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(userList.size() > 0){
+			msg = "success";
+			for(Iterator<CpyUserInfo> it = userList.iterator() ; it.hasNext();){
+				CpyUserInfo user = it.next();
+				Map<String,Object> map_d = new HashMap<String,Object>();
+				map_d.put("userId", user.getId());
+				map_d.put("userName", user.getUserName());
+				map_d.put("userSex", user.getUserSex().equals("m") ? "男" : "女");
+				map_d.put("zxNum", user.getUserZxNum());
+				String userScField = user.getUserScFiledId();
+				String scFiledName = "";
+				if(!userScField.equals("")){
+					List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField);
+					for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
+						JsFiledInfoTb js = it_1.next();
+						scFiledName += js.getZyName() + ",";
+					}
+					if(!scFiledName.equals("")){
+						scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+					}
+				}
+				map_d.put("scFiledName", scFiledName);
+				Integer userExp = user.getUserExper();
+				String userExpChi = "";
+				if(userExp >= 0 && userExp < 100){
+					userExpChi = "铜牌";
+				}else if(userExp > 100 && userExp < 1000){
+					userExpChi = "银牌";
+				}else if(userExp > 1000){
+					userExpChi = "金牌";
+				}
+				map_d.put("userExp", userExp);
+				map_d.put("userExpChi", userExpChi);
+				list_d.add(map_d);
+			}
+			map.put("userInfo", list_d);
+		}else{
+			msg = "noInfo";
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 }

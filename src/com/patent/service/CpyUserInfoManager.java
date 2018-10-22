@@ -199,4 +199,14 @@ public interface CpyUserInfoManager {
 	 * @throws WEBException
 	 */
 	List<CpyUserInfo> listValidInfoByOpt(Integer cpyId,Integer roleId) throws WEBException;
+	
+	/**
+	 * 列出当前代理机构所有未离职、状态为有效且擅长指定专业、员工姓名的员工列表
+	 * @param cpyId 代理机构编号
+	 * @param jsId 专业领域编号（0表示全部）
+	 * @param userName 员工姓名(""表示全部)
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CpyUserInfo> listValidInfoByOpt(Integer cpyId,Integer jsId,String userName) throws WEBException;
 }
