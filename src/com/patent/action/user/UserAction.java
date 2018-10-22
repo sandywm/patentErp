@@ -1207,10 +1207,12 @@ public class UserAction extends DispatchAction {
 		String userName = Transcode.unescape_new1("userName", request);
 		Integer currLoginUserId = this.getLoginUserId(request);
 		Integer jsId = CommonTools.getFinalInteger("jsId", request);
+		Integer opt = CommonTools.getFinalInteger("opt", request);//opt(0:全部，1:只显示员工列表)
 		Integer cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
 		List<CpyUserInfo> userList = cum.listValidInfoByOpt(cpyId, jsId, userName);
 		String msg = "";
 		List<Object> list_d = new ArrayList<Object>();
+		List<Object> list_j = new ArrayList<Object>();
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(userList.size() > 0){
 			msg = "success";
@@ -1247,11 +1249,28 @@ public class UserAction extends DispatchAction {
 				map_d.put("userExpChi", userExpChi);
 				list_d.add(map_d);
 			}
-			map.put("userInfo", list_d);
+			
 		}else{
 			msg = "noInfo";
 		}
-		map.put("result", msg);
+		map.put("userResult", msg);
+		map.put("userInfo", list_d);
+		if(opt.equals(0)){
+			List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, "");
+			if(jsList.size() > 0){
+				map.put("jsResult", "success");
+				for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
+					JsFiledInfoTb js = it_1.next();
+					Map<String,Object> map_j = new HashMap<String,Object>();
+					map_j.put("jsId", js.getId());
+					map_j.put("jsName", js.getZyName());
+					list_j.add(map_j);
+				}
+			}else{
+				map.put("jsResult", "noInfo");
+			}
+			map.put("jsInfo", list_j);
+		}
 		this.getJsonPkg(map, response);
 		return null;
 	}
