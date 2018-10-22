@@ -1907,7 +1907,7 @@ public class ZlMainAction extends DispatchAction {
 						String ajUpload = CommonTools.getFinalStr("ajUpload", request);
 						String ajRemark = Transcode.unescape_new("ajRemark", request);
 						String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
-						String cpyDate = CommonTools.getFinalStr("cpyDate", request);//代理机构从分配到定稿提交的期限
+						String cpyDate = CommonTools.getFinalStr("cpyDate", request);//代理机构从分配到定稿提交的期限(修改定稿提交之前的最后一个未完成流程的期限)
 						Double ajFjInfo = 0.0;
 						if(!ajSqrId.equals("")){//案件费减只有在申请人存在的条件下才能进行设置
 							ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);
@@ -1919,9 +1919,9 @@ public class ZlMainAction extends DispatchAction {
 							upFileDate = CurrentTime.getStringDate();
 						}
 						zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt, pubId, ajSqAddress, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0);
-						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz(zl.getId(),"专利案件录入");
-						if(lcList.size() > 0){
-							mxm.updateEdateById(lcList.get(0).getId(), -1, upUserId, ajUpload, upFileDate, "", upFileDate, "");
+						List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "专利案件录入");
+						if(mxList.size() > 0){
+							mxm.updateEdateById(mxList.get(0).getId(), -1, upUserId, ajUpload, upFileDate, "", upFileDate, "");
 							String ajUpload_db = zlList.get(0).getAjUpload();
 							if(!ajUpload.equals(ajUpload_db)){
 								if(!ajUpload_db.equals("")){
@@ -1954,6 +1954,8 @@ public class ZlMainAction extends DispatchAction {
 								//修改案件的案件附件
 								zlm.updateZlUpFile_dg(zlId, ajUpload);
 							}
+							//获取定稿提交之前的最后一个未完成的流程
+//							lcm
 						}
 					}
 				}
