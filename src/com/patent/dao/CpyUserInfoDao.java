@@ -139,5 +139,5 @@ public interface CpyUserInfoDao {
 	 * @param userName 员工姓名(""表示全部)
 	 * @return
 	 */
-	List<CpyUserInfo> findValidInfoByOpt(Session sess, Integer cpyId, Integer jsId,String userName);
+	List<CpyUserInfo> findValidInfoByOpt(Session sess, Integer cpyId, Integer jsId,String userName,String actNameEng);
 }

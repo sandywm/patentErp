@@ -687,6 +687,8 @@ public class ReadZipFile {
     			}else{//不存在
     				map.put("result", "noInfo");
     				map.put("tzsName", tzsName);
+    				map.put("zlName", zlName);
+	            	map.put("ajNoGf", ajNoGf);
 					map.put("detailInfo", "该通知书没有匹配到专利");
     			}
 	        }else{

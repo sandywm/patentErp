@@ -133,7 +133,7 @@ public class CpyUserInfoDaoImpl implements CpyUserInfoDao{
 
 	@Override
 	public List<CpyUserInfo> findValidInfoByOpt(Session sess, Integer cpyId, Integer jsId,
-			String userName) {
+			String userName,String actNameEng) {
 		// TODO Auto-generated method stub
 		String hql = " from CpyUserInfo as cu where cu.cpyInfoTb.id = "+cpyId;
 		hql += " and cu.userLzStatus = 1 and cu.userYxStatus = 1";
@@ -143,6 +143,8 @@ public class CpyUserInfoDaoImpl implements CpyUserInfoDao{
 		if(jsId > 0){
 			hql += " and FIND_IN_SET("+jsId+",cu.userScFiledId) > 0";
 		}
+		//获取
+//		hql += " and exists(select cru.id from CpyRoleUserInfoTb as cru and exists(select ar.id from ActRoleInfoTb as ar where ar.modActInfoTb.actNameEng = '"+actNameEng+"' and ar.cpyRoleInfoTb.id = cru))";
 		return sess.createQuery(hql).list();
 	}
 

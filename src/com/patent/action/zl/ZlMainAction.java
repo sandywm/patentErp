@@ -1921,7 +1921,8 @@ public class ZlMainAction extends DispatchAction {
 						zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt, pubId, ajSqAddress, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0);
 						List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "专利案件录入");
 						if(mxList.size() > 0){
-							mxm.updateEdateById(mxList.get(0).getId(), -1, upUserId, ajUpload, upFileDate, "", upFileDate, "");
+							ZlajLcMxInfoTb mx = mxList.get(0);
+							mxm.updateEdateById(mx.getId(), -1, upUserId, ajUpload, upFileDate, "", upFileDate, "");
 							String ajUpload_db = zlList.get(0).getAjUpload();
 							if(!ajUpload.equals(ajUpload_db)){
 								if(!ajUpload_db.equals("")){
@@ -1954,17 +1955,17 @@ public class ZlMainAction extends DispatchAction {
 								//修改案件的案件附件
 								zlm.updateZlUpFile_dg(zlId, ajUpload);
 							}
-							if(cpyDate.equals(mxList.get(0).getZlajLcInfoTb().getLcCpyDate())){//如果期限被修改
-								//获取定稿提交之前的最后一个未完成的流程
-								List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
-								if(lcList.size() > 0){
-									//修改代理机构期限时间
-									lcm.updateLcBasicInfoById(lcList.get(0).getId(), "", "", "", cpyDate, "");
+							String cpyDate_db = mx.getZlajLcInfoTb().getLcCpyDate();
+							if(!cpyDate.equals(cpyDate_db)){//如果期限被修改
+								if(mx.getLcMxNo() <= 6.0){//定稿提交之前都可以修改代理机构期限时间
+									//获取定稿提交之前的最后一个未完成的流程
+									List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
+									if(lcList.size() > 0){
+										//修改代理机构期限时间
+										lcm.updateLcBasicInfoById(lcList.get(0).getId(), "", "", "", cpyDate, "");
+									}
 								}
-//								zlm.up
-//								11
 							}
-							
 						}
 					}
 				}

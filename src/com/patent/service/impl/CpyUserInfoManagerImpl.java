@@ -341,7 +341,7 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 		try {
 			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return cUserDao.findValidInfoByOpt(sess, cpyId, jsId, userName);
+			return cUserDao.findValidInfoByOpt(sess, cpyId, jsId, userName,"");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

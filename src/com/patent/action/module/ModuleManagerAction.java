@@ -718,22 +718,29 @@ public class ModuleManagerAction extends DispatchAction {
 			ModActInfoTb ma = maList.get(0);
 			Integer modId = ma.getModuleInfoTb().getId();
 			String actNameEng_db = ma.getActNameEng();
-			String actNameChi_db = ma.getActNameChi();
-			if(actNameChi_db.equals(actNameChi) && actNameEng_db.equals(actNameEng)){
+			String actNameChi_db = ma.getActNameChi();		
+			if(actNameChi_db.equals(actNameChi) && actNameEng_db.equals(actNameEng)){//中文英文都相同
 				msg = "success";
-			}else if(actNameChi_db.equals(actNameChi) && !actNameEng_db.equals(actNameEng)){
+			}else if(actNameChi_db.equals(actNameChi) && !actNameEng_db.equals(actNameEng)){//中文相同英文不同
 				if(mam.listSpecInfoByOpt(modId, "", actNameEng).size() == 0){//不存在
 					mam.upMActById(maId, "", actNameEng, -1);
 					msg = "success";
 				}else{
 					msg = "exist";
 				}
-			}else if(!actNameChi_db.equals(actNameChi) && actNameEng_db.equals(actNameEng)){
+			}else if(!actNameChi_db.equals(actNameChi) && actNameEng_db.equals(actNameEng)){//中文不同英文相同
 				if(mam.listSpecInfoByOpt(modId, actNameChi, "").size() == 0){//不存在
 					mam.upMActById(maId, actNameChi, "", -1);
 					msg = "success";
 				}else{
 					msg = "exist";
+				}
+			}else if(!actNameChi_db.equals(actNameChi) && !actNameEng_db.equals(actNameEng)){//中文英文都不同
+				if(mam.listSpecInfoByOpt(modId, "", actNameEng).size() > 0 || mam.listSpecInfoByOpt(modId, actNameChi, "").size() > 0){
+					msg = "exist";
+				}else{
+					mam.upMActById(maId, actNameChi, actNameEng, -1);
+					msg = "success";
 				}
 			}
 		}else{
