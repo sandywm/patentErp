@@ -700,7 +700,7 @@
 			}
 			function showOutDateTips(){
 				$('#outDateTip').click(function(){
-					layer.tips('您的会员已到期，之前的高级功能将不能使用，如需使用，请及时续费购买！','#outDateTip', {tips:[1,'#FF8000'],time:4000});
+					layer.tips('您的会员已到期，银牌以上的模块将不能使用，如需使用，请及时续费购买！','#outDateTip', {tips:[1,'#FF8000'],time:4000});
 				});
 			}
 			//获取当前代理机构会员是否已到期状态
@@ -721,7 +721,7 @@
 			function memberOutDateTip(){
 				var hyEndFlag = getCpyHyStatus();
 				if(hyEndFlag){//表示过期
-					layer.confirm('您的会员已到期，之前的高级功能将不能使用，如需使用，请及时续费购买！',{
+					layer.confirm('您的会员已到期，银牌以上的模块将不能使用，如需使用，请及时续费购买！',{
 						title:'会员到期提醒',
 					  	skin: 'layui-layer-molv',
 					  	btn: ['确定','取消'] //按钮

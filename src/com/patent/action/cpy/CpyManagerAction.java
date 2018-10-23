@@ -1060,20 +1060,18 @@ public class CpyManagerAction extends DispatchAction {
 			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
 			Integer cpyLevel = cpy.getCpyLevel();
 			map.put("cpyLevel", cpyLevel);
-			if(cpyLevel.equals(0)){
-				hyEndFlag = true;
+			String cpyEndDate = cpy.getEndDate();
+			Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate);
+			if(diffDays > 0){
+				hyEndFlag = false;
 			}else{
-				String cpyEndDate = cpy.getEndDate();
-				Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate);
-				if(diffDays > 0){
-					hyEndFlag = false;
-				}
+				hyEndFlag = true;
 			}
-			map.put("hyEndFlag", hyEndFlag);
 		}else{
 			map.put("cpyLevel", 0);
-			map.put("hyEndFlag", true);
+			hyEndFlag = false;
 		}
+		map.put("hyEndFlag", hyEndFlag);
 		String json = JSON.toJSONString(map);
         PrintWriter pw = response.getWriter();  
         pw.write(json); 

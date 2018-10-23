@@ -126,6 +126,7 @@ public class ModuleManagerAction extends DispatchAction {
 	
 	/**
 	 * 获取平台所有模块(超级管理员)，当是代理机构管理员时，获取同等级的平台及其以下模块并需要传递selRoleId参数
+	 * 如果是铜牌会员，只要在免费期限内可以使用银牌以上的功能-2018-10-23日修改，免费期后只能使用铜牌的会员功能
 	 * @description
 	 * @author wm
 	 * @date 2018-8-7 下午05:03:31
@@ -167,12 +168,15 @@ public class ModuleManagerAction extends DispatchAction {
 				selRoleId = CommonTools.getFinalInteger(request.getParameter("selRoleId"));
 				cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
 				String cpyEndDate = cpy.getEndDate();
-				if(cpy.getCpyLevel() > 0){
-					if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0){
-						endFlag = false;//已过期(免费会员不存在过期)
-					}
+//				if(cpy.getCpyLevel() > 0){
+//					if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0){
+//						endFlag = false;//已过期(免费会员不存在过期)
+//					}
+//				}
+				if(CurrentTime.compareDate(CurrentTime.getStringDate(), cpyEndDate) <= 0){
+					endFlag = false;
 				}
-				mList = mm.listInfoByLevel(cpy.getCpyLevel(),0);
+				mList = mm.listInfoByLevel(-1,0);
 				if(selRoleId.equals(0)){//当获取指定角色的模块列表情况时，不用再获取角色列表了
 					//获取该代理机构下的用户角色列表
 					List<CpyRoleInfoTb> crList = crm.listInfoByCpyId(cpy.getId());
@@ -218,11 +222,12 @@ public class ModuleManagerAction extends DispatchAction {
 				map_1.put("modLevel", mod.getModLevel());
 				if(endFlag){//未过期
 					if(loginType.equals("cpyUser") && cpy != null){
-						if(cpy.getCpyLevel() >= mod.getModLevel()){
-							map_1.put("useFlag", true);
-						}else{
-							map_1.put("useFlag", false);
-						}
+//						if(cpy.getCpyLevel() >= mod.getModLevel()){
+//							map_1.put("useFlag", true);
+//						}else{
+//							map_1.put("useFlag", false);
+//						}
+						map_1.put("useFlag", true);
 					}
 				}else{//已过期
 					if(mod.getModLevel() > 0){//铜牌以上的模块--全部不能设置
