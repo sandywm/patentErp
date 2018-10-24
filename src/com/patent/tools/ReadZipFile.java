@@ -312,8 +312,11 @@ public class ReadZipFile {
 									msg = "uploadExist";//之前已经上传过，无需再次上传
 									map.put("tzsName", tzsName);
 									map.put("zlId", zlId);
-									map.put("detailInfo", zlInfo+"之前已成功导入过["+tzsName+"] 无需再次导入");
+									map.put("ajNoGf", zl.getAjNoGf());
+									map.put("ajTitle", zl.getAjTitle());
 									map.put("result", msg);
+									//删除当前通知书压缩包
+									FileOpration.deleteFile(pathPre+upZipPath);
 								}else{//未增加
 //									if(tzsName.equals("专利申请受理通知书")){
 										msg = "success";
@@ -649,6 +652,8 @@ public class ReadZipFile {
 								map.put("zlId", zl.getId());
 								map.put("detailInfo", zlInfo + "当前导入人员不是系统指定人员,请更换导入人员重新导入当前通知书");
 								map.put("result", "tzsUserError");
+								//删除当前通知书压缩包
+								FileOpration.deleteFile(pathPre+upZipPath);
 							}
 							//-------------------------新修改E-----------------------------//
 
@@ -658,6 +663,7 @@ public class ReadZipFile {
 							map.put("zlId", zl.getId());
 							map.put("detailInfo", zlInfo+ "已终止，不能进行导入通知书操作");
 							map.put("result", msg);
+							//删除当前通知书压缩包
 						}
     				}else{//获取到一个以上的专利信息(需要用户判断选择一个，然后再进行操作)
     					List<Object> list_r = new ArrayList<Object>();
@@ -692,11 +698,15 @@ public class ReadZipFile {
 	            	map.put("ajNoGf", ajNoGf);
 					map.put("detailInfo", "该通知书没有匹配到专利");
 					map.put("zipPath", upZipPath);
+					//删除当前通知书压缩包
+					FileOpration.deleteFile(pathPre+upZipPath);
     			}
 	        }else{
 	        	map.put("result", "tzsError");
 				map.put("detailInfo", "请导入正确的通知书");
 				map.put("zipPath", upZipPath);
+				//删除当前通知书压缩包
+				FileOpration.deleteFile(pathPre+upZipPath);
 	        }
 	        
         }catch (Exception e) {
@@ -704,6 +714,8 @@ public class ReadZipFile {
         	map.put("result", "typeError");
 			map.put("detailInfo", "只支持ZIP压缩格式的通知书");
 			map.put("zipPath", upZipPath);
+			//删除当前通知书压缩包
+			FileOpration.deleteFile(pathPre+upZipPath);
 		}
         System.out.println(list_d);
         return map;
