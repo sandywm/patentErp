@@ -1216,52 +1216,51 @@ public class UserAction extends DispatchAction {
 		List<Object> list_d = new ArrayList<Object>();
 		List<Object> list_j = new ArrayList<Object>();
 		Map<String,Object> map = new HashMap<String,Object>();
+		msg = "success";
+		Map<String,Object> map_m = new HashMap<String,Object>();
+		//把管理员加上
+		CpyUserInfo user_m = cum.listManagerInfoByOpt(cpyId, "管理员").get(0);
+		map_m.put("userId", user_m.getId());
+		map_m.put("userName", user_m.getUserName());
+		//获取用户角色
+		List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(user_m.getId());
+		String roleName = "";
+		for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
+			CpyRoleUserInfoTb ru = it_1.next();
+			roleName += ru.getCpyRoleInfoTb().getRoleName() + ",";
+		}
+		if(!roleName.equals("")){
+			roleName = roleName.substring(0, roleName.length() - 1);
+		}
+		map_m.put("userRole", roleName);
+		map_m.put("userSex", user_m.getUserSex().equals("m") ? "男" : "女");
+		map_m.put("zxNum", user_m.getUserZxNum());
+		String userScField = user_m.getUserScFiledId();
+		String scFiledName = "";
+		if(!userScField.equals("")){
+			List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField);
+			for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
+				JsFiledInfoTb js = it_1.next();
+				scFiledName += js.getZyName() + ",";
+			}
+			if(!scFiledName.equals("")){
+				scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+			}
+		}
+		map_m.put("scFiledName", scFiledName);
+		Integer userExp = user_m.getUserExper();
+		String userExpChi = "";
+		if(userExp >= 0 && userExp < 100){
+			userExpChi = "铜牌";
+		}else if(userExp > 100 && userExp < 1000){
+			userExpChi = "银牌";
+		}else if(userExp > 1000){
+			userExpChi = "金牌";
+		}
+		map_m.put("userExp", userExp);
+		map_m.put("userExpChi", userExpChi);
+		list_d.add(map_m);
 		if(userList.size() > 0){
-			msg = "success";
-			Map<String,Object> map_m = new HashMap<String,Object>();
-			//把管理员加上
-			CpyUserInfo user_m = cum.listManagerInfoByOpt(cpyId, "管理员").get(0);
-			map_m.put("userId", user_m.getId());
-			map_m.put("userName", user_m.getUserName());
-			//获取用户角色
-			List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(user_m.getId());
-			String roleName = "";
-			for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
-				CpyRoleUserInfoTb ru = it_1.next();
-				roleName += ru.getCpyRoleInfoTb().getRoleName() + ",";
-			}
-			if(!roleName.equals("")){
-				roleName = roleName.substring(0, roleName.length() - 1);
-			}
-			map_m.put("userRole", roleName);
-			map_m.put("userSex", user_m.getUserSex().equals("m") ? "男" : "女");
-			map_m.put("zxNum", user_m.getUserZxNum());
-			String userScField = user_m.getUserScFiledId();
-			String scFiledName = "";
-			if(!userScField.equals("")){
-				List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField);
-				for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
-					JsFiledInfoTb js = it_1.next();
-					scFiledName += js.getZyName() + ",";
-				}
-				if(!scFiledName.equals("")){
-					scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
-				}
-			}
-			map_m.put("scFiledName", scFiledName);
-			Integer userExp = user_m.getUserExper();
-			String userExpChi = "";
-			if(userExp >= 0 && userExp < 100){
-				userExpChi = "铜牌";
-			}else if(userExp > 100 && userExp < 1000){
-				userExpChi = "银牌";
-			}else if(userExp > 1000){
-				userExpChi = "金牌";
-			}
-			map_m.put("userExp", userExp);
-			map_m.put("userExpChi", userExpChi);
-			list_d.add(map_m);
-
 			for(Iterator<CpyUserInfo> it = userList.iterator() ; it.hasNext();){
 				CpyUserInfo user = it.next();
 				Map<String,Object> map_d = new HashMap<String,Object>();
@@ -1306,9 +1305,6 @@ public class UserAction extends DispatchAction {
 				map_d.put("userExpChi", userExpChi_1);
 				list_d.add(map_d);
 			}
-			
-		}else{
-			msg = "noInfo";
 		}
 		map.put("userResult", msg);
 		map.put("userInfo", list_d);
