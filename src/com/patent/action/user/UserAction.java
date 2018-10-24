@@ -1282,7 +1282,7 @@ public class UserAction extends DispatchAction {
 				String userScField_1 = user.getUserScFiledId();
 				String scFiledName_1 = "";
 				if(!userScField_1.equals("")){
-					List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField);
+					List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField_1);
 					for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
 						JsFiledInfoTb js = it_1.next();
 						scFiledName_1 += js.getZyName() + ",";

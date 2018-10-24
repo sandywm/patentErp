@@ -2723,6 +2723,12 @@ public class ZlMainAction extends DispatchAction {
 	public ActionForward dealTzsDetail(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String zipPath = Transcode.unescape_new1("zipPath", request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<Object> list_d = new ArrayList<Object>();
+		for(Integer i = 0 ; i < zipPath.split(",").length ; i++){
+			list_d.add(ReadZipFile.readZipFile_new("E:\\",zipPath.split(",")[i],1,1,0));
+		}
+		map.put("result", list_d);
 //		List<Object>  rzList = ReadZipFile.readZipFile_new(zipPath);
 //		if(rzList.size() > 0){
 //			for(Iterator<Object> it = rzList.iterator() ; it.hasNext();){
@@ -2730,6 +2736,7 @@ public class ZlMainAction extends DispatchAction {
 //				
 //			}
 //		}
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
