@@ -666,57 +666,93 @@ public class ZlMainAction extends DispatchAction {
 						Integer bhUserId = zl.getBhUserId();
 						map.put("ajStatus", zl.getAjStatus());
 						map.put("checkUserId", checkUserId);
-						map.put("checkUserName", cum.getEntityById(checkUserId).getUserName());
-						map.put("zxUserId", zxUserId);
-						map.put("zxUserName", cum.getEntityById(zxUserId).getUserName());
-						map.put("tjUserId", tjUserId);
-						map.put("tjUserName", cum.getEntityById(tjUserId).getUserName());
-						map.put("tzsUserId", tzsUserId);
-						map.put("tzsUserName", cum.getEntityById(tzsUserId).getUserName());
-						map.put("feeUserId", feeUserId);
-						map.put("feeUserName", cum.getEntityById(feeUserId).getUserName());
-						map.put("bzUserId", bzUserId);
-						map.put("bzUserName", cum.getEntityById(bzUserId).getUserName());
-						map.put("bzshUserId", bzshUserId);
-						map.put("bzshUserName", cum.getEntityById(bzshUserId).getUserName());
-						map.put("bhUserId", bhUserId);
-						map.put("bhUserName", cum.getEntityById(bhUserId).getUserName());
-						//获取当前代理机构所有人员
-						List<CpyUserInfo> uList = cum.listValidInfoByOpt(cpyId, 0);
-						List<Object> list_u = new ArrayList<Object>();
-						for(Iterator<CpyUserInfo> it = uList.iterator() ; it.hasNext();){
-							CpyUserInfo user = it.next();
-							Map<String,Object> map_d = new HashMap<String,Object>();
-							map_d.put("userId", user.getId());
-							map_d.put("userName", user.getUserName());
-							String scFiledIdStr = user.getUserScFiledId();
-							String jsName = "";
-							if(!scFiledIdStr.equals("")){
-								List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, scFiledIdStr);
-								
-								for(Iterator<JsFiledInfoTb> it_j = jsList.iterator() ; it_j.hasNext();){
-									JsFiledInfoTb js = it_j.next();
-									jsName += js.getZyName() + ",";
-								}
-								if(!jsName.equals("")){
-									jsName = jsName.substring(0, jsName.length() - 1);
-								}
+						if(checkUserId > 0){
+							CpyUserInfo cUser = cum.getEntityById(checkUserId);
+							if(cUser != null){
+								map.put("checkUserName", cUser.getUserName());
+							}else{
+								map.put("checkUserName", "");
 							}
-							map_d.put("jsName", jsName);
-							map_d.put("zxNum", user.getUserZxNum());
-							Integer userExper = user.getUserExper();
-							String experCon = "";
-							if(userExper >= 0 && userExper <= 100){
-								experCon = "铜牌";
-							}else if(userExper >= 101 && userExper <= 1000){
-								experCon = "银牌";
-							}else if(userExper >= 1001){
-								experCon = "金牌";
-							}
-							map_d.put("exper", experCon);
-							list_u.add(map_d);
+						}else{
+							map.put("checkUserName", "");
 						}
-						map.put("allUserInfo", list_u);
+						map.put("zxUserId", zxUserId);
+						if(zxUserId > 0){
+							CpyUserInfo cUser = cum.getEntityById(zxUserId);
+							if(cUser != null){
+								map.put("zxUserName", cUser.getUserName());
+							}else{
+								map.put("zxUserName", "");
+							}
+						}else{
+							map.put("zxUserName", "");
+						}
+						map.put("tjUserId", tjUserId);
+						if(tjUserId > 0){
+							CpyUserInfo cUser = cum.getEntityById(tjUserId);
+							if(cUser != null){
+								map.put("tjUserName", cUser.getUserName());
+							}else{
+								map.put("tjUserName", "");
+							}
+						}else{
+							map.put("tjUserName", "");
+						}
+						map.put("tzsUserId", tzsUserId);
+						if(tzsUserId > 0){
+							CpyUserInfo cUser = cum.getEntityById(tzsUserId);
+							if(cUser != null){
+								map.put("tzsUserName", cUser.getUserName());
+							}else{
+								map.put("tzsUserName", "");
+							}
+						}else{
+							map.put("tzsUserName", "");
+						}
+						map.put("feeUserId", feeUserId);
+						if(feeUserId > 0){
+							CpyUserInfo cUser = cum.getEntityById(feeUserId);
+							if(cUser != null){
+								map.put("feeUserName", cUser.getUserName());
+							}else{
+								map.put("feeUserName", "");
+							}
+						}else{
+							map.put("feeUserName", "");
+						}
+						map.put("bzUserId", bzUserId);
+						if(bzUserId > 0){
+							CpyUserInfo cUser = cum.getEntityById(bzUserId);
+							if(cUser != null){
+								map.put("bzUserName", cUser.getUserName());
+							}else{
+								map.put("bzUserName", "");
+							}
+						}else{
+							map.put("bzUserName", "");
+						}
+						map.put("bzshUserId", bzshUserId);
+						if(bzshUserId > 0){
+							CpyUserInfo cUser = cum.getEntityById(bzshUserId);
+							if(cUser != null){
+								map.put("bzshUserName", cUser.getUserName());
+							}else{
+								map.put("bzshUserName", "");
+							}
+						}else{
+							map.put("bzshUserName", "");
+						}
+						map.put("bhUserId", bhUserId);
+						if(bhUserId > 0){
+							CpyUserInfo cUser = cum.getEntityById(bhUserId);
+							if(cUser != null){
+								map.put("bhUserName", cUser.getUserName());
+							}else{
+								map.put("bhUserName", "");
+							}
+						}else{
+							map.put("bhUserName", "");
+						}
 					}else if(opt.equals("lc")){//流程
 						map = new HashMap<String,Object>();
 						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zlId);
