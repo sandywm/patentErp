@@ -1204,49 +1204,106 @@ public class UserAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		JsFiledInfoManager jsm = (JsFiledInfoManager) AppFactory.instance(null).getApp(Constants.WEB_JS_FIELD_INFO);
+		CpyRoleInfoManager crm = (CpyRoleInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_ROLE_INFO);
 		String userName = Transcode.unescape_new1("userName", request);
 		Integer currLoginUserId = this.getLoginUserId(request);
 		Integer jsId = CommonTools.getFinalInteger("jsId", request);
 		Integer opt = CommonTools.getFinalInteger("opt", request);//opt(0:全部，1:只显示员工列表)
 		Integer cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
-		List<CpyUserInfo> userList = cum.listValidInfoByOpt(cpyId, jsId, userName);
+		String actNameEng = CommonTools.getFinalStr("actNameEng", request);//权限名称
+		List<CpyUserInfo> userList = cum.listValidInfoByOpt(cpyId, jsId, userName,actNameEng);
 		String msg = "";
 		List<Object> list_d = new ArrayList<Object>();
 		List<Object> list_j = new ArrayList<Object>();
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(userList.size() > 0){
 			msg = "success";
+			Map<String,Object> map_m = new HashMap<String,Object>();
+			//把管理员加上
+			CpyUserInfo user_m = cum.listManagerInfoByOpt(cpyId, "管理员").get(0);
+			map_m.put("userId", user_m.getId());
+			map_m.put("userName", user_m.getUserName());
+			//获取用户角色
+			List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(user_m.getId());
+			String roleName = "";
+			for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
+				CpyRoleUserInfoTb ru = it_1.next();
+				roleName += ru.getCpyRoleInfoTb().getRoleName() + ",";
+			}
+			if(!roleName.equals("")){
+				roleName = roleName.substring(0, roleName.length() - 1);
+			}
+			map_m.put("userRole", roleName);
+			map_m.put("userSex", user_m.getUserSex().equals("m") ? "男" : "女");
+			map_m.put("zxNum", user_m.getUserZxNum());
+			String userScField = user_m.getUserScFiledId();
+			String scFiledName = "";
+			if(!userScField.equals("")){
+				List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField);
+				for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
+					JsFiledInfoTb js = it_1.next();
+					scFiledName += js.getZyName() + ",";
+				}
+				if(!scFiledName.equals("")){
+					scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+				}
+			}
+			map_m.put("scFiledName", scFiledName);
+			Integer userExp = user_m.getUserExper();
+			String userExpChi = "";
+			if(userExp >= 0 && userExp < 100){
+				userExpChi = "铜牌";
+			}else if(userExp > 100 && userExp < 1000){
+				userExpChi = "银牌";
+			}else if(userExp > 1000){
+				userExpChi = "金牌";
+			}
+			map_m.put("userExp", userExp);
+			map_m.put("userExpChi", userExpChi);
+			list_d.add(map_m);
+
 			for(Iterator<CpyUserInfo> it = userList.iterator() ; it.hasNext();){
 				CpyUserInfo user = it.next();
 				Map<String,Object> map_d = new HashMap<String,Object>();
 				map_d.put("userId", user.getId());
 				map_d.put("userName", user.getUserName());
+				//获取用户角色
+				List<CpyRoleUserInfoTb> ruList_1 = crm.listInfoByUserId(user.getId());
+				String roleName_1 = "";
+				for(Iterator<CpyRoleUserInfoTb> it_1 = ruList_1.iterator() ; it_1.hasNext();){
+					CpyRoleUserInfoTb ru = it_1.next();
+					roleName_1 += ru.getCpyRoleInfoTb().getRoleName() + ",";
+				}
+				if(!roleName_1.equals("")){
+					roleName_1 = roleName_1.substring(0, roleName_1.length() - 1);
+				}
+				map_d.put("userRole", roleName_1);
 				map_d.put("userSex", user.getUserSex().equals("m") ? "男" : "女");
 				map_d.put("zxNum", user.getUserZxNum());
-				String userScField = user.getUserScFiledId();
-				String scFiledName = "";
-				if(!userScField.equals("")){
+				String userScField_1 = user.getUserScFiledId();
+				String scFiledName_1 = "";
+				if(!userScField_1.equals("")){
 					List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField);
 					for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
 						JsFiledInfoTb js = it_1.next();
-						scFiledName += js.getZyName() + ",";
+						scFiledName_1 += js.getZyName() + ",";
 					}
-					if(!scFiledName.equals("")){
-						scFiledName = scFiledName.substring(0, scFiledName.length() - 1);
+					if(!scFiledName_1.equals("")){
+						scFiledName_1 = scFiledName_1.substring(0, scFiledName_1.length() - 1);
 					}
 				}
-				map_d.put("scFiledName", scFiledName);
-				Integer userExp = user.getUserExper();
-				String userExpChi = "";
-				if(userExp >= 0 && userExp < 100){
-					userExpChi = "铜牌";
-				}else if(userExp > 100 && userExp < 1000){
-					userExpChi = "银牌";
-				}else if(userExp > 1000){
-					userExpChi = "金牌";
+				map_d.put("scFiledName", scFiledName_1);
+				Integer userExp_1 = user.getUserExper();
+				String userExpChi_1 = "";
+				if(userExp_1 >= 0 && userExp_1 < 100){
+					userExpChi_1 = "铜牌";
+				}else if(userExp_1 > 100 && userExp_1 < 1000){
+					userExpChi_1 = "银牌";
+				}else if(userExp_1 > 1000){
+					userExpChi_1 = "金牌";
 				}
-				map_d.put("userExp", userExp);
-				map_d.put("userExpChi", userExpChi);
+				map_d.put("userExp", userExp_1);
+				map_d.put("userExpChi", userExpChi_1);
 				list_d.add(map_d);
 			}
 			

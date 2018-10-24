@@ -205,8 +205,9 @@ public interface CpyUserInfoManager {
 	 * @param cpyId 代理机构编号
 	 * @param jsId 专业领域编号（0表示全部）
 	 * @param userName 员工姓名(""表示全部)
+	 * @param actNameEng 权限名称（不能为空）
 	 * @return
 	 * @throws WEBException
 	 */
-	List<CpyUserInfo> listValidInfoByOpt(Integer cpyId,Integer jsId,String userName) throws WEBException;
+	List<CpyUserInfo> listValidInfoByOpt(Integer cpyId,Integer jsId,String userName,String actNameEng) throws WEBException;
 }

@@ -336,12 +336,12 @@ public class CpyUserInfoManagerImpl implements CpyUserInfoManager{
 
 	@Override
 	public List<CpyUserInfo> listValidInfoByOpt(Integer cpyId, Integer jsId,
-			String userName) throws WEBException {
+			String userName,String actNameEng) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			cUserDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return cUserDao.findValidInfoByOpt(sess, cpyId, jsId, userName,"");
+			return cUserDao.findValidInfoByOpt(sess, cpyId, jsId, userName,actNameEng);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -144,7 +144,10 @@ public class CpyUserInfoDaoImpl implements CpyUserInfoDao{
 			hql += " and FIND_IN_SET("+jsId+",cu.userScFiledId) > 0";
 		}
 		//获取
-//		hql += " and exists(select cru.id from CpyRoleUserInfoTb as cru and exists(select ar.id from ActRoleInfoTb as ar where ar.modActInfoTb.actNameEng = '"+actNameEng+"' and ar.cpyRoleInfoTb.id = cru))";
+		String hql1 = "select cru.cpyUserInfo.id from CpyRoleUserInfoTb as cru ";
+		String hql2 = "select ar.id from ActRoleInfoTb as ar ";
+		String hql3 = "select ma.id from ModActInfoTb as ma where ma.actNameEng = '"+actNameEng+"' and ma.id = ar.modActInfoTb.id";
+		hql += " and exists(" + hql1 + "where exists("+hql2+"where exists("+hql3+") and cru.cpyRoleInfoTb.id = ar.cpyRoleInfoTb.id) and cru.cpyUserInfo.id = cu.id)";
 		return sess.createQuery(hql).list();
 	}
 
