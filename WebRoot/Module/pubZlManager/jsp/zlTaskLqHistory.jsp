@@ -131,6 +131,7 @@
 							}else{
 								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.pzId +'" taskTit="'+ d.pzTitle +'"><i class="layui-icon layui-icon-search"></i>查看详情</a>';
 							}
+							//return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.pzId +'" taskTit="'+ d.pzTitle +'"><i class="layui-icon layui-icon-search"></i></a>';
 						}},
 					]],
 					done : function(res, curr, count){
@@ -207,7 +208,7 @@
 		   			        	}else if(json['result'] == 'infoDiff'){
 		   			        		layer.msg('抱歉，此任务只有任务领取者或申请人才有权利进行撤销', {icon:5,anim:6,time:2500});
 		   			        	}else if(json['result'] == 'noReceiv'){
-		   			        		layer.msg('抱歉，该专利已被领取，不能再领取了', {icon:5,anim:6,time:1500});
+		   			        		layer.msg('抱歉，该专利已被领取!', {icon:5,anim:6,time:1500});
 		   			        	}
 		   			        }
 		   				});

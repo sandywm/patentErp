@@ -129,8 +129,8 @@
 		  				field[attr] = $.trim(escape(field[attr]));
 		  			}
 		  		}
-		  		if(addEditFmrOpts == 'addFmrOpts'){//增加发明人
-		  			if(parent.isZlAddFmLxFlag){
+		  		if(addEditFmrOpts == 'addFmrOpts' || addEditFmrOpts == 'addJsLxrOpts'){//增加发明人
+		  			if(parent.isZlAddFmLxFlag){//从添加编辑专利进来的添加新的发明人
 		  				var cusIds = parent.$('#sqrIdInp').val();
 		  				url = '/customer.do?action=addFmrData&cusId='+cusIds;
 		  			}else{

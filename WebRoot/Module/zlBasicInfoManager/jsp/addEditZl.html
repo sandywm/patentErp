@@ -241,16 +241,14 @@
 									_this.getAjNum(parent.$('#lqZlTypeInp').val());		
 									_this.getEwYqList(parent.$('#lqZlTypeInp').val());		
 									tmpEwyqIdArray.length = 0;		
-						  		}
-						  		if($('#pubZlIdInpTxt').val() != ''){//表示点击了保存按钮
-						  			parent.addZlFlag = true;//激活重置按钮
+									parent.addZlFlag = false;
 						  		}
 						  	}
 						});	
 					});
 					//重置已选择的专利领取任务
 					$('.resetSp').on('click',function(){
-						if(parent.addZlFlag){
+						if($('#pubZlIdInp').val() != ''){
 							layer.confirm('确认要清空当前已选择的领取任务？', {
 							  title:'提示',
 							  skin: 'layui-layer-molv',
@@ -261,7 +259,6 @@
 								$('#pubZlIdInpTxt').val('');
 								parent.$('#lqZlIdInpText').val('');
 								layer.close(index);
-								parent.addZlFlag = false;
 							});
 						}
 					});
@@ -320,7 +317,7 @@
 					//添加技术联系人
 					$('#addJsLxrBtn').on('click',function(){
 						_this.commonLayerLxrFmr('添加技术联系人');
-						tmpLxrFmrOpts = $(this).attr('opts');
+						addEditFmrOpts = tmpLxrFmrOpts = $(this).attr('opts');
 						if($('#techLxrBox p').length > 0 /*&& isHasJsLxrFlag*/){
 							//表示已经创建了技术联系人，假如删除了某个申请人，此时应该从新匹配jsLxrIdArray jsLxrIdNum
 							jsLxrIdArray.length = 0;
@@ -449,7 +446,7 @@
 												ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 												yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 												ajUpload:$('#fujianInp').val(),cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal};
-			   				//layer.load('1');
+			   				layer.load('1');
 							$.ajax({
 			   					type:'post',
 			   			        async:false,
@@ -457,8 +454,8 @@
 			   			        data:field,
 			   			        url:url,
 			   			        success:function (json){
-			   			        	//layer.closeAll('loading');
-			   			        	console.log(json)
+			   			        	layer.closeAll('loading');
+			   			        	//console.log(json)
 			   			        	if(json['result'] == 'success'){
 			   			        		function callBackSucc(){
 			   			        			var index= parent.layer.getFrameIndex(window.name);
@@ -474,10 +471,12 @@
 			   			        		layer.msg('抱歉，您暂无权限添加编辑专利', {icon:5,anim:6,time:1000});
 			   			        	}else if(json['result'] == 'error'){
 			   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
-			   			        	}else if(json['result'] == 'typDiff'){
+			   			        	}else if(json['result'] == 'typeDiff'){
 			   			        		layer.msg('选择的专利类型和专利任务类型不一致', {icon:5,anim:6,time:2200});
 			   			        	}else if(json['result'] == 'notUpdate'){
 			   			        		layer.msg('定稿以后或专利状态终止条件下不能修改', {icon:5,anim:6,time:2200});
+			   			        	}else if(json['result'] == 'addError'){
+			   			        		layer.msg('当前选择的专利任务已被其他专利占用！', {icon:5,anim:6,time:2200});
 			   			        	}
 			   			        }
 			   				});
@@ -900,7 +899,6 @@
 					delHasAddMethod('delJsLxrBtn','delJsLxrOpt');
 					if(json.pubZlName != ''){//编辑首次进来页面判断是否存在已添加的专利任务存在激活重置
 						parent.$('#lqZlIdInp').val(json.pubZlId);//将已经存在数据库的pubZlId赋给父级用于弹窗页面的回显
-			  			parent.addZlFlag = true;//激活重置按钮
 			  		}
 				}
 			};
@@ -911,12 +909,8 @@
 				tmpEwyqIdArray.length = 0;
 				if(value == 'fmxx'){
 					$('.selZlTaskSp').hide();
-					parent.addZlFlag = false;
 				}else{
 					$('.selZlTaskSp').show();
-					if($('#pubZlIdInp').val() != ''){
-						parent.addZlFlag = false;
-					}
 				}
 				$('#pubZlIdInp').val('');
 				parent.$('#lqZlIdInp').val('');
@@ -961,6 +955,7 @@
 				}
 				$('.downloadBtn').on('click',function(){
 					var downFilePath = $(this).attr('downFilePath');
+					layer.load('1');
 					var form = $("<form>");   //定义一个form表单
 					form.attr('style', 'display:none'); //在form表单中添加查询参数
 					form.attr('target', '');
@@ -973,6 +968,7 @@
 					$('body').append(form);  //将表单放置在web中 
 					form.append(input1);   //将查询参数控件提交到表单上
             		form.submit();
+            		layer.closeAll('loading');
 				});
 			}
 			$(function(){

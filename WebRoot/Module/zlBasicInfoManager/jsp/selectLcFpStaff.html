@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlBasicInfoManager/css/lcfp.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+  	<title>选择流程分配人员</title>
+</head>
+<body style="background:#fff;">
+	<div id="addLcFp">
+		<!-- 搜索  -->
+		<div class="searchPart layui-form">
+			<div class="innerSearch widSearch1">
+				<input id="zlTypeInp" type="hidden" value=""/>
+				<select id="zlTypeListSel" lay-filter="zlTypeListSel">
+				 	<option value="">请选择专业领域</option>
+				 	<option value="fm">发明</option>
+				 	<option value="syxx">实用新型</option>
+				 	<option value="wg">外观</option>
+				</select> 
+			</div>
+			<div class="innerSearch widSearch2">
+				<input id="lqZlTitleInp" type="text" placeholder="请输入领取专利标题" class="layui-input"/>
+			</div>
+			<div class="innerSearch">
+				<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search
+ "></i></button>
+			</div>
+		</div>
+		<ul class="lcFpTit">
+			<li class="oneWidLi">&nbsp;</li>
+			<li class="twoWidLi">员工姓名</li>
+			<li class="twoWidLi">员工性别</li>
+			<li class="threeWidLi">擅长领域</li>
+			<li class="twoWidLi">撰写数量</li>
+			<li class="twoWidLi">员工等级</li>
+		</ul>
+		<div id="lcFpTaskPar" class="lcFpCon">
+			<ul id="lcFpSon"></ul>
+		</div>
+	</div>
+	<div class="botSaveBox">
+		<button type="button" id="saveLqZlBtn" class="layui-btn">确定</button>
+	</div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','form','jquery'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form;
+			var page = {
+				init : function(){
+					this.onLoad();
+					this.bindEvent();
+				},
+				bindEvent : function(){
+					
+				},
+				onLoad : function(){
+					this.loadStaffList('initLoad');
+				},
+				loadStaffList : function(opts){
+					var _this = this,noData='<div class="noData" style="display:block;"><i class="iconfont layui-extend-noData"></i><p>暂无员工<p></div>';
+					//layer.load('1');
+					if(opts == 'initLoad'){
+						var field = {userName:'',jsId:'',opt:0,actNameEng:'dealZl'};
+					}
+					$.ajax({
+  						type:'post',
+				        async:false,
+				        dataType:'json',
+				        data : field,
+				        url:'/user.do?action=getValidUserData',
+				        success:function (json){
+				        	layer.closeAll('loading');
+				        	console.log(json)
+				        	if(json['userResult'] == 'success'){
+				        		$('.botSaveBox').show();
+				        		var listUserData = json.userInfo; 
+				        		_this.renderLqZlTaskList(listData);
+				        	}else if(json['userResult'] == 'noInfo'){
+				        		$('.lcFpCon ul').html(noData);
+				        		$('.botSaveBox').hide();
+				        		$('#scrollParent').remove();
+				        		$('#lcFpSon').animate({'top':0});
+								common.getId('lcFpTaskPar').onmousewheel = function(){
+									return false;
+								};
+				        	}
+				        }
+  					});
+				}
+			};
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>

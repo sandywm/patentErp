@@ -231,7 +231,7 @@
 						{field : 'zlStatusInfo', title: '案件状态', width:120, align:'center'},
 						{field : '', title: '操作', width:globalWid, fixed: 'right', align:'center',templet : function(d){
 							if(globalLqStatus == 0){//流程分配
-								return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="viewInfo"><i class="layui-icon layui-icon-search"></i>查看</a> <a class="layui-btn layui-btn-xs" lay-event="lcfpFun"><i class="layui-icon layui-icon-edit"></i>流程分配</a>';
+								return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="viewInfo"><i class="layui-icon layui-icon-search"></i>查看</a> <a class="layui-btn layui-btn-xs" lay-event="lcfpFun" zlId="'+ d.id +'"><i class="layui-icon layui-icon-edit"></i>流程分配</a>';
 							}else if(globalLqStatus ==1){//专利任务
 								return '<a class="layui-btn layui-btn-xs" lay-event="editZlTask"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
 							}else if(globalLqStatus == 2){//撰写任务领取
@@ -244,14 +244,10 @@
 					done : function(res, curr, count){
 						layer.closeAll('loading');
 						if(res.msg == 'success'){
-							//$('.noData').hide().html('');
 							$('#noData_'+lqStatusVal).hide().html('');
-			        		//$('.layui-table-view').show();
 			        		$('#zlBasicListTab_'+lqStatusVal).siblings('.layui-table-view').show();
 						}else if(res.msg == 'noInfo'){
-							//$('.layui-table-view').hide();
 							$('#zlBasicListTab_'+lqStatusVal).siblings('.layui-table-view').hide();
-			        		//$('.noData').show();
 			        		$('#noData_'+lqStatusVal).show();
 			        		if(opts == 'initLoad'){
 			        			$('#noData_'+lqStatusVal).html("<i class='iconfont layui-extend-noData'></i><p>暂无记录</p>");
@@ -268,8 +264,9 @@
 					if(page.data.upZlFlag){
 						addEditZlOpts = $(this).attr('opts');
 						globalZlId = $(this).attr('zlId');
+						addZlFlag = false;
 						var fullScreenIndex = layer.open({
-							title:'增加新专利',
+							title:'编辑专利',
 							type: 2,
 						  	area: ['700px', '500px'],
 						  	fixed: true, //不固定
@@ -277,9 +274,9 @@
 						  	shadeClose :false,
 						  	content: '/Module/zlBasicInfoManager/jsp/addEditZl.html',
 						  	end:function(){
-						  		/*if(addZlFlag){
+						  		if(addZlFlag){
 						  			loadZlInfoList('initLoad');
-						  		}*/
+						  		}
 						  	}
 						});	
 						layer.full(fullScreenIndex);
@@ -288,6 +285,27 @@
 					}
 				}else if(obj.event == 'lcfpFun'){//流程分配
 					page.data.fpZlFlag = common.getPermission('fpZl','',0);
+					if(page.data.fpZlFlag){
+						globalZlId = $(this).attr('zlId');
+						addZlFlag = false;
+						var fullScreenIndex = layer.open({
+							title:'流程分配',
+							type: 2,
+						  	area: ['700px', '500px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	content: '/Module/zlBasicInfoManager/jsp/lcFp.html',
+						  	end:function(){
+						  		/*if(addZlFlag){
+						  			loadZlInfoList('initLoad');
+						  		}*/
+						  	}
+						});	
+						layer.full(fullScreenIndex);
+					}else{
+						layer.msg('抱歉，您暂无权限进行流程分配', {icon:5,anim:6,time:1000});
+					}
 				}
 			});
 			$(function(){

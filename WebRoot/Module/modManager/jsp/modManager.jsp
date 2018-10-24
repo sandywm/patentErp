@@ -21,6 +21,7 @@
   				<div class="layui-card">
   					<div class="layui-card-header posRel">
   						<span>模块权限管理</span>
+  						<span id="outDateTips"></span>
   						<a id="addMod" class="posAbs newAddBtn" opts="addBtn" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加模块</a>
   						<div class="roleList clearfix fr">
   							<input id="roleIdInp" type="hidden" value="0"/>
@@ -36,7 +37,7 @@
   			</div>
   		</div>
   	</div>
-  	<i id="outDateTip" class="iconfont layui-extend-tishi"></i>
+  	<!--  i id="outDateTip" class="iconfont layui-extend-tishi"></i-->
     <script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		var roleName = parent.roleName,loginType = parent.loginType,globalOpts = "addBtn",globalModId=0,madIdArray=[],roleList=[];
@@ -721,18 +722,7 @@
 			function memberOutDateTip(){
 				var hyEndFlag = getCpyHyStatus();
 				if(hyEndFlag){//表示过期
-					layer.confirm('您的会员已到期，银牌以上的模块将不能使用，如需使用，请及时续费购买！',{
-						title:'会员到期提醒',
-					  	skin: 'layui-layer-molv',
-					  	btn: ['确定','取消'] //按钮
-					},function(index){
-						layer.close(index);
-						$('#outDateTip').show();
-						showOutDateTips();
-					}, function(){
-						$('#outDateTip').show();
-						showOutDateTips();
-					});	
+					$('#outDateTips').html('您的会员已到期， 铜牌以上的模块将不能使用，如需使用，请及时续费购买！');
 				}
 			}
 			$(function(){

@@ -21,8 +21,13 @@
 				var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
 				//读取本地文件
 				obj.preview(function(index,file,result){
+					var fileNames = file.name.split('.')[0]; 
 					var fileType = file.name.substr(file.name.lastIndexOf('.'));
 					var size = file.size;
+					if(fileNames.length > 50){
+						layer.msg('上传的文件名不能超过50个字符',{icon:5,anim:6,time:1000});
+	    				return;
+					}
 					if(fileType == '.jpg' || fileType == '.png' || fileType == '.bmp' || fileType == '.gif' || fileType == '.jpeg'){
 		    			//如果是图片，单个图片不能大于5M
 		    			if(size > (5 * 1024 * 1024)){

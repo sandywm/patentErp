@@ -1,0 +1,200 @@
+@import url("../../../css/common.css");
+@import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
+body{
+	background:#f2f2f2;
+	color:#666;
+}   
+.layui-form-label{
+	width:125px;
+}
+.layui-form-label span{
+	 color: red;
+    margin-right: 2px;
+}
+.multiBox p{
+	height:22px;
+	line-height:22px;
+	padding:0 8px 0 26px;
+	float:left;
+	display:block;
+	background:rgba(32,160,255,.1);
+	border:1px solid rgba(32,160,255,.2);
+	color:#20a0ff;
+	margin-right:8px;
+	margin-top:8px;
+	border-radius:3px;
+	position:relative;
+	cursor:pointer;
+}
+.multiBox p i{
+	font-size:18px;
+	position:absolute;
+	left:8px;
+	top:0;
+}
+.addSpan{
+	cursor:pointer;
+	color:#009688;
+	margin-top:9px;
+	display:block;
+	position:relative;
+	margin-right:10px;
+}
+.addSpan i{
+	font-size:20px;
+	position:absolute;
+	left:0;
+	top:-2px;
+}
+.addSpan:hover{
+	color:#F47837;
+}
+.searchPart{
+	width:100%;
+	height:38px;
+	margin:10px 0 5px 0;
+}
+.innerSearch{
+	height:100%;
+	float:left;
+	margin-left:15px;
+}
+.widSearch1{
+	width:150px;
+}
+.widSearch2{
+	width:230px;
+}
+.lcFpTit,
+.lcFpCon li{
+	width:100%;
+}
+.lcFpTit{
+	height:35px;
+	background:#f1f1f1;
+}
+.lcFpCon li{
+	height:35px;
+	cursor:pointer;
+}
+.lcFpTit li,
+.lcFpCon li p{
+	float:left;
+	text-align:center;
+}
+.lcFpTit li{
+	font-weight:600;
+	line-height:35px;
+}
+.lcFpCon li p{
+	line-height:35px;
+}
+.oneWidLi{
+	width:50px;
+}
+.twoWidLi{
+	width:135px;
+}
+.threeWidLi{
+	width:260px;
+}
+.lcFpCon{
+	height:325px;
+	overflow:hidden;
+	position:relative;
+	background:yellow;
+}
+#lcFpSon{
+	width:100%;
+	position:absolute;
+	left:0;
+	top:0;
+}
+.parentScroll,
+.scrollBar{
+	width: 5px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-radius: 20px;
+}
+.parentScroll{
+	height:100%;
+}
+.scrollBar{
+	height:50px;
+	background:#F47837;
+}
+.lcFpCon li{
+	border-bottom:1px solid #ccc;
+}
+.botSaveBox{
+	margin-top:10px;
+	width:100%;
+	text-align:right;
+	height:38px;
+	line-height:38px;
+}
+.botSaveBox button{
+	width:120px;
+	font-size:14px;
+	margin-right:10px;
+	padding:0px;
+}
+.labelMod{
+	height:24px;
+	line-height:24px;
+	padding:0 6px;
+	display:block;
+	float:left;
+	position:relative;
+	margin:0 0px 10px 0;
+}
+.labelMod span.likeCheckSpan{
+	width:16px;
+	height:16px;
+	line-height:16px;
+	border:1px solid #d2d2d2;
+	border-radius:2px;
+	background:#fff;
+	-webkit-transition:.1s linear;
+	transition:.1s linear;
+	display:block;
+	margin:3px 6px 0 0px;
+	float:left;
+}
+.hasBorRad{
+	width:18px !important;
+	height:18px !important;
+	line-height:18px !important;
+	border-radius:50% !important;
+	margin-top:7px !important;
+	margin-left:6px !important;
+	border:1px solid #999 !important;
+}
+.labelMod span.likeCheckSpan b{
+	color:#fff;
+	font-size:12px;
+	margin-left:2px;
+}
+.labelMod span.hasActive{
+	border-color:#5FB878 !important;
+	background:#5FB878 !important;
+}
+.labelMod span.hasActive b{
+	color:#fff;
+}
+.labelMod strong{
+	font-weight:normal;
+	float:left;
+}
+.threeWidLi span{
+	display: inline-block;
+    height: 22px;
+    line-height: 22px;
+    padding: 0 5px;
+    background: #009688;
+    color: #fff;
+    margin-right: 5px;
+    font-size: 12px;
+}

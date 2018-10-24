@@ -302,15 +302,9 @@ body{
 .hasAlign{
 	text-align:center;
 }
-#outDateTip{
-	font-size:50px;
-	position:fixed;
-	right:15px;
-	bottom:15px;
-	color:#FF8000;
-	cursor:pointer;
-	display:none;
-	z-index:100;
+#outDateTips{
+	margin-left:15px;
+	color:#F47837;
 }
 .oddBg{
 	background:#f2f2f2;

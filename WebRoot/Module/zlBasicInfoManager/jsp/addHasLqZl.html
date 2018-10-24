@@ -42,7 +42,7 @@
 		</div>
 	</div>
 	<div class="botSaveBox">
-		<button type="button" id="saveLqZlBtn" class="layui-btn">保存</button>
+		<button type="button" id="saveLqZlBtn" class="layui-btn">确定</button>
 	</div>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
@@ -96,6 +96,7 @@
 					this.loadLqZlTask('initLoad');
 				},
 				loadLqZlTask : function(opts){
+					parent.addEditZlOpts == 'addZlOpts' ? parent.$('#lqZlIdInp').val('') : parent.$('#lqZlIdInp').val();
 					var _this = this,noData='<div class="noData" style="display:block;"><i class="iconfont layui-extend-noData"></i><p>暂无领取专利记录<p></div>';
 					layer.load('1');
 					if(opts == 'initLoad'){
@@ -144,6 +145,10 @@
 							strHtml += '<span class="likeCheckSpan hasBorRad hasActive"><b class="layui-icon layui-icon-ok" style="margin-left:0px;"></b></span>';
 							strHtml += '<input type="checkbox" class="inpRadCheck zlLqTaskInp" checked/>';
 							this.data.isCheckedFlag = true;
+							//表示编辑的时候已经添加了已领取的任务到数据库
+							parent.$('#lqZlIdInp').val(listData[i].pzId);
+							parent.$('#lqZlIdInpText').val(listData[i].pzTitle);
+							parent.$('#lqZlTypeInp').val(listData[i].pzType);
 						}else{
 							strHtml += '<span class="likeCheckSpan hasBorRad"><b class="layui-icon layui-icon-ok" style="margin-left:0px;"></b></span>';
 							strHtml += '<input type="checkbox" class="inpRadCheck zlLqTaskInp"/>';
