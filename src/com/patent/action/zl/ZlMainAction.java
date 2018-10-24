@@ -2729,13 +2729,6 @@ public class ZlMainAction extends DispatchAction {
 			list_d.add(ReadZipFile.readZipFile_new("E:\\",zipPath.split(",")[i],1,1,0));
 		}
 		map.put("result", list_d);
-//		List<Object>  rzList = ReadZipFile.readZipFile_new(zipPath);
-//		if(rzList.size() > 0){
-//			for(Iterator<Object> it = rzList.iterator() ; it.hasNext();){
-//				Object obj = it.next();
-//				
-//			}
-//		}
 		this.getJsonPkg(map, response);
 		return null;
 	}

@@ -299,7 +299,7 @@ public class ReadZipFile {
     					ZlajMainInfoTb zl = zlList.get(0);
     					Integer zlId = zl.getId();
     					zlType = zl.getAjType();
-    					String zlInfo = "该专利["+zl.getAjNoGf()+"] ["+ zl.getAjTitle() +"]";
+//    					String zlInfo = "该专利["+zl.getAjNoGf()+"] ["+ zl.getAjTitle() +"]";
     					//只有在案件状态正常时（0）
 						if(zl.getAjStopStatus().equals(0)){
 							
@@ -629,8 +629,10 @@ public class ReadZipFile {
 //										}
 //									}
 									map.put("tzsName", tzsName);
-									map.put("detailInfo", zlInfo + "已成功导入通知书");
-									map.put("result", msg);
+									map.put("zlId", zlId);
+									map.put("ajNoGf", zl.getAjNoGf());
+									map.put("ajTitle", zl.getAjTitle());
+									map.put("result", msg);//已成功导入通知书
 //									2018年10月24日
 //									String upZipPath_new = upZipPath;
 //									if(specZlId == 0){//没有针对指定的专利导入，需要修改上传文件路径
@@ -642,6 +644,7 @@ public class ReadZipFile {
 //										//复制上传通知书到正确位置
 //										 if(!file.exists()){//不存在改文件，进行复制
 //											 FileOpration.copyFile(oldPath, newPath);
+//											 FileOpration.deleteFile(oldPath);
 //										 }
 //									}
 //									tzsm.addTzs(zlId, tzsName, fwDate, "", fwSerial,upZipPath_new);
@@ -650,8 +653,9 @@ public class ReadZipFile {
 							}else{
 								map.put("tzsName", tzsName);
 								map.put("zlId", zl.getId());
-								map.put("detailInfo", zlInfo + "当前导入人员不是系统指定人员,请更换导入人员重新导入当前通知书");
-								map.put("result", "tzsUserError");
+								map.put("ajNoGf", zl.getAjNoGf());
+								map.put("ajTitle", zl.getAjTitle());
+								map.put("result", "tzsUserError");//当前导入人员不是系统指定人员,请更换导入人员重新导入当前通知书
 								//删除当前通知书压缩包
 								FileOpration.deleteFile(pathPre+upZipPath);
 							}
@@ -661,9 +665,11 @@ public class ReadZipFile {
 							msg =  "zlStop";//专利终止条件下不能进行导入
 							map.put("tzsName", tzsName);
 							map.put("zlId", zl.getId());
-							map.put("detailInfo", zlInfo+ "已终止，不能进行导入通知书操作");
-							map.put("result", msg);
+							map.put("ajNoGf", zl.getAjNoGf());
+							map.put("ajTitle", zl.getAjTitle());
+							map.put("result", msg);//已终止，不能进行导入通知书操作
 							//删除当前通知书压缩包
+							FileOpration.deleteFile(pathPre+upZipPath);
 						}
     				}else{//获取到一个以上的专利信息(需要用户判断选择一个，然后再进行操作)
     					List<Object> list_r = new ArrayList<Object>();
@@ -684,26 +690,22 @@ public class ReadZipFile {
     						map_1.put("zlType", zlTypeChi);
     						list_r.add(map);
     					}
-    					map.put("result", "repeatInfo");
+    					map.put("result", "repeatInfo");//该通知书匹配到两个以上的专利，请选择一个专利进行重新匹配
     					map.put("tzsName", tzsName);
-						map.put("detailInfo", "该通知书匹配到两个以上的专利，请选择一个专利进行重新匹配");
     					map.put("zlList", list_r);
     					//把通知书内容保存
     					map.put("tzsInfo", list_d);
+    					map.put("zipPath", upZipPath);
     				}
     			}else{//不存在
-    				map.put("result", "noInfo");
+    				map.put("result", "noInfo");//该通知书没有匹配到专利
     				map.put("tzsName", tzsName);
-    				map.put("zlName", zlName);
-	            	map.put("ajNoGf", ajNoGf);
-					map.put("detailInfo", "该通知书没有匹配到专利");
 					map.put("zipPath", upZipPath);
 					//删除当前通知书压缩包
 					FileOpration.deleteFile(pathPre+upZipPath);
     			}
 	        }else{
-	        	map.put("result", "tzsError");
-				map.put("detailInfo", "请导入正确的通知书");
+	        	map.put("result", "tzsError");//请导入正确的通知书
 				map.put("zipPath", upZipPath);
 				//删除当前通知书压缩包
 				FileOpration.deleteFile(pathPre+upZipPath);
@@ -711,8 +713,7 @@ public class ReadZipFile {
 	        
         }catch (Exception e) {
 			// TODO Auto-generated catch block
-        	map.put("result", "typeError");
-			map.put("detailInfo", "只支持ZIP压缩格式的通知书");
+        	map.put("result", "typeError");//只支持ZIP压缩格式的通知书
 			map.put("zipPath", upZipPath);
 			//删除当前通知书压缩包
 			FileOpration.deleteFile(pathPre+upZipPath);
