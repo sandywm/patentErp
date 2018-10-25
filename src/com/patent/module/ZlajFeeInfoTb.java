@@ -205,7 +205,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		return yearFeeNo;
 	}
 
-	public void seYearFeeNo(Integer yearFeeNo) {
+	public void setYearFeeNo(Integer yearFeeNo) {
 		this.yearFeeNo = yearFeeNo;
 	}
 
