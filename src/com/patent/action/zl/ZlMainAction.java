@@ -1312,7 +1312,7 @@ public class ZlMainAction extends DispatchAction {
 						boolean flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, tjUserId, 
 								tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
 						if(flag){
-							Integer ajStatus = Integer.parseInt(zl.getAjStatus());
+							Double ajStatus = Double.parseDouble(zl.getAjStatus());
 							Integer checkUserId_db = zl.getCheckUserId();
 							Integer zxUserId_db = zl.getZxUserId();
 							Integer tjUserId_db = zl.getTjUserId();

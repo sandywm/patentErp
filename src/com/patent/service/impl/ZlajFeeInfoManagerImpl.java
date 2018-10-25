@@ -97,7 +97,7 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 	public Integer addZLFee(Integer zlId, Integer appUserId, Integer geeTypeId,
 			Double feePrice, Double feeRate,String feeEndDateCpy, String feeEndDateGf,
 			String feeRemark, Integer feeStatus, Integer cpyId,
-			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer lcMxId)
+			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -110,7 +110,7 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			tran = sess.beginTransaction();
 			ZlajFeeInfoTb zlFee = new ZlajFeeInfoTb(ftDao.getTypeEntityById(sess, geeTypeId), uDao.get(sess, appUserId),
 					cDao.get(sess, cpyId), zlDao.get(sess, zlId), feePrice, feeRate,feeEndDateCpy,
-					feeEndDateGf, feeRemark, feeStatus,djStatus, feeJnDate, feeUpZd,tzsArea,lcMxId);
+					feeEndDateGf, feeRemark, feeStatus,djStatus, feeJnDate, feeUpZd,tzsArea,yearFeeNo);
 			fDao.save(sess, zlFee);
 			tran.commit();
 			return zlFee.getId();

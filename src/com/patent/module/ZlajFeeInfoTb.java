@@ -27,7 +27,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	private String feeJnDate;
 	private String feeUpZd;
 	private String tzsArea;
-	private Integer lcMxId;
+	private Integer yearFeeNo;
 
 	// Constructors
 
@@ -39,7 +39,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	public ZlajFeeInfoTb(FeeTypeInfoTb feeTypeInfoTb, CpyUserInfo cpyUserInfo,
 			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
-			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer lcMxId) {
+			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -54,14 +54,14 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.feeJnDate = feeJnDate;
 		this.feeUpZd = feeUpZd;
 		this.tzsArea = tzsArea;
-		this.lcMxId = lcMxId;
+		this.yearFeeNo = yearFeeNo;
 	}
 
 	/** full constructor */
 	public ZlajFeeInfoTb(Integer id,FeeTypeInfoTb feeTypeInfoTb, CpyUserInfo cpyUserInfo,
 			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
-			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer lcMxId) {
+			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -76,7 +76,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.feeJnDate = feeJnDate;
 		this.feeUpZd = feeUpZd;
 		this.tzsArea = tzsArea;
-		this.lcMxId = lcMxId;
+		this.yearFeeNo = yearFeeNo;
 	}
 
 	// Property accessors
@@ -201,12 +201,12 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.tzsArea = tzsArea;
 	}
 
-	public Integer getLcMxId() {
-		return lcMxId;
+	public Integer getYearFeeNo() {
+		return yearFeeNo;
 	}
 
-	public void setLcMxId(Integer lcMxId) {
-		this.lcMxId = lcMxId;
+	public void seYearFeeNo(Integer yearFeeNo) {
+		this.yearFeeNo = yearFeeNo;
 	}
 
 }

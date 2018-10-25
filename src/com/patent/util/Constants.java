@@ -31,6 +31,8 @@ public class Constants {
 	
 	public static final Integer PUB_PRINT_FEE = 50;//公告印刷费
 	
+	public static final Integer YEAR_FEE_TQ_DAYS = 45;//年费自动生成提前日（在下个年度年费起始日往前45天时自动增加）
+	
 	//免费会员不能增加子公司
 	public static final Integer SUB_CPY_NUM_YP = 1;//银牌对应的子公司个数
 	public static final Integer SUB_CPY_NUM_JP = 3;//金牌对应的子公司个数

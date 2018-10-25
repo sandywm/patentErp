@@ -83,4 +83,14 @@ public interface ZlajFeeInfoDao {
 	 * @return
 	 */
 	List<ZlajFeeInfoTb> findInfoByOpt(Session sess,Integer zlId,String tzsArea,Integer feeStatus,Integer djStatus);
+	
+	/**
+	 * 获取系统中所有缴纳年费的记录（id降序）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-25 上午09:38:37
+	 * @param sess
+	 * @return
+	 */
+	List<ZlajFeeInfoTb> findYearFeeInfoByOpt(Session sess);
 }

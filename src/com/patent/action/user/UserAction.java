@@ -1220,10 +1220,11 @@ public class UserAction extends DispatchAction {
 		Map<String,Object> map_m = new HashMap<String,Object>();
 		//把管理员加上
 		CpyUserInfo user_m = cum.listManagerInfoByOpt(cpyId, "管理员").get(0);
-		map_m.put("userId", user_m.getId());
+		Integer userId_m =  user_m.getId();
+		map_m.put("userId",userId_m);
 		map_m.put("userName", user_m.getUserName());
 		//获取用户角色
-		List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(user_m.getId());
+		List<CpyRoleUserInfoTb> ruList = crm.listInfoByUserId(userId_m);
 		String roleName = "";
 		for(Iterator<CpyRoleUserInfoTb> it_1 = ruList.iterator() ; it_1.hasNext();){
 			CpyRoleUserInfoTb ru = it_1.next();
@@ -1263,47 +1264,50 @@ public class UserAction extends DispatchAction {
 		if(userList.size() > 0){
 			for(Iterator<CpyUserInfo> it = userList.iterator() ; it.hasNext();){
 				CpyUserInfo user = it.next();
-				Map<String,Object> map_d = new HashMap<String,Object>();
-				map_d.put("userId", user.getId());
-				map_d.put("userName", user.getUserName());
-				//获取用户角色
-				List<CpyRoleUserInfoTb> ruList_1 = crm.listInfoByUserId(user.getId());
-				String roleName_1 = "";
-				for(Iterator<CpyRoleUserInfoTb> it_1 = ruList_1.iterator() ; it_1.hasNext();){
-					CpyRoleUserInfoTb ru = it_1.next();
-					roleName_1 += ru.getCpyRoleInfoTb().getRoleName() + ",";
-				}
-				if(!roleName_1.equals("")){
-					roleName_1 = roleName_1.substring(0, roleName_1.length() - 1);
-				}
-				map_d.put("userRole", roleName_1);
-				map_d.put("userSex", user.getUserSex().equals("m") ? "男" : "女");
-				map_d.put("zxNum", user.getUserZxNum());
-				String userScField_1 = user.getUserScFiledId();
-				String scFiledName_1 = "";
-				if(!userScField_1.equals("")){
-					List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField_1);
-					for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
-						JsFiledInfoTb js = it_1.next();
-						scFiledName_1 += js.getZyName() + ",";
+				Integer userId = user.getId();
+				if(!userId.equals(userId_m)){
+					Map<String,Object> map_d = new HashMap<String,Object>();
+					map_d.put("userId", userId);
+					map_d.put("userName", user.getUserName());
+					//获取用户角色
+					List<CpyRoleUserInfoTb> ruList_1 = crm.listInfoByUserId(userId);
+					String roleName_1 = "";
+					for(Iterator<CpyRoleUserInfoTb> it_1 = ruList_1.iterator() ; it_1.hasNext();){
+						CpyRoleUserInfoTb ru = it_1.next();
+						roleName_1 += ru.getCpyRoleInfoTb().getRoleName() + ",";
 					}
-					if(!scFiledName_1.equals("")){
-						scFiledName_1 = scFiledName_1.substring(0, scFiledName_1.length() - 1);
+					if(!roleName_1.equals("")){
+						roleName_1 = roleName_1.substring(0, roleName_1.length() - 1);
 					}
+					map_d.put("userRole", roleName_1);
+					map_d.put("userSex", user.getUserSex().equals("m") ? "男" : "女");
+					map_d.put("zxNum", user.getUserZxNum());
+					String userScField_1 = user.getUserScFiledId();
+					String scFiledName_1 = "";
+					if(!userScField_1.equals("")){
+						List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, userScField_1);
+						for(Iterator<JsFiledInfoTb> it_1 = jsList.iterator() ; it_1.hasNext();){
+							JsFiledInfoTb js = it_1.next();
+							scFiledName_1 += js.getZyName() + ",";
+						}
+						if(!scFiledName_1.equals("")){
+							scFiledName_1 = scFiledName_1.substring(0, scFiledName_1.length() - 1);
+						}
+					}
+					map_d.put("scFiledName", scFiledName_1);
+					Integer userExp_1 = user.getUserExper();
+					String userExpChi_1 = "";
+					if(userExp_1 >= 0 && userExp_1 < 100){
+						userExpChi_1 = "铜牌";
+					}else if(userExp_1 > 100 && userExp_1 < 1000){
+						userExpChi_1 = "银牌";
+					}else if(userExp_1 > 1000){
+						userExpChi_1 = "金牌";
+					}
+					map_d.put("userExp", userExp_1);
+					map_d.put("userExpChi", userExpChi_1);
+					list_d.add(map_d);
 				}
-				map_d.put("scFiledName", scFiledName_1);
-				Integer userExp_1 = user.getUserExper();
-				String userExpChi_1 = "";
-				if(userExp_1 >= 0 && userExp_1 < 100){
-					userExpChi_1 = "铜牌";
-				}else if(userExp_1 > 100 && userExp_1 < 1000){
-					userExpChi_1 = "银牌";
-				}else if(userExp_1 > 1000){
-					userExpChi_1 = "金牌";
-				}
-				map_d.put("userExp", userExp_1);
-				map_d.put("userExpChi", userExpChi_1);
-				list_d.add(map_d);
 			}
 		}
 		map.put("userResult", msg);

@@ -239,6 +239,32 @@ public class CurrentTime {
 	}
 	
 	/**
+	 * 指定日期+年数
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-25 上午09:13:28
+	 * @param specifiedDate
+	 * @param addMonthes
+	 * @return
+	 */
+	public static String getFinalDate_2(String specifiedDate,int addYears){
+		String finalDate = "";
+		Calendar calendar = Calendar.getInstance();
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Date date = sdf.parse(specifiedDate);
+			calendar.setTime(date);
+			calendar.add(Calendar.YEAR, addYears);
+			finalDate =  sdf.format(calendar.getTime());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return finalDate;
+	}
+	
+	/**
 	 * 日期相减相差天数
 	 * @description
 	 * @author wm
@@ -573,7 +599,7 @@ public class CurrentTime {
 //		System.out.println(Math.round(2.51));
 //		System.out.println(CurrentTime.getMonthOrLast());
 //		System.out.println(CurrentTime.getEndDayofMonth(2016,8));
-		System.out.println(CurrentTime.getFinalDate_1("2018-01-12",3));
+		System.out.println(CurrentTime.getFinalDate_2("2018-01-12",1));
 		
 	}
 }

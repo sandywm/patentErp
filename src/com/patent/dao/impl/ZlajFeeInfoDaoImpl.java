@@ -75,4 +75,10 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		return null;
 	}
 
+	@Override
+	public List<ZlajFeeInfoTb> findYearFeeInfoByOpt(Session sess) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

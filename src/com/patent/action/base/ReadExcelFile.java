@@ -119,5 +119,8 @@ public class ReadExcelFile {
 //		 new FileInputStream(file);
 		 String aaa = "2017301654572";
 		 System.out.print(aaa.substring(4, 5));
+		 Integer c = 3;
+		 Integer d = 3;
+		 System.out.println(c.equals(d) + "   "+ (c == d));
 	}
 }
