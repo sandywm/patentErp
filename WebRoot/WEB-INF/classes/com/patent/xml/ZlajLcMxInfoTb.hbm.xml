@@ -19,7 +19,7 @@
             <column name="lc_fz_user_id" not-null="true">
                 <comment>流程负责人(等同于(承办人))</comment>
             </column>
-        </many-to-one>
+        </property>
         <property name="lcMxName" type="java.lang.String">
             <column name="lc_mx_name" length="50" not-null="true">
                 <comment>流程明细名称</comment>
