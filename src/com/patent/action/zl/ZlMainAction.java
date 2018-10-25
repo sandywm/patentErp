@@ -784,11 +784,14 @@ public class ZlMainAction extends DispatchAction {
 									Map<String,Object> map_d = new HashMap<String,Object>();
 									map_d.put("mxId", mx.getId());
 									map_d.put("mxName", mx.getLcMxName());
-									CpyUserInfo user = mx.getCpyUser();
-									if(user != null){
-										map_d.put("fzUserName", user.getUserName());
-									}else{
-										map_d.put("fzUserName", "");
+									Integer lcFzUserId = mx.getLcFzUserId();
+									if(lcFzUserId > 0){//存在
+										CpyUserInfo user = cum.getEntityById(lcFzUserId);
+										if(user != null){
+											map_d.put("fzUserName", user.getUserName());
+										}else{
+											map_d.put("fzUserName", "");
+										}
 									}
 									map_d.put("mxSDate", mx.getLcMxSDate());
 									map_d.put("mxEDate", mx.getLcMxEDate());
@@ -2133,7 +2136,7 @@ public class ZlMainAction extends DispatchAction {
 							if(mxList.size() > 0){
 								ZlajLcMxInfoTb lcmx = mxList.get(0);
 								if(lcmx.getLcMxEDate().equals("")){
-									if(currUserId.equals(lcmx.getCpyUser().getId())){
+									if(currUserId.equals(lcmx.getLcFzUserId())){
 										msg = "success";
 									}else{
 										if(this.getLoginRoleName(request).equals("管理员")){//管理员可以操作任何环节
@@ -2291,7 +2294,7 @@ public class ZlMainAction extends DispatchAction {
 									double lcNo = lcmx.getLcMxNo();//流程号
 									String cpyDate = lcList.get(0).getLcCpyDate();
 									if(lcmx.getLcMxEDate().equals("")){
-										if(currUserId.equals(lcmx.getCpyUser().getId())){
+										if(currUserId.equals(lcmx.getLcFzUserId())){
 											if(ajStatus.equals(lcNo)){
 												msg = "success";
 											}else{

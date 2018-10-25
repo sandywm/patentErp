@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-
-import com.patent.dao.CpyUserInfoDao;
 import com.patent.dao.ZlajLcInfoDao;
 import com.patent.dao.ZlajLcMxInfoDao;
 import com.patent.exception.WEBException;
@@ -19,7 +17,6 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 
 	ZlajLcInfoDao lcDao = null;
 	ZlajLcMxInfoDao mxDao = null;
-	CpyUserInfoDao uDao = null;
 	Transaction tran = null;
 	@Override
 	public Integer addLcMx(Integer lcId, Integer fzUserId, String lcMxName,
@@ -30,10 +27,9 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 		try {
 			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
 			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
-			uDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			ZlajLcMxInfoTb mxInfo = new ZlajLcMxInfoTb(uDao.get(sess, fzUserId), lcDao.get(sess, lcId),
+			ZlajLcMxInfoTb mxInfo = new ZlajLcMxInfoTb(fzUserId, lcDao.get(sess, lcId),
 					lcMxName, lcMxNo, lcMxSDate, lcMxEDate,lcMxUpFile, lcMxUpUserId, lcMxUpDate,
 					lcMxUpSize, lcMxFee, lcMxRemark);
 			mxDao.save(sess, mxInfo);
@@ -55,7 +51,6 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 		// TODO Auto-generated method stub
 		try {
 			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
-			uDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
 			ZlajLcMxInfoTb mx = mxDao.get(sess, id);
@@ -64,7 +59,7 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 					mx.setLcMxEDate(eDate);
 				}
 				if(fzUserId > 0){
-					mx.setCpyUser(uDao.get(sess, fzUserId));
+					mx.setLcFzUserId(fzUserId);
 				}
 				if(lcMxUpUserId > 0){
 					mx.setLcMxUpUserId(lcMxUpUserId);
