@@ -100,5 +100,35 @@ public interface ZlajLcMxInfoDao {
 	 * @param lcMxName 流程明细
 	 * @return
 	 */
-	List<ZlajLcMxInfoTb> findSpecInfoInfoByOpt(Session sess,Integer zlId,String lcMxName);
+	List<ZlajLcMxInfoTb> findSpecInfoByOpt(Session sess,Integer zlId,String lcMxName);
+	
+	/**
+	 * 获取指定流程负责人名下的任务列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-26 上午09:56:37
+	 * @param sess
+	 * @param fzUserId 流程负责人
+	 * @param comStatus 完成状态（0：未完成，1：已完成）
+	 * @param zlTitle 专利名称（""表示全部）
+	 * @param ajNoQt 案件编号（""表示全部）
+	 * @param zlNo 专利/申请号（""表示全部）
+	 * @return
+	 */
+	List<ZlajLcMxInfoTb> findSpecInfoByOpt(Session sess,Integer fzUserId,Integer comStatus,String zlTitle,String ajNoQt, String zlNo,Integer pageNo,Integer pageSize);
+	
+	/**
+	 * 获取指定流程负责人名下的任务记录条数
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-26 下午04:33:59
+	 * @param sess
+	 * @param fzUserId 流程负责人
+	 * @param comStatus 完成状态（0：未完成，1：已完成）
+	 * @param zlTitle 专利名称（""表示全部）
+	 * @param ajNoQt 案件编号（""表示全部）
+	 * @param zlNo 专利/申请号（""表示全部）
+	 * @return
+	 */
+	Integer getCountByOpt(Session sess,Integer fzUserId,Integer comStatus,String zlTitle,String ajNoQt, String zlNo);
 }

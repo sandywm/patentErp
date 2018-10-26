@@ -21,6 +21,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -221,6 +223,29 @@ public class ZlMainAction extends DispatchAction {
 	public ActionForward goZlPage(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		String loginType = this.getLoginType(request);
+		boolean fpZlFlag = false;//任务分配
+		boolean lqzLFlag = false;//专利任务领取
+		boolean dealZlFlag = false;//专利流程处理
+		if(loginType.equals("cpyUser")){//代理机构下
+			CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
+			Integer roleId = this.getLoginRoleId(request);
+			if(cpyUser != null){
+				if(this.getLoginRoleName(request).equals("管理员")){
+					fpZlFlag = true;
+					lqzLFlag = true;
+					dealZlFlag = true;
+				}else{
+					fpZlFlag = Ability.checkAuthorization(roleId, "fpZl");
+					lqzLFlag = Ability.checkAuthorization(roleId, "lqZl");
+					dealZlFlag = Ability.checkAuthorization(roleId, "dealZl");
+				}
+			}
+		}
+		request.setAttribute("fpZlFlag", fpZlFlag);
+		request.setAttribute("lqzLFlag", lqzLFlag);
+		request.setAttribute("dealZlFlag", dealZlFlag);
 		return mapping.findForward("zlPage");
 	}
 	
@@ -244,6 +269,7 @@ public class ZlMainAction extends DispatchAction {
 		JsFiledInfoManager jsm = (JsFiledInfoManager) AppFactory.instance(null).getApp(Constants.WEB_JS_FIELD_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		Integer cpyId = CommonTools.getFinalInteger("cpyId",request);
 		Integer stopStatus = CommonTools.getFinalInteger("stopStatus",request);
 		String ajNoQt = CommonTools.getFinalStr("ajNoQt",request);
@@ -254,7 +280,8 @@ public class ZlMainAction extends DispatchAction {
 		String lxr = CommonTools.getFinalStr("lxr", request);
 		String sDate = CommonTools.getFinalStr("sDate", request);
 		String eDate = CommonTools.getFinalStr("eDate", request);
-		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利任务，2：撰写任务领取,3：我的专利）
+		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利，2：撰写任务领取,3：我的专利,4:我的任务）
+		Integer comStatus = CommonTools.getFinalInteger("comStatus", request);//我的任务时传递的参数
 		Integer currLoginUserId = this.getLoginUserId(request);
 		//当任务条件为0时，撰写任务领取，这时需要强制stopStatus为正常（0）
 		if(lqStatus.equals(0)){//撰写任务领取时，专利任务必须时正常状态
@@ -264,13 +291,13 @@ public class ZlMainAction extends DispatchAction {
 		String loginType = this.getLoginType(request);
 		boolean abilityFlag = false;
 		if(loginType.equals("cpyUser")){//代理机构下
-			CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
+			CpyUserInfo cpyUser = cum.getEntityById(currLoginUserId);
 			if(cpyUser != null){
 				cpyId = cpyUser.getCpyInfoTb().getId();
 				if(this.getLoginRoleName(request).equals("管理员")){
 					abilityFlag = true;
 				}else{
-					//获取当前用户是否有修改权限
+					//获取当前用户是否有浏览权限
 					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listZl");
 				}
 			}
@@ -279,157 +306,192 @@ public class ZlMainAction extends DispatchAction {
 			abilityFlag = true;
 		}
 		if(abilityFlag){
-			Integer count = zlm.getCountByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate,lqStatus,currLoginUserId);
-			if(count > 0){
-				Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
-				Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
-				List<ZlajMainInfoTb> zlList = zlm.listPageInfoByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, lqStatus, currLoginUserId,pageNo, pageSize);
-				List<Object> list_d = new ArrayList<Object>();
-				for(Iterator<ZlajMainInfoTb> it = zlList.iterator() ; it.hasNext();){
-					ZlajMainInfoTb zl = it.next();
-					Map<String,Object> map_d = new HashMap<String,Object>();
-					map_d.put("id", zl.getId());
-					map_d.put("ajNo", zl.getAjNoQt());
-					map_d.put("ajNoGf", zl.getAjNoGf());
-					map_d.put("ajTitle", zl.getAjTitle());
-					String ajType_db = zl.getAjType();
-					String ajType_new = "";
-					if(ajType_db.equals("fm")){
-						ajType_new = "发明";
-					}else if(ajType_db.equals("syxx")){
-						ajType_new = "实用新型";
-					}else if(ajType_db.equals("wg")){
-						ajType_new = "外观";
-					}else if(ajType_db.equals("fmxx")){
-						ajType_new = "发明+新型";
-					}
-					map_d.put("ajType", ajType_new);
-					String ajFieldIdStr = zl.getAjFieldId();
-					String ajFieldName = "";
-					if(!ajFieldIdStr.equals("")){
-						List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, ajFieldIdStr);
-						for(Iterator<JsFiledInfoTb> it_js = jsList.iterator(); it_js.hasNext();){
-							JsFiledInfoTb js = it_js.next();
-							ajFieldName += js.getZyName() + ",";
+			if(lqStatus <= 3){
+				Integer count = zlm.getCountByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate,lqStatus,currLoginUserId);
+				if(count > 0){
+					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
+					List<ZlajMainInfoTb> zlList = zlm.listPageInfoByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, lqStatus, currLoginUserId,pageNo, pageSize);
+					List<Object> list_d = new ArrayList<Object>();
+					for(Iterator<ZlajMainInfoTb> it = zlList.iterator() ; it.hasNext();){
+						ZlajMainInfoTb zl = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("id", zl.getId());
+						map_d.put("ajNo", zl.getAjNoQt());
+						map_d.put("ajNoGf", zl.getAjNoGf());
+						map_d.put("ajTitle", zl.getAjTitle());
+						String ajType_db = zl.getAjType();
+						String ajType_new = "";
+						if(ajType_db.equals("fm")){
+							ajType_new = "发明";
+						}else if(ajType_db.equals("syxx")){
+							ajType_new = "实用新型";
+						}else if(ajType_db.equals("wg")){
+							ajType_new = "外观";
+						}else if(ajType_db.equals("fmxx")){
+							ajType_new = "发明+新型";
 						}
-						if(!ajFieldName.equals("")){
-							ajFieldName = ajFieldName.substring(0, ajFieldName.length() - 1);
-						}
-					}				
-					map_d.put("ajFieldName", ajFieldName);
-					String sqrId = zl.getAjSqrId();
-					String sqrName = "";//可以是公司也可以是个人
-					if(!sqrId.equals("")){
- 						String[] sqrIdArr = sqrId.split(",");
- 						for(Integer i = 0 ; i < sqrIdArr.length ; i++){
- 							List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[i]));
- 							if(cList.size() > 0){
- 								sqrName += cList.get(0).getCusName() + ",";
- 							}
- 						}
- 						if(!sqrName.equals("")){
- 							sqrName = sqrName.substring(0, sqrName.length() - 1);
- 						}
- 					}
-					map_d.put("sqrInfo", sqrName);
-					String fmrId = zl.getAjFmrId();
-					String fmrName = "";
- 					if(!fmrId.equals("")){
- 						String[] fmrIdArr = fmrId.split(",");
- 						for(Integer i = 0 ; i < fmrIdArr.length ; i++){
- 							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
- 							if(cList.size() > 0){
- 								fmrName += cList.get(0).getCusFmrName() + ",";
- 							}
- 						}
- 						if(!fmrName.equals("")){
- 							fmrName = fmrName.substring(0, fmrName.length() - 1);
- 						}
- 					}
-					map_d.put("fmrInfo", fmrName);
-					String lxrId = zl.getAjLxrId();
- 					String lxrName = "";
- 					if(!lxrId.equals("")){
- 						String[] lxrIdArr = lxrId.split(",");
- 						for(Integer j = 0 ; j < lxrIdArr.length ; j++){
- 							List<CustomerLxrInfoTb> clList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
- 							if(clList.size() > 0){
- 								lxrName += clList.get(0).getCusLxrName() + ",";
- 							}
- 						}
- 						if(!lxrName.equals("")){
- 							lxrName = lxrName.substring(0, lxrName.length() - 1);
- 						}
- 					}
-					map_d.put("lxrInfo", lxrName);
-					String jsLxrId = zl.getJsLxrId();
-					String jsLxrName = "";
- 					if(!jsLxrId.equals("")){
- 						String[] jsLxrIdArr = jsLxrId.split(",");
- 						for(Integer i = 0 ; i < jsLxrIdArr.length ; i++){
- 							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(jsLxrIdArr[i]), cpyId);
- 							if(cList.size() > 0){
- 								jsLxrName += cList.get(0).getCusFmrName() + ",";
- 							}
- 						}
- 						if(!jsLxrName.equals("")){
- 							jsLxrName = jsLxrName.substring(0, jsLxrName.length() - 1);
- 						}
- 					}
-					map_d.put("jsLxrInfo", jsLxrName);
-					map_d.put("ajFjInfo", zl.getAjFjInfo());
-					map_d.put("ajAddress", zl.getAjSqAddress());
-					map_d.put("applyDate", zl.getAjApplyDate());
-					map_d.put("ajStatus", zl.getAjStatusChi());
-					map_d.put("ajStopStatus", zl.getAjStopStatus().equals(0) ? "正常":"终止");
-					map_d.put("ajStopDate", zl.getAjStopDate());
-					map_d.put("ajStopUser", zl.getAjStopUser());
-					String soptUserType = zl.getAjStopUserType();
-					if(zl.getAjStopStatus().equals(1)){
-						if(soptUserType.equals("cpyUser")){
-							soptUserType = "机构员工";
-						}else{
-							soptUserType = "发布人员";
-						}
-					}
-					map_d.put("ajStopUserType", soptUserType);
-					map_d.put("ajAddDate", zl.getAjAddDate());
-					Integer zxUserId = zl.getZxUserId();
-					String zxUserName = "暂无";
-					CpyUserInfo zxUser = cum.getEntityById(zxUserId);
-					if(zxUser != null){
-						zxUserName = zxUser.getUserName();
-					}
-					map_d.put("zxUserName", zxUserName);
-					//查看当前最后任务时限有没有过期
-					String zlStatusInfo = "";
-					if(zl.getAjStopStatus().equals(0)){//案件终止状态下不在对比
-						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zl.getId());
-						if(lcList.size() > 0){
-							ZlajLcInfoTb lc = lcList.get(0);
-							if(lc.getLcEDate().equals("")){//未完成
-								Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), lc.getLcCpyDate());
-								if(diffDays <= 0){
-									zlStatusInfo = "outDate";//已过期
-								}else if(diffDays.equals(1)){
-									zlStatusInfo = "outDate_jj";//:即将过期
-								}else if(diffDays > 1){
-									zlStatusInfo = "outDate_zc";//正常
-								}
+						map_d.put("ajType", ajType_new);
+						String ajFieldIdStr = zl.getAjFieldId();
+						String ajFieldName = "";
+						if(!ajFieldIdStr.equals("")){
+							List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, ajFieldIdStr);
+							for(Iterator<JsFiledInfoTb> it_js = jsList.iterator(); it_js.hasNext();){
+								JsFiledInfoTb js = it_js.next();
+								ajFieldName += js.getZyName() + ",";
+							}
+							if(!ajFieldName.equals("")){
+								ajFieldName = ajFieldName.substring(0, ajFieldName.length() - 1);
+							}
+						}				
+						map_d.put("ajFieldName", ajFieldName);
+						String sqrId = zl.getAjSqrId();
+						String sqrName = "";//可以是公司也可以是个人
+						if(!sqrId.equals("")){
+	 						String[] sqrIdArr = sqrId.split(",");
+	 						for(Integer i = 0 ; i < sqrIdArr.length ; i++){
+	 							List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[i]));
+	 							if(cList.size() > 0){
+	 								sqrName += cList.get(0).getCusName() + ",";
+	 							}
+	 						}
+	 						if(!sqrName.equals("")){
+	 							sqrName = sqrName.substring(0, sqrName.length() - 1);
+	 						}
+	 					}
+						map_d.put("sqrInfo", sqrName);
+						String fmrId = zl.getAjFmrId();
+						String fmrName = "";
+	 					if(!fmrId.equals("")){
+	 						String[] fmrIdArr = fmrId.split(",");
+	 						for(Integer i = 0 ; i < fmrIdArr.length ; i++){
+	 							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
+	 							if(cList.size() > 0){
+	 								fmrName += cList.get(0).getCusFmrName() + ",";
+	 							}
+	 						}
+	 						if(!fmrName.equals("")){
+	 							fmrName = fmrName.substring(0, fmrName.length() - 1);
+	 						}
+	 					}
+						map_d.put("fmrInfo", fmrName);
+						String lxrId = zl.getAjLxrId();
+	 					String lxrName = "";
+	 					if(!lxrId.equals("")){
+	 						String[] lxrIdArr = lxrId.split(",");
+	 						for(Integer j = 0 ; j < lxrIdArr.length ; j++){
+	 							List<CustomerLxrInfoTb> clList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
+	 							if(clList.size() > 0){
+	 								lxrName += clList.get(0).getCusLxrName() + ",";
+	 							}
+	 						}
+	 						if(!lxrName.equals("")){
+	 							lxrName = lxrName.substring(0, lxrName.length() - 1);
+	 						}
+	 					}
+						map_d.put("lxrInfo", lxrName);
+						String jsLxrId = zl.getJsLxrId();
+						String jsLxrName = "";
+	 					if(!jsLxrId.equals("")){
+	 						String[] jsLxrIdArr = jsLxrId.split(",");
+	 						for(Integer i = 0 ; i < jsLxrIdArr.length ; i++){
+	 							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(jsLxrIdArr[i]), cpyId);
+	 							if(cList.size() > 0){
+	 								jsLxrName += cList.get(0).getCusFmrName() + ",";
+	 							}
+	 						}
+	 						if(!jsLxrName.equals("")){
+	 							jsLxrName = jsLxrName.substring(0, jsLxrName.length() - 1);
+	 						}
+	 					}
+						map_d.put("jsLxrInfo", jsLxrName);
+						map_d.put("ajFjInfo", zl.getAjFjInfo());
+						map_d.put("ajAddress", zl.getAjSqAddress());
+						map_d.put("applyDate", zl.getAjApplyDate());
+						map_d.put("ajStatus", zl.getAjStatusChi());
+						map_d.put("ajStopStatus", zl.getAjStopStatus().equals(0) ? "正常":"终止");
+						map_d.put("ajStopDate", zl.getAjStopDate());
+						map_d.put("ajStopUser", zl.getAjStopUser());
+						String soptUserType = zl.getAjStopUserType();
+						if(zl.getAjStopStatus().equals(1)){
+							if(soptUserType.equals("cpyUser")){
+								soptUserType = "机构员工";
+							}else{
+								soptUserType = "发布人员";
 							}
 						}
-					}else{
-						zlStatusInfo = "ajStop";//案件已终止
+						map_d.put("ajStopUserType", soptUserType);
+						map_d.put("ajAddDate", zl.getAjAddDate());
+						Integer zxUserId = zl.getZxUserId();
+						String zxUserName = "暂无";
+						CpyUserInfo zxUser = cum.getEntityById(zxUserId);
+						if(zxUser != null){
+							zxUserName = zxUser.getUserName();
+						}
+						map_d.put("zxUserName", zxUserName);
+						//查看当前最后任务时限有没有过期
+						String zlStatusInfo = "";
+						if(zl.getAjStopStatus().equals(0)){//案件终止状态下不在对比
+							List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zl.getId());
+							if(lcList.size() > 0){
+								ZlajLcInfoTb lc = lcList.get(0);
+								if(lc.getLcEDate().equals("")){//未完成
+									Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), lc.getLcCpyDate());
+									if(diffDays <= 0){
+										zlStatusInfo = "outDate";//已过期
+									}else if(diffDays.equals(1)){
+										zlStatusInfo = "outDate_jj";//:即将过期
+									}else if(diffDays > 1){
+										zlStatusInfo = "outDate_zc";//正常
+									}
+								}
+							}
+						}else{
+							zlStatusInfo = "ajStop";//案件已终止
+						}
+						map_d.put("zlStatusInfo", zlStatusInfo);
+						list_d.add(map_d);
 					}
-					map_d.put("zlStatusInfo", zlStatusInfo);
-					list_d.add(map_d);
+					map.put("msg", "success");
+					map.put("data", list_d);
+					map.put("count", count);
+					map.put("code", 0);
+				}else{
+					map.put("msg", "noInfo");
 				}
-				map.put("msg", "success");
-				map.put("data", list_d);
-				map.put("count", count);
-				map.put("code", 0);
-			}else{
-				map.put("msg", "noInfo");
+			}else if(lqStatus.equals(4)){//我的任务
+				Integer count = mxm.getCountByOpt(currLoginUserId, comStatus, ajTitle, ajNoQt, zlNo);
+				if(count > 0){
+					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
+					List<ZlajLcMxInfoTb> unMxList = mxm.listSpecInfoByOpt(currLoginUserId, comStatus, ajTitle, ajNoQt, zlNo,pageNo,pageSize);
+					List<Object> list_d = new ArrayList<Object>();
+					map.put("result", "success");
+					for(Iterator<ZlajLcMxInfoTb> it = unMxList.iterator() ; it.hasNext();){
+						ZlajLcMxInfoTb mx = it.next();
+						ZlajLcInfoTb lc = mx.getZlajLcInfoTb();
+						ZlajMainInfoTb zl = lc.getZlajMainInfoTb();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("mxId", mx.getId());
+						map_d.put("taskName", mx.getLcMxName());//任务名称
+						map_d.put("taskSdate", mx.getLcMxSDate());//任务开始日期
+						map_d.put("taskComDate", mx.getLcMxEDate());//任务完成日期
+						map_d.put("taskEdateCpy", lc.getLcEDate());//任务期限（代理机构）
+						map_d.put("taskEdateGf", lc.getLcGfDate());//任务期限（官方）
+						map_d.put("zlTitle", zl.getAjTitle());//专利标题
+						map_d.put("zlNo", zl.getAjNoGf());//专利申请/专利号
+						map_d.put("ajNoQt", zl.getAjNoQt());//案件编号
+						map_d.put("zlId", zl.getId());//专利编号
+						map_d.put("lcNo", mx.getLcMxNo());//流程号
+						list_d.add(map_d);
+					}
+					map.put("msg", "success");
+					map.put("data", list_d);
+					map.put("count", count);
+					map.put("code", 0);
+				}else{
+					map.put("msg", "noInfo");
+				}
 			}
 		}
 
@@ -1382,6 +1444,8 @@ public class ZlMainAction extends DispatchAction {
 											mxm.addLcMx(lcId, tjUserId, "定稿提交人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改");
 										}
 									}
+								}else{
+									msg = "notUp";//定稿提交以后不能进行修改
 								}
 								if(msg.equals("success")){
 									if(tzsUserId_db.equals(0)){
@@ -2741,7 +2805,6 @@ public class ZlMainAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
-	
 	
 	/**
 	 * 下载文件

@@ -142,4 +142,34 @@ public interface ZlajLcMxInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateMxNoById(Integer id,Double mxNo) throws WEBException;
+	
+	/**
+	 * 获取指定流程负责人名下的任务列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-26 上午10:58:18
+	 * @param fzUserId 流程负责人
+	 * @param comStatus 完成状态（0：未完成，1：已完成）
+	 * @param zlTitle 专利名称（""表示全部）
+	 * @param ajNoQt 案件编号（""表示全部）
+	 * @param zlNo 专利/申请号（""表示全部）
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajLcMxInfoTb> listSpecInfoByOpt(Integer fzUserId,Integer comStatus,String zlTitle,String ajNoQt, String zlNo,Integer pageNo,Integer pageSize) throws WEBException;
+	
+	/**
+	 * 获取指定流程负责人名下的任务记录条数
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-26 下午04:35:46
+	 * @param fzUserId 流程负责人
+	 * @param comStatus 完成状态（0：未完成，1：已完成）
+	 * @param zlTitle 专利名称（""表示全部）
+	 * @param ajNoQt 案件编号（""表示全部）
+	 * @param zlNo 专利/申请号（""表示全部）
+	 * @return
+	 * @throws WEBException
+	 */
+	Integer getCountByOpt(Integer fzUserId,Integer comStatus,String zlTitle,String ajNoQt, String zlNo) throws WEBException;
 }

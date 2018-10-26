@@ -6,6 +6,7 @@ import org.hibernate.Session;
 
 import com.patent.dao.ZlajLcMxInfoDao;
 import com.patent.module.ZlajLcMxInfoTb;
+import com.patent.tools.CommonTools;
 
 @SuppressWarnings("unchecked")
 public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
@@ -71,11 +72,59 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 	}
 
 	@Override
-	public List<ZlajLcMxInfoTb> findSpecInfoInfoByOpt(Session sess,
+	public List<ZlajLcMxInfoTb> findSpecInfoByOpt(Session sess,
 			Integer zlId, String lcMxName) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajLcMxInfoTb as lcmx where lcmx.zlajLcInfoTb.zlajMainInfoTb.id = "+zlId + " and lcmx.lcMxName = '"+lcMxName+"'";
 		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public List<ZlajLcMxInfoTb> findSpecInfoByOpt(Session sess,Integer fzUserId,Integer comStatus,String zlTitle,String ajNoQt, String zlNo,Integer pageNo,Integer pageSize) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajLcMxInfoTb as lcmx where lcmx.lcFzUserId = fzUserId";
+		if(comStatus.equals(0)){//未完成
+			hql += " and lcmx.lcMxEDate = '' and lcmx.zlajLcInfoTb.zlajMainInfoTb.id = 0";
+		}else if(comStatus.equals(1)){
+			hql += " and lcmx.lcMxEDate != ''";
+		}
+		if(!zlTitle.equals("")){
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajTitle like '%"+zlTitle+"%'";
+		}
+		if(!ajNoQt.equals("")){
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoQt like '%"+ajNoQt+"%'";
+		}
+		if(!zlNo.equals("")){
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoGf like '%"+zlNo+"%'";
+		}
+		int offset = (pageNo - 1) * pageSize;
+		if (offset < 0) {
+			offset = 0;
+		}
+		return sess.createQuery(hql).setFirstResult(offset).setMaxResults(pageSize).list();
+	}
+
+	@Override
+	public Integer getCountByOpt(Session sess, Integer fzUserId,
+			Integer comStatus, String zlTitle, String ajNoQt, String zlNo) {
+		// TODO Auto-generated method stub
+		String hql = "select count(lcmx.id) from ZlajLcMxInfoTb as lcmx where lcmx.lcFzUserId = fzUserId";
+		if(comStatus.equals(0)){//未完成
+			hql += " and lcmx.lcMxEDate = '' and lcmx.zlajLcInfoTb.zlajMainInfoTb.id = 0";
+		}else if(comStatus.equals(1)){
+			hql += " and lcmx.lcMxEDate != ''";
+		}
+		if(!zlTitle.equals("")){
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajTitle like '%"+zlTitle+"%'";
+		}
+		if(!ajNoQt.equals("")){
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoQt like '%"+ajNoQt+"%'";
+		}
+		if(!zlNo.equals("")){
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoGf like '%"+zlNo+"%'";
+		}
+		Object count_obj = sess.createQuery(hql).uniqueResult();
+		return CommonTools.longToInt(count_obj);
 	}
 
 }

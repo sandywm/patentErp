@@ -181,7 +181,7 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 		try {
 			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return mxDao.findSpecInfoInfoByOpt(sess, zlId, lcmxName);
+			return mxDao.findSpecInfoByOpt(sess, zlId, lcmxName);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -217,7 +217,7 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 	}
 
 	@Override
-	public boolean updateMxNoById(Integer id, Double mxNo) throws WEBException {
+	public boolean updateMxNoById(Integer id, Double mxNo)throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
@@ -235,6 +235,39 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("修改指定流程明细的流程号时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<ZlajLcMxInfoTb> listSpecInfoByOpt(Integer fzUserId,Integer comStatus,String zlTitle,String ajNoQt, String zlNo,Integer pageNo,Integer pageSize)throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return mxDao.findSpecInfoByOpt(sess, fzUserId, comStatus, zlTitle, ajNoQt, zlNo, pageNo, pageSize);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定流程负责人名下的任务列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public Integer getCountByOpt(Integer fzUserId, Integer comStatus,
+			String zlTitle, String ajNoQt, String zlNo) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return mxDao.getCountByOpt(sess, fzUserId, comStatus, zlTitle, ajNoQt, zlNo);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定流程负责人名下的任务记录条数时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

@@ -116,6 +116,8 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and zl.zxUserId = 0 and zl.tzsUserId > 0";
 		}else if(lqStatus.equals(3)){
 			hql += " and zl.ajAddUserId = "+ajAddUserId;
+		}else if(lqStatus.equals(4)){
+			
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);
