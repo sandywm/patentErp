@@ -302,7 +302,7 @@ public class ZlMainAction extends DispatchAction {
 				}
 			}
 		}else if(loginType.equals("spUser")){//平台用户
-			lqStatus = -1;
+			lqStatus = 1;
 			abilityFlag = true;
 		}
 		if(abilityFlag){
