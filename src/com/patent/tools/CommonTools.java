@@ -397,8 +397,8 @@ public class CommonTools {
 	 * @param zlType
 	 * @return
 	 */
-	public static Integer getYearFee(Integer yearNum,String zlType){
-		Integer yearFee = 0;
+	public static Double getYearFee(Integer yearNum,String zlType){
+		Double yearFee = 0d;
 		if(zlType.equals("fm")){
 			if(yearNum >= 1 && yearNum <= 3){
 				yearFee = Constants.FM_YEAR_FEE_1_3;

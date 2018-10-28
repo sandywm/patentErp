@@ -45,17 +45,17 @@ public class Constants {
 	
 	public static final Integer freeDays = 15;//代理机构注册免费天数
 	
-	public static final Integer FM_YEAR_FEE_1_3 = 900;//1-3年度费用
-	public static final Integer FM_YEAR_FEE_4_6 = 1200;
-	public static final Integer FM_YEAR_FEE_7_9 = 2000;
-	public static final Integer FM_YEAR_FEE_10_12 = 4000;
-	public static final Integer FM_YEAR_FEE_13_15 = 6000;
-	public static final Integer FM_YEAR_FEE_16_20 = 8000;
+	public static final Double FM_YEAR_FEE_1_3 = 900.0;//1-3年度费用
+	public static final Double FM_YEAR_FEE_4_6 = 1200.0;
+	public static final Double FM_YEAR_FEE_7_9 = 2000.0;
+	public static final Double FM_YEAR_FEE_10_12 = 4000.0;
+	public static final Double FM_YEAR_FEE_13_15 = 6000.0;
+	public static final Double FM_YEAR_FEE_16_20 = 8000.0;
 	
-	public static final Integer SY_WG_YEAR_FEE_1_3 = 600;//1-3年度费用
-	public static final Integer SY_WG_YEAR_FEE_4_5 = 900;
-	public static final Integer SY_WG_YEAR_FEE_6_8 = 1200;
-	public static final Integer SY_WG_YEAR_FEE_9_10 = 2000;
+	public static final Double SY_WG_YEAR_FEE_1_3 = 600.0;//1-3年度费用
+	public static final Double SY_WG_YEAR_FEE_4_5 = 900.0;
+	public static final Double SY_WG_YEAR_FEE_6_8 = 1200.0;
+	public static final Double SY_WG_YEAR_FEE_9_10 = 2000.0;
 	
 
 	//-------------------WEB-------------------------//

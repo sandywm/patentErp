@@ -619,15 +619,14 @@ public class ReadZipFile {
 														//年费为申请日+1年-一天
 														String applyDate_sys = zl.getAjApplyDate();//申请日
 														if(!applyDate_sys.equals("")){
-															Integer feeRateMaxYear = 0;//存在费减的年限
+															//自动增加10/20年度的年费
 															for(Integer j = yearNo_1 ; j <= yearNum ; j++){
-																feeName = feeNamePre + "第" + yearNo_1 + "年"+jfDetailArr1[0];
+																feeName = feeNamePre + "第" + j + "年"+jfDetailArr1[0];
 																String yearFee_sDate = CurrentTime.getFinalDate_2(applyDate_sys, j);//第一次年费开始日期（可能不是第一年度）
 																String yearFee_eDate = CurrentTime.getFinalDate(CurrentTime.getFinalDate_2(applyDate_sys, j+1), -1);//第一交年费结束日期（可能不是第一年度）
 																String feeRange = yearFee_sDate+":"+yearFee_eDate;
-																Integer yearFee = 0;
+																Double yearFee = 0d;
 																List<FeeTypeInfoTb> feeTList = fm.listInfoByName(feeName);
-																 
 																if(feeTList.size() > 0){//存在该费用类型
 																	feeTypeId = feeTList.get(0).getId();
 																	String feeCpyDate = "";//代理机构期限
@@ -635,20 +634,46 @@ public class ReadZipFile {
 																	if(j == yearNo_1){//第一次存在截止日期
 																		feeCpyDate = CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY);
 																		feeGfDate = feeEdate;
-																	}
-																	yearFee = CommonTools.getYearFee(j, zlType);
-																	if(fjRate_temp > 0){//存在费减
-																		if(zlType.equals("fm")){//发明--头10次年费有费减
-																			
-																		}else{//新型、外观头6次有费减
-																			
+																		yearFee = Double.parseDouble(jfDetailArr1[1]);
+																	}else{
+																		yearFee = CommonTools.getYearFee(j, zlType);
+																		feeCpyDate = CurrentTime.getFinalDate(yearFee_sDate, Constants.JF_SL_END_DATE_CPY);;
+																		feeGfDate = yearFee_sDate;
+																		if(fjRate_temp > 0){//存在费减
+																			if(zlType.equals("fm")){//发明--头10次年费有费减
+																				if(j < (yearNo_1 + 10)){//可计算费减
+																					yearFee *= fjRate_temp;
+																				}else{
+																					fjRate_temp = 0.0;
+																				}
+																			}else{//新型、外观头6次有费减
+																				if(j < (yearNo_1 + 6)){//可计算费减
+																					yearFee *= fjRate_temp;
+																				}else{
+																					fjRate_temp = 0.0;
+																				}
+																			}
 																		}
 																	}
-																	fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, Double.parseDouble(jfDetailArr1[1]), fjRate_temp,CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), 
-																			feeEdate, "", 0, cpyId, 0, "", "",tzsName,j,feeRange,0);
+																	fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, yearFee, fjRate_temp,feeCpyDate, 
+																			feeGfDate, "", 0, cpyId, 0, "", "",tzsName,j,feeRange,0);
 																}
-																
 															}
+															//只增加通知书一个年度的年费，后续年费在上个年度的结束日提前45天自动增加
+															/**feeName = feeNamePre + "第" + yearNo_1 + "年"+jfDetailArr1[0];
+															String yearFee_sDate = CurrentTime.getFinalDate_2(applyDate_sys, yearNo_1);//第一次年费开始日期（可能不是第一年度）
+															String yearFee_eDate = CurrentTime.getFinalDate(CurrentTime.getFinalDate_2(applyDate_sys, yearNo_1+1), -1);//第一交年费结束日期（可能不是第一年度）
+															String feeRange = yearFee_sDate+":"+yearFee_eDate;
+															Double yearFee = 0d;
+															List<FeeTypeInfoTb> feeTList = fm.listInfoByName(feeName);
+															if(feeTList.size() > 0){//存在该费用类型
+																feeTypeId = feeTList.get(0).getId();
+																String feeCpyDate = CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY);//代理机构期限
+																String feeGfDate = feeEdate;//官方期限
+																yearFee = Double.parseDouble(jfDetailArr1[1]);
+																fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, yearFee, fjRate_temp,feeCpyDate, 
+																		feeGfDate, "", 0, cpyId, 0, "", "",tzsName,yearNo_1,feeRange,0);
+															}**/
 														}
 													}else{
 														feeName = jfDetailArr1[0];
@@ -663,7 +688,6 @@ public class ReadZipFile {
 														}
 													}
 												}
-												//以后的年费没有下发通知书需要自动增加--除非晚交年费（国家会下发缴费通知书）
 //											}
 										}
 									}
