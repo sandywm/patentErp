@@ -85,5 +85,15 @@
                 <comment>第几年度数字（不是年费的为0）</comment>
             </column>
         </property>
+         <property name="feeRange" type="java.lang.String">
+            <column name="fee_range" length="100">
+                <comment>年费范围</comment>
+            </column>
+        </property>
+        <property name="addStatus" type="java.lang.Integer">
+            <column name="add_status" not-null="true">
+                <comment>自动增加年费标记(0:已增加,1:未增加)-不是年费默认为0</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

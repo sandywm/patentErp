@@ -20,6 +20,8 @@ import java.util.regex.Pattern;
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletRequest;
 
+import com.patent.util.Constants;
+
 public class CommonTools {
 	
 	/**
@@ -384,6 +386,45 @@ public class CommonTools {
 	public static boolean checkEmail(String inputEmail){
 		String regex = "\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
         return Pattern.matches(regex, inputEmail);   
+	}
+	
+	/**
+	 * 根据年度、专利类型获取年费
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-28 上午09:25:21
+	 * @param yearNum
+	 * @param zlType
+	 * @return
+	 */
+	public static Integer getYearFee(Integer yearNum,String zlType){
+		Integer yearFee = 0;
+		if(zlType.equals("fm")){
+			if(yearNum >= 1 && yearNum <= 3){
+				yearFee = Constants.FM_YEAR_FEE_1_3;
+			}else if(yearNum >= 4 && yearNum <= 6){
+				yearFee = Constants.FM_YEAR_FEE_4_6;
+			}else if(yearNum >= 7 && yearNum <= 9){
+				yearFee = Constants.FM_YEAR_FEE_7_9;
+			}else if(yearNum >= 10 && yearNum <= 12){
+				yearFee = Constants.FM_YEAR_FEE_10_12;
+			}else if(yearNum >= 13 && yearNum <= 15){
+				yearFee = Constants.FM_YEAR_FEE_13_15;
+			}else if(yearNum >= 16 && yearNum <= 20 ){
+				yearFee = Constants.FM_YEAR_FEE_16_20;
+			}
+		}else{//新型+外观
+			if(yearNum >= 1 && yearNum <= 3){
+				yearFee = Constants.SY_WG_YEAR_FEE_1_3;
+			}else if(yearNum >= 4 && yearNum <= 6){
+				yearFee = Constants.SY_WG_YEAR_FEE_4_5;
+			}else if(yearNum >= 7 && yearNum <= 9){
+				yearFee = Constants.SY_WG_YEAR_FEE_6_8;
+			}else if(yearNum >= 10 && yearNum <= 12){
+				yearFee = Constants.SY_WG_YEAR_FEE_9_10;
+			}
+		}
+		return yearFee;
 	}
 	
 	public static void main(String[] args){

@@ -31,7 +31,6 @@ public class Constants {
 	
 	public static final Integer PUB_PRINT_FEE = 50;//公告印刷费
 	
-	public static final Integer YEAR_FEE_TQ_DAYS = 45;//年费自动生成提前日（在下个年度年费起始日往前45天时自动增加）
 	
 	//免费会员不能增加子公司
 	public static final Integer SUB_CPY_NUM_YP = 1;//银牌对应的子公司个数
@@ -45,6 +44,18 @@ public class Constants {
 	//钻石会员无限制
 	
 	public static final Integer freeDays = 15;//代理机构注册免费天数
+	
+	public static final Integer FM_YEAR_FEE_1_3 = 900;//1-3年度费用
+	public static final Integer FM_YEAR_FEE_4_6 = 1200;
+	public static final Integer FM_YEAR_FEE_7_9 = 2000;
+	public static final Integer FM_YEAR_FEE_10_12 = 4000;
+	public static final Integer FM_YEAR_FEE_13_15 = 6000;
+	public static final Integer FM_YEAR_FEE_16_20 = 8000;
+	
+	public static final Integer SY_WG_YEAR_FEE_1_3 = 600;//1-3年度费用
+	public static final Integer SY_WG_YEAR_FEE_4_5 = 900;
+	public static final Integer SY_WG_YEAR_FEE_6_8 = 1200;
+	public static final Integer SY_WG_YEAR_FEE_9_10 = 2000;
 	
 
 	//-------------------WEB-------------------------//

@@ -28,6 +28,8 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	private String feeUpZd;
 	private String tzsArea;
 	private Integer yearFeeNo;
+	private String feeRange;
+	private Integer addStatus;
 
 	// Constructors
 
@@ -39,7 +41,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	public ZlajFeeInfoTb(FeeTypeInfoTb feeTypeInfoTb, CpyUserInfo cpyUserInfo,
 			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
-			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo) {
+			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -55,13 +57,15 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.feeUpZd = feeUpZd;
 		this.tzsArea = tzsArea;
 		this.yearFeeNo = yearFeeNo;
+		this.feeRange = feeRange;
+		this.addStatus = addStatus;
 	}
 
 	/** full constructor */
 	public ZlajFeeInfoTb(Integer id,FeeTypeInfoTb feeTypeInfoTb, CpyUserInfo cpyUserInfo,
 			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
-			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo) {
+			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -77,6 +81,8 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.feeUpZd = feeUpZd;
 		this.tzsArea = tzsArea;
 		this.yearFeeNo = yearFeeNo;
+		this.feeRange = feeRange;
+		this.addStatus = addStatus;
 	}
 
 	// Property accessors
@@ -207,6 +213,22 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	public void setYearFeeNo(Integer yearFeeNo) {
 		this.yearFeeNo = yearFeeNo;
+	}
+
+	public String getFeeRange() {
+		return feeRange;
+	}
+
+	public void setFeeRange(String feeRange) {
+		this.feeRange = feeRange;
+	}
+
+	public Integer getAddStatus() {
+		return addStatus;
+	}
+
+	public void setAddStatus(Integer addStatus) {
+		this.addStatus = addStatus;
 	}
 
 }

@@ -348,8 +348,9 @@ public class ReadZipFile {
 											if(feeList.size() > 0){
 												ZlajFeeInfoTb fee = feeList.get(0);
 												if(fee.getFeeEndDateGf().equals("noDate")){
-													String feeEndDate_gf = CurrentTime.getFinalDate(applyDate, Constants.JF_SC_END_DATE_GF);
-													String feeEndDate_cpy = CurrentTime.getFinalDate(applyDate, Constants.JF_SC_END_DATE_CPY);
+													String finalDate = CurrentTime.getFinalDate_2(applyDate, 3);//申请人3年后的时间
+													String feeEndDate_gf = CurrentTime.getFinalDate(finalDate, -1);
+													String feeEndDate_cpy = CurrentTime.getFinalDate(feeEndDate_gf, Constants.TD_RECEIVE_DAYS);//代理机构比官方绝限提前天数
 													fm.updateFeeInfoById(feeList.get(0).getId(), feeEndDate_cpy, feeEndDate_gf);
 												}
 												
@@ -425,7 +426,8 @@ public class ReadZipFile {
 													}
 													
 													if(fm.listInfoByOpt(zlId, feeTypeId).size() == 0){//不存在该费用才增加
-														fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, Double.parseDouble(jfDetailArr1[1]), fjRate_temp, CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), feeEdate, "", 0, cpyId, 0, "", "",tzsName,0);
+														fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, Double.parseDouble(jfDetailArr1[1]), fjRate_temp, 
+																CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), feeEdate, "", 0, cpyId, 0, "", "",tzsName,0,"",0);
 													}
 												}
 											}
@@ -439,10 +441,12 @@ public class ReadZipFile {
 												String lcmxName = "实质审查费催缴";
 												//等有了专利申请日后再修改过来
 												if(!applyDate_sys.equals("")){//存在申请日期
-													feeEndDate_gf = CurrentTime.getFinalDate(applyDate_sys, Constants.JF_SC_END_DATE_GF);
-													feeEndDate_cpy = CurrentTime.getFinalDate(applyDate_sys, Constants.JF_SC_END_DATE_CPY);
+													String finalDate = CurrentTime.getFinalDate_2(applyDate_sys, 3);//申请人3年后的时间
+													feeEndDate_gf = CurrentTime.getFinalDate(finalDate, -1);
+													feeEndDate_cpy = CurrentTime.getFinalDate(feeEndDate_gf, Constants.TD_RECEIVE_DAYS);//代理机构比官方绝限提前天数
 												}else{
 													lcmxName = "实质审查费催缴-无申请日";
+													//等待导入受理通知书或者手动修改申请日的时候自动修改实质审查费的期限时间
 												}
 												//取消掉增加费用催缴流程（只在缴费记录表里面体现）
 //												Integer nextLcId_1 = lcm.addLcInfo(zlId, "费用催缴", "实质审查费催缴", currDate, feeEndDate_cpy, "", feeEndDate_gf,8.2);
@@ -457,7 +461,8 @@ public class ReadZipFile {
 												double scFee_final  = Double.parseDouble(fjRate) * Constants.SC_FEE;
 												//增加未缴纳实质审查费的清单3--发明专利申请实质审查费（实质审查费在申请日三年之内缴纳）
 												if(fm.listInfoByOpt(zlId, 3).size() == 0){//不存在该费用才增加
-													fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 0, "", "",tzsName,0);
+													fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, 
+															feeEndDate_gf, "", 0, cpyId, 0, "", "",tzsName,0,"",0);
 												}
 											}
 //											if(lcNo == 7.1){//说明是正常顺序
@@ -597,25 +602,64 @@ public class ReadZipFile {
 													String feeName = "";
 													String[] jfDetailArr1 = jfDetailArr[i].split(",");
 													Double fjRate_temp = 0.0;
+													Integer yearNo_1 = 0;
 													if(jfDetailArr1[0].equals("年费")){
-														feeName = "第"+yearNo+"年"+jfDetailArr1[0];
+														Integer yearNum = 10;//发明专利前10年度费用由费减，其他专利前6年度都费减
+														yearNo_1 = Integer.parseInt(yearNo);
+														String feeNamePre = "";
 														if(zlType.equals("fm")){
-															feeName += "发明专利";
+															feeNamePre = "发明专利";
+															yearNum = 20;
 														}else if(zlType.equals("syxx")){
-															feeName += "实用新型专利";
+															feeNamePre = "实用新型专利";
 														}else if(zlType.equals("wg")){
-															feeName += "外观设计专利";
+															feeNamePre = "外观设计专利";
 														}
 														fjRate_temp = Double.parseDouble(fjRate);
+														//年费为申请日+1年-一天
+														String applyDate_sys = zl.getAjApplyDate();//申请日
+														if(!applyDate_sys.equals("")){
+															Integer feeRateMaxYear = 0;//存在费减的年限
+															for(Integer j = yearNo_1 ; j <= yearNum ; j++){
+																feeName = feeNamePre + "第" + yearNo_1 + "年"+jfDetailArr1[0];
+																String yearFee_sDate = CurrentTime.getFinalDate_2(applyDate_sys, j);//第一次年费开始日期（可能不是第一年度）
+																String yearFee_eDate = CurrentTime.getFinalDate(CurrentTime.getFinalDate_2(applyDate_sys, j+1), -1);//第一交年费结束日期（可能不是第一年度）
+																String feeRange = yearFee_sDate+":"+yearFee_eDate;
+																Integer yearFee = 0;
+																List<FeeTypeInfoTb> feeTList = fm.listInfoByName(feeName);
+																 
+																if(feeTList.size() > 0){//存在该费用类型
+																	feeTypeId = feeTList.get(0).getId();
+																	String feeCpyDate = "";//代理机构期限
+																	String feeGfDate = "";//官方期限
+																	if(j == yearNo_1){//第一次存在截止日期
+																		feeCpyDate = CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY);
+																		feeGfDate = feeEdate;
+																	}
+																	yearFee = CommonTools.getYearFee(j, zlType);
+																	if(fjRate_temp > 0){//存在费减
+																		if(zlType.equals("fm")){//发明--头10次年费有费减
+																			
+																		}else{//新型、外观头6次有费减
+																			
+																		}
+																	}
+																	fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, Double.parseDouble(jfDetailArr1[1]), fjRate_temp,CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), 
+																			feeEdate, "", 0, cpyId, 0, "", "",tzsName,j,feeRange,0);
+																}
+																
+															}
+														}
 													}else{
 														feeName = jfDetailArr1[0];
 														fjRate_temp = 0.0;
-													}
-													List<FeeTypeInfoTb> feeTList = fm.listInfoByName(feeName);
-													if(feeTList.size() > 0){//存在该费用类型
-														feeTypeId = feeTList.get(0).getId();
-														if(fm.listInfoByOpt(zlId, feeTypeId).size() == 0){
-															fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, Double.parseDouble(jfDetailArr1[1]), fjRate_temp,CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), feeEdate, "", 0, cpyId, 0, "", "",tzsName,Integer.parseInt(yearNo));
+														List<FeeTypeInfoTb> feeTList = fm.listInfoByName(feeName);
+														if(feeTList.size() > 0){//存在该费用类型
+															feeTypeId = feeTList.get(0).getId();
+															if(fm.listInfoByOpt(zlId, feeTypeId).size() == 0){
+																fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, Double.parseDouble(jfDetailArr1[1]), fjRate_temp,CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), 
+																		feeEdate, "", 0, cpyId, 0, "", "",tzsName,yearNo_1,"",0);
+															}
 														}
 													}
 												}

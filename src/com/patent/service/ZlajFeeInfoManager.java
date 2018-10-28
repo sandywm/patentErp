@@ -86,12 +86,14 @@ public interface ZlajFeeInfoManager{
 	 * @param feeJnDate 缴费时间
 	 * @param feeUpZd 缴费账单
 	 * @param tzsArea 缴费属于哪个通知书的收费明细
-	 * @param yearFeeNo 第年度数字
+	 * @param yearFeeNo 第年度数字（不是年费的为0）
+	 * @param feeRange 年费范围####-##-##:####-##-##（不是年费为""）
+	 * @param addStatus 自动增加年费标记(0:已增加,1:未增加)-不是年费默认为0
 	 * @return
 	 * @throws WEBException
 	 */
 	Integer addZLFee(Integer zlId,Integer appUserId,Integer geeTypeId,Double feePrice,Double feeRate,String feeEndDateCpy,String feeEndDateGf,String feeRemark,Integer feeStatus,
-			Integer cpyId,Integer djStatus,String feeJnDate,String feeUpZd,String tzsArea,Integer yearFeeNo) throws WEBException;
+			Integer cpyId,Integer djStatus,String feeJnDate,String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus) throws WEBException;
 	
 	/**
 	 * 修改缴费信息
