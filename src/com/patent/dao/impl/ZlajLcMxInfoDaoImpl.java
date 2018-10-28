@@ -82,7 +82,7 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 	@Override
 	public List<ZlajLcMxInfoTb> findSpecInfoByOpt(Session sess,Integer fzUserId,Integer comStatus,String zlTitle,String ajNoQt, String zlNo,Integer pageNo,Integer pageSize) {
 		// TODO Auto-generated method stub
-		String hql = " from ZlajLcMxInfoTb as lcmx where lcmx.lcFzUserId = fzUserId";
+		String hql = " from ZlajLcMxInfoTb as lcmx where lcmx.lcFzUserId = "+fzUserId;
 		if(comStatus.equals(0)){//未完成
 			hql += " and lcmx.lcMxEDate = '' and lcmx.zlajLcInfoTb.zlajMainInfoTb.id = 0";
 		}else if(comStatus.equals(1)){
@@ -108,7 +108,7 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 	public Integer getCountByOpt(Session sess, Integer fzUserId,
 			Integer comStatus, String zlTitle, String ajNoQt, String zlNo) {
 		// TODO Auto-generated method stub
-		String hql = "select count(lcmx.id) from ZlajLcMxInfoTb as lcmx where lcmx.lcFzUserId = fzUserId";
+		String hql = "select count(lcmx.id) from ZlajLcMxInfoTb as lcmx where lcmx.lcFzUserId = "+fzUserId;
 		if(comStatus.equals(0)){//未完成
 			hql += " and lcmx.lcMxEDate = '' and lcmx.zlajLcInfoTb.zlajMainInfoTb.id = 0";
 		}else if(comStatus.equals(1)){
