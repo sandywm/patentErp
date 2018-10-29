@@ -176,7 +176,7 @@ public class UploadAction extends DispatchAction {
 							userPath += ajId + "\\" + fileType;
 							absolutPath += ajId + "\\" + fileType;
 						}else{
-							//技术底稿
+							//技术底稿、批量上传的通知书
 							//之前放在外层，等待专利增加后，剪切到ajId下
 //							userPath += "dg";
 //							absolutPath += "dg";

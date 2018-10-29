@@ -1698,7 +1698,7 @@ public class ZlMainAction extends DispatchAction {
 								String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
 								String cpyDate = CommonTools.getFinalStr("cpyDate", request);//内部期限(前期资料提交完成时间)
 								String sDate = CurrentTime.getStringDate();//开始日期
-								Double ajFjInfo = 0.0;
+								Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减（当受理通知书丢失的时候可以手动增加，最好是导入受理通知书）
 								if(!ajSqrId.equals("")){//费减只有在申请人存在的时候才能进行设置
 									ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);
 								}
@@ -2018,7 +2018,7 @@ public class ZlMainAction extends DispatchAction {
 						String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
 						String cpyDate = CommonTools.getFinalStr("cpyDate", request);//代理机构从分配到定稿提交的期限(修改定稿提交之前的最后一个未完成流程的期限)
 						Double ajFjInfo = 0.0;
-						if(!ajSqrId.equals("")){//案件费减只有在申请人存在的条件下才能进行设置
+						if(!ajSqrId.equals("")){//案件费减只有在申请人存在的条件下才能进行设置（一般情况下不建议修改，需要通过受理通知书自动修改）
 							ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);
 						}
 						Integer upUserId = -1;
@@ -2559,9 +2559,38 @@ public class ZlMainAction extends DispatchAction {
 		return null;
 	}
 	
+	/**
+	 * 获取代理机构下所有的专利的所有费用
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-29 下午04:46:28
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getAllFeeInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		Integer zlId = CommonTools.getFinalInteger("zlId", request);
+		Integer currLoginUserId = this.getLoginUserId(request);
+		Integer cpyId = 0;
+		if(this.getLoginType(request).equals("cpyUser")){
+			cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();//当前登录人员所在的代理机构
+		}
+		
+		return null;
+	}
 	
 	/**
-	 * 缴纳所有费用
+	 * 缴纳所有费用(代理机构代缴)
 	 * @description
 	 * @author Administrator
 	 * @date 2018-10-11 上午10:07:53
@@ -2799,7 +2828,7 @@ public class ZlMainAction extends DispatchAction {
 		Map<String,Object> map = new HashMap<String,Object>();
 		List<Object> list_d = new ArrayList<Object>();
 		for(Integer i = 0 ; i < zipPath.split(",").length ; i++){
-			list_d.add(ReadZipFile.readZipFile_new("E:\\",zipPath.split(",")[i],1,1,0));
+			list_d.add(ReadZipFile.readZipFile_new("E:\\"+zipPath.split(",")[i],1,1,0));
 		}
 		map.put("result", list_d);
 		this.getJsonPkg(map, response);
@@ -2821,9 +2850,7 @@ public class ZlMainAction extends DispatchAction {
 	public ActionForward downFile(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
-//		String fileUrl = CommonTools.getFinalStr("fileUrl", request);
 		String fileUrl = Transcode.unescape_new1("fileUrl", request);
-//		String fileUrl = Transcode.decode("fileUrl", request);
 		String absoFilePath = "";//绝对地址
 		String fileName = "";
 		OutputStream fos = null;

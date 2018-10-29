@@ -516,7 +516,9 @@ public class CurrentTime {
      * @return
      */
     public static String getRadomTime(){
-    	return getFormat("mm")+getFormat("ss")+getFormat("SSS");
+    	Integer max = 100,min = 10;
+    	String radomStr = String.valueOf(Math.round(Math.random()*(max-min)+min));//两位随机数
+    	return getFormat("mm")+getFormat("ss")+getFormat("SSS")+radomStr;
     }
     
     /**
@@ -599,7 +601,10 @@ public class CurrentTime {
 //		System.out.println(Math.round(2.51));
 //		System.out.println(CurrentTime.getMonthOrLast());
 //		System.out.println(CurrentTime.getEndDayofMonth(2016,8));
-		System.out.println(CurrentTime.getFinalDate_2("2018-01-12",1));
+//		for(int i = 1 ; i <= 20 ; i++){
+//			System.out.println("time_"+i+": "+CurrentTime.getRadomTime());
+//		}
+		
 		
 	}
 }

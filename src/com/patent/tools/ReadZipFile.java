@@ -28,12 +28,10 @@ import com.patent.action.base.IgnoreDTDEntityResolver;
 import com.patent.factory.AppFactory;
 import com.patent.module.FeeTypeInfoTb;
 import com.patent.module.ZlajFeeInfoTb;
-import com.patent.module.ZlajLcInfoTb;
 import com.patent.module.ZlajLcMxInfoTb;
 import com.patent.module.ZlajMainInfoTb;
 import com.patent.service.MailInfoManager;
 import com.patent.service.ZlajFeeInfoManager;
-import com.patent.service.ZlajFjInfoManager;
 import com.patent.service.ZlajLcInfoManager;
 import com.patent.service.ZlajLcMxInfoManager;
 import com.patent.service.ZlajMainInfoManager;
@@ -45,28 +43,26 @@ public class ReadZipFile {
 
 	
 	/**
-	 * 读取上传的通知书内容(格式必须是zip)
+	 * 读取上传的通知书内容(格式必须是zip)--通知书都存在通知书数据表里面
 	 * @description
 	 * @author Administrator
 	 * @date 2018-9-29 下午04:44:44
-	 * @param pathPre 文件路径默认
-	 * @param upZipPath 上传的文件路径
+	 * @param upZipPath 上传的文件路径(cpyUser/u_id/****.zip)
 	 * @param currUserId 当前操作人员
 	 * @param cpyId 当前操作人员公司编号
 	 * @param specZlId 专利编号（统一上传时为0，大于0时表示对指定的专利上传）
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<String,Object> readZipFile_new(String pathPre,String upZipPath,Integer currUserId,Integer cpyId,Integer specZlId) throws Exception{
+	public static Map<String,Object> readZipFile_new(String upZipPath,Integer currUserId,Integer cpyId,Integer specZlId) throws Exception{
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
-		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		Charset gbk = Charset.forName("gbk");
-		String finalPath = pathPre + "\\" + upZipPath;
+		String upZipName = upZipPath.substring(upZipPath.lastIndexOf("\\") + 1);//上传的通知书zip名字
 		List<Object> list_d = new ArrayList<Object>();
 		String msg = "";
 		String currDate = CurrentTime.getStringDate();
@@ -86,6 +82,7 @@ public class ReadZipFile {
 		Double jfTotal = 0.0;//缴费总计
 		String yearNo = "";//年度数字
 		Map<String,Object> map = new HashMap<String,Object>();
+		String finalPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath;//上传文件的绝对路径
 		msg = "";
         try {
 			ZipFile zf = new ZipFile(finalPath,gbk);
@@ -241,7 +238,7 @@ public class ReadZipFile {
 			            	}
 			            	list_d.add(map_d);
 			            	break;
-	        			}else{//里面不存在数据文件，需要从list.xml中获取
+	        			}else{//里面不存在数据文件，需要从list.xml中获取(比如补正通知书)
 	        				l1 = root.element("TONGZHISXJ");
 	        				if(l1 != null){
 	        					Element l2 = l1.element("SHUXINGXX");
@@ -251,7 +248,7 @@ public class ReadZipFile {
 	        						ajNoGf = l2.elementText("SHENQINGH");
 	        						fwSerial = root.element("FAWENXLH").getTextTrim();
 	        						fwDate = CurrentTime.convertFormatDate(l2.elementText("FAWENR"));
-	        						feeEdate = CurrentTime.getFinalDate(fwDate, Constants.TD_RECEIVE_DAYS);
+	        						feeEdate = CurrentTime.getFinalDate(fwDate, (60+Constants.TD_RECEIVE_DAYS));
 	        						map_d.put("zlName", zlName);
 	    							map_d.put("tzsName", tzsName);
 	    			            	map_d.put("ajNoGf", ajNoGf);
@@ -316,13 +313,14 @@ public class ReadZipFile {
 									map.put("ajTitle", zl.getAjTitle());
 									map.put("result", msg);
 									//删除当前通知书压缩包
-									FileOpration.deleteFile(pathPre+upZipPath);
+									FileOpration.deleteFile(finalPath);
 								}else{//未增加
+									String upZipPath_final = "cpyUser\\"+zlId+"\\tzs\\"+upZipName;
 									if(tzsName.equals("专利申请受理通知书")){
 										msg = "success";
 										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.1);//导入通知书期限1个月
 										if(currLcId > 0){
-											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入受理通知书", 7.1, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入受理通知书", 7.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
 											//发送邮件
 											mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", "新任务通知：导入费用减缓审批/缴纳申请费通知书", "专利["+zl.getAjTitle()+"]已完成受理通知书导入，请及时完成导入费用减缓审批/缴纳申请费通知书工作");
 										}
@@ -364,7 +362,7 @@ public class ReadZipFile {
 										msg = "success";
 										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入费用减缓审批/缴纳申请费通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.2);//导入通知书期限1个月
 										if(currLcId > 0){
-											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入费用减缓审批/缴纳申请费通知书", 7.2, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入费用减缓审批/缴纳申请费通知书", 7.2, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
 											//发送邮件
 											mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getFeeUserId(), "cpyUser", "新任务通知：费用催缴", "专利["+zl.getAjTitle()+"]已完成费用减缓审批/缴纳申请费通知书导入，请及时完成费用催缴工作");
 											
@@ -469,26 +467,27 @@ public class ReadZipFile {
 //												zlm.updateZlStatusById(zlId, "8.0", "等待缴纳"+lcName_next);
 //											}
 										}
-									}else if(tzsName.equals("补正通知书") || tzsName.contains("审查意见通知书") || tzsName.contains("初步审查合格通知书")){
+									}else if(tzsName.contains("补正通知书") || tzsName.contains("审查意见通知书") || tzsName.contains("初步审查合格通知书")){
 										msg = "success";
 										if(tzsName.contains("初步审查合格通知书")){//初审合格
     										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入初步审查合格通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",9.1);//导入通知书期限1个月
 											if(currLcId > 0){
-												mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入初步审查合格通知书", 9.1, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+												mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入初步审查合格通知书", 9.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
 											}
 											if(zlType.equals("fm")){
 												if(lcNo < 13){//实审之前导入初步审查合格通知书
-													List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴");
-													if(mxList.size() > 0){
-														ZlajLcMxInfoTb mx = mxList.get(0);
-														boolean feeFlag = (mx.getLcMxEDate().equals("") || mx.getLcMxEDate().equals("noDate"));
-														if(!feeFlag){//已缴纳了实审费
-															//状态进入实审中
-															zlm.updateZlStatusById(zlId, "13.0", "实审中");
-														}else{//需要在三年内提交实审费才能进行
-															zlm.updateZlStatusById(zlId, "12.0", "等待缴纳实审费");
-														}
-													}
+													zlm.updateZlStatusById(zlId, "13.0", "实审中/等待缴纳实审费");
+//													List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "实质审查费催缴");
+//													if(mxList.size() > 0){
+//														ZlajLcMxInfoTb mx = mxList.get(0);
+//														boolean feeFlag = (mx.getLcMxEDate().equals("") || mx.getLcMxEDate().equals("noDate"));
+//														if(!feeFlag){//已缴纳了实审费
+//															//状态进入实审中
+//															zlm.updateZlStatusById(zlId, "13.0", "实审中");
+//														}else{//需要在三年内提交实审费才能进行
+//															zlm.updateZlStatusById(zlId, "12.0", "等待缴纳实审费");
+//														}
+//													}
 												}
 											}else{//其他类型专利没有实审
 												zlm.updateZlStatusById(zlId, "14.0", "等待导入授权、办理登记手续通知书");
@@ -496,7 +495,7 @@ public class ReadZipFile {
 										}else{//说明需要进行补正或者审查答复（可能是初审的补正/审查答复，也可能是实审的补正/审查答复）
 											String finalDate = CurrentTime.getFinalDate(fwDate, Constants.TD_RECEIVE_DAYS);//推定收到日
 											String finalDate_cpy = "";//官方绝限提前15天
-											Integer addMonthes = 2;
+											Integer addMonthes = 2;//补正通知书都是2个月+15天
 											if(lcNo >= 9.0 && lcNo < 10){//说明当前处于初审阶段（所有专利）
 												if(tzsName.equals("第一次审查意见通知书")){
 													//发明专利的第一次审查意见通知书的答复期限是下发日+15天+4个月，其余都是2个月
@@ -511,7 +510,7 @@ public class ReadZipFile {
 												finalDate_cpy = CurrentTime.getFinalDate(finalDate,-Constants.JF_SL_END_DATE_CPY);
 												Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
 												if(currLcId > 0){
-													mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+													mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
 												}
 												Double newLcNo = 0.0;
 												if(lcNo < 9.9){
@@ -543,7 +542,7 @@ public class ReadZipFile {
 												}
     											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
 												if(currLcId > 0){
-													mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+													mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
 												}
 												Double newLcNo = 0.0;
 												if(lcNo < 13.9){
@@ -581,13 +580,13 @@ public class ReadZipFile {
 										}
 										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
 										if(currLcId > 0){
-											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
 										}
 									}else if(tzsName.equals("办理登记手续通知书")){//授权和办理登记手续通知书
 										msg = "success";
 										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",14.0);//导入通知书期限1个月
 										if(currLcId > 0){
-											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, 14.0, currDate, currDate, upZipPath, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, 14.0, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
 											//取消掉增加费用催缴流程（只在缴费记录表里面体现）
 //											Integer nextLcId = lcm.addLcInfo(zlId, "费用催缴", "授权登记费催缴", fwDate, CurrentTime.getFinalDate(feeEdate, -Constants.JF_SL_END_DATE_CPY), "", feeEdate,15.0);//导入通知书期限1个月
 //											if(nextLcId > 0){
@@ -696,12 +695,10 @@ public class ReadZipFile {
 									map.put("ajNoGf", zl.getAjNoGf());
 									map.put("ajTitle", zl.getAjTitle());
 									map.put("result", msg);//已成功导入通知书
-//									2018年10月24日
-									String upZipPath_new = upZipPath;
+//									将上传的通知书
 									if(specZlId == 0){//没有针对指定的专利导入，需要修改上传文件路径
-										String oldPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath;//上传通知书的原绝对路径
-										upZipPath_new = "cpyUser\\"+zlId+"\\tzs\\"+upZipPath.substring((upZipPath.lastIndexOf("\\")+1));
-										String newPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath_new;
+										String oldPath = finalPath;//上传通知书的原绝对路径
+										String newPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath_final;
 										//也需要挪动到新的正确位置
 										File file = new File(newPath);
 										//复制上传通知书到正确位置
@@ -710,7 +707,7 @@ public class ReadZipFile {
 											 FileOpration.deleteFile(oldPath);
 										 }
 									}
-									tzsm.addTzs(zlId, tzsName, fwDate, "", fwSerial,upZipPath_new);
+									tzsm.addTzs(zlId, tzsName, fwDate, "", fwSerial,upZipPath_final);
 								}
 								
 							}else{
@@ -720,7 +717,7 @@ public class ReadZipFile {
 								map.put("ajTitle", zl.getAjTitle());
 								map.put("result", "tzsUserError");//当前导入人员不是系统指定人员,请更换导入人员重新导入当前通知书
 								//删除当前通知书压缩包
-								FileOpration.deleteFile(pathPre+upZipPath);
+								FileOpration.deleteFile(finalPath);
 							}
 							//-------------------------新修改E-----------------------------//
 
@@ -732,7 +729,7 @@ public class ReadZipFile {
 							map.put("ajTitle", zl.getAjTitle());
 							map.put("result", msg);//已终止，不能进行导入通知书操作
 							//删除当前通知书压缩包
-							FileOpration.deleteFile(pathPre+upZipPath);
+							FileOpration.deleteFile(finalPath);
 						}
     				}else{//获取到一个以上的专利信息(需要用户判断选择一个，然后再进行操作)
     					List<Object> list_r = new ArrayList<Object>();
@@ -763,23 +760,20 @@ public class ReadZipFile {
     			}else{//不存在
     				map.put("result", "noInfo");//该通知书没有匹配到专利
     				map.put("tzsName", tzsName);
-					map.put("zipPath", upZipPath);
 					//删除当前通知书压缩包
-					FileOpration.deleteFile(pathPre+upZipPath);
+					FileOpration.deleteFile(finalPath);
     			}
 	        }else{
 	        	map.put("result", "tzsError");//请导入正确的通知书
-				map.put("zipPath", upZipPath);
 				//删除当前通知书压缩包
-				FileOpration.deleteFile(pathPre+upZipPath);
+				FileOpration.deleteFile(finalPath);
 	        }
 	        
         }catch (Exception e) {
 			// TODO Auto-generated catch block
         	map.put("result", "typeError");//只支持ZIP压缩格式的通知书
-			map.put("zipPath", upZipPath);
 			//删除当前通知书压缩包
-			FileOpration.deleteFile(pathPre+upZipPath);
+			FileOpration.deleteFile(finalPath);
 		}
         System.out.println(list_d);
         return map;
@@ -828,7 +822,7 @@ public class ReadZipFile {
 	 */
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		ReadZipFile.readZipFile_new("E:\\","发明-补正通知书.zip",0,0,0);
+		ReadZipFile.readZipFile_new("E:\\发明-补正通知书.zip",0,0,0);
 //		for(Iterator<Object> it = objList.iterator() ; it.hasNext();){
 //			Object obj = it.next();
 //			System.out.println(obj);
