@@ -109,7 +109,7 @@ public class PubZlAction extends DispatchAction {
 	}
 	
 	/**
-	 * 分页获取专利列表(申请人/公司，平台用户查看)
+	 * 分页获取专利列表(申请人/公司，代理机构查看，平台用户查看)
 	 * @description
 	 * @author wm
 	 * @date 2018-8-13 上午09:03:06
@@ -127,22 +127,25 @@ public class PubZlAction extends DispatchAction {
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		Map<String,Object> map = new HashMap<String,Object>();
 		String zlTitle = Transcode.unescape(request.getParameter("zlTitle"), request);
-		String zlNo = request.getParameter("zlNo");
-		String zlType = request.getParameter("zlType");
-		String pubDate = request.getParameter("pubDate");
-		Integer zlStatus = Integer.parseInt(request.getParameter("zlStatus"));
+		String zlNo = CommonTools.getFinalStr("zlNo", request);
+		String zlType = CommonTools.getFinalStr("zlType", request);
+		String pubDate = CommonTools.getFinalStr("pubDate", request);
+		Integer zlStatus = CommonTools.getFinalInteger("zlStatus",request);
+		Integer zlCheckStatus = CommonTools.getFinalInteger("zlCheckStatus",request);//专利审核状态
 		Integer currUserId = 0;
 		String loginType = this.getLoginType(request);
 		if(loginType.equals("appUser")){//申请人/公司查看
 			currUserId = this.getLoginUserId(request);
+		}else if(loginType.equals("cpyUser")){//代理机构只查看审核通过的且未领取的
+			zlCheckStatus = 1;
 		}
 		//平台管理人员、代理机构查看全部
-		Integer count = pzm.getCountByOpt(currUserId, zlTitle, zlNo, zlType, pubDate, zlStatus);
+		Integer count = pzm.getCountByOpt(currUserId, zlTitle, zlNo, zlType, pubDate, zlStatus,zlCheckStatus);
 		if(count > 0){
 			map.put("msg", "success");
 			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
 			Integer pageNo = CommonTools.getFinalInteger(request.getParameter("page"));//等同于pageNo
-			List<PubZlInfoTb> pzList = pzm.listPageInfoByOpt(currUserId, zlTitle, zlNo, zlType, pubDate, zlStatus, pageNo, pageSize);
+			List<PubZlInfoTb> pzList = pzm.listPageInfoByOpt(currUserId, zlTitle, zlNo, zlType, pubDate, zlStatus, zlCheckStatus,pageNo, pageSize);
 			List<Object> list_d = new ArrayList<Object>();
 			for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
 				PubZlInfoTb pz = it.next();
@@ -183,6 +186,17 @@ public class PubZlAction extends DispatchAction {
 				}
 				map_d.put("ajNoQt", ajNoQt);
 				map_d.put("ajLqStatus", pz.getZlStatus());
+				Integer zlCheckStatus_db = pz.getZlCheckStatus();
+				map_d.put("zlCheckStatus", zlCheckStatus_db);
+				String zlCheckStatusChi = "";
+				if(zlCheckStatus_db.equals(0)){
+					zlCheckStatusChi = "未审核";
+				}else if(zlCheckStatus_db.equals(1)){
+					zlCheckStatusChi = "审核通过";
+				}else if(zlCheckStatus_db.equals(2)){
+					zlCheckStatusChi = "审核未通过";
+				}
+				map_d.put("zlCheckStatusChi", zlCheckStatusChi);
 				if(pz.getZlStatus().equals(1)){
 					if(loginType.equals("cpyUser")){
 						if(pz.getLqUserId().equals(this.getLoginUserId(request))){
@@ -260,97 +274,121 @@ public class PubZlAction extends DispatchAction {
 		}
 		if(!msg.equals("error")){
 			List<PubZlInfoTb> pbZlList = pzm.listSpecInfoByOpt(pubId, userId);
+			boolean showFlag = true;
 			if(pbZlList.size() > 0){
 				PubZlInfoTb pz = pbZlList.get(0);
-				map.put("zlId", pz.getId());
-				map.put("zlTitle", pz.getZlTitle());
-				map.put("zlContent", pz.getZlContent());
-				String zlType = pz.getZlType();
-				if(zlType.equals("fm")){
-					map.put("typeChi", "发明");
-				}else if(zlType.equals("syxx")){
-					map.put("typeChi", "实用新型");
-				}else if(zlType.equals("wg")){
-					map.put("typeChi", "外观");
-				}
-				map.put("zlType", zlType);
-				String zlUpCl = pz.getZlUpCl();
-				String zlUpClSize = "";
-				String zlUpClName = "";
-				List<Object> list_file = new ArrayList<Object>();
-				if(!zlUpCl.equals("")){
-					String[] zlUpClArr = zlUpCl.split(",");
-					for(Integer i = 0  ; i < zlUpClArr.length ; i++){
-						zlUpClName = zlUpClArr[i].substring((zlUpClArr[i].lastIndexOf("\\") + 1));
-						zlUpClSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + zlUpClArr[i]);
-						Map<String,String> map_file = new HashMap<String,String>();
-						map_file.put("zlUpClPath", zlUpClArr[i]);
-						map_file.put("fileName", zlUpClName);
-						map_file.put("fileSize", zlUpClSize);
-						map_file.put("downFilePath", zlUpClArr[i]);
-						list_file.add(map_file);
+				if(loginType.equals("cpyUser")){//只能获取审核通过详情
+					if(!pz.getZlCheckStatus().equals(1)){//未审核或者审核不通过，代理机构不能进行查看
+						showFlag = false;
 					}
 				}
-				map.put("zlUpCl", list_file);
-				
-				map.put("zlStatus", pz.getZlStatus());
-				map.put("zlStatusChi", pz.getZlStatus().equals(0) ? "待领取" : "已领取");
-				if(pz.getZlStatus().equals(1)){
-					if(loginType.equals("cpyUser")){
-						if(pz.getLqUserId().equals(this.getLoginUserId(request))){
+				if(showFlag){
+					map.put("zlId", pz.getId());
+					map.put("zlTitle", pz.getZlTitle());
+					map.put("zlContent", pz.getZlContent());
+					String zlType = pz.getZlType();
+					if(zlType.equals("fm")){
+						map.put("typeChi", "发明");
+					}else if(zlType.equals("syxx")){
+						map.put("typeChi", "实用新型");
+					}else if(zlType.equals("wg")){
+						map.put("typeChi", "外观");
+					}
+					map.put("zlType", zlType);
+					String zlUpCl = pz.getZlUpCl();
+					String zlUpClSize = "";
+					String zlUpClName = "";
+					List<Object> list_file = new ArrayList<Object>();
+					if(!zlUpCl.equals("")){
+						String[] zlUpClArr = zlUpCl.split(",");
+						for(Integer i = 0  ; i < zlUpClArr.length ; i++){
+							zlUpClName = zlUpClArr[i].substring((zlUpClArr[i].lastIndexOf("\\") + 1));
+							zlUpClSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + zlUpClArr[i]);
+							Map<String,String> map_file = new HashMap<String,String>();
+							map_file.put("zlUpClPath", zlUpClArr[i]);
+							map_file.put("fileName", zlUpClName);
+							map_file.put("fileSize", zlUpClSize);
+							map_file.put("downFilePath", zlUpClArr[i]);
+							list_file.add(map_file);
+						}
+					}
+					map.put("zlUpCl", list_file);
+					
+					map.put("zlStatus", pz.getZlStatus());
+					map.put("zlStatusChi", pz.getZlStatus().equals(0) ? "待领取" : "已领取");
+					if(pz.getZlStatus().equals(1)){
+						if(loginType.equals("cpyUser")){
+							if(pz.getLqUserId().equals(this.getLoginUserId(request))){
+								map.put("undoShowFlag", true);
+							}else{
+								map.put("undoShowFlag", false);
+							}
+						}else if(loginType.equals("appUser")){
 							map.put("undoShowFlag", true);
-						}else{
+						}else  if(loginType.equals("spUser")){
 							map.put("undoShowFlag", false);
 						}
-					}else if(loginType.equals("appUser")){
-						map.put("undoShowFlag", true);
-					}else  if(loginType.equals("spUser")){
+					}else{
 						map.put("undoShowFlag", false);
 					}
-				}else{
-					map.put("undoShowFlag", false);
-				}
-				map.put("pubDate", pz.getZlNewDate());
-				map.put("lqrName", pz.getLqUserName());
-				map.put("lqrCpyName", pz.getLqCpyName());
-				if(pz.getLqUserId() > 0){
-					map.put("lqDate", pz.getLqDate());
-				}else{
-					map.put("lqDate", "");
-				}
-				ApplyInfoTb appUser = pz.getApplyInfoTb();
-				map.put("pubInfo", appUser.getAppName());
-				if(msg.equals("success")){//针对有权限的开放
-					map.put("pubLxrInfo", appUser.getAppLxr());
-					map.put("pubLxrTelInfo", appUser.getAppTel());
-					map.put("pubLxrEmailInfo", appUser.getAppEmail());
-				}else{//没权限或者会员已到期的不能查看
-					map.put("pubLxrInfo", "****");
-					map.put("pubLxrTelInfo", "****");
-					map.put("pubLxrEmailInfo", "****");
-				}
-				Integer ajId = pz.getAjId();
-				String ajNoQt = "";
-				map.put("ajId", ajId);
-				if(ajId > 0){
-					List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(ajId, 0);
-					if(zlList.size() > 0){
-						ajNoQt = zlList.get(0).getAjNoQt();
+					map.put("pubDate", pz.getZlNewDate());
+					map.put("lqrName", pz.getLqUserName());
+					map.put("lqrCpyName", pz.getLqCpyName());
+					if(pz.getLqUserId() > 0){
+						map.put("lqDate", pz.getLqDate());
+					}else{
+						map.put("lqDate", "");
 					}
-				}
-				map.put("ajNoQt", ajNoQt);
-				//获取领取/撤销记录
-				List<PubZlCzRecordTb> zlCzList = pzm.listInfoByPubId(pubId);
-				List<Object> list_d = new ArrayList<Object>();
-				if(zlCzList.size() > 0){
-					for(Iterator<PubZlCzRecordTb> it = zlCzList.iterator() ; it.hasNext();){
-						PubZlCzRecordTb zlCz = it.next();
-						Map<String,String> map_d = new HashMap<String,String>();
-						map_d.put("czDetail", zlCz.getAddDate()+"："+zlCz.getAddContent());
-						list_d.add(map_d);
+					ApplyInfoTb appUser = pz.getApplyInfoTb();
+					map.put("pubInfo", appUser.getAppName());
+					if(msg.equals("success")){//针对有权限的开放
+						map.put("pubLxrInfo", appUser.getAppLxr());
+						map.put("pubLxrTelInfo", appUser.getAppTel());
+						map.put("pubLxrEmailInfo", appUser.getAppEmail());
+					}else{//没权限或者会员已到期的不能查看
+						map.put("pubLxrInfo", "****");
+						map.put("pubLxrTelInfo", "****");
+						map.put("pubLxrEmailInfo", "****");
 					}
+					Integer ajId = pz.getAjId();
+					String ajNoQt = "";
+					map.put("ajId", ajId);
+					if(ajId > 0){
+						List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(ajId, 0);
+						if(zlList.size() > 0){
+							ajNoQt = zlList.get(0).getAjNoQt();
+						}
+					}
+					map.put("ajNoQt", ajNoQt);
+					//获取领取/撤销记录
+					List<PubZlCzRecordTb> zlCzList = pzm.listInfoByPubId(pubId);
+					List<Object> list_d = new ArrayList<Object>();
+					if(zlCzList.size() > 0){
+						for(Iterator<PubZlCzRecordTb> it = zlCzList.iterator() ; it.hasNext();){
+							PubZlCzRecordTb zlCz = it.next();
+							Map<String,String> map_d = new HashMap<String,String>();
+							map_d.put("czDetail", zlCz.getAddDate()+"："+zlCz.getAddContent());
+							list_d.add(map_d);
+						}
+					}
+					map.put("zlCzInfo", list_d);
+					Integer zlCheckStatus_db = pz.getZlCheckStatus();
+					map.put("zlCheckStatus", zlCheckStatus_db);
+					String zlCheckStatusChi = "";
+					if(zlCheckStatus_db.equals(0)){
+						zlCheckStatusChi = "未审核";
+					}else if(zlCheckStatus_db.equals(1)){
+						zlCheckStatusChi = "审核通过";
+					}else if(zlCheckStatus_db.equals(2)){
+						zlCheckStatusChi = "审核未通过";
+					}
+					map.put("zlCheckStatusChi", zlCheckStatusChi);
+					map.put("zlCheckRemark", pz.getZlCheckRemark());
+				}else{
+					msg = "noInfo";
 				}
-				map.put("zlCzInfo", list_d);
+			}else{
+				msg = "noInfo";
 			}
 		}
 		map.put("result", msg);

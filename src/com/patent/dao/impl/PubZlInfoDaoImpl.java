@@ -45,9 +45,9 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 	@Override
 	public List<PubZlInfoTb> findPageInfoByOpt(Session sess, Integer pubId,
 			String zlTitle, String zlNo, String zlType, String pubDate,
-			Integer zlStatus, Integer pageNo, Integer pageSize) {
+			Integer zlStatus, Integer zlCheckStatus, Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
-		String hql = " from PubZlInfoTb as pz where 1=1";
+		String hql = " from PubZlInfoTb as pz where pz.zlCheckStatus = "+zlCheckStatus;
 		if(pubId > 0){
 			hql += " and pz.applyInfoTb.id = "+pubId;
 		}
@@ -75,9 +75,9 @@ public class PubZlInfoDaoImpl implements PubZlInfoDao{
 
 	@Override
 	public Integer getCountByOpt(Session sess, Integer pubId, String zlTitle,
-			String zlNo, String zlType, String pubDate, Integer zlStatus) {
+			String zlNo, String zlType, String pubDate, Integer zlStatus,Integer zlCheckStatus) {
 		// TODO Auto-generated method stub
-		String hql = "select count(pz.id) from PubZlInfoTb as pz where 1=1";
+		String hql = "select count(pz.id) from PubZlInfoTb as pz where pz.zlCheckStatus = "+zlCheckStatus;
 		if(pubId > 0){
 			hql += " and pz.applyInfoTb.id = "+pubId;
 		}

@@ -82,13 +82,14 @@ public interface PubZlInfoManager {
 	 * @param zlType 专利类型 （""时表示全部）
 	 * @param pubDate 发布日期 （""时表示全部）
 	 * @param zlStatus 专利领取状态 （-1时表示全部）
+	 * @param zlCheckStatus 专利任务审核状态（0:未审核,1:审核通过,2:未通过）
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 * @throws WEBException
 	 */
 	List<PubZlInfoTb> listPageInfoByOpt(Integer pubId,String zlTitle,String zlNo,String zlType,
-			String pubDate,Integer zlStatus,Integer pageNo,Integer pageSize) throws WEBException; 
+			String pubDate,Integer zlStatus,Integer zlCheckStatus,Integer pageNo,Integer pageSize) throws WEBException; 
 	
 	/**
 	 * 根据条件获取发布专利任务记录条数
@@ -101,11 +102,12 @@ public interface PubZlInfoManager {
 	 * @param zlType 专利类型 （""时表示全部）
 	 * @param pubDate 发布日期 （""时表示全部）
 	 * @param zlStatus 专利领取状态 （-1时表示全部）
+	 * @param zlCheckStatus 专利任务审核状态（0:未审核,1:审核通过,2:未通过）
 	 * @return
 	 * @throws WEBException
 	 */
 	Integer getCountByOpt(Integer pubId,String zlTitle,String zlNo,String zlType,
-			String pubDate,Integer zlStatus) throws WEBException; 
+			String pubDate,Integer zlStatus,Integer zlCheckStatus) throws WEBException; 
 	
 	/**
 	 * 获取指定领取公司指定主键编号的发布专利信息
@@ -219,4 +221,17 @@ public interface PubZlInfoManager {
 	 * @throws WEBException
 	 */
 	Integer getCountByOpt(Integer lqCpyId,String zlType,String zlTitle,Integer pubZlId)throws WEBException ;
+	
+	/**
+	 * 修改专利任务审核信息
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-1 上午10:58:17
+	 * @param pubId 专利任务编号
+	 * @param zlCheckStatus 审核状态（0:未审核,1:审核通过,2:未通过）
+	 * @param zlCheckRemark 审核备注说明
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateTaskCheckInfo(Integer pubId,Integer zlCheckStatus,String zlCheckRemark)throws WEBException ;
 }

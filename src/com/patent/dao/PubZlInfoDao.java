@@ -53,12 +53,13 @@ public interface PubZlInfoDao {
 	 * @param zlType 专利类型 （""时表示全部）
 	 * @param pubDate 发布日期 （""时表示全部）
 	 * @param zlStatus 专利领取状态 （-1时表示全部）
+	 * @param zlCheckStatus 专利任务审核状态（0:未审核,1:审核通过,2:未通过）
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 */
 	List<PubZlInfoTb> findPageInfoByOpt(Session sess,Integer pubId,String zlTitle,String zlNo,String zlType,
-			String pubDate,Integer zlStatus,Integer pageNo,Integer pageSize);
+			String pubDate,Integer zlStatus,Integer zlCheckStatus,Integer pageNo,Integer pageSize);
 	
 	/**
 	 * 根据条件获取发布的专利信息记录条数
@@ -72,10 +73,11 @@ public interface PubZlInfoDao {
 	 * @param zlType 专利类型 （""时表示全部）
 	 * @param pubDate 发布日期 （""时表示全部）
 	 * @param zlStatus 专利领取状态 （-1时表示全部）
+	 * @param zlCheckStatus 专利任务审核状态（0:未审核,1:审核通过,2:未通过）
 	 * @return
 	 */
 	Integer getCountByOpt(Session sess,Integer pubId,String zlTitle,String zlNo,String zlType,
-			String pubDate,Integer zlStatus);
+			String pubDate,Integer zlStatus,Integer zlCheckStatus);
 	
 	/**
 	 * 获取指定领取公司指定专利任务编号的发布专利信息

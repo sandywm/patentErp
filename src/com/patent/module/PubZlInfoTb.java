@@ -30,6 +30,8 @@ public class PubZlInfoTb implements java.io.Serializable {
 	private String lqCpyName;
 	private String lqDate;
 	private Integer ajId;
+	private Integer zlCheckStatus;
+	private String zlCheckRemark;
 	private Set<PubZlCzRecordTb> pubZlCzRecordTbs = new HashSet<PubZlCzRecordTb>();
 
 	// Constructors
@@ -41,7 +43,7 @@ public class PubZlInfoTb implements java.io.Serializable {
 	public PubZlInfoTb(ApplyInfoTb applyInfoTb, String zlTitle, String zlContent,String zlNo,String zlType,
 			String zlUpCl, String zlNewDate, Integer zlStatus, Integer lqUserId,
 			String lqUserName, Integer lqCpyId, String lqCpyName, String lqDate,
-			Integer ajId) {
+			Integer ajId,Integer zlCheckStatus,String zlCheckRemark) {
 		this.applyInfoTb = applyInfoTb;
 		this.zlTitle = zlTitle;
 		this.zlContent = zlContent;
@@ -56,13 +58,15 @@ public class PubZlInfoTb implements java.io.Serializable {
 		this.lqCpyName = lqCpyName;
 		this.lqDate = lqDate;
 		this.ajId = ajId;
+		this.zlCheckStatus = zlCheckStatus;
+		this.zlCheckRemark = zlCheckRemark;
 	}
 	
 	/** full constructor */
 	public PubZlInfoTb(Integer id,ApplyInfoTb applyInfoTb, String zlTitle, String zlContent,String zlNo,String zlType,
 			String zlUpCl, String zlNewDate, Integer zlStatus, Integer lqUserId,
 			String lqUserName, Integer lqCpyId, String lqCpyName, String lqDate,
-			Integer ajId) {
+			Integer ajId,Integer zlCheckStatus,String zlCheckRemark) {
 		this.id = id;
 		this.applyInfoTb = applyInfoTb;
 		this.zlTitle = zlTitle;
@@ -78,6 +82,8 @@ public class PubZlInfoTb implements java.io.Serializable {
 		this.lqCpyName = lqCpyName;
 		this.lqDate = lqDate;
 		this.ajId = ajId;
+		this.zlCheckStatus = zlCheckStatus;
+		this.zlCheckRemark = zlCheckRemark;
 	}
 
 	// Property accessors
@@ -208,6 +214,22 @@ public class PubZlInfoTb implements java.io.Serializable {
 
 	public void setPubZlCzRecordTbs(Set<PubZlCzRecordTb> pubZlCzRecordTbs) {
 		this.pubZlCzRecordTbs = pubZlCzRecordTbs;
+	}
+
+	public Integer getZlCheckStatus() {
+		return zlCheckStatus;
+	}
+
+	public void setZlCheckStatus(Integer zlCheckStatus) {
+		this.zlCheckStatus = zlCheckStatus;
+	}
+
+	public String getZlCheckRemark() {
+		return zlCheckRemark;
+	}
+
+	public void setZlCheckRemark(String zlCheckRemark) {
+		this.zlCheckRemark = zlCheckRemark;
 	}
 
 }

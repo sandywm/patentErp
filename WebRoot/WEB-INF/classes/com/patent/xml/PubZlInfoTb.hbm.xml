@@ -45,6 +45,16 @@
                 <comment>发布时间</comment>
             </column>
         </property>
+         <property name="zlCheckStatus" type="java.lang.Integer">
+            <column name="zl_check_status" not-null="true">
+                <comment>专利任务审核状态(0:未审核,1:审核通过,2:未通过)</comment>
+            </column>
+        </property>
+        <property name="zlCheckRemark" type="java.lang.String">
+            <column name="zl_check_remark" length="200">
+                <comment>备注(审核备注说明)</comment>
+            </column>
+        </property>
         <property name="zlStatus" type="java.lang.Integer">
             <column name="zl_status" not-null="true">
                 <comment>状态(0：等待领取，1：已领取)</comment>

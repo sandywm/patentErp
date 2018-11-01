@@ -32,7 +32,7 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
 			PubZlInfoTb pz = new PubZlInfoTb(aDao.get(sess, pubUserId), zlTitle, zlContent,"",zlType,
-					zlUpCl, zlNewDate, 0, 0,"", 0, "", "",0);
+					zlUpCl, zlNewDate, 0, 0,"", 0, "", "",0,0,"");
 			pzDao.save(sess, pz);
 			tran.commit();
 			return pz.getId();
@@ -142,13 +142,13 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 
 	@Override
 	public List<PubZlInfoTb> listPageInfoByOpt(Integer pubId, String zlTitle,
-			String zlNo, String zlType, String pubDate, Integer zlStatus,
+			String zlNo, String zlType, String pubDate, Integer zlStatus,Integer zlCheckStatus,
 			Integer pageNo, Integer pageSize) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return pzDao.findPageInfoByOpt(sess, pubId, zlTitle, zlNo, zlType, pubDate, zlStatus, pageNo, pageSize);
+			return pzDao.findPageInfoByOpt(sess, pubId, zlTitle, zlNo, zlType, pubDate, zlStatus, zlCheckStatus, pageNo, pageSize);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -160,13 +160,13 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 
 	@Override
 	public Integer getCountByOpt(Integer pubId, String zlTitle, String zlNo,
-			String zlType, String pubDate, Integer zlStatus)
+			String zlType, String pubDate, Integer zlStatus,Integer zlCheckStatus)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return pzDao.getCountByOpt(sess, pubId, zlTitle, zlNo, zlType, pubDate, zlStatus);
+			return pzDao.getCountByOpt(sess, pubId, zlTitle, zlNo, zlType, pubDate, zlStatus, zlCheckStatus);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -336,6 +336,33 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据条件获取当前代理机构下已领取未增加的专利任务记录条数信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateTaskCheckInfo(Integer pubId, Integer zlCheckStatus,
+			String zlCheckRemark) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			pzDao = (PubZlInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_PUB_ZL_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			List<PubZlInfoTb> pzList = pzDao.findSpecInfoByOpt(sess, pubId, 0);
+			if(pzList.size() > 0){
+				PubZlInfoTb pz = pzList.get(0);
+				pz.setZlCheckStatus(zlCheckStatus);
+				pz.setZlCheckRemark(zlCheckRemark);
+				pzDao.update(sess, pz);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改专利任务审核信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}
