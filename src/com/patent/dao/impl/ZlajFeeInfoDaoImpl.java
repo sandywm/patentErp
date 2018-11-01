@@ -81,4 +81,12 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		return null;
 	}
 
+	@Override
+	public List<ZlajFeeInfoTb> findAllFeeByZlId(Session sess, Integer zlId,
+			Integer cpyId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajFeeInfoTb as zlf where zlf.zlajMainInfoTb.id = "+zlId + " and zlf.cpyInfoTb.id = "+cpyId + " order by zlf.feeEndDateGf asc";
+		return sess.createQuery(hql).list();
+	}
+
 }

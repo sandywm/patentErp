@@ -26,11 +26,12 @@ public interface ZlajLcMxInfoManager {
 	 * @param lcMxUpSize  附件大小
 	 * @param lcMxFee 流程所需缴纳的费用
 	 * @param lcMxRemark 备注
+	 * @param lcPjScore 流程评分
 	 * @return
 	 * @throws WEBException
 	 */
 	Integer addLcMx(Integer lcId,Integer fzUserId,String lcMxName, Double lcMxNo, String lcMxSDate, String lcMxEDate,
-			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,String lcMxUpSize,Double lcMxFee,String lcMxRemark) throws WEBException;
+			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,String lcMxUpSize,Double lcMxFee,String lcMxRemark,Integer lcPjScore) throws WEBException;
 	
 	/**
 	 * 修改流程负责人、完成时间、备注等（一般是领取）
@@ -45,11 +46,12 @@ public interface ZlajLcMxInfoManager {
 	 * @param lcMxUpSize  附件大小(""时不修改)
 	 * @param eDate 完成时间
 	 * @param lcMxRemark 备注(""不修改)
+	 * @param lcPjScore 流程评分（-1不修改）
 	 * @return
 	 * @throws WEBException
 	 */
 	boolean updateEdateById(Integer id,Integer fzUserId,Integer lcMxUpUserId,String lcMxUpFile,
-			String lcMxUpDate,String lcMxUpSize,String eDate, String lcMxRemark) throws WEBException;
+			String lcMxUpDate,String lcMxUpSize,String eDate, String lcMxRemark,Integer lcPjScore) throws WEBException;
 	
 	/**
 	 * 根据流程编号获取所有流程明细

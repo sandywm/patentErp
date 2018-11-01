@@ -95,5 +95,20 @@
                 <comment>自动增加年费标记(0:已增加,1:未增加)-不是年费默认为0</comment>
             </column>
         </property>
+        <property name="backDate" type="java.lang.String">
+            <column name="back_date" length="30">
+                <comment>退换时间</comment>
+            </column>
+        </property>
+         <property name="feeBatchNo" type="java.lang.String">
+            <column name="fee_batch_no" length="50">
+                <comment>缴费批次号</comment>
+            </column>
+        </property>
+         <property name="bankSerialNo" type="java.lang.String">
+            <column name="bank_serial_no" length="50">
+                <comment>银行缴费流水号</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

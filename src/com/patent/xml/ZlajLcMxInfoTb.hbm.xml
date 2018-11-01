@@ -65,6 +65,11 @@
                 <comment>缴纳费用</comment>
             </column>
         </property>
+        <property name="lcPjScore" type="java.lang.Integer">
+            <column name="lc_pj_score">
+                <comment>流程评分（只有技术审核才用到，默认-1）</comment>
+            </column>
+        </property>
         <property name="lcMxRemark" type="java.lang.String">
             <column name="lc_mx_remark" length="100">
                 <comment>备注</comment>

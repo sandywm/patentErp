@@ -24,6 +24,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 	private String lcMxUpDate;
 	private String lcMxUpSize;
 	private Double lcMxFee;
+	private Integer lcPjScore;
 	private String lcMxRemark;
 
 	// Constructors
@@ -36,7 +37,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 	public ZlajLcMxInfoTb(Integer lcFzUserId, ZlajLcInfoTb zlajLcInfoTb,
 			String lcMxName, Double lcMxNo, String lcMxSDate, String lcMxEDate,
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,
-			String lcMxUpSize, Double lcMxFee, String lcMxRemark) {
+			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore) {
 		this.lcFzUserId = lcFzUserId;
 		this.zlajLcInfoTb = zlajLcInfoTb;
 		this.lcMxName = lcMxName;
@@ -49,13 +50,14 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 		this.lcMxUpSize = lcMxUpSize;
 		this.lcMxRemark = lcMxRemark;
 		this.lcMxFee =  lcMxFee;
+		this.lcPjScore = lcPjScore;
 	}
 
 	/** full constructor */
 	public ZlajLcMxInfoTb(Integer id,Integer lcFzUserId, ZlajLcInfoTb zlajLcInfoTb,
 			String lcMxName, Double lcMxNo, String lcMxSDate, String lcMxEDate,
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,
-			String lcMxUpSize, Double lcMxFee, String lcMxRemark) {
+			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore) {
 		this.lcFzUserId = lcFzUserId;
 		this.zlajLcInfoTb = zlajLcInfoTb;
 		this.lcMxName = lcMxName;
@@ -68,6 +70,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 		this.lcMxUpSize = lcMxUpSize;
 		this.lcMxRemark = lcMxRemark;
 		this.lcMxFee =  lcMxFee;
+		this.lcPjScore = lcPjScore;
 	}
 
 	// Property accessors
@@ -174,6 +177,14 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 
 	public void setLcMxFee(Double lcMxFee) {
 		this.lcMxFee = lcMxFee;
+	}
+
+	public Integer getLcPjScore() {
+		return lcPjScore;
+	}
+
+	public void setLcPjScore(Integer lcPjScore) {
+		this.lcPjScore = lcPjScore;
 	}
 
 }

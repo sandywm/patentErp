@@ -89,11 +89,14 @@ public interface ZlajFeeInfoManager{
 	 * @param yearFeeNo 第年度数字（不是年费的为0）
 	 * @param feeRange 年费范围####-##-##:####-##-##（不是年费为""）
 	 * @param addStatus 自动增加年费标记(0:已增加,1:未增加)-不是年费默认为0
+	 * @param backDate 退换时间
+	 * @param feeBatchNo 缴费批次号
+	 * @param bankSerialNo 银行缴费流水号
 	 * @return
 	 * @throws WEBException
 	 */
 	Integer addZLFee(Integer zlId,Integer appUserId,Integer geeTypeId,Double feePrice,Double feeRate,String feeEndDateCpy,String feeEndDateGf,String feeRemark,Integer feeStatus,
-			Integer cpyId,Integer djStatus,String feeJnDate,String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus) throws WEBException;
+			Integer cpyId,Integer djStatus,String feeJnDate,String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus,String backDate,String feeBatchNo,String bankSerialNo) throws WEBException;
 	
 	/**
 	 * 修改缴费信息
@@ -124,4 +127,16 @@ public interface ZlajFeeInfoManager{
 	 * @throws WEBException
 	 */
 	boolean updateFeeInfoById(Integer id,String feeEndDateCpy,String feeEndDateGf) throws WEBException;
+	
+	/**
+	 * 获取指定代理机构下指定专利的所有费用（按照官方期限升序排列）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-30 上午08:54:13
+	 * @param zlId 专利编号
+	 * @param cpyId 代理机构编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajFeeInfoTb> listAllFeeByZlId(Integer zlId,Integer cpyId) throws WEBException ;
 }

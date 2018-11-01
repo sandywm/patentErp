@@ -320,7 +320,7 @@ public class ReadZipFile {
 										msg = "success";
 										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.1);//导入通知书期限1个月
 										if(currLcId > 0){
-											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入受理通知书", 7.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入受理通知书", 7.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
 											//发送邮件
 											mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", "新任务通知：导入费用减缓审批/缴纳申请费通知书", "专利["+zl.getAjTitle()+"]已完成受理通知书导入，请及时完成导入费用减缓审批/缴纳申请费通知书工作");
 										}
@@ -362,7 +362,7 @@ public class ReadZipFile {
 										msg = "success";
 										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入费用减缓审批/缴纳申请费通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.2);//导入通知书期限1个月
 										if(currLcId > 0){
-											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入费用减缓审批/缴纳申请费通知书", 7.2, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入费用减缓审批/缴纳申请费通知书", 7.2, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
 											//发送邮件
 											mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getFeeUserId(), "cpyUser", "新任务通知：费用催缴", "专利["+zl.getAjTitle()+"]已完成费用减缓审批/缴纳申请费通知书导入，请及时完成费用催缴工作");
 											
@@ -425,7 +425,7 @@ public class ReadZipFile {
 													
 													if(fm.listInfoByOpt(zlId, feeTypeId).size() == 0){//不存在该费用才增加
 														fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, Double.parseDouble(jfDetailArr1[1]), fjRate_temp, 
-																CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), feeEdate, "", 0, cpyId, 0, "", "",tzsName,0,"",0);
+																CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), feeEdate, "", 0, cpyId, 0, "", "",tzsName,0,"",0,"","","");
 													}
 												}
 											}
@@ -460,7 +460,7 @@ public class ReadZipFile {
 												//增加未缴纳实质审查费的清单3--发明专利申请实质审查费（实质审查费在申请日三年之内缴纳）
 												if(fm.listInfoByOpt(zlId, 3).size() == 0){//不存在该费用才增加
 													fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, 
-															feeEndDate_gf, "", 0, cpyId, 0, "", "",tzsName,0,"",0);
+															feeEndDate_gf, "", 0, cpyId, 0, "", "",tzsName,0,"",0,"","","");
 												}
 											}
 //											if(lcNo == 7.1){//说明是正常顺序
@@ -472,7 +472,7 @@ public class ReadZipFile {
 										if(tzsName.contains("初步审查合格通知书")){//初审合格
     										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入初步审查合格通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",9.1);//导入通知书期限1个月
 											if(currLcId > 0){
-												mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入初步审查合格通知书", 9.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+												mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入初步审查合格通知书", 9.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
 											}
 											if(zlType.equals("fm")){
 												if(lcNo < 13){//实审之前导入初步审查合格通知书
@@ -510,7 +510,7 @@ public class ReadZipFile {
 												finalDate_cpy = CurrentTime.getFinalDate(finalDate,-Constants.JF_SL_END_DATE_CPY);
 												Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
 												if(currLcId > 0){
-													mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+													mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
 												}
 												Double newLcNo = 0.0;
 												if(lcNo < 9.9){
@@ -526,7 +526,7 @@ public class ReadZipFile {
 												//增加案件补正/案件审查答复的环节（当前环节的下一个环节）
 												Integer nextLcId = lcm.addLcInfo(zlId, lcName, lcName, currDate, finalDate_cpy, "", finalDate,newLcNo);
 												if(nextLcId > 0){
-													mxm.addLcMx(nextLcId, zl.getBzUserId(), lcName, newLcNo, currDate, "", "", 0, "", "",  0.0, "等待"+lcName);
+													mxm.addLcMx(nextLcId, zl.getBzUserId(), lcName, newLcNo, currDate, "", "", 0, "", "",  0.0, "等待"+lcName,-1);
 												}
     										}else if(lcNo >= 13.0 && lcNo < 14 && zlType.equals("fm")){//说明当前处于实审阶段（发明专利）
     											if(tzsName.equals("第一次审查意见通知书")){
@@ -542,7 +542,7 @@ public class ReadZipFile {
 												}
     											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
 												if(currLcId > 0){
-													mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+													mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
 												}
 												Double newLcNo = 0.0;
 												if(lcNo < 13.9){
@@ -558,7 +558,7 @@ public class ReadZipFile {
 												//增加案件补正/案件审查答复的环节（当前环节的下一个环节）
 												Integer nextLcId = lcm.addLcInfo(zlId, lcName, lcName, currDate, finalDate_cpy, "", finalDate,newLcNo);
 												if(nextLcId > 0){
-													mxm.addLcMx(nextLcId, zl.getBzUserId(), lcName, newLcNo, currDate, "", "", 0, "", "",  0.0, "等待"+lcName);
+													mxm.addLcMx(nextLcId, zl.getBzUserId(), lcName, newLcNo, currDate, "", "", 0, "", "",  0.0, "等待"+lcName,-1);
 												}
     										}
 										}
@@ -580,13 +580,13 @@ public class ReadZipFile {
 										}
 										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
 										if(currLcId > 0){
-											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
 										}
 									}else if(tzsName.equals("办理登记手续通知书")){//授权和办理登记手续通知书
 										msg = "success";
 										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",14.0);//导入通知书期限1个月
 										if(currLcId > 0){
-											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, 14.0, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName);
+											mxm.addLcMx(currLcId, zl.getTzsUserId(), "导入"+tzsName, 14.0, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
 											//取消掉增加费用催缴流程（只在缴费记录表里面体现）
 //											Integer nextLcId = lcm.addLcInfo(zlId, "费用催缴", "授权登记费催缴", fwDate, CurrentTime.getFinalDate(feeEdate, -Constants.JF_SL_END_DATE_CPY), "", feeEdate,15.0);//导入通知书期限1个月
 //											if(nextLcId > 0){
@@ -655,7 +655,7 @@ public class ReadZipFile {
 																		}
 																	}
 																	fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, yearFee, fjRate_temp,feeCpyDate, 
-																			feeGfDate, "", 0, cpyId, 0, "", "",tzsName,j,feeRange,0);
+																			feeGfDate, "", 0, cpyId, 0, "", "",tzsName,j,feeRange,0,"","","");
 																}
 															}
 															//只增加通知书一个年度的年费，后续年费在上个年度的结束日提前45天自动增加
@@ -682,7 +682,7 @@ public class ReadZipFile {
 															feeTypeId = feeTList.get(0).getId();
 															if(fm.listInfoByOpt(zlId, feeTypeId).size() == 0){
 																fm.addZLFee(zlId, zl.getFeeUserId(), feeTypeId, Double.parseDouble(jfDetailArr1[1]), fjRate_temp,CurrentTime.getFinalDate(feeEdate, Constants.JF_SL_END_DATE_CPY), 
-																		feeEdate, "", 0, cpyId, 0, "", "",tzsName,yearNo_1,"",0);
+																		feeEdate, "", 0, cpyId, 0, "", "",tzsName,yearNo_1,"",0,"","","");
 															}
 														}
 													}

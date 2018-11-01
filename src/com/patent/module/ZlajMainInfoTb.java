@@ -40,6 +40,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private Integer ajFaId;
 	private Integer checkUserId;
 	private Integer zxUserId;
+	private Integer cusCheckUserId;
 	private Integer tjUserId;
 	private Integer tzsUserId;
 	private Integer feeUserId;
@@ -70,7 +71,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajFmrId, String ajLxrId, String jsLxrId,Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, String ajStatusChi,Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
-			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,
+			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer ajAddUserId) {
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
@@ -102,6 +103,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajAddDate = ajAddDate;
 		this.checkUserId = checkUserId;
 		this.zxUserId = zxUserId;
+		this.cusCheckUserId = cusCheckUserId;
 		this.tjUserId = tjUserId;
 		this.tzsUserId = tzsUserId;
 		this.feeUserId = feeUserId;
@@ -117,7 +119,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajFmrId, String ajLxrId, String jsLxrId,Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, String ajStatusChi,Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
-			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,
+			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer ajAddUserId) {
 		this.id = id;
 		this.cpyInfoTb = cpyInfoTb;
@@ -150,6 +152,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajAddDate = ajAddDate;
 		this.checkUserId = checkUserId;
 		this.zxUserId = zxUserId;
+		this.cusCheckUserId = cusCheckUserId;
 		this.tjUserId = tjUserId;
 		this.tzsUserId = tzsUserId;
 		this.feeUserId = feeUserId;
@@ -495,6 +498,14 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	public void setJsLxrId(String jsLxrId) {
 		this.jsLxrId = jsLxrId;
+	}
+
+	public Integer getCusCheckUserId() {
+		return cusCheckUserId;
+	}
+
+	public void setCusCheckUserId(Integer cusCheckUserId) {
+		this.cusCheckUserId = cusCheckUserId;
 	}
 
 

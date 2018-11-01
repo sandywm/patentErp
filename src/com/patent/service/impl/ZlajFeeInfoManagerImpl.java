@@ -96,8 +96,9 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 	@Override
 	public Integer addZLFee(Integer zlId, Integer appUserId, Integer geeTypeId,
 			Double feePrice, Double feeRate,String feeEndDateCpy, String feeEndDateGf,
-			String feeRemark, Integer feeStatus, Integer cpyId,
-			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus)
+			String feeRemark, Integer feeStatus, Integer cpyId,Integer djStatus, String feeJnDate, 
+			String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus,
+			String backDate,String feeBatchNo,String bankSerialNo)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -110,7 +111,8 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			tran = sess.beginTransaction();
 			ZlajFeeInfoTb zlFee = new ZlajFeeInfoTb(ftDao.getTypeEntityById(sess, geeTypeId), uDao.get(sess, appUserId),
 					cDao.get(sess, cpyId), zlDao.get(sess, zlId), feePrice, feeRate,feeEndDateCpy,
-					feeEndDateGf, feeRemark, feeStatus,djStatus, feeJnDate, feeUpZd,tzsArea,yearFeeNo,feeRange,addStatus);
+					feeEndDateGf, feeRemark, feeStatus,djStatus, feeJnDate, feeUpZd,tzsArea,yearFeeNo,feeRange,addStatus,
+					backDate,feeBatchNo,bankSerialNo);
 			fDao.save(sess, zlFee);
 			tran.commit();
 			return zlFee.getId();
@@ -191,6 +193,23 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据费用名称获取费用类型信息列表时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<ZlajFeeInfoTb> listAllFeeByZlId(Integer zlId, Integer cpyId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fDao.findAllFeeByZlId(sess, zlId, cpyId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定代理机构下指定专利的所有费用（按照官方期限升序排列）时出现异常");
 		} finally{
 			HibernateUtil.closeSession();
 		}

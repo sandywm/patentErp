@@ -25,7 +25,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,String ajSqrName,
 			String ajFmrId, String ajLxrId, String jsLxrId,Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId, Integer checkUserId,Integer zxUserId,
+			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId, Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId)
 			throws WEBException {
 		// TODO Auto-generated method stub
@@ -36,7 +36,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			tran = sess.beginTransaction();
 			ZlajMainInfoTb zl = new ZlajMainInfoTb(cDao.get(sess, cpyId), ajNo, ajNoQt, ajNoGf,
 					ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, ajYxqDetail,
-					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, ajStatusChi, 0,0,pubZlId,"","","",CurrentTime.getStringDate(),checkUserId,zxUserId,
+					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, ajStatusChi, 0,0,pubZlId,"","","",CurrentTime.getStringDate(),checkUserId,zxUserId,cusCheckUserId,
 					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId);
 			zlDao.save(sess, zl);
 			tran.commit();
@@ -250,7 +250,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 
 	@Override
 	public boolean updateOperatorUserInfoByZlId(Integer zlId,
-			Integer checkUserId, Integer zxUserId, Integer tjUserId,
+			Integer checkUserId, Integer zxUserId, Integer cusCheckUserId,Integer tjUserId,
 			Integer tzsUserId, Integer feeUserId, Integer bzUserId,
 			Integer bzshUserId, Integer bhUserId) throws WEBException {
 		// TODO Auto-generated method stub
@@ -265,6 +265,9 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 				}
 				if(zxUserId >= 0){
 					zl.setZxUserId(zxUserId);
+				}
+				if(cusCheckUserId >= 0){
+					zl.setCusCheckUserId(cusCheckUserId);
 				}
 				if(tjUserId >= 0){
 					zl.setTjUserId(tjUserId);

@@ -93,4 +93,16 @@ public interface ZlajFeeInfoDao {
 	 * @return
 	 */
 	List<ZlajFeeInfoTb> findYearFeeInfoByOpt(Session sess);
+	
+	/**
+	 * 获取指定代理机构下指定专利的所有费用（按照官方期限升序排列）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-10-30 上午08:48:15
+	 * @param sess
+	 * @param zlId 专利编号
+	 * @param cpyId 代理机构编号
+	 * @return
+	 */
+	List<ZlajFeeInfoTb> findAllFeeByZlId(Session sess,Integer zlId,Integer cpyId);
 }

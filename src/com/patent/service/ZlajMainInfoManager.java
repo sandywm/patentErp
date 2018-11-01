@@ -37,6 +37,7 @@ public interface ZlajMainInfoManager {
 	 * @param checkUserId 审查人员编号
 	 * @param cpyId 代理机构编号
 	 * @param zxUserId 撰写人员编号
+	 * @param cusCheckUserId 客户确认人员
 	 * @param tjUserId 定稿提交人员
 	 * @param tzsUserId 通知书导入人员
 	 * @param feeUserId 费用催缴人员
@@ -51,7 +52,7 @@ public interface ZlajMainInfoManager {
 			String ajTitle, String ajType, String ajFieldId, String ajSqrId,String ajSqrName,
 			String ajFmrId, String ajLxrId, String jsLxrId,Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
-			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId,Integer checkUserId,Integer zxUserId,
+			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId) throws WEBException;
 	
 	/**
@@ -204,6 +205,7 @@ public interface ZlajMainInfoManager {
 	 * @param zlId 专利编号
 	 * @param checkUserId 审查人员编号（-1不修改）
 	 * @param zxUserId 撰写人员编号（-1不修改）
+	 * @param cusCheckUserId 客户确认人员（-1不修改）
 	 * @param tjUserId 定稿提交人员（-1不修改）
 	 * @param tzsUserId 通知书导入人员（-1不修改）
 	 * @param feeUserId 费用催缴人员（-1不修改）
@@ -213,7 +215,7 @@ public interface ZlajMainInfoManager {
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateOperatorUserInfoByZlId(Integer zlId,Integer checkUserId,Integer zxUserId,
+	boolean updateOperatorUserInfoByZlId(Integer zlId,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId) throws WEBException;
 	
 	/**

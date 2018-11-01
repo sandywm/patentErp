@@ -130,6 +130,11 @@
                 <comment>案件撰写人员（没有就为0）</comment>
             </column>
         </property>
+        <property name="cusCheckUserId" type="java.lang.Integer">
+            <column name="cus_check_user_id">
+                <comment>客户确认人员（没有就为0）</comment>
+            </column>
+        </property>
         <property name="tjUserId" type="java.lang.Integer">
             <column name="tj_user_id">
                 <comment>定稿提交人员（没有就为0）</comment>

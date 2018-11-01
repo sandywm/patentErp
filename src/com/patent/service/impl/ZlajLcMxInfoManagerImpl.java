@@ -22,7 +22,7 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 	public Integer addLcMx(Integer lcId, Integer fzUserId, String lcMxName,
 			Double lcMxNo, String lcMxSDate, String lcMxEDate,
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,
-			String lcMxUpSize, Double lcMxFee, String lcMxRemark) throws WEBException {
+			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
@@ -31,7 +31,7 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 			tran = sess.beginTransaction();
 			ZlajLcMxInfoTb mxInfo = new ZlajLcMxInfoTb(fzUserId, lcDao.get(sess, lcId),
 					lcMxName, lcMxNo, lcMxSDate, lcMxEDate,lcMxUpFile, lcMxUpUserId, lcMxUpDate,
-					lcMxUpSize, lcMxFee, lcMxRemark);
+					lcMxUpSize, lcMxFee, lcMxRemark,lcPjScore);
 			mxDao.save(sess, mxInfo);
 			tran.commit();
 			return mxInfo.getId();
@@ -46,7 +46,7 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 
 	@Override
 	public boolean updateEdateById(Integer id,Integer fzUserId,Integer lcMxUpUserId,String lcMxUpFile,
-			String lcMxUpDate,String lcMxUpSize,String eDate, String lcMxRemark)
+			String lcMxUpDate,String lcMxUpSize,String eDate, String lcMxRemark,Integer lcPjScore)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -75,6 +75,9 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 				}
 				if(!lcMxRemark.equals("")){
 					mx.setLcMxRemark(lcMxRemark);
+				}
+				if(!lcPjScore.equals(-1)){
+					mx.setLcPjScore(lcPjScore);
 				}
 				mxDao.update(sess, mx);
 				tran.commit();
