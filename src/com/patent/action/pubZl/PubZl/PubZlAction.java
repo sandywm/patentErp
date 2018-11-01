@@ -75,6 +75,16 @@ public class PubZlAction extends DispatchAction {
 	}
 	
 	/**
+	 * 获取session中的用户角色名称
+	 * @param request
+	 * @return
+	 */
+	private String getLoginRoleName(HttpServletRequest request){
+        String roleName = (String)request.getSession(false).getAttribute(Constants.LOGIN_USER_ROLE_NAME);
+        return roleName;
+	}
+	
+	/**
 	 * 封装json
 	*  @author  Administrator
 	*  @ModifiedBy  
@@ -966,6 +976,39 @@ public class PubZlAction extends DispatchAction {
 						}
 					}
 				}
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 超管审核申请人发布的专利任务
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-1 下午04:46:34
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward checkZlStatus(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
+		String loginRoleName = this.getLoginRoleName(request);
+		Map<String,String> map = new HashMap<String,String>();
+		String msg = "noAbility";
+		if(this.getLoginType(request).equals("spUser")){
+			if(loginRoleName.equals("super") || loginRoleName.equals("check")){//超管或者审核人员获取所有模块列表
+				Integer pubId = CommonTools.getFinalInteger("pubId", request);
+				Integer zlCheckStatus = CommonTools.getFinalInteger("zlCheckStatus", request);
+				String zlCheckRemark = Transcode.unescape_new1("zlCheckRemark", request);
+				pzm.updateTaskCheckInfo(pubId, zlCheckStatus, zlCheckRemark);
+				msg = "success";
 			}
 		}
 		map.put("result", msg);
