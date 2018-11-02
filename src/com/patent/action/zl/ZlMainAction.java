@@ -2372,7 +2372,6 @@ public class ZlMainAction extends DispatchAction {
 			}
 			if(abilityFlag){
 				Integer zlId = CommonTools.getFinalInteger("zlId", request);//（公共参数）
-				Double ajStatus = CommonTools.getFinalDouble("ajStatus", request);//传递过来的案件流程号，目的是和当前实时获取的案件流程号进行对比，引起同时操作（公共参数）
 				Integer currUserId = this.getLoginUserId(request);
 				CpyUserInfo user = cum.getEntityById(currUserId);
 				if(user != null && zlId > 0){
@@ -2391,18 +2390,10 @@ public class ZlMainAction extends DispatchAction {
 									String cpyDate = lcList.get(0).getLcCpyDate();
 									if(lcmx.getLcMxEDate().equals("")){
 										if(currUserId.equals(lcmx.getLcFzUserId())){
-											if(ajStatus.equals(lcNo)){
-												msg = "success";
-											}else{
-												msg = "lcDiff";//流程已发生变化，请刷新后重试!
-											}
+											msg = "success";
 										}else{
 											if(roleName.equals("管理员")){//管理员可以操作任何环节
-												if(ajStatus.equals(lcNo)){
-													msg = "success";
-												}else{
-													msg = "lcDiff";//流程已发生变化，请刷新后重试!
-												}
+												msg = "success";
 											}
 										}
 										if(msg.equals("success")){
@@ -2488,7 +2479,7 @@ public class ZlMainAction extends DispatchAction {
 												Integer cusCheckStatus = CommonTools.getFinalInteger("cusCheckStatus",request);//客户确认状态（0：未通过，1：已通过）
 												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//撰写附件（参数）
 												mxm.updateEdateById(lcMxId, currUserId, currUserId, upZxFile, currDate, "", currDate, taskRemark,-1);
-												if(!upZxFile.equals("")){
+												if(!upZxFile.equals("")){//上传文件不为空
 													String[] fjNameArr = upZxFile.split(",");
 													for(Integer i = 0 ; i < fjNameArr.length ; i++){
 														String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));

@@ -478,6 +478,9 @@ public class PubZlAction extends DispatchAction {
 					}
 					
 					boolean flag = pzm.updateBasicInfoById(pubId, zlTitle, zlContent, zlType, zlUpCl);
+					if(zl.getZlCheckStatus().equals(2)){//审核未通过的，点击保存后变成未审核
+						pzm.updateTaskCheckInfo(pubId, 0, "");
+					}
 					if(flag){
 						msg = "success";
 					}else{
