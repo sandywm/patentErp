@@ -551,11 +551,16 @@ body{
 .layui-table-page>div{
 	text-align:right;
 }
+.tabNavTit{
+	margin-bottom:10px;
+	z-index:10;
+}
 .layui-extend-bangzhu{
 	font-size:18px;
-	position:absolute;
-	left:415px;
-	top:10px;
+	/*position:absolute;
+	right:-10px;
+	top:0px;*/
+	float:left;
 	z-index:10;
 	cursor:pointer;
 	color:#009688;

@@ -53,12 +53,37 @@ body{
 	color:#F47837;
 }
 /* 待领取 */
+.notCheckStatus,
+.hasCheckStatus,
+.noPasCheckStatus,
+.verifyTxt p span{
+	width:8px;
+	height:8px;
+	border-radius:50%;
+	position:absolute;
+}
+.notCheckStatus,
+.hasCheckStatus,
+.noPasCheckStatus{
+	left:5px;
+	top:10px;
+	cursor:pointer;
+}
+.notCheckStatus{
+	background:#c2c2c2;
+}
+.hasCheckStatus{
+	background:#5FB878;
+}
+.noPasCheckStatus{
+	background:#FF5722;
+}
 .waitReceive{
 	color:#FF5722;
 	margin-right:5px;
 }
 .hasReceive{
-	color:#009688;
+	color:#01AAED;
 	margin-right:5px;
 }
 /* 查看任务详情 代理机构 平台用户下使用 */
@@ -210,4 +235,78 @@ body{
 }
 .closeBtns:hover i{
 	color:red;
+}
+.verifyTxt{
+	height:100%;
+	position:absolute;
+	left:310px;
+	top:0px;
+	z-index:100;
+	opacity:.8;
+	display:none;
+}
+.verifyTxt p{
+	float:left;
+	margin-right:15px;
+	position:relative;
+	padding-left:13px;
+	color:#999;
+}
+.verifyTxt p span{
+	left:0;
+	top:16px;
+	background:pink;
+}
+.verifyTxt p span.noVerifySpan{
+	background:#c2c2c2;
+}
+.verifyTxt p span.pasVerifySpan{
+	background:#5FB878;
+}
+.verifyTxt p span.noPasVerifySpan{
+	background:#FF5722;
+}
+/* 审核不通过备注 */
+.verifyBox{
+	width:90%;
+	margin:0 auto;
+}
+.verifyBox textarea{
+	height:100px;
+	resize:none;
+	margin-top:10px;
+	display:none;
+}
+/* 未通过图标 */
+.notPassIcon{
+	position:absolute;
+	right:100px;
+	top:25px;
+	transform:rotate(40deg);
+}
+.notPassTxt{
+	width:90%;
+	color:#FF5722;
+	margin-top:9px;
+	float:left;
+}
+.notPassText{
+	color:#FF5722;
+}
+.notPassIcon i{
+	font-size:100px;
+	color:#d81e06;
+}
+.shenheBtn{
+	text-align:center;
+}
+.shenheBtn button{
+	display:inline-block;
+	position:relative;
+	padding:0 26px;
+	text-indent:20px;
+}
+.shenheBtn button i{
+	position:absolute;
+	left:4px;
 }

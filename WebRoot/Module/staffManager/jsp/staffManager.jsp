@@ -203,7 +203,7 @@
 						limits:[10,20,30,40],
 						text: {none : '暂无相关数据'},
 						cols : [[
-							{field : 'userId', title: 'ID', width:60, fixed: 'left' , align:'center'},
+							{field : '', title: '序号', width:60, type:'numbers',fixed: 'left' , align:'center'},
 							{field : 'name', title: '姓名', width:80 , align:'center',fixed: 'left' },
 							{field : 'account', title: '用户名', width:80 , align:'center',style:'color:#01AAED;'},
 							{field : 'namePy', title: '用户拼音', width:100 , align:'center'},

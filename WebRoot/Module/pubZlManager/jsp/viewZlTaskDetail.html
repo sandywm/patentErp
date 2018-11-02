@@ -103,6 +103,56 @@
 			   				});
 						});
 					});
+					//审核
+					$('.verifyBtn').on('click',function(){
+						var pubId = $(this).attr('pubId'),taskTit = $(this).attr('taskTit');
+						var strHtml = '';
+						strHtml += '<div class="verifyBox layui-form"><input id="staInp" type="hidden" value=""/>';
+						strHtml += '<input type="radio" name="verifyStaInp" lay-filter="verifyStaFilter" value="1" title="通过"/>';
+						strHtml += '<input type="radio" name="verifyStaInp" lay-filter="verifyStaFilter" value="2" title="不通过"/>';
+						strHtml += '<textarea placeholder="请输入不通过原因" class="layui-textarea noPasTxtarea" maxlength="80"></textarea>';
+						strHtml += '</div>';
+						layer.open({
+	        				title : '审核专利[' + taskTit + ']',
+	        				type: 1,
+	        				area:['400px','260px'],
+	        				skin: 'addEditRole', //样式类名
+	        				closeBtn: 0, //不显示关闭按钮
+	        			  	shadeClose: false, //开启遮罩关闭
+	        			  	content: strHtml,
+	        			  	btn : ['确定','取消'],
+	        			  	btnAlign:'c',
+	        			  	yes: function(index, layero){
+	        			  		if($('#staInp').val() == ''){
+	        			  			layer.msg('请选择通过或不通过其中一种', {icon:5,anim:6,time:1500});
+	        			  			return;
+	        			  		}else if($('.noPasTxtarea').val() == '' && $('#staInp').val() == 2){
+	        			  			layer.msg('请输入不通过原因', {icon:5,anim:6,time:1500});
+	        			  			return;
+	        			  		}
+	        			  		$.ajax({
+	          						type:"post",
+	        				        async:false,
+	        				        dataType:"json",
+	        				        data : {pubId : pubId,zlCheckStatus:$('#staInp').val(),zlCheckRemark:escape($('.noPasTxtarea').val())},
+	        				        url:'/pubZl.do?action=checkZlStatus',
+	        				        success:function (json){
+	        				        	if(json['result'] == 'success'){
+	        				        		var parentIndex= parent.layer.getFrameIndex(window.name);
+	        				        		layer.msg('审核完成',{icon:1,time:1000},function(){
+	    		   			        			layer.close(index);
+	    		   			        			parent.viewZlFlag = true;
+	    		   			        			parent.layer.close(parentIndex);
+	    					        		});
+	        				        	}else if(json['result'] == 'noAbility'){
+	        				        		layer.msg('抱歉，您暂无审核专利任务的权限', {icon:5,anim:6,time:1500});
+	        				        	}
+	        				        }
+	          					});
+	        				}
+	        			});
+						form.render();
+					});
 					//下载附件
 					$('.downloadBtn').on('click',function(){
 						var downFilePath = $(this).attr('downFilePath');
@@ -122,11 +172,17 @@
 				},
 				//渲染任务详情结构
 				renderViewPubZlDetail : function(json){
+					console.log(json)
 					var strHtml = '',receiveHisHtml='';
 					if(outDateFlag){
 						strHtml += '<li class="taskTitDetail">'+ json.zlTitle +'<span>(您的会员已到期,部分详情将无法查看)<span></li>';
 					}else{
 						strHtml += '<li class="taskTitDetail">'+ json.zlTitle +'</li>';
+					}
+					if(json.zlCheckStatus == 2){
+						//表示审核未通过
+						strHtml += '<span class="notPassIcon"><i class="iconfont layui-extend-weitongguo"></i></span>';
+						strHtml += '<li class="specHeiLi clearfix"><div class="innerPar clearfix"><p>审核意见</p><p class="notPassText"><span>'+ json.zlCheckRemark +'</span></p></div></li>';
 					}
 					strHtml += '<li><div class="innerPar"><p>发布者</p><p>'+ json.pubInfo +'</p></div>';
 					strHtml += '<div class="innerPar"><p>发布日期</p><p>'+ json.pubDate +'</p></div></li>';
@@ -159,16 +215,31 @@
 					strHtml += '<li><div class="innerPar"><p>领取人</p><p>'+ json.lqrName +'</p></div>';
 					strHtml += '<div class="innerPar"><p>领取时间</p><p>'+ json.lqDate +'</p></div></li>';
 					strHtml += '<li><div class="innerPar" style="width:100%;border-right:none;"><p>领取人所属公司</p><p>'+ json.lqrCpyName +'</p></div></li>';
-					$('#viewZlTaskUl').html(strHtml);
-					receiveHisHtml += '<blockquote class="layui-elem-quote">撰写人领取/撤销记录</blockquote>';
-					receiveHisHtml += '<ul class="receiveHisUl">';
-					for(var i=0;i<json.zlCzInfo.length;i++){
-						receiveHisHtml += '<li><span>'+ json.zlCzInfo[i].czDetail +'<span></li>';
+					if(json.zlCheckStatus == 0){
+						//表示未审核，增加审核按钮
+						strHtml += '<li style="padding:10px 0;"><div class="innerPar shenheBtn" style="width:100%;border-right:none;"><button class="layui-btn verifyBtn" pubId="'+ json.zlId +'" taskTit="'+ json.zlTitle +'"><i class="layui-icon layui-icon-vercode"></i>审核</button></div></li>';
 					}
-					receiveHisHtml += '<ul>';
-					$('#receiveHisWrap').html(receiveHisHtml);
+					$('#viewZlTaskUl').html(strHtml);
+					if(json.zlCheckStatus == 1){
+						receiveHisHtml += '<blockquote class="layui-elem-quote">撰写人领取/撤销记录</blockquote>';
+						receiveHisHtml += '<ul class="receiveHisUl">';
+						for(var i=0;i<json.zlCzInfo.length;i++){
+							receiveHisHtml += '<li><span>'+ json.zlCzInfo[i].czDetail +'<span></li>';
+						}
+						receiveHisHtml += '<ul>';
+						$('#receiveHisWrap').html(receiveHisHtml);
+					}
 				}
 			};
+			form.on('radio(verifyStaFilter)', function(data){
+				if(data.value == 2){
+					//不通过
+					$('.noPasTxtarea').show();
+				}else{
+					$('.noPasTxtarea').hide();
+				}
+				$('#staInp').val(data.value);
+			});  
 			$(function(){
 				page.init();
 			});

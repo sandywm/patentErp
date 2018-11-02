@@ -14,31 +14,30 @@
 		<div class="searchPart layui-form">
 			<div class="innerSearch widSearch1">
 				<input id="zlTypeInp" type="hidden" value=""/>
-				<select id="zlTypeListSel" lay-filter="zlTypeListSel">
-				 	<option value="">请选择专业领域</option>
-				 	<option value="fm">发明</option>
-				 	<option value="syxx">实用新型</option>
-				 	<option value="wg">外观</option>
-				</select> 
+				<div id="jsFieldWrap"></div>
 			</div>
 			<div class="innerSearch widSearch2">
-				<input id="lqZlTitleInp" type="text" placeholder="请输入领取专利标题" class="layui-input"/>
+				<input id="lqZlTitleInp" type="text" placeholder="请输入员工姓名" class="layui-input"/>
 			</div>
 			<div class="innerSearch">
 				<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search
  "></i></button>
 			</div>
 		</div>
-		<ul class="lcFpTit">
-			<li class="oneWidLi">&nbsp;</li>
-			<li class="twoWidLi">员工姓名</li>
-			<li class="twoWidLi">员工性别</li>
-			<li class="threeWidLi">擅长领域</li>
-			<li class="twoWidLi">撰写数量</li>
-			<li class="twoWidLi">员工等级</li>
-		</ul>
 		<div id="lcFpTaskPar" class="lcFpCon">
-			<ul id="lcFpSon"></ul>
+			<table id="lcFpSon" class="layui-table" lay-filter="userInfoTable"></table>
+			<script type="text/html" id="radioTpl">
+  				<label class="labelMod">
+					<span class="likeCheckSpan hasBorRad"><b class="layui-icon layui-icon-ok" style="margin-left:0px;"></b></span>
+				</label>
+			</script>
+			<script type="text/html" id="sexTpl">
+  				{{#  if(d.userSex === '女'){ }}
+    				<span style="color: #F581B1;">{{ d.sex = "女" }}</span>
+  				{{#  } else { }}
+    				{{ d.userSex = "男" }}
+  				{{#  } }}
+			</script>
 		</div>
 	</div>
 	<div class="botSaveBox">
@@ -46,26 +45,46 @@
 	</div>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		layui.use(['layer','form','jquery'],function(){
+		var globalTypeUser = parent.globalTypeUser;
+		layui.use(['layer','form','jquery','table'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
-				form = layui.form;
+				form = layui.form,
+				table = layui.table;
 			var page = {
+				data : {
+					userId : ''
+				},
 				init : function(){
 					this.onLoad();
 					this.bindEvent();
 				},
 				bindEvent : function(){
-					
+					var _this = this;
+					//查询
+					$('#queryBtn').on('click',function(){
+						_this.loadStaffList('queryLoad');
+					});
+					$('.botSaveBox').on('click',function(){
+						var index= parent.layer.getFrameIndex(window.name);
+						if(_this.data.userId == ''){
+							layer.msg('请选择员工！', {icon:5,anim:6,time:1500});
+							return;
+						}
+						parent.layer.close(index);
+					});
 				},
 				onLoad : function(){
 					this.loadStaffList('initLoad');
 				},
 				loadStaffList : function(opts){
 					var _this = this,noData='<div class="noData" style="display:block;"><i class="iconfont layui-extend-noData"></i><p>暂无员工<p></div>';
-					//layer.load('1');
+					layer.load('1');
 					if(opts == 'initLoad'){
 						var field = {userName:'',jsId:'',opt:0,actNameEng:'dealZl'};
+					}else{
+						var jsId = $('#jsFieldInp').val(),userName=$.trim($('#lqZlTitleInp').val());
+						var field = {userName:escape(userName),jsId:jsId,opt:0,actNameEng:'dealZl'};
 					}
 					$.ajax({
   						type:'post',
@@ -75,11 +94,19 @@
 				        url:'/user.do?action=getValidUserData',
 				        success:function (json){
 				        	layer.closeAll('loading');
-				        	console.log(json)
+				        	if(opts != 'queryLoad'){
+				        		if(json['jsResult'] == 'success'){
+					        		$('#jsFieldWrap').show();
+					        		var listJsData = json.jsInfo;
+					        		_this.renderJsField(listJsData);
+					        	}else if(json['jsResult'] == 'noInfo'){
+					        		$('#jsFieldWrap').hide();
+					        	}
+				        	}
 				        	if(json['userResult'] == 'success'){
 				        		$('.botSaveBox').show();
 				        		var listUserData = json.userInfo; 
-				        		_this.renderLqZlTaskList(listData);
+				        		_this.renderLqZlTaskList(listUserData);
 				        	}else if(json['userResult'] == 'noInfo'){
 				        		$('.lcFpCon ul').html(noData);
 				        		$('.botSaveBox').hide();
@@ -91,8 +118,89 @@
 				        	}
 				        }
   					});
+				},
+				switchToArray : function(tmpArray){
+					var strHtml = '';
+					for(var i=0;i<tmpArray.length;i++){
+						strHtml += '<span class="blockSpan">'+ tmpArray[i] +'</span>';
+					}
+					return strHtml;
+				},
+				//获取技术领域
+				renderJsField : function(listJsData){
+					var options = '';
+					options += '<input id="jsFieldInp" type="hidden"/>';
+					options += '<select id="jsFieldFilter" lay-filter="jsFieldFilter">';
+					options += '<option value="">请选择技术领域</option>';
+					for(var i=0,iLen=listJsData.length;i<iLen;i++){
+						options += '<option value="'+ listJsData[i].jsId +'">'+ listJsData[i].jsName +'</option>';
+					}
+					options += '</select>';
+					$('#jsFieldWrap').html(options);
+					form.render();
+				},
+				renderLqZlTaskList : function(listUserData){
+					table.render({
+	    				elem: '#lcFpSon',
+						height: 'full-120',
+						data : listUserData,
+						even : true,
+						cellMinWidth : 100,
+						cols : [[
+							{field : '', title: '', align:'center',width:70,templet:'#radioTpl'},
+							{field : 'userName', title: '员工姓名', align:'center',width:110},
+							{field : 'userSex', title: '性别', align:'center',width:110,templet: '#sexTpl'},
+							{field : 'scFiledName', title:'擅长领域', align:'center',width:205,templet : function(d){
+								if(d.scFiledName != ''){
+									return page.switchToArray(d.scFiledName.split(','));
+								}else{
+									return '';
+								}
+							}},
+							{field : 'userRole', title: '绑定角色', align:'center',width:205,templet : function(d){
+								if(d.userRole != ''){
+									return page.switchToArray(d.userRole.split(','));
+								}else{
+									return '';
+								}
+							}},
+							{field : 'zxNum', title: '撰写数量', align:'center',width:110},
+							{field : 'userExpChi', title: '员工等级', align:'center',width:110}
+							
+						]]
+	    			});
 				}
 			};
+			//选择技术领域form
+			form.on('select(jsFieldFilter)', function(data){
+				var value = data.value;
+				value == '' ? $('#jsFieldInp').val('') : $('#jsFieldInp').val(value);
+			});
+			table.on('row(userInfoTable)', function(obj){
+				var data = obj.data;			   
+			    $('.likeCheckSpan').removeClass('hasActive');
+			    $(this).find('.likeCheckSpan').addClass('hasActive');
+			    obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+				page.data.userId = data.userId;
+				var strHtml = '<p id="'+ globalTypeUser +'_con" userId="'+ data.userId +'"><i class="layui-icon layui-icon-username"></i>'+  data.userName +'</p>';
+				if(globalTypeUser == 'addZxUser'){//增加专利撰写人员
+					parent.$('#zxPeopleBox').html(strHtml);
+				}else if(globalTypeUser == 'addZlShUser'){//专利审查人员
+					parent.$('#zlShBox').html(strHtml);
+				}else if(globalTypeUser == 'addDingGaoUser'){//定稿提交人员
+					parent.$('#dingGaoBox').html(strHtml);
+				}else if(globalTypeUser == 'addTongZhiShuUser'){//导入通知书人员
+					parent.$('#tzsBox').html(strHtml);
+				}else if(globalTypeUser == 'addFeeUser'){//费用催缴人员
+					parent.$('#feiyongBox').html(strHtml);
+				}else if(globalTypeUser == 'addBuZhengUser'){//专利补正人员
+					parent.$('#buzhengBox').html(strHtml);
+				}else if(globalTypeUser == 'addBuzhengShUser'){//补正审核人员
+					parent.$('#shBzBox').html(strHtml);
+				}else if(globalTypeUser == 'addZlBhUser'){//专利驳回人员
+					parent.$('#bohuiBox').html(strHtml);
+				}
+			});
 			$(function(){
 				page.init();
 			});
