@@ -731,6 +731,7 @@ public class ZlMainAction extends DispatchAction {
 						Integer bzUserId = zl.getBzUserId();
 						Integer bzshUserId = zl.getBzshUserId();
 						Integer bhUserId = zl.getBhUserId();
+						Integer cusCheckUserId = zl.getCusCheckUserId();
 						map.put("ajStatus", zl.getAjStatus());
 						map.put("checkUserId", checkUserId);
 						if(checkUserId > 0){
@@ -753,6 +754,17 @@ public class ZlMainAction extends DispatchAction {
 							}
 						}else{
 							map.put("zxUserName", "");
+						}
+						map.put("cusCheckUserId", cusCheckUserId);
+						if(cusCheckUserId > 0){
+							CpyUserInfo cUser = cum.getEntityById(cusCheckUserId);
+							if(cUser != null){
+								map.put("cusCheckUserName", cUser.getUserName());
+							}else{
+								map.put("cusCheckUserName", "");
+							}
+						}else{
+							map.put("cusCheckUserName", "");
 						}
 						map.put("tjUserId", tjUserId);
 						if(tjUserId > 0){
@@ -810,7 +822,7 @@ public class ZlMainAction extends DispatchAction {
 							map.put("bzshUserName", "");
 						}
 						map.put("bhUserId", bhUserId);
-						if(bhUserId > 0){
+						if(tjUserId > 0){
 							CpyUserInfo cUser = cum.getEntityById(bhUserId);
 							if(cUser != null){
 								map.put("bhUserName", cUser.getUserName());
