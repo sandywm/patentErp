@@ -310,7 +310,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			tran = sess.beginTransaction();
 			ZlajMainInfoTb zl = zlDao.get(sess, id);
 			if(zl != null){
-				if(Integer.parseInt(zlStatus) >= 0){
+				if(Double.parseDouble(zlStatus) >= 0){
 					zl.setAjStatus(zlStatus);
 					zl.setAjStatusChi(ajStatusChi);
 					zlDao.update(sess, zl);
