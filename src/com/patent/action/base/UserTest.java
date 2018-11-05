@@ -35,11 +35,12 @@ public class UserTest implements Comparable<UserTest>{
 	@Override
 	public int compareTo(UserTest user) {
 		// TODO Auto-generated method stub
-		int i = Integer.parseInt(this.getZlNo()) - Integer.parseInt(user.getZlNo());//先按照专利号排序
-		if(i == 0){
-			return Integer.parseInt(this.getFwNo()) - Integer.parseInt(user.getFwNo());//如果专利号相等，再按照发文序号排序
-		}
-		return i;
+		long i = Long.parseLong(this.getZlNo()) -Long.parseLong(user.getZlNo());//先按照专利号排序
+//		if(i == 0){
+//			return Integer.parseInt(this.getFwNo()) - Integer.parseInt(user.getFwNo());//如果专利号相等，再按照发文序号排序
+//		}
+		System.out.println(this.getZlNo() + "  " + user.getZlNo() + "    " + i);
+		return (int)i;
 	}
 	
 	public List<UserTest> getList(String fwNo,String zlNo){
@@ -51,9 +52,9 @@ public class UserTest implements Comparable<UserTest>{
 	public static void main(String[] args) {  
 		
 		UserTest ut = new UserTest();
-		List<UserTest> u1 = ut.getList("20170508", "112233");
-		List<UserTest> u2 = ut.getList("20170507", "112233");
-		List<UserTest> u3 = ut.getList("20170507", "112234");
+		List<UserTest> u1 = ut.getList("20170508", "2017081000077760");
+		List<UserTest> u2 = ut.getList("20170507", "2017051100436820");
+		List<UserTest> u3 = ut.getList("20170507", "2017051100436840");
 		List<UserTest> users = new ArrayList<UserTest>(); 
 		users.addAll(u1);
 		users.addAll(u2);

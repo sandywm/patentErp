@@ -9,11 +9,13 @@ import com.patent.dao.CpyInfoDao;
 import com.patent.dao.CpyUserInfoDao;
 import com.patent.dao.FeeTypeInfoDao;
 import com.patent.dao.ZlajFeeInfoDao;
+import com.patent.dao.ZlajFeeSubInfoDao;
 import com.patent.dao.ZlajMainInfoDao;
 import com.patent.exception.WEBException;
 import com.patent.factory.DaoFactory;
 import com.patent.module.FeeTypeInfoTb;
 import com.patent.module.ZlajFeeInfoTb;
+import com.patent.module.ZlajFeeSubInfoTb;
 import com.patent.service.ZlajFeeInfoManager;
 import com.patent.tools.HibernateUtil;
 import com.patent.util.Constants;
@@ -22,6 +24,7 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 
 	FeeTypeInfoDao ftDao = null;
 	ZlajFeeInfoDao fDao = null;
+	ZlajFeeSubInfoDao fsDao = null;
 	CpyInfoDao cDao = null;
 	CpyUserInfoDao uDao = null;
 	ZlajMainInfoDao zlDao = null;
@@ -210,6 +213,48 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("获取指定代理机构下指定专利的所有费用（按照官方期限升序排列）时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public Integer addFeeSubInfo(String feeRange, Double latePrice,
+			Integer feeId, Integer feeTypeId, String remark)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			fsDao = (ZlajFeeSubInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_SUB_INFO);
+			ftDao = (FeeTypeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_FEE_TYPE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajFeeSubInfoTb fs = new ZlajFeeSubInfoTb(fDao.get(sess, feeId),
+					ftDao.getTypeEntityById(sess, feeTypeId), feeRange, latePrice,remark);
+			fsDao.save(sess, fs);
+			tran.commit();
+			return fs.getId();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("增加费用信息子表时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<ZlajFeeSubInfoTb> listInfoByFeeId(Integer feeId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fsDao = (ZlajFeeSubInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_SUB_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fsDao.findInfoByFeeId(sess, feeId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据费用编号获取费用子表列表时出现异常");
 		} finally{
 			HibernateUtil.closeSession();
 		}

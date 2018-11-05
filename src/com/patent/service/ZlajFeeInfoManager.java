@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import com.patent.exception.WEBException;
 import com.patent.module.FeeTypeInfoTb;
 import com.patent.module.ZlajFeeInfoTb;
+import com.patent.module.ZlajFeeSubInfoTb;
 
 public interface ZlajFeeInfoManager{
 
@@ -139,4 +140,31 @@ public interface ZlajFeeInfoManager{
 	 * @throws WEBException
 	 */
 	List<ZlajFeeInfoTb> listAllFeeByZlId(Integer zlId,Integer cpyId) throws WEBException ;
+	
+	/**
+	 * 增加费用信息子表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-3 上午09:10:25
+	 * @param feeRange 费用范围
+	 * @param latePrice 滞纳金
+	 * @param feeId 费用编号
+	 * @param feeTypeId 费用类型编号
+	 * @param remark 备注
+	 * @return
+	 * @throws WEBException
+	 */
+	Integer addFeeSubInfo(String feeRange,Double latePrice,Integer feeId,Integer feeTypeId,String remark)throws WEBException;
+	
+	
+	/**
+	 * 根据费用编号获取费用子表列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-3 上午09:11:13
+	 * @param feeId 费用编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajFeeSubInfoTb> listInfoByFeeId(Integer feeId)throws WEBException;
 }

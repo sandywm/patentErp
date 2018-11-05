@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +38,9 @@ import com.alibaba.fastjson.JSON;
 import com.patent.util.WebUrl;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
+import com.patent.json.FeeDetailJson;
+import com.patent.json.LateFeeJson;
+import com.patent.json.TzsJson;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.CustomerFmrInfoTb;
 import com.patent.module.CustomerInfoTb;
@@ -2959,12 +2963,47 @@ public class ZlMainAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String zipPath = Transcode.unescape_new1("zipPath", request);
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<Object> list_d = new ArrayList<Object>();
+		List<TzsJson> tjList = new ArrayList<TzsJson>();
+		//读取通知书
 		for(Integer i = 0 ; i < zipPath.split(",").length ; i++){
-			list_d.add(ReadZipFile.readZipFile_new("E:\\"+zipPath.split(",")[i],1,1,0));
+			tjList.addAll(ReadZipFile.readZipFile_new("E:\\"+zipPath.split(",")[i],1,1,0));
 		}
-		map.put("result", list_d);
-		this.getJsonPkg(map, response);
+		//按照发文日进行排序
+		Collections.sort(tjList);
+		//然后进行数据库操作
+		for(int j = 0; j < tjList.size(); j++){
+        	TzsJson tJson = tjList.get(j);
+        	String fwSerial = tJson.getFwSerial();//发文序号
+        	String ajNoGf = tJson.getAjNoGf();//专利/申请号
+        	String tzsName = tJson.getTzsName();//通知书
+        	String zlName = tJson.getZlName();//专利名称
+        	String fwDate = tJson.getFwDate();//发文日期
+        	String sqlName = tJson.getSqrName();//申请人
+        	String applyDate = tJson.getApplyDate();//申请日期
+        	String zlType = tJson.getZlType();//战力类型
+        	String fjApplyDate = tJson.getFjApplyDate();//费减请求日期
+        	String fjRecord = tJson.getFjRecord();//费减记录
+        	String feeDate = tJson.getFeeEdate();//缴费截止日期/补正截止日期 
+        	String fjRate = tJson.getFjRate();//费减比率 
+        	List<FeeDetailJson> fdList = tJson.getFdList();//费用明细
+        	if(fdList.size() > 0){
+        		for(Integer k = 0 ; k < fdList.size() ; k++){
+        			FeeDetailJson fdJson = fdList.get(k);
+        			System.out.println(fdJson.getFeeName()+" :"+fdJson.getFeeAmount());
+        		}
+        	}
+        	String yearNo = tJson.getYearNo();//年度数字
+        	List<LateFeeJson> lfList = tJson.getLfList();//年费滞纳金
+        	if(lfList.size() > 0){
+        		for(Integer k = 0 ; k < lfList.size() ; k++){
+        			LateFeeJson lfJson = lfList.get(k);
+        			System.out.println("缴费时间段："+lfJson.getFeeSDate()+"至"+lfJson.getFeeEDate() + " 滞纳金 " + lfJson.getLateFee());
+        		}
+        	}
+        	String tzsPath = tJson.getZipPath();//上传的压缩包位置
+		}
+//		map.put("result", list_d);
+//		this.getJsonPkg(map, response);
 		return null;
 	}
 	

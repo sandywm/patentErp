@@ -107,4 +107,5 @@ public class Constants {
 	public static final String DAO_ZLAJ_FJ_INFO = "zlaj_fj_info_Dao";
 	public static final String DAO_ZLAJ_FEE_INFO = "zlaj_fee_info_Dao";
 	public static final String DAO_FEE_TYPE_INFO = "fee_type_info_Dao";
+	public static final String DAO_ZLAJ_FEE_SUB_INFO = "zlaj_fee_sub_info_Dao";
 }

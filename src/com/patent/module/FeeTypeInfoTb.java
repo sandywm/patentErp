@@ -19,6 +19,7 @@ public class FeeTypeInfoTb implements java.io.Serializable {
 	private String feeName;
 	private String feeStatus;
 	private Set<ZlajFeeInfoTb> zlajFeeInfoTbs = new HashSet<ZlajFeeInfoTb>();
+	private Set<ZlajFeeSubInfoTb> zlajFeeSubInfoTbs = new HashSet<ZlajFeeSubInfoTb>();
 
 	// Constructors
 
@@ -71,6 +72,14 @@ public class FeeTypeInfoTb implements java.io.Serializable {
 
 	public void setZlajFeeInfoTbs(Set<ZlajFeeInfoTb> zlajFeeInfoTbs) {
 		this.zlajFeeInfoTbs = zlajFeeInfoTbs;
+	}
+
+	public Set<ZlajFeeSubInfoTb> getZlajFeeSubInfoTbs() {
+		return zlajFeeSubInfoTbs;
+	}
+
+	public void setZlajFeeSubInfoTbs(Set<ZlajFeeSubInfoTb> zlajFeeSubInfoTbs) {
+		this.zlajFeeSubInfoTbs = zlajFeeSubInfoTbs;
 	}
 
 }

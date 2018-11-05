@@ -28,5 +28,13 @@
             </key>
             <one-to-many class="com.patent.module.ZlajFeeInfoTb" />
         </set>
+        <set name="zlajFeeSubInfoTbs" inverse="true">
+            <key>
+                <column name="fee_type_id" not-null="true">
+                    <comment>费用类型</comment>
+                </column>
+            </key>
+            <one-to-many class="com.patent.module.ZlajFeeSubInfoTb" />
+        </set>
     </class>
 </hibernate-mapping>

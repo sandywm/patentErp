@@ -1,5 +1,8 @@
 package com.patent.module;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * ZlajFeeInfoTb entity. @author MyEclipse Persistence Tools
  */
@@ -33,6 +36,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	private String backDate;
 	private String feeBatchNo;
 	private String bankSerialNo;
+	private Set<ZlajFeeSubInfoTb> zlajFeeSubInfoTbs = new HashSet<ZlajFeeSubInfoTb>();
 
 	// Constructors
 
@@ -264,6 +268,14 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	public void setBankSerialNo(String bankSerialNo) {
 		this.bankSerialNo = bankSerialNo;
+	}
+
+	public Set<ZlajFeeSubInfoTb> getZlajFeeSubInfoTbs() {
+		return zlajFeeSubInfoTbs;
+	}
+
+	public void setZlajFeeSubInfoTbs(Set<ZlajFeeSubInfoTb> zlajFeeSubInfoTbs) {
+		this.zlajFeeSubInfoTbs = zlajFeeSubInfoTbs;
 	}
 
 }

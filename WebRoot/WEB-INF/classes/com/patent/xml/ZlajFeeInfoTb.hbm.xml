@@ -110,5 +110,13 @@
                 <comment>银行缴费流水号</comment>
             </column>
         </property>
+        <set name="zlajFeeSubInfoTbs" inverse="true">
+            <key>
+                <column name="fee_id" not-null="true">
+                    <comment>费用编号</comment>
+                </column>
+            </key>
+            <one-to-many class="com.patent.module.ZlajFeeSubInfoTb" />
+        </set>
     </class>
 </hibernate-mapping>

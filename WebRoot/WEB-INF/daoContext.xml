@@ -25,4 +25,5 @@
 	<dao id="zlaj_fj_info_Dao" class="com.patent.dao.impl.ZlajFjInfoDaoImpl"/>
 	<dao id="zlaj_fee_info_Dao" class="com.patent.dao.impl.ZlajFeeInfoDaoImpl"/>
 	<dao id="fee_type_info_Dao" class="com.patent.dao.impl.FeeTypeInfoDaoImpl"/>
+	<dao id="zlaj_fee_sub_info_Dao" class="com.patent.dao.impl.ZlajFeeSubInfoDaoImpl"/>
 </daoContext>
