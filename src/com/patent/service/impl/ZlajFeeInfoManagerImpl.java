@@ -265,7 +265,34 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			Double backFee, Integer backStatus, Double discountsFee)
 			throws WEBException {
 		// TODO Auto-generated method stub
-		return false;
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajFeeInfoTb zlFee = fDao.getFeeEntityById(sess, feeId);
+			if(zlFee != null){
+				zlFee.setBackDate(backDate);
+				if(backFee > 0){
+					zlFee.setBackFee(backFee);
+				}
+				if(backStatus >= 0){
+					zlFee.setBackStatus(backStatus);
+					if(backStatus.equals(1)){
+						zlFee.setDiscountsFee(discountsFee);
+					}
+				}
+				fDao.update(sess, zlFee);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改指定编号的费用代缴信息时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
 	}
 
 
