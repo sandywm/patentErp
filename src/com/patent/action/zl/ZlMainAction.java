@@ -875,6 +875,8 @@ public class ZlMainAction extends DispatchAction {
 										}else{
 											map_d.put("fzUserName", "");
 										}
+									}else{
+										map_d.put("fzUserName", "");
 									}
 									map_d.put("mxSDate", mx.getLcMxSDate());
 									map_d.put("mxEDate", mx.getLcMxEDate());
@@ -891,7 +893,7 @@ public class ZlMainAction extends DispatchAction {
 											upFile += upFileName + ",";
 											upFileSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upFileArr[i]);
 											Map<String,String> map_mx = new HashMap<String,String>();
-											map_d.put("upFileName", upFileName);
+											map_mx.put("upFileName", upFileName);
 											map_mx.put("upUserName", upUserName);
 											map_mx.put("upDate", upDate);
 											map_mx.put("upFileSize", upFileSize);
@@ -1205,6 +1207,82 @@ public class ZlMainAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
+	
+	/**
+	 * 获取指定的流程明细
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-8 上午08:36:52
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getLcMxDetail(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer lcId = CommonTools.getFinalInteger("lcId",request);
+		List<ZlajLcMxInfoTb> mxList = mxm.listDetailInfoByLcId(lcId);
+		List<Object> list_d = new ArrayList<Object>();
+		Map<String,Object> map = new HashMap<String,Object>();
+		String msg = "noInfo";
+		if(mxList.size() > 0){
+			msg = "success";
+			for(Iterator<ZlajLcMxInfoTb> it = mxList.iterator() ; it.hasNext();){
+				ZlajLcMxInfoTb mx = it.next();
+				Map<String,Object> map_d = new HashMap<String,Object>();
+				map_d.put("mxId", mx.getId());
+				map_d.put("mxName", mx.getLcMxName());
+				Integer lcFzUserId = mx.getLcFzUserId();
+				if(lcFzUserId > 0){//存在
+					CpyUserInfo user = cum.getEntityById(lcFzUserId);
+					if(user != null){
+						map_d.put("fzUserName", user.getUserName());
+					}else{
+						map_d.put("fzUserName", "");
+					}
+				}
+				map_d.put("mxSDate", mx.getLcMxSDate());
+				map_d.put("mxEDate", mx.getLcMxEDate());
+				String upFile = mx.getLcMxUpFile();
+				String upFileName = "";//文件名称
+				String upFileSize = "";//文件大小
+				if(!upFile.equals("")){
+					String[] upFileArr = upFile.split(",");
+					String upUserName = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();//上传人
+					String upDate = mx.getLcMxUpDate();//上传日期
+					List<Object> list_mx_1 = new ArrayList<Object>();
+					for(Integer i = 0 ; i < upFileArr.length ; i++){
+						upFileName = upFileArr[i].substring(upFileArr[i].lastIndexOf("\\")+1,upFileArr[i].length());
+						upFile += upFileName + ",";
+						upFileSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upFileArr[i]);
+						Map<String,String> map_mx = new HashMap<String,String>();
+						map_mx.put("upFileName", upFileName);
+						map_mx.put("upUserName", upUserName);
+						map_mx.put("upDate", upDate);
+						map_mx.put("upFileSize", upFileSize);
+						map_mx.put("downFilePath", upFileArr[i]);
+						list_mx_1.add(map_mx);
+					}
+					map_d.put("upFileDetail", list_mx_1);//附件明细（当上传文件存在时出现）
+					upFile = upFile.substring(0, upFile.length() - 1);
+				}
+				map_d.put("upFile", upFile);
+				map_d.put("mxRemark", mx.getLcMxRemark());
+				list_d.add(map_d);
+			}
+		}
+		map.put("mxInfo", list_d);
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+		
+	}
+	
 	
 	/**
 	 * 流程移交操作--针对代理机构员工开放(只有在流程分发人员分配任务后流程人员才能进行任务移交)
@@ -2961,47 +3039,94 @@ public class ZlMainAction extends DispatchAction {
 	 */
 	public ActionForward dealTzsDetail(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		String zipPath = Transcode.unescape_new1("zipPath", request);
-		Map<String,Object> map = new HashMap<String,Object>();
-		List<TzsJson> tjList = new ArrayList<TzsJson>();
-		//读取通知书
-		for(Integer i = 0 ; i < zipPath.split(",").length ; i++){
-			tjList.addAll(ReadZipFile.readZipFile_new("E:\\"+zipPath.split(",")[i],1,1,0));
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		String roleName = this.getLoginRoleName(request);
+		String zipPath = Transcode.unescape_new1("zipPath", request);//上传的通知书路径cpyUser/u_id/###.zip
+		String filePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + zipPath;
+		String lcNo = "";//当前流程号
+		boolean abilityFlag = false;
+		Integer cpyId = 0;
+		if(this.getLoginType(request).equals("cpyUser")){
+			//判断权限
+			//获取当前用户是否有修改权限
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//只有具有专利流程处理权限的员工才能进行流程处理
+			}
+			Integer currUserId = this.getLoginUserId(request);
+			CpyUserInfo user = cum.getEntityById(currUserId);
+			if(user != null){
+				cpyId = user.getCpyInfoTb().getId();
+				
+				
+				Map<String,Object> map = new HashMap<String,Object>();
+				List<TzsJson> tjList = new ArrayList<TzsJson>();
+				//读取通知书
+				for(Integer i = 0 ; i < zipPath.split(",").length ; i++){
+					tjList.addAll(ReadZipFile.readZipFile_new("E:\\"+zipPath.split(",")[i],1,1,0));
+				}
+				//按照发文日进行排序
+				Collections.sort(tjList);
+				//然后进行数据库操作
+				for(int j = 0; j < tjList.size(); j++){
+		        	TzsJson tJson = tjList.get(j);
+		        	String fwSerial = tJson.getFwSerial();//发文序号
+		        	String ajNoGf = tJson.getAjNoGf();//专利/申请号
+		        	String tzsName = tJson.getTzsName();//通知书
+		        	String zlName = tJson.getZlName();//专利名称
+		        	String fwDate = tJson.getFwDate();//发文日期
+		        	String sqrName = tJson.getSqrName();//申请人
+		        	String applyDate = tJson.getApplyDate();//申请日期
+		        	String zlType = tJson.getZlType();//战力类型
+		        	String fjApplyDate = tJson.getFjApplyDate();//费减请求日期
+		        	String fjRecord = tJson.getFjRecord();//费减记录
+		        	String feeDate = tJson.getFeeEdate();//缴费截止日期/补正截止日期 
+		        	String fjRate = tJson.getFjRate();//费减比率 
+		        	List<FeeDetailJson> fdList = tJson.getFdList();//费用明细
+		        	if(fdList.size() > 0){
+		        		for(Integer k = 0 ; k < fdList.size() ; k++){
+		        			FeeDetailJson fdJson = fdList.get(k);
+		        			System.out.println(fdJson.getFeeName()+" :"+fdJson.getFeeAmount());
+		        		}
+		        	}
+		        	String yearNo = tJson.getYearNo();//年度数字
+		        	List<LateFeeJson> lfList = tJson.getLfList();//年费滞纳金
+		        	if(lfList.size() > 0){
+		        		for(Integer k = 0 ; k < lfList.size() ; k++){
+		        			LateFeeJson lfJson = lfList.get(k);
+		        			System.out.println("缴费时间段："+lfJson.getFeeSDate()+"至"+lfJson.getFeeEDate() + " 滞纳金 " + lfJson.getLateFee());
+		        		}
+		        	}
+		        	String tzsPath = tJson.getZipPath();//上传的压缩包位置
+		        	//执行动作
+		        	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(ajNoGf);
+		        	if(zlList.size() == 0){//说明系统中还没有该专利号的专利/也可能是之前没导入过通知书
+		        		zlList = zlm.listSpecInfoByOpt(zlName, sqrName, zlType,cpyId);
+		        	}
+		        	Integer zlNum = zlList.size();
+		        	if(zlNum > 0){
+		        		if(zlNum.equals(1)){
+		        			
+		        		}else{//多个
+		        			
+		        		}
+		        	}else{//不存在
+	    				map.put("readInfo", "noInfo");//该通知书没有匹配到专利
+	    				map.put("tzsName", tzsName);
+						//删除当前通知书压缩包
+						FileOpration.deleteFile(filePath);
+		        	}
+				}
+			}
 		}
-		//按照发文日进行排序
-		Collections.sort(tjList);
-		//然后进行数据库操作
-		for(int j = 0; j < tjList.size(); j++){
-        	TzsJson tJson = tjList.get(j);
-        	String fwSerial = tJson.getFwSerial();//发文序号
-        	String ajNoGf = tJson.getAjNoGf();//专利/申请号
-        	String tzsName = tJson.getTzsName();//通知书
-        	String zlName = tJson.getZlName();//专利名称
-        	String fwDate = tJson.getFwDate();//发文日期
-        	String sqlName = tJson.getSqrName();//申请人
-        	String applyDate = tJson.getApplyDate();//申请日期
-        	String zlType = tJson.getZlType();//战力类型
-        	String fjApplyDate = tJson.getFjApplyDate();//费减请求日期
-        	String fjRecord = tJson.getFjRecord();//费减记录
-        	String feeDate = tJson.getFeeEdate();//缴费截止日期/补正截止日期 
-        	String fjRate = tJson.getFjRate();//费减比率 
-        	List<FeeDetailJson> fdList = tJson.getFdList();//费用明细
-        	if(fdList.size() > 0){
-        		for(Integer k = 0 ; k < fdList.size() ; k++){
-        			FeeDetailJson fdJson = fdList.get(k);
-        			System.out.println(fdJson.getFeeName()+" :"+fdJson.getFeeAmount());
-        		}
-        	}
-        	String yearNo = tJson.getYearNo();//年度数字
-        	List<LateFeeJson> lfList = tJson.getLfList();//年费滞纳金
-        	if(lfList.size() > 0){
-        		for(Integer k = 0 ; k < lfList.size() ; k++){
-        			LateFeeJson lfJson = lfList.get(k);
-        			System.out.println("缴费时间段："+lfJson.getFeeSDate()+"至"+lfJson.getFeeEDate() + " 滞纳金 " + lfJson.getLateFee());
-        		}
-        	}
-        	String tzsPath = tJson.getZipPath();//上传的压缩包位置
-		}
+
 //		map.put("result", list_d);
 //		this.getJsonPkg(map, response);
 		return null;

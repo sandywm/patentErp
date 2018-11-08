@@ -124,6 +124,18 @@ public class ReadZipFile {
 	        			if(l1 != null){//读取到数据文件（不判断直接存）
 	        				tzsName = l1.getTextTrim();//通知书名称
 	        				ajNoGf = root.element("application_number").getTextTrim();//申请号或专利号
+	        				if(ajNoGf.length() == 13){
+            					String zlTypeNo = ajNoGf.substring(4, 5);
+            					if(zlTypeNo.equals("1")){
+            						zlType = "fm";
+            					}else if(zlTypeNo.equals("2") || zlTypeNo.equals("8")){
+            						zlType = "syxx";
+            					}else if(zlTypeNo.equals("3") || zlTypeNo.equals("9")){
+            						zlType = "wg";
+            					}
+            				}else if(ajNoGf.length() == 14){
+            					zlType = "wg";
+            				}
 	        				Element l2 = root.element("application_date");
 	        				if(l2 != null){
 	        					applyDate = CurrentTime.convertFormatDate(l2.getTextTrim());//申请日
@@ -156,26 +168,7 @@ public class ReadZipFile {
 //			            	map_d.put("applyDate", applyDate);
 //			            	map_d.put("sqrName", sqrName);
 			            	if(tzsName.equals("专利申请受理通知书")){
-			            		Element lType = root.element("file_list");
-			            		if(lType != null){
-			            			lType = lType.element("file_info");
-			            			if(lType != null){
-			            				for(@SuppressWarnings("unchecked")
-	        							Iterator<Element> it = lType.elementIterator("file"); it.hasNext();){
-			            					lType = it.next();
-			            					String zlTypeChi = lType.element("file_name").getTextTrim();
-			            					if(zlTypeChi.indexOf("实用新型") >= 0){
-			            						zlType = "syxx";
-			            					}else if(zlTypeChi.indexOf("发明专利") >= 0){
-			            						zlType = "fm";
-			            					}else if(zlTypeChi.indexOf("外观") >= 0){
-			            						zlType = "wg";
-			            					}
-//	        								map_d.put("zlType", zlType);
-	        								break;
-	        	        				}
-			            			}
-			            		}
+			            		
 			            	}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
 			            		if(tzsName.equals("费用减缓审批通知书")){
 			            			fjApplyDate = CurrentTime.convertFormatDate(root.element("cost_slow_req_date").getTextTrim());
@@ -284,9 +277,22 @@ public class ReadZipFile {
 	        							TzsJson tJson = list_sub_d.get(j);
         					        	if(tJson.getAjNoGf().equals(ajNoGf) && tJson.getFwSerial().equals(fwSerial)){
         					        		readFlag = true;
+        					        		break;
         					        	}
         					        }
 	        						if(!readFlag){//没读取过
+	        							if(ajNoGf.length() == 13){
+	                    					String zlTypeNo = ajNoGf.substring(4, 5);
+	                    					if(zlTypeNo.equals("1")){
+	                    						zlType = "fm";
+	                    					}else if(zlTypeNo.equals("2") || zlTypeNo.equals("8")){
+	                    						zlType = "syxx";
+	                    					}else if(zlTypeNo.equals("3") || zlTypeNo.equals("9")){
+	                    						zlType = "wg";
+	                    					}
+	                    				}else if(ajNoGf.length() == 14){
+	                    					zlType = "wg";
+	                    				}
 	        							fwDate = CurrentTime.convertFormatDate(l2.elementText("FAWENR"));
 		        						feeEdate = CurrentTime.getFinalDate(fwDate, (60+Constants.TD_RECEIVE_DAYS));
 //		        						map_d.put("zlName", zlName);
@@ -862,34 +868,12 @@ public class ReadZipFile {
 	 */
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-//		List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\123.zip",0,0,0);
-//		List<TzsJson> tj1 = ReadZipFile.readZipFile_new("E:\\112.zip",0,0,0);
-//		List<TzsJson> tj2 = ReadZipFile.readZipFile_new("E:\\（没有做费减的新型）一种新型铸焊模具-办理登记手续通知书.zip",0,0,0);
-//		List<TzsJson> tj3 = ReadZipFile.readZipFile_new("E:\\（班德路发明）一种萜烯树脂的制备方法-办理登记手续通知书.zip",0,0,0);
-//		List<TzsJson> tj4 = ReadZipFile.readZipFile_new("E:\\发明-补正通知书.zip",0,0,0);
-//		List<TzsJson> tj5 = ReadZipFile.readZipFile_new("E:\\发明-第一次审查意见通知书.zip",0,0,0);
-//		List<TzsJson> tj6 = ReadZipFile.readZipFile_new("E:\\发明-发明专利申请公布及进入实质审查通知书.zip",0,0,0);
-//		List<TzsJson> tj7 = ReadZipFile.readZipFile_new("E:\\实用新型-受理+费用减缓通知书.zip",0,0,0);
-//		List<TzsJson> tj8 = ReadZipFile.readZipFile_new("E:\\实用新型-受理+交纳申请费通知书.zip",0,0,0);
-//		List<TzsJson> tj9 = ReadZipFile.readZipFile_new("E:\\外观设计-办理登记手续通知书.zip",0,0,0);
-		System.out.println(CurrentTime.getStringTime1());
 		List<TzsJson> tjList = new ArrayList<TzsJson>();
-		for(int i = 1 ; i <= 28; i++){
+		for(int i = 6 ; i <= 6; i++){
 			List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\11\\"+i+".zip",0,0,0);
 			tjList.addAll(tj);
 		}
-//		List<TzsJson> tjList = new ArrayList<TzsJson>();
-//		tjList.addAll(tj);
-//		tjList.addAll(tj1);
-//		tjList.addAll(tj2);
-//		tjList.addAll(tj3);
-//		tjList.addAll(tj4);
-//		tjList.addAll(tj5);
-//		tjList.addAll(tj6);
-//		tjList.addAll(tj7);
-//		tjList.addAll(tj8);
-//		tjList.addAll(tj9);
-		Collections.sort(tjList);
+//		Collections.sort(tjList);
 		for(int j = 0; j < tjList.size(); j++){
         	TzsJson tJson = tjList.get(j);
         	System.out.println("---------------------------------"+j);
@@ -922,7 +906,6 @@ public class ReadZipFile {
         	}
         	System.out.println("通知书路径 : "+tJson.getZipPath());
         }
-		System.out.println(CurrentTime.getStringTime1());
 	}
 
 }

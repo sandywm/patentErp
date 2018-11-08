@@ -16,7 +16,7 @@
 			jdbc:mysql://localhost:3306/patent?useUnicode=true&amp;characterEncoding=utf-8
 		</property>
 		<property name="connection.username">root</property>
-		<property name="connection.password">32011823wm</property>
+		<property name="connection.password">32011823pyly</property>
 		<!-- C3P0 connection pool  -->
 		<property name="hibernate.connection.provider_class">
 			org.hibernate.connection.C3P0ConnectionProvider
@@ -82,6 +82,7 @@
 		<mapping resource="com/patent/xml/CpyJoinInfoTb.hbm.xml" />
 		<mapping resource="com/patent/xml/ZlajLcMxInfoTb.hbm.xml" />
 		<mapping resource="com/patent/xml/PubZlCzRecordTb.hbm.xml" />
+		<mapping resource="com/patent/xml/ZlajFeeSubInfoTb.hbm.xml" />
 
 
 	</session-factory>
