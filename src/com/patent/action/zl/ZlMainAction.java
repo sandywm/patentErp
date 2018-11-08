@@ -1188,6 +1188,8 @@ public class ZlMainAction extends DispatchAction {
 					}else{
 						map_d.put("fzUserName", "");
 					}
+				}else{
+					map_d.put("fzUserName", "");
 				}
 				map_d.put("mxSDate", mx.getLcMxSDate());
 				map_d.put("mxEDate", mx.getLcMxEDate());
