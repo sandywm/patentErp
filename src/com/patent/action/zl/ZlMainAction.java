@@ -529,14 +529,12 @@ public class ZlMainAction extends DispatchAction {
 		JsFiledInfoManager jsm = (JsFiledInfoManager) AppFactory.instance(null).getApp(Constants.WEB_JS_FIELD_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO); 
-		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
 		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		ZlajFeeInfoManager zfm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		String opt = CommonTools.getFinalStr("opt", request);//basic(基本信息),lcfz(流程负责人员),lc(流程),tzs(通知书),fj(附件),fy(费用)-后续有的再加
-		Integer lcId = CommonTools.getFinalInteger("lcId", request);//当是lc环节时才传递这个值，也可以不传，其他环节不传
 		String msg = "error";
 		boolean abilityFlag = false;
 		Integer cpyId = 0;
@@ -840,7 +838,6 @@ public class ZlMainAction extends DispatchAction {
 						map = new HashMap<String,Object>();
 						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zlId);
 						List<Object> list_lc = new ArrayList<Object>();
-						List<Object> list_mx = new ArrayList<Object>();
 						if(lcList.size() > 0){
 							msg = "success";
 							for(Iterator<ZlajLcInfoTb> it = lcList.iterator() ; it.hasNext();){
@@ -855,61 +852,6 @@ public class ZlMainAction extends DispatchAction {
 								list_lc.add(map_d);
 							}
 							map.put("lcInfo", list_lc);
-							//默认获取最后一个流程的流程明细
-							Integer lastLcId = lcList.get(0).getId();
-							if(lcId > 0){
-								lastLcId = lcId;//当有指定的流程时
-							}
-							List<ZlajLcMxInfoTb> mxList = mxm.listDetailInfoByLcId(lastLcId);
-							if(mxList.size() > 0){
-								for(Iterator<ZlajLcMxInfoTb> it = mxList.iterator() ; it.hasNext();){
-									ZlajLcMxInfoTb mx = it.next();
-									Map<String,Object> map_d = new HashMap<String,Object>();
-									map_d.put("mxId", mx.getId());
-									map_d.put("mxName", mx.getLcMxName());
-									Integer lcFzUserId = mx.getLcFzUserId();
-									if(lcFzUserId > 0){//存在
-										CpyUserInfo user = cum.getEntityById(lcFzUserId);
-										if(user != null){
-											map_d.put("fzUserName", user.getUserName());
-										}else{
-											map_d.put("fzUserName", "");
-										}
-									}else{
-										map_d.put("fzUserName", "");
-									}
-									map_d.put("mxSDate", mx.getLcMxSDate());
-									map_d.put("mxEDate", mx.getLcMxEDate());
-									String upFile_db = mx.getLcMxUpFile();
-									String upFile = "";
-									String upFileName = "";//文件名称
-									String upFileSize = "";//文件大小
-									if(!upFile_db.equals("")){
-										String[] upFileArr = upFile_db.split(",");
-										String upUserName = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();//上传人
-										String upDate = mx.getLcMxUpDate();//上传日期
-										List<Object> list_mx_1 = new ArrayList<Object>();
-										for(Integer i = 0 ; i < upFileArr.length ; i++){
-											upFileName = upFileArr[i].substring(upFileArr[i].lastIndexOf("\\")+1,upFileArr[i].length());
-											upFile += upFileName + ",";
-											upFileSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upFileArr[i]);
-											Map<String,String> map_mx = new HashMap<String,String>();
-											map_mx.put("upFileName", upFileName);
-											map_mx.put("upUserName", upUserName);
-											map_mx.put("upDate", upDate);
-											map_mx.put("upFileSize", upFileSize);
-											map_mx.put("downFilePath", upFileArr[i]);
-											list_mx_1.add(map_mx);
-										}
-										map_d.put("upFileDetail", list_mx_1);//附件明细（当上传文件存在时出现）
-										upFile = upFile.substring(0, upFile.length() - 1);
-									}
-									map_d.put("upFile", upFile);
-									map_d.put("mxRemark", mx.getLcMxRemark());
-									list_mx.add(map_d);
-								}
-							}
-							map.put("mxInfo", list_mx);
 						}else{
 							msg = "noInfo";
 						}
@@ -1249,17 +1191,20 @@ public class ZlMainAction extends DispatchAction {
 				}
 				map_d.put("mxSDate", mx.getLcMxSDate());
 				map_d.put("mxEDate", mx.getLcMxEDate());
-				String upFile = mx.getLcMxUpFile();
+				String upFile_db = mx.getLcMxUpFile();
 				String upFileName = "";//文件名称
 				String upFileSize = "";//文件大小
-				if(!upFile.equals("")){
-					String[] upFileArr = upFile.split(",");
+				Integer fileNum = 0;
+				String fileInfo = "";
+				if(!upFile_db.equals("")){
+					String[] upFileArr = upFile_db.split(",");
+					fileNum = upFileArr.length;
+					fileInfo = fileNum+"个";
 					String upUserName = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();//上传人
 					String upDate = mx.getLcMxUpDate();//上传日期
 					List<Object> list_mx_1 = new ArrayList<Object>();
-					for(Integer i = 0 ; i < upFileArr.length ; i++){
+					for(Integer i = 0 ; i < fileNum ; i++){
 						upFileName = upFileArr[i].substring(upFileArr[i].lastIndexOf("\\")+1,upFileArr[i].length());
-						upFile += upFileName + ",";
 						upFileSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upFileArr[i]);
 						Map<String,String> map_mx = new HashMap<String,String>();
 						map_mx.put("upFileName", upFileName);
@@ -1270,9 +1215,8 @@ public class ZlMainAction extends DispatchAction {
 						list_mx_1.add(map_mx);
 					}
 					map_d.put("upFileDetail", list_mx_1);//附件明细（当上传文件存在时出现）
-					upFile = upFile.substring(0, upFile.length() - 1);
 				}
-				map_d.put("upFile", upFile);
+				map_d.put("upFile", fileInfo);
 				map_d.put("mxRemark", mx.getLcMxRemark());
 				list_d.add(map_d);
 			}
