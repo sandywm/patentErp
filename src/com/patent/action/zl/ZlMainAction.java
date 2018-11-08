@@ -880,11 +880,12 @@ public class ZlMainAction extends DispatchAction {
 									}
 									map_d.put("mxSDate", mx.getLcMxSDate());
 									map_d.put("mxEDate", mx.getLcMxEDate());
-									String upFile = mx.getLcMxUpFile();
+									String upFile_db = mx.getLcMxUpFile();
+									String upFile = "";
 									String upFileName = "";//文件名称
 									String upFileSize = "";//文件大小
-									if(!upFile.equals("")){
-										String[] upFileArr = upFile.split(",");
+									if(!upFile_db.equals("")){
+										String[] upFileArr = upFile_db.split(",");
 										String upUserName = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();//上传人
 										String upDate = mx.getLcMxUpDate();//上传日期
 										List<Object> list_mx_1 = new ArrayList<Object>();
