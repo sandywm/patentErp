@@ -2125,7 +2125,7 @@ public class ZlMainAction extends DispatchAction {
 										Integer lastIndex_1 = lastFjName.indexOf(".");
 										String fjVersion = lastFjName.substring(0, lastIndex_1);
 										String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-										fjm.addFj(zlId, ajUploadArr[i], fjVersion, "技术底稿文件", fjGs, FileOpration.getFileSize(filePath + fileName), upUserId, upFileDate);
+										fjm.addFj(zlId, ajUploadArr[i], fjVersion, "技术底稿文件", fjGs, FileOpration.getFileSize(filePath + ajUploadArr[i]), upUserId, upFileDate);
 									}
 								}
 								//修改案件的案件附件

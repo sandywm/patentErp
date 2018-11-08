@@ -175,7 +175,7 @@ public interface ZlajFeeInfoManager{
 	 * @date 2018-11-8 上午10:35:37
 	 * @param feeId 费用编号
 	 * @param backDate 退换日期
-	 * @param backFee 退换费用
+	 * @param backFee 退换费用（大于0时修改）
 	 * @param backStatus 退换状态（-1时不修改）
 	 * @param discountsFee 优惠费用(大于0时才修改)
 	 * @return
