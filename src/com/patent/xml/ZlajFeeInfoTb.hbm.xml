@@ -100,6 +100,21 @@
                 <comment>退换时间</comment>
             </column>
         </property>
+        <property name="backFee" type="java.lang.Double">
+            <column name="back_fee" precision="10">
+                <comment>退换费用</comment>
+            </column>
+        </property>
+        <property name="backStatus" type="java.lang.Integer">
+            <column name="back_status" not-null="true">
+                <comment>退换状态（0：未完成(默认)，1：已完成）</comment>
+            </column>
+        </property>
+        <property name="discountsFee" type="java.lang.Double">
+            <column name="discounts_fee" precision="10">
+                <comment>优惠费用(只有在退换状态从未完成修改为完成时才自动计算出来)</comment>
+            </column>
+        </property>
          <property name="feeBatchNo" type="java.lang.String">
             <column name="fee_batch_no" length="50">
                 <comment>缴费批次号</comment>

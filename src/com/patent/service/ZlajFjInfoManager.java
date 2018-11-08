@@ -54,10 +54,12 @@ public interface ZlajFjInfoManager {
 	 * @date 2018-9-21 上午08:53:36
 	 * @param ajId 案件编号
 	 * @param fjType 附件类型
+	 * @param orderFlag 是否排序(true：是，false:否)
+	 * @param orderInfo 附件类型（ASC,DESC）,当不排序时为""
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajFjInfoTb> listSpecInfoByOpt(Integer ajId,String fjType) throws WEBException;
+	List<ZlajFjInfoTb> listSpecInfoByOpt(Integer ajId,String fjType,boolean orderFlag,String orderInfo) throws WEBException;
 	
 	/**
 	 * 批量删除指定附件的信息

@@ -61,9 +61,12 @@ public class ZlajFjInfoDaoImpl implements ZlajFjInfoDao{
 
 	@Override
 	public List<ZlajFjInfoTb> findSpecInfoByOpt(Session sess, Integer ajId,
-			String fjType) {
+			String fjType,boolean orderFlag,String orderInfo) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajFjInfoTb as fj where fj.zlajMainInfoTb.id = "+ajId + " and fj.fjType = '"+fjType+"'";
+		if(orderFlag){
+			hql += " order by fj.id '"+orderInfo+"'";
+		}
 		return sess.createQuery(hql).list();
 	}
 

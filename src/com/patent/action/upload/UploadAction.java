@@ -190,27 +190,8 @@ public class UploadAction extends DispatchAction {
 						String filename = fileItem.getName();// 获取名字
 						Integer lastIndex = filename.lastIndexOf(".");
 						String suffix = filename.substring(lastIndex+1);
-						if(loginType.equals("cpyUser")){
-							String filePre = filename.substring(0, lastIndex);
-							 Integer nextNum = 1;
-							 String nextVersion = "";
-							 if(fileType.equals("fj")){
-								List<ZlajFjInfoTb> fjList = fjm.listLastInfoByAjId(ajId);
-								if(fjList.size() > 0){
-									nextNum = Integer.parseInt(fjList.get(0).getFjVersion()) + 1;
-								}
-								nextVersion = "V"+nextNum;
-								filename = filePre + "_" + nextVersion + "." + suffix;
-							 }else if(fileType.equals("pj")){
-								 List<ZlajFeeInfoTb> fList = fm.listInfoByOpt(ajId, "");
-								 nextVersion = "V" + (fList.size() + 1);
-								 filename = filePre + "_" + nextVersion + "." + suffix;
-							 }else if(fileType.equals("tzs")){
-								 filename = filePre + "_" + CurrentTime.getRadomTime() + "." + suffix;
-							 }else if(fileType.equals("dg")){
-								 filename = filePre + "_" + CurrentTime.getRadomTime() + "." + suffix;
-							 }
-						 }
+						String filePre = filename.substring(0, lastIndex);
+						filename = filePre + "_" + CurrentTime.getRadomTime() + "." + suffix;
 						CheckImage ci = new CheckImage();
 						//doc,docx,wps,xls,xlsx,txt,pdf,pptx,ppt,zip,rar,dwg,eml,jpg,png,bmp,gif,vsd,vsdx如果文件格式不在上述范围内请压缩成zip格式后上传
 						String checkFileSuffixInfo = ci.getUpFileStuffix(suffix);

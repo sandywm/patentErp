@@ -75,7 +75,9 @@ public interface ZlajFjInfoDao {
 	 * @param sess
 	 * @param ajId 案件编号
 	 * @param fjType 附件类型
+	 * @param orderFlag 是否排序(true：是，false:否)
+	 * @param orderInfo 附件类型（ASC,DESC）,当不排序时为""
 	 * @return
 	 */
-	List<ZlajFjInfoTb> findSpecInfoByOpt(Session sess,Integer ajId,String fjType);
+	List<ZlajFjInfoTb> findSpecInfoByOpt(Session sess,Integer ajId,String fjType,boolean orderFlag,String orderInfo);
 }

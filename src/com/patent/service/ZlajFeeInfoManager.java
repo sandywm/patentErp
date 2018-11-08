@@ -70,7 +70,7 @@ public interface ZlajFeeInfoManager{
 	
 	/**
 	 * 初始增加专利缴费信息
-	 * @description
+	 * @description(退换费用、退换状态、优惠费用初始为0)
 	 * @author Administrator
 	 * @date 2018-10-10 上午11:21:53
 	 * @param zlId 专利编号
@@ -167,4 +167,21 @@ public interface ZlajFeeInfoManager{
 	 * @throws WEBException
 	 */
 	List<ZlajFeeSubInfoTb> listInfoByFeeId(Integer feeId)throws WEBException;
+	
+	/**
+	 * 根据主键修改专利代缴费用的退换信息
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-8 上午10:35:37
+	 * @param feeId 费用编号
+	 * @param backDate 退换日期
+	 * @param backFee 退换费用
+	 * @param backStatus 退换状态（-1时不修改）
+	 * @param discountsFee 优惠费用(大于0时才修改)
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateBackFeeInfoById(Integer feeId,String backDate,Double backFee,Integer backStatus,Double discountsFee)throws WEBException;
+	
+//	List<ZlajFeeInfoTb> listAllFeeByOpt(Integer zlId,Integer cpyId) throws WEBException ;
 }

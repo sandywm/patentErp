@@ -79,13 +79,13 @@ public class ZlajFjInfoManagerImpl implements ZlajFjInfoManager {
 	}
 
 	@Override
-	public List<ZlajFjInfoTb> listSpecInfoByOpt(Integer ajId, String fjType)
+	public List<ZlajFjInfoTb> listSpecInfoByOpt(Integer ajId, String fjType,boolean orderFlag,String orderInfo)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			fjDao = (ZlajFjInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FJ_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return fjDao.findSpecInfoByOpt(sess, ajId, fjType);
+			return fjDao.findSpecInfoByOpt(sess, ajId, fjType,orderFlag,orderInfo);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

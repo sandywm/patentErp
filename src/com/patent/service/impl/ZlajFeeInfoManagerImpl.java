@@ -115,7 +115,7 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			ZlajFeeInfoTb zlFee = new ZlajFeeInfoTb(ftDao.getTypeEntityById(sess, geeTypeId), uDao.get(sess, appUserId),
 					cDao.get(sess, cpyId), zlDao.get(sess, zlId), feePrice, feeRate,feeEndDateCpy,
 					feeEndDateGf, feeRemark, feeStatus,djStatus, feeJnDate, feeUpZd,tzsArea,yearFeeNo,feeRange,addStatus,
-					backDate,feeBatchNo,bankSerialNo);
+					backDate,0.0,0,0.0,feeBatchNo,bankSerialNo);
 			fDao.save(sess, zlFee);
 			tran.commit();
 			return zlFee.getId();
@@ -258,6 +258,14 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 		} finally{
 			HibernateUtil.closeSession();
 		}
+	}
+
+	@Override
+	public boolean updateBackFeeInfoById(Integer feeId, String backDate,
+			Double backFee, Integer backStatus, Double discountsFee)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 

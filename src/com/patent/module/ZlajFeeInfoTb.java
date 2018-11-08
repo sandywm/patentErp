@@ -33,7 +33,10 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	private Integer yearFeeNo;
 	private String feeRange;
 	private Integer addStatus;
-	private String backDate;
+	private String backDate;//退换时间
+	private Double backFee;//退换费用总计
+	private Integer backStatus;//退换状态
+	private Double discountsFee;//优惠费用
 	private String feeBatchNo;
 	private String bankSerialNo;
 	private Set<ZlajFeeSubInfoTb> zlajFeeSubInfoTbs = new HashSet<ZlajFeeSubInfoTb>();
@@ -49,7 +52,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
 			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus,
-			String backDate,String feeBatchNo,String bankSerialNo) {
+			String backDate,Double backFee,Integer backStatus,Double discountsFee,String feeBatchNo,String bankSerialNo) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -68,6 +71,9 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.feeRange = feeRange;
 		this.addStatus = addStatus;
 		this.backDate = backDate;
+		this.backFee = backFee;
+		this.backStatus = backStatus;
+		this.discountsFee = discountsFee;
 		this.feeBatchNo = feeBatchNo;
 		this.bankSerialNo = bankSerialNo;
 	}
@@ -77,7 +83,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
 			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus,
-			String backDate,String feeBatchNo,String bankSerialNo) {
+			String backDate,Double backFee,Integer backStatus,Double discountsFee,String feeBatchNo,String bankSerialNo) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -96,6 +102,9 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.feeRange = feeRange;
 		this.addStatus = addStatus;
 		this.backDate = backDate;
+		this.backFee = backFee;
+		this.backStatus = backStatus;
+		this.discountsFee = discountsFee;
 		this.feeBatchNo = feeBatchNo;
 		this.bankSerialNo = bankSerialNo;
 	}
@@ -276,6 +285,30 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	public void setZlajFeeSubInfoTbs(Set<ZlajFeeSubInfoTb> zlajFeeSubInfoTbs) {
 		this.zlajFeeSubInfoTbs = zlajFeeSubInfoTbs;
+	}
+
+	public Double getBackFee() {
+		return backFee;
+	}
+
+	public void setBackFee(Double backFee) {
+		this.backFee = backFee;
+	}
+
+	public Integer getBackStatus() {
+		return backStatus;
+	}
+
+	public void setBackStatus(Integer backStatus) {
+		this.backStatus = backStatus;
+	}
+
+	public Double getDiscountsFee() {
+		return discountsFee;
+	}
+
+	public void setDiscountsFee(Double discountsFee) {
+		this.discountsFee = discountsFee;
 	}
 
 }

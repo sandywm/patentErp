@@ -2103,7 +2103,7 @@ public class ZlMainAction extends DispatchAction {
 							if(!ajUpload.equals(ajUpload_db)){
 								if(!ajUpload_db.equals("")){
 									//删除之前的附件记录
-									List<ZlajFjInfoTb> fjList = fjm.listSpecInfoByOpt(zlId, "技术底稿文件");
+									List<ZlajFjInfoTb> fjList = fjm.listSpecInfoByOpt(zlId, "技术底稿文件",false,"");
 									String ajIdStr_del = "";
 									for(Iterator<ZlajFjInfoTb> it = fjList.iterator() ; it.hasNext();){
 										ZlajFjInfoTb fj = it.next();
@@ -2481,6 +2481,7 @@ public class ZlMainAction extends DispatchAction {
 												Integer zxScore = CommonTools.getFinalInteger("zxScore", request);//员工撰写质量评分（0分表示审核失败）（参数）
 												if(zxScore.equals(0) || zxScore.equals(1) || zxScore.equals(2) || zxScore.equals(5)){
 													//修改流程详情
+													//需要确认审核这块有没有上传的新文件
 													mxm.updateEdateById(lcMxId, currUserId, -1, "", "", "", currDate, taskRemark,zxScore);
 													if(zxScore.equals(0)){//审核未通过
 														if(lcNo == 4.9){//不能再加
@@ -2519,6 +2520,8 @@ public class ZlMainAction extends DispatchAction {
 												//修改流程详情
 												Integer cusCheckStatus = CommonTools.getFinalInteger("cusCheckStatus",request);//客户确认状态（0：未通过，1：已通过）
 												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//撰写附件（参数）
+												//需要确认客户确认这块有没有上传的新文件
+												
 												mxm.updateEdateById(lcMxId, currUserId, currUserId, upZxFile, currDate, "", currDate, taskRemark,-1);
 												if(!upZxFile.equals("")){//上传文件不为空
 													String[] fjNameArr = upZxFile.split(",");
