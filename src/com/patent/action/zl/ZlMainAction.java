@@ -893,7 +893,7 @@ public class ZlMainAction extends DispatchAction {
 								map_d.put("fjDx", fj.getFjDx());
 								map_d.put("upUserName", fj.getCpyUserInfo().getUserName());
 								map_d.put("upDate", fj.getFjUpDate());
-								map_d.put("downFilePath", fj.getFjUpDate());
+								map_d.put("downFilePath", fj.getFjName());
 								list_fj.add(map_d);
 							}
 							map.put("fjInfo", list_fj);
