@@ -2458,7 +2458,7 @@ public class ZlMainAction extends DispatchAction {
 															Integer lastIndex_1 = lastFjName.indexOf(".");
 															String fjVersion = lastFjName.substring(0, lastIndex_1);
 															String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-															fjm.addFj(zlId, fileName, fjVersion, "撰稿文件", fjGs, FileOpration.getFileSize(filePath + fileName), currUserId, currDate);
+															fjm.addFj(zlId, fileName, fjVersion, "撰稿文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 														}
 													}
 													lcNo += 1;
@@ -2479,10 +2479,23 @@ public class ZlMainAction extends DispatchAction {
 												}
 											}else if(lcNo >= 4.0 && lcNo < 5.0){//案件审核
 												Integer zxScore = CommonTools.getFinalInteger("zxScore", request);//员工撰写质量评分（0分表示审核失败）（参数）
+												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//审核人员上传的撰稿文件（参数）
 												if(zxScore.equals(0) || zxScore.equals(1) || zxScore.equals(2) || zxScore.equals(5)){
 													//修改流程详情
 													//需要确认审核这块有没有上传的新文件
-													mxm.updateEdateById(lcMxId, currUserId, -1, "", "", "", currDate, taskRemark,zxScore);
+													mxm.updateEdateById(lcMxId, currUserId, currUserId, upZxFile, currDate, "", currDate, taskRemark,zxScore);
+													if(!upZxFile.equals("")){
+														String[] fjNameArr = upZxFile.split(",");
+														for(Integer i = 0 ; i < fjNameArr.length ; i++){
+															String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
+															Integer lastIndex = fileName.lastIndexOf("_");
+															String lastFjName = fileName.substring(lastIndex+1, fileName.length());
+															Integer lastIndex_1 = lastFjName.indexOf(".");
+															String fjVersion = lastFjName.substring(0, lastIndex_1);
+															String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
+															fjm.addFj(zlId, fileName, fjVersion, "审核文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
+														}
+													}
 													if(zxScore.equals(0)){//审核未通过
 														if(lcNo == 4.9){//不能再加
 															lcNo = lcNo - 1 ;
@@ -2532,7 +2545,7 @@ public class ZlMainAction extends DispatchAction {
 														Integer lastIndex_1 = lastFjName.indexOf(".");
 														String fjVersion = lastFjName.substring(0, lastIndex_1);
 														String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-														fjm.addFj(zlId, fileName, fjVersion, "客户补充文件", fjGs, FileOpration.getFileSize(filePath + fileName), currUserId, currDate);
+														fjm.addFj(zlId, fileName, fjVersion, "客户补充文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 													}
 												}
 												if(cusCheckStatus.equals(0)){//客户确认未通过
@@ -2592,7 +2605,7 @@ public class ZlMainAction extends DispatchAction {
 														Integer lastIndex_1 = lastFjName.indexOf(".");
 														String fjVersion = lastFjName.substring(0, lastIndex_1);
 														String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-														fjm.addFj(zlId, fileName, fjVersion, "定稿文件", fjGs, FileOpration.getFileSize(filePath + fileName), currUserId, currDate);
+														fjm.addFj(zlId, fileName, fjVersion, "定稿文件", fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 													}
 													mxm.updateEdateById(lcMxId, zl.getTjUserId(), zl.getTjUserId(), upZxFile, currDate, "", currDate, taskRemark,-1);
 													//修改必须的信息
