@@ -2372,7 +2372,100 @@ public class ZlMainAction extends DispatchAction {
 		return null;
 	}
 	
-	
+	/**
+	 * 获取指定专利的目前流程任务（定稿提交之前）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-9 上午10:01:47
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getLcTaskDetail(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
+		boolean abilityFlag = false;
+		String roleName = this.getLoginRoleName(request);
+		Integer currUserId = this.getLoginUserId(request);
+		Integer zlId = CommonTools.getFinalInteger("zlId", request);
+		String filePath = "";//附件
+		String fileSize = "";//附件大小
+		String upUser = "";//上传人
+		String fileName = "";//附件名称
+		String remark = "";//备注或者审核意见
+		if(this.getLoginType(request).equals("cpyUser")){
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理
+			}
+			if(abilityFlag){
+				//获取当前流程号
+				CpyUserInfo user = cum.getEntityById(currUserId);
+				if(user != null && zlId > 0){
+					List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, user.getCpyInfoTb().getId());
+					if(zlList.size() > 0){
+						ZlajMainInfoTb zl = zlList.get(0);
+						if(zl.getAjStopStatus().equals(0)){//只有在案件状态正常时（0）
+							//获取当前最后一个未完成的流程
+							List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
+							if(lcList.size() > 0){
+								List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcList.get(0).getId());
+								if(mxList.size() > 0){
+									ZlajLcMxInfoTb lcmx = mxList.get(0);
+									double lcNo = lcmx.getLcMxNo();//流程号
+									if(lcNo >= 3.0 && lcNo < 4.0){//案件撰写/案件补正
+										if(lcNo == 3.0){//第一次撰稿
+											//获取业务人员提供的技术底稿和专利备注
+											filePath = zl.getAjUpload();
+											remark = zl.getAjRemark();//第一次撰写时为专利备注
+										}else{//补正时
+											String zlStatusChi = zl.getAjStatusChi();//获取当前专利任务名称
+											if(zlStatusChi.equals("撰稿修改-技术审核")){
+												//说明是技术审核没通过
+											}else if(zlStatusChi.equals("撰稿修改-客户确认")){
+												//说明是客户确认没通过
+											}
+										}
+									}else if(lcNo >= 4.0 && lcNo < 5.0){//案件技术审核
+										//获取撰稿人员最近一次提交的撰稿文件、备注需要自己填写
+										String mxName = "新申请撰稿";//第一次技术审核
+										if(lcNo > 4.0){
+											mxName = "撰稿修改";
+										}
+										List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, mxName);
+										Integer mxLen = mxList_t.size();
+										if(mxLen > 0){
+											ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);//获取最近一次的撰稿修改
+											filePath = mx.getLcMxUpFile();
+										}
+									}else if(lcNo >= 5.0 && lcNo <= 6.0){//客户确认、定稿提交
+										//获取技术审核人员最近一次提交的审核文件
+										List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "专利审核");
+										Integer mxLen = mxList_t.size();
+										if(mxLen > 0){
+											ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);//获取最近一次的专利审核
+											filePath = mx.getLcMxUpFile();
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
 	
 	
 	/**
@@ -2507,20 +2600,31 @@ public class ZlMainAction extends DispatchAction {
 														if(nextLcId > 0){
 															mxm.addLcMx(nextLcId, zl.getZxUserId(), "撰稿修改", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1);
 															//修改专利的案件状态
-															zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"撰稿修改");
+															zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"撰稿修改-技术审核");
 															//发送邮件
 															mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getZxUserId(), "cpyUser", "新任务通知：撰稿修改", "专利["+zl.getAjTitle()+"]审核未通过，请及时完成专利撰稿修改工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
 														}else{
 															msg = "error";
 														}
 													}else{//审核通过
-														lcNo = 5;//客户确认
+														List<ZlajLcInfoTb> lcList_t = lcm.listLcInfoByLcMz(zlId, "客户确认");//获取是否存在客户确认列表
+														Integer lcLen = lcList_t.size();
+														if(lcLen > 0){
+															if(lcLen > 9){//一直停留在9
+																lcLen = 9;
+																lcNo = 5.0 + (double)lcLen / 10;
+															}else{
+																lcNo = 5.0 + (double)lcLen / 10 + 0.1;
+															}
+														}else{
+															lcNo = 5.0;//客户确认
+														}
 														//增加下一个流程
 														Integer nextLcId = lcm.addLcInfo(zlId, "客户确认", "客户确认", currDate, cpyDate, "", "",5.0);
 														if(nextLcId > 0){
 															mxm.addLcMx(nextLcId, zl.getTjUserId(), "客户确认", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1);
 															//修改专利的案件状态
-															zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待定稿提交");
+															zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待客户确认");
 															//发送邮件
 															mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getTjUserId(), "cpyUser", "新任务通知：定稿提交", "专利["+zl.getAjTitle()+"]审核已审核通过，请及时完成专利提交工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
 															//审核成功，增加撰写人经验、撰写数量(增加到客户确认上完成)
@@ -2550,9 +2654,20 @@ public class ZlMainAction extends DispatchAction {
 												}
 												if(cusCheckStatus.equals(0)){//客户确认未通过
 													if(lcNo == 5.9){//不能再加
-														lcNo = lcNo - 1 ;
+														lcNo = lcNo - 2 ;
 													}else{
-														lcNo = lcNo - 1 + 0.1;
+														//客户确认时的流程号不一定和技术上审核、撰稿修改统一
+														List<ZlajLcInfoTb> lcList_t = lcm.listLcInfoByLcMz(zlId, "撰稿修改-客户确认");//获取是否存在撰稿修改列表
+														Integer lcLen = lcList_t.size();
+														if(lcLen > 0){
+															//获取最后一次撰稿修改的流程号
+															Double zg_lcNo_final = lcList_t.get(lcLen - 1).getLcNo();
+															if(zg_lcNo_final == 3.9){//一直停留在3.9
+																lcNo = 3.9;
+															}else{
+																lcNo = zg_lcNo_final + 0.1;
+															}
+														}
 													}
 													//增加撰稿修改环节
 													Integer nextLcId = lcm.addLcInfo(zlId, "撰稿修改", "撰稿修改", currDate, cpyDate, "", "",lcNo);
