@@ -2389,145 +2389,238 @@ public class ZlMainAction extends DispatchAction {
 		// TODO Auto-generated method stub
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
-		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
-		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		Map<String,Object> map = new HashMap<String,Object>();
 		boolean abilityFlag = false;
 		String roleName = this.getLoginRoleName(request);
 		Integer currUserId = this.getLoginUserId(request);
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		String filePath = "";//附件
-		String fileSize = "";//附件大小
 		String upUser = "";//上传人
 		String fileName = "";//附件名称
 		String fileType = "";//附件类型
 		String remark = "";//备注或者审核意见
+		String msg = "error";
 		if(this.getLoginType(request).equals("cpyUser")){
 			if(roleName.equals("管理员")){
 				abilityFlag = true;
 			}else{
 				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理
 			}
-			if(abilityFlag){
-				//获取当前流程号
-				CpyUserInfo user = cum.getEntityById(currUserId);
-				if(user != null && zlId > 0){
-					List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, user.getCpyInfoTb().getId());
-					if(zlList.size() > 0){
-						ZlajMainInfoTb zl = zlList.get(0);
-						if(zl.getAjStopStatus().equals(0)){//只有在案件状态正常时（0）
-							//获取当前最后一个未完成的流程
-							List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
-							if(lcList.size() > 0){
-								List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcList.get(0).getId());
-								if(mxList.size() > 0){
-									ZlajLcMxInfoTb lcmx = mxList.get(0);
-									double lcNo = lcmx.getLcMxNo();//流程号
-									map.put("lcNo", lcNo);
-									if(lcNo >= 3.0 && lcNo < 4.0){//案件撰写/案件补正
-										if(lcNo == 3.0){//第一次撰稿
-											//获取业务人员提供的技术底稿和专利备注
-											filePath = zl.getAjUpload();
-											remark = zl.getAjRemark();//第一次撰写时为专利备注
-											fileType = "技术底稿";
-										}else{//补正时
-											String zlStatusChi = zl.getAjStatusChi();//获取当前专利任务名称
-											if(zlStatusChi.equals("撰稿修改-技术审核")){
-												//说明是技术审核没通过
-												fileType = "审核文件";
-												//获取最后一次的专利审核的附件和审核意见
-												List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "专利审核");
-												Integer mxLen = mxList_t.size();
-												ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);
-												filePath = mx.getLcMxUpFile();
-												if(!filePath.equals("")){
-													fileType = "审核文件";
-													CpyUserInfo cUser = cum.getEntityById(mx.getLcMxUpUserId());
-													if(cUser != null){
-														upUser = cUser.getUserName();
-													}
-												}
-												remark = mx.getLcMxRemark();
-											}else if(zlStatusChi.equals("撰稿修改-客户确认")){
-												//说明是客户确认没通过
-												//获取最后一次的专利审核的附件和审核意见
-												List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "专利审核");
-												Integer mxLen = mxList_t.size();
-												ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);
-												String filePath_curr = mx.getLcMxUpFile();
-												if(!filePath_curr.equals("")){
-													fileType = "审核文件";
-													CpyUserInfo cUser = cum.getEntityById(mx.getLcMxUpUserId());
-													if(cUser != null){
-														upUser = cUser.getUserName();
-													}
-													filePath = filePath_curr;
-												}
-												//获取最后一次客户提交的和审核意见
-												List<ZlajLcMxInfoTb> mxList_t1 = mxm.listSpecInfoInfoByOpt(zlId, "客户确认");
-												Integer mxLen_1 = mxList_t1.size();
-												ZlajLcMxInfoTb mx_1 = mxList_t1.get(mxLen_1 - 1);
-												String filePath_curr_1 = mx_1.getLcMxUpFile();
-												if(!filePath_curr_1.equals("")){
-													CpyUserInfo cUser = cum.getEntityById(mx_1.getLcMxUpUserId());
-													if(cUser != null){
-														upUser = cUser.getUserName();
-													}
-													fileType += ",客户补充文件";
-													filePath += "," + filePath_curr_1;
-												}
-												remark = mx_1.getLcMxRemark();
+		}
+//		else if(this.getLoginType(request).equals("appUser")){//只有自己发布的
+//			List<ZlajMainInfoTb> zlList_1 = zlm.listSpecInfoById(zlId,0);
+//			if(zlList_1.size() > 0){
+//				if(zlList_1.get(0).getPubZlId().equals(currUserId)){//客户只能查看自己的（增加专利时如果没有选择已领取的专利列表，这时的发布人就是默认第一个申请人）
+//					abilityFlag = true;
+//				}
+//			}
+//		}
+		if(abilityFlag){
+			//获取当前流程号
+			CpyUserInfo user = cum.getEntityById(currUserId);
+			if(user != null && zlId > 0){
+				List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, user.getCpyInfoTb().getId());
+				if(zlList.size() > 0){
+					ZlajMainInfoTb zl = zlList.get(0);
+					if(zl.getAjStopStatus().equals(0)){//只有在案件状态正常时（0）
+						//获取当前最后一个未完成的流程
+						List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
+						if(lcList.size() > 0){
+							List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcList.get(0).getId());
+							if(mxList.size() > 0){
+								ZlajLcMxInfoTb lcmx = mxList.get(0);
+								double lcNo = lcmx.getLcMxNo();//流程号
+								if(lcNo >= 3.0 && lcNo < 4.0){//案件撰写/案件补正
+									if(lcNo == 3.0){//第一次撰稿
+										//获取业务人员提供的技术底稿和专利备注
+										filePath = zl.getAjUpload();
+										remark = zl.getAjRemark();//第一次撰写时为专利备注
+										fileType = "技术底稿";
+										upUser = cum.getEntityById(zl.getAjAddUserId()).getUserName();
+									}else{//补正时
+										String zlStatusChi = zl.getAjStatusChi();//获取当前专利任务名称
+										if(zlStatusChi.equals("撰稿修改-技术审核")){
+											//说明是技术审核没通过
+											//获取撰写人员最后一次提交的撰稿文件
+											String mxName = "新申请撰稿";
+											if(lcNo > 3.1){//不是第一次被审核人员否定
+												mxName = "撰稿修改";
 											}
+											List<ZlajLcMxInfoTb> mxList_t1 = mxm.listSpecInfoInfoByOpt(zlId, mxName);
+											Integer mxLen_1 = mxList_t1.size();
+											ZlajLcMxInfoTb mx_1 = mxList_t1.get(mxLen_1 - 1);
+											filePath = mx_1.getLcMxUpFile();
+											fileType = "撰稿文件";
+											upUser = cum.getEntityById(mx_1.getLcMxUpUserId()).getUserName();//撰稿文件的上传人
+											//获取最后一次的专利审核的附件和审核意见
+											List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "专利审核");
+											Integer mxLen = mxList_t.size();
+											ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);
+											//审核人员上传的审核文件
+											String filePath_sc = mx.getLcMxUpFile();
 											
-										}
-									}else if(lcNo >= 4.0 && lcNo < 5.0){//案件技术审核
-										//获取撰稿人员最近一次提交的撰稿文件、备注需要自己填写
-										String mxName = "新申请撰稿";//第一次技术审核
-										if(lcNo > 4.0){
-											mxName = "撰稿修改";
-										}
-										List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, mxName);
-										Integer mxLen = mxList_t.size();
-										if(mxLen > 0){
-											ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);//获取最近一次的撰稿修改
-											filePath = mx.getLcMxUpFile();
-											if(!filePath.equals("")){
-												fileType = "撰稿文件";
+											if(!filePath_sc.equals("")){
+												filePath += ":" + filePath_sc;
+												fileType += ":审核文件";
+												CpyUserInfo cUser = cum.getEntityById(mx.getLcMxUpUserId());
+												if(cUser != null){
+													upUser += ":" + cUser.getUserName();
+												}
 											}
+											remark = mx.getLcMxRemark();
+										}else if(zlStatusChi.equals("撰稿修改-客户确认")){
+											//说明是客户确认没通过
+											//获取撰写人员最后一次提交的撰稿文件
+											List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "撰稿修改");
+											Integer mxLen = mxList_t.size();
+											if(mxLen > 0){
+												
+											}else{//说明没有撰稿修改文件，可能是撰写人员一次性通过
+												mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "新申请撰稿");
+												mxLen = mxList_t.size();
+											}
+											ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);
+											String filePath_curr = mx.getLcMxUpFile();
+											if(!filePath_curr.equals("")){
+												fileType = "撰稿文件";
+												CpyUserInfo cUser = cum.getEntityById(mx.getLcMxUpUserId());
+												upUser = cUser.getUserName();//撰稿文件的上传人
+												filePath = filePath_curr;
+											}
+											//获取最后一次客户提交的和审核意见
+											List<ZlajLcMxInfoTb> mxList_t1 = mxm.listSpecInfoInfoByOpt(zlId, "客户确认");
+											Integer mxLen_1 = mxList_t1.size();
+											ZlajLcMxInfoTb mx_1 = mxList_t1.get(mxLen_1 - 1);
+											String filePath_curr_1 = mx_1.getLcMxUpFile();
+											if(!filePath_curr_1.equals("")){
+												CpyUserInfo cUser = cum.getEntityById(mx_1.getLcMxUpUserId());
+												if(cUser != null){
+													upUser += ":" + cUser.getUserName();
+												}
+												fileType += ":客户补充文件";
+												filePath += ":" + filePath_curr_1;
+											}
+											remark = mx_1.getLcMxRemark();
 										}
-									}else if(lcNo >= 5.0 && lcNo <= 6.0){//客户确认、定稿提交
-										//获取技术审核人员最近一次提交的审核文件
-										List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "专利审核");
-										Integer mxLen = mxList_t.size();
-										if(mxLen > 0){
-											ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);//获取最近一次的专利审核
-											filePath = mx.getLcMxUpFile();
-											if(!filePath.equals("")){
-												fileType = "审核文件";
+										
+									}
+								}else if(lcNo >= 4.0 && lcNo < 5.0){//案件技术审核
+									//获取撰稿人员最近一次提交的撰稿文件，不存在备注
+									String mxName = "新申请撰稿";//第一次技术审核
+									if(lcNo > 4.0){
+										mxName = "撰稿修改";
+									}
+									List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, mxName);
+									Integer mxLen = mxList_t.size();
+									if(mxLen > 0){
+										ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);//获取最近一次的撰稿修改
+										filePath = mx.getLcMxUpFile();
+										if(!filePath.equals("")){
+											fileType = "撰稿文件";
+											CpyUserInfo cUser = cum.getEntityById(mx.getLcMxUpUserId());
+											if(cUser != null){
+												upUser = cUser.getUserName();
 											}
 										}
 									}
+								}else if(lcNo >= 5.0 && lcNo <= 6.0){//客户确认、定稿提交
+									//客户确认和定稿提交的时候--获取的是最后一次撰写人提交的撰稿文件（可能是新申请撰稿文件，也可能是撰稿修改文件）--不存在备注
+									List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "撰稿修改");
+									Integer mxLen = mxList_t.size();
+									if(mxLen == 0){//不能存在撰稿修改，说明撰写人一次性通过
+										mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "新申请撰稿");
+										mxLen = mxList_t.size();
+									}
+									ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);//获取最近一次的撰稿修改
+									filePath = mx.getLcMxUpFile();
 									if(!filePath.equals("")){
+										fileType = "撰稿文件";
+										CpyUserInfo cUser = cum.getEntityById(mx.getLcMxUpUserId());
+										if(cUser != null){
+											upUser = cUser.getUserName();
+										}
+									}
+									//定稿提交的时候可能会出现客户的变更信息-可能会出现在附件中，也可能会出现在remark中
+									if(lcNo == 6.0){//定稿提交时还可能出现客户需要变更的信息（变更联系人。。。。），客户通过
+										List<ZlajLcMxInfoTb> mxList_t1 = mxm.listSpecInfoInfoByOpt(zlId, "客户确认");
+										Integer mxLen_1 = mxList_t1.size();
+										if(mxLen_1 > 0){//存在客户确认时上传的文件
+											ZlajLcMxInfoTb mx_1 = mxList_t1.get(mxLen_1 - 1);//获取最近一次的撰稿修改
+											String filePath_cus = mx_1.getLcMxUpFile();
+											if(!filePath_cus.equals("")){
+												filePath += ":" + filePath_cus;
+												upUser += ":" + cum.getEntityById(mx.getLcMxUpUserId()).getUserName();
+												fileType += ":" + "客户补充文件";
+											}
+											remark = mx_1.getLcMxRemark();
+										}
+									}
+								}
+								List<Object> list_d = new ArrayList<Object>();
+								if(!filePath.equals("")){
+									msg = "success";
+									String[] fileTypeArr = fileType.split(":");
+									String[] upUserArr = upUser.split(":");
+									if(fileTypeArr.length == 1){//只存在一种类型的文件
 										String[] fjNameArr = filePath.split(",");
 										for(Integer i = 0 ; i < fjNameArr.length ; i++){
+											Map<String,String> map_f = new HashMap<String,String>();
 											String fileName_curr = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));//文件名称
-											Integer lastIndex = fileName.lastIndexOf("_");
-											String lastFjName = fileName.substring(lastIndex+1, fileName.length());
+											Integer lastIndex = fileName_curr.lastIndexOf("_");
+											String lastFjName = fileName_curr.substring(lastIndex+1, fileName_curr.length());
 											Integer lastIndex_1 = lastFjName.indexOf(".");
 											String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());//文件格式
 											String fjSize = FileOpration.getFileSize(filePath + fjNameArr[i]);//文件大小
-//											String downFilePath = 
+											String downFilePath = fjNameArr[i];
+											map_f.put("fileName", fileName_curr);
+											map_f.put("fjGs", fjGs);
+											map_f.put("fjSize", fjSize);
+											map_f.put("fileType", fileType);
+											map_f.put("fjSize", downFilePath);
+											map_f.put("upUser", upUser);
+											list_d.add(map_f);
+										}
+									}else{//存在两种类型的文件
+										String[] fjNameArr_main = filePath.split(":");
+										for(Integer i = 0 ; i < fjNameArr_main.length ; i++){
+											String[] fjNameArr_sub = fjNameArr_main[i].split(",");
+											for(Integer j = 0 ; j < fjNameArr_sub.length ; j++){
+												Map<String,String> map_f = new HashMap<String,String>();
+												String fileName_curr = fjNameArr_sub[j].substring((fjNameArr_sub[j].lastIndexOf("\\") + 1));//文件名称
+												Integer lastIndex = fileName_curr.lastIndexOf("_");
+												String lastFjName = fileName_curr.substring(lastIndex+1, fileName_curr.length());
+												Integer lastIndex_1 = lastFjName.indexOf(".");
+												String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());//文件格式
+												String fjSize = FileOpration.getFileSize(filePath + fjNameArr_sub[j]);//文件大小
+												String downFilePath = fjNameArr_sub[j];
+												map_f.put("fileName", fileName_curr);
+												map_f.put("fjGs", fjGs);
+												map_f.put("fjSize", fjSize);
+												map_f.put("fileType", fileTypeArr[i]);
+												map_f.put("fjSize", downFilePath);
+												map_f.put("upUser", upUserArr[i]);
+												list_d.add(map_f);
+											}
 										}
 									}
+									map.put("lcNo", lcNo);//当前流程号
+									map.put("fileInfo", list_d);//附件列表
+									map.put("remark", remark);//意见/备注
+								}else{
+									msg = "noInfo";
 								}
 							}
 						}
 					}
 				}
 			}
+		}else{
+			msg = "noAbility";
 		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -2615,7 +2708,7 @@ public class ZlMainAction extends DispatchAction {
 															Integer lastIndex_1 = lastFjName.indexOf(".");
 															String fjVersion = lastFjName.substring(0, lastIndex_1);
 															String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-															fjm.addFj(zlId, fileName, fjVersion, "撰稿文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
+															fjm.addFj(zlId, fjNameArr[i], fjVersion, "撰稿文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 														}
 													}
 													lcNo += 1;
@@ -2650,7 +2743,7 @@ public class ZlMainAction extends DispatchAction {
 															Integer lastIndex_1 = lastFjName.indexOf(".");
 															String fjVersion = lastFjName.substring(0, lastIndex_1);
 															String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-															fjm.addFj(zlId, fileName, fjVersion, "审核文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
+															fjm.addFj(zlId, fjNameArr[i], fjVersion, "审核文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 														}
 													}
 													if(zxScore.equals(0)){//审核未通过
@@ -2713,7 +2806,7 @@ public class ZlMainAction extends DispatchAction {
 														Integer lastIndex_1 = lastFjName.indexOf(".");
 														String fjVersion = lastFjName.substring(0, lastIndex_1);
 														String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-														fjm.addFj(zlId, fileName, fjVersion, "客户补充文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
+														fjm.addFj(zlId, fjNameArr[i], fjVersion, "客户补充文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 													}
 												}
 												if(cusCheckStatus.equals(0)){//客户确认未通过
@@ -2784,7 +2877,7 @@ public class ZlMainAction extends DispatchAction {
 														Integer lastIndex_1 = lastFjName.indexOf(".");
 														String fjVersion = lastFjName.substring(0, lastIndex_1);
 														String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-														fjm.addFj(zlId, fileName, fjVersion, "定稿文件", fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
+														fjm.addFj(zlId, fjNameArr[i], fjVersion, "定稿文件", fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 													}
 													mxm.updateEdateById(lcMxId, zl.getTjUserId(), zl.getTjUserId(), upZxFile, currDate, "", currDate, taskRemark,-1);
 													//修改必须的信息
@@ -2862,6 +2955,7 @@ public class ZlMainAction extends DispatchAction {
 				}
 			}
 		}
+		map.put("result", msg);
 		this.getJsonPkg(map, response);
 		return null;
 	}

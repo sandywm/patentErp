@@ -106,7 +106,6 @@ public class ReadExcelFile {
 //		System.out.println(version + "       "+suffix);
 		Double aa = 1.5;
 		Double bb = 1.50;
-		System.out.println(aa.equals(bb));
 //		File file = new File("e:\\发明-补正通知书1.zip");
 //		 if (file.exists()) { //文件存在时          
 //			 System.out.println(true);
@@ -118,9 +117,9 @@ public class ReadExcelFile {
 //		 System.out.println(file.getName());
 //		 new FileInputStream(file);
 		 String aaa = "2017301654572";
-		 System.out.print(aaa.substring(4, 5));
 		 Integer c = 3;
 		 Integer d = 3;
-		 System.out.println(c.equals(d) + "   "+ (c == d));
+		 Double a = 5.0;
+		 System.out.println(5.0 + (double)2 / 10);
 	}
 }
