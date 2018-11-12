@@ -89,4 +89,31 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<ZlajFeeInfoTb> findAllFeeByOpt(Session sess, Integer zlId,
+			String feeTypeStatus, Integer djStatus, Integer feeStatus,
+			Integer backStatus, Integer cpyId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajFeeInfoTb as zlf where zlf.zlajMainInfoTb.id = "+zlId + " and zlf.cpyInfoTb.id = "+cpyId;
+		if(!feeTypeStatus.equals("")){
+			if(feeTypeStatus.equals("nf")){
+				hql += " and zlf.feeTypeInfoTb.feeStatus like '%"+feeTypeStatus+"%'";
+			}else{
+				hql += " and zlf.feeTypeInfoTb.feeStatus = '"+feeTypeStatus+"'";
+			}
+		}
+		if(djStatus >= 0){
+			hql += " and zlf.djStatus = "+djStatus;
+			if(djStatus.equals(1)){//代缴
+				if(backStatus >= 0){
+					hql += " and zlf.backStatus = "+backStatus;
+				}
+			}
+		}
+		if(feeStatus >= 0){
+			hql += " and zlf.feeStatus = "+feeStatus;
+		}
+		return sess.createQuery(hql).list();
+	}
+
 }

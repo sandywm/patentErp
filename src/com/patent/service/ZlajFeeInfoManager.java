@@ -183,5 +183,20 @@ public interface ZlajFeeInfoManager{
 	 */
 	boolean updateBackFeeInfoById(Integer feeId,String backDate,Double backFee,Integer backStatus,Double discountsFee)throws WEBException;
 	
-//	List<ZlajFeeInfoTb> listAllFeeByOpt(Integer zlId,Integer cpyId) throws WEBException ;
+	/**
+	 * 根据条件获取缴费列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-12 上午10:01:22
+	 * @param zlId 专利编号
+	 * @param feeTypeStatus 费用类型（""表示全部）
+	 * @param djStatus 代缴状态（-1为全部）
+	 * @param feeStatus 缴费状态（-1为全部）
+	 * @param backStatus 退换状态（-1为全部）--代缴的时候才出现
+	 * @param cpyId 代理机构编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajFeeInfoTb> listAllFeeByOpt(Integer zlId,String feeTypeStatus,Integer djStatus,Integer feeStatus,Integer backStatus,Integer cpyId)throws WEBException;
+	
 }

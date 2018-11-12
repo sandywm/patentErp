@@ -50,6 +50,7 @@ import com.patent.module.PubZlCzRecordTb;
 import com.patent.module.PubZlInfoTb;
 import com.patent.module.ZlajEwyqInfoTb;
 import com.patent.module.ZlajFeeInfoTb;
+import com.patent.module.ZlajFeeSubInfoTb;
 import com.patent.module.ZlajFjInfoTb;
 import com.patent.module.ZlajLcInfoTb;
 import com.patent.module.ZlajLcMxInfoTb;
@@ -903,127 +904,106 @@ public class ZlMainAction extends DispatchAction {
 					}else if(opt.equals("fy")){//费用
 						map = new HashMap<String,Object>();
 						msg = "success";
-						List<ZlajFeeInfoTb> zfList_gf = zfm.listInfoByOpt(zlId, "gf");//官费
-						List<ZlajFeeInfoTb> zfList_dlf = zfm.listInfoByOpt(zlId, "dlf");//代理费
-						List<ZlajFeeInfoTb> zfList_nf = zfm.listInfoByOpt(zlId, "nf");//年费
-						List<ZlajFeeInfoTb> zfList_jlj = zfm.listInfoByOpt(zlId, "jlj");//奖励金
-						List<Object> list_gf = new ArrayList<Object>();
-						List<Object> list_dlf = new ArrayList<Object>();
-						List<Object> list_nf = new ArrayList<Object>();
-						List<Object> list_jlj = new ArrayList<Object>();
-						Double gfTotal = 0.00,dlfTotal = 0.00,nfTotal = 0.00,jljTotal = 0.00;
-						if(zfList_gf.size() > 0){
-							for(Iterator<ZlajFeeInfoTb> it = zfList_gf.iterator() ; it.hasNext();){
+						String feeTypeStatus = CommonTools.getFinalStr("feeTypeStatus", request);//费用类型（gf,dlf,nf,jlj）
+						Integer djStatus = CommonTools.getFinalInteger("djStatus", request);//代缴状态
+						Integer feeStatus = CommonTools.getFinalInteger("feeStatus", request);//缴费状态
+						Integer backStatus = CommonTools.getFinalInteger("backStatus", request);//退费状态
+						List<ZlajFeeInfoTb> feeList = zfm.listAllFeeByOpt(zlId, feeTypeStatus, djStatus, feeStatus, backStatus, cpyId);
+						Double feeTotal = 0.00;//费用总计
+						Double djFeeTotal = 0.00;//代缴费用统计
+						Double backFeeTotal = 0.00;//已退费用统计
+						Double diffFeeTotal = 0.00;//未退费用总计
+						Double discountsFeeTotal = 0.00;//优惠费用总计
+						List<Object> list_d = new ArrayList<Object>();
+						if(feeList.size() > 0){
+							for(Iterator<ZlajFeeInfoTb> it = feeList.iterator() ; it.hasNext();){
 								ZlajFeeInfoTb gf = it.next();
 								Map<String,Object> map_d = new HashMap<String,Object>();
-								map_d.put("feeName", gf.getFeeTypeInfoTb().getFeeName());
-								map_d.put("applyUserName", gf.getCpyUserInfo().getUserName());
-								map_d.put("feePrice", gf.getFeePrice());
-								map_d.put("jnDate", gf.getFeeJnDate());
-								map_d.put("jnStatus", gf.getFeeStatus().equals(0) ? "未交" : "已交");
-								map_d.put("djStatus", gf.getDjStatus().equals(0) ? "自交" : "代交");
-								map_d.put("gfDate", gf.getFeeEndDateGf());
-								map_d.put("cpyDate", gf.getFeeEndDateJj());
-								map_d.put("feeZd", gf.getFeeUpZd());
-								map_d.put("feeRemark", gf.getFeeRemark());
-								list_gf.add(map_d);
-								gfTotal += gf.getFeePrice();
+								String feeName = gf.getFeeTypeInfoTb().getFeeName();
+								map_d.put("feeId", gf.getId());
+								map_d.put("feeName", feeName);//费用名称
+								List<Object> list_d_sub = new ArrayList<Object>();
+								if(feeName.contains("年费")){//可能存在年费滞纳金
+									List<ZlajFeeSubInfoTb> feeSubList = zfm.listInfoByFeeId(gf.getId());
+									if(feeSubList.size() > 0){
+										for(Iterator<ZlajFeeSubInfoTb> it_sub = feeSubList.iterator() ; it_sub.hasNext();){
+											ZlajFeeSubInfoTb subFee = it_sub.next();
+											Map<String,Object> map_d_sub = new HashMap<String,Object>();
+											map_d_sub.put("subFeeName", feeName+"滞纳金");
+											map_d_sub.put("feeRange", subFee.getFeeRange());
+											map_d_sub.put("subFeePrice", subFee.getFeePrice());
+											map_d_sub.put("subFeeRemark", subFee.getFeeRemark());
+											list_d_sub.add(map_d_sub);
+										}
+									}
+								}
+								map_d.put("subFeeInfo", list_d_sub);//费用子项（年费滞纳金）--只供参考用
+								map_d.put("applyUserName", gf.getCpyUserInfo().getUserName());//操作人
+								Double feePrice = gf.getFeePrice();
+								map_d.put("feePrice", feePrice);//费用金额
+								map_d.put("jnDate", gf.getFeeJnDate());//缴费时间
+								Integer jnStatus = gf.getFeeStatus();
+								map_d.put("jnStatus", jnStatus.equals(0) ? "未交" : "已交");//缴费状态
+								Double feeRate = gf.getFeeRate();
+								if(feeRate > 0){
+									map_d.put("feeRate",feeRate * 100 + "%");//费减
+								}else{
+									map_d.put("feeRate","无费减");//费减
+								}
+								map_d.put("gfDate", gf.getFeeEndDateGf());//官方期限
+								map_d.put("cpyDate", gf.getFeeEndDateJj());//费用期限
+								Integer djStatus_temp = gf.getDjStatus();
+								map_d.put("djStatus", djStatus_temp.equals(0) ? "自交" : "代交");//代缴状态
+								if(djStatus.equals(1)){//代缴下才有退换信息
+									map_d.put("backStatus",gf.getBackStatus().equals(0) ? "未完成" : "已完成");//退换状态
+									Double backFee = gf.getBackFee();
+									map_d.put("backFee",backFee);//退换费用
+									Double discountsFee = gf.getDiscountsFee();
+									map_d.put("discountsFee",discountsFee);//优惠
+									map_d.put("backDate",gf.getBackDate());//退换日期
+									if(jnStatus.equals(1)){//费用为已交状态
+										//计入代缴费用总计
+										djFeeTotal += feePrice;
+										backFeeTotal += backFee;
+										discountsFeeTotal += discountsFee;
+									}
+								}else{
+									map_d.put("backStatus","");
+									map_d.put("backFee","");
+									map_d.put("discountsFee","");
+									map_d.put("backDate","");
+								}
+								map_d.put("feeZd", gf.getFeeUpZd());//缴费账单
+								map_d.put("feeBatchNo",gf.getFeeBatchNo());//缴费批次号
+								map_d.put("bankSerialNo",gf.getBankSerialNo());//银行缴费流水号
+								map_d.put("feeRemark", gf.getFeeRemark());//备注
+								list_d.add(map_d);
+								feeTotal += feePrice;
 							}
-							if(gfTotal > 0){
-								gfTotal = Convert.convertInputNumber_2(gfTotal);
+							if(feeTotal > 0){
+								feeTotal = Convert.convertInputNumber_2(feeTotal);
+							}
+							if(djFeeTotal > 0){
+								djFeeTotal = Convert.convertInputNumber_2(djFeeTotal);
+							}
+							if(backFeeTotal > 0){
+								backFeeTotal = Convert.convertInputNumber_2(backFeeTotal);
+							}
+							if(discountsFeeTotal > 0){
+								discountsFeeTotal = Convert.convertInputNumber_2(discountsFeeTotal);
 							}
 							map.put("gfResult", "success");
 						}else{
 							map.put("gfResult", "noInfo");
 						}
-						map.put("gfInfo", list_gf);
-						map.put("gfTotal", gfTotal);
-						
-						if(zfList_dlf.size() > 0){
-							for(Iterator<ZlajFeeInfoTb> it = zfList_dlf.iterator() ; it.hasNext();){
-								ZlajFeeInfoTb gf = it.next();
-								Map<String,Object> map_d = new HashMap<String,Object>();
-								map_d.put("feeName", gf.getFeeTypeInfoTb().getFeeName());
-								map_d.put("applyUserName", gf.getCpyUserInfo().getUserName());
-								map_d.put("feePrice", gf.getFeePrice());
-								map_d.put("jnDate", gf.getFeeJnDate());
-								map_d.put("jnStatus", gf.getFeeStatus().equals(0) ? "未交" : "已交");
-								map_d.put("djStatus", gf.getDjStatus().equals(0) ? "自交" : "代交");
-								map_d.put("gfDate", gf.getFeeEndDateGf());
-								map_d.put("cpyDate", gf.getFeeEndDateJj());
-								map_d.put("feeZd", gf.getFeeUpZd());
-								map_d.put("feeRemark", gf.getFeeRemark());
-								list_dlf.add(map_d);
-								dlfTotal += gf.getFeePrice();
-							}
-							if(dlfTotal > 0){
-								dlfTotal = Convert.convertInputNumber_2(dlfTotal);
-							}
-							map.put("dlfResult", "success");
-						}else{
-							map.put("dlfResult", "noInfo");
-						}
-						
-						map.put("dlfInfo", list_dlf);
-						map.put("dlfTotal", dlfTotal);
-						
-						if(zfList_nf.size() > 0){
-							for(Iterator<ZlajFeeInfoTb> it = zfList_nf.iterator() ; it.hasNext();){
-								ZlajFeeInfoTb gf = it.next();
-								Map<String,Object> map_d = new HashMap<String,Object>();
-								map_d.put("feeName", gf.getFeeTypeInfoTb().getFeeName());
-								map_d.put("applyUserName", gf.getCpyUserInfo().getUserName());
-								map_d.put("feePrice", gf.getFeePrice());
-								map_d.put("jnDate", gf.getFeeJnDate());
-								map_d.put("jnStatus", gf.getFeeStatus().equals(0) ? "未交" : "已交");
-								map_d.put("djStatus", gf.getDjStatus().equals(0) ? "自交" : "代交");
-								map_d.put("gfDate", gf.getFeeEndDateGf());
-								map_d.put("cpyDate", gf.getFeeEndDateJj());
-								map_d.put("feeZd", gf.getFeeUpZd());
-								map_d.put("feeRemark", gf.getFeeRemark());
-								list_nf.add(map_d);
-								nfTotal += gf.getFeePrice();;
-							}
-							if(nfTotal > 0){
-								nfTotal = Convert.convertInputNumber_2(nfTotal);
-							}
-							map.put("nfResult", "success");
-						}else{
-							map.put("nfResult", "noInfo");
-						}
-						
-						map.put("nfInfo", list_nf);
-						map.put("nfTotal", nfTotal);
-
-						if(zfList_jlj.size() > 0){
-							for(Iterator<ZlajFeeInfoTb> it = zfList_jlj.iterator() ; it.hasNext();){
-								ZlajFeeInfoTb gf = it.next();
-								Map<String,Object> map_d = new HashMap<String,Object>();
-								map_d.put("feeName", gf.getFeeTypeInfoTb().getFeeName());
-								map_d.put("applyUserName", gf.getCpyUserInfo().getUserName());
-								map_d.put("feePrice", gf.getFeePrice());
-								map_d.put("jnDate", "");
-								map_d.put("jnStatus", "");
-								map_d.put("djStatus", "");
-								map_d.put("gfDate", gf.getFeeEndDateGf());
-								map_d.put("cpyDate", "");
-								map_d.put("feeZd", "");
-								map_d.put("feeRemark", gf.getFeeRemark());
-								list_jlj.add(map_d);
-								jljTotal += gf.getFeePrice();;
-							}
-							if(jljTotal > 0){
-								jljTotal = Convert.convertInputNumber_2(jljTotal);
-							}
-							map.put("jljResult", "success");
-						}else{
-							map.put("jljResult", "noInfo");
-						}
-						
-						map.put("jljInfo", list_jlj);
-						map.put("jljTotal", jljTotal);
+						diffFeeTotal = Convert.convertInputNumber_2(djFeeTotal - backFeeTotal - discountsFeeTotal);
+						map.put("feeInfo", list_d);
+						map.put("djFeeTotal", djFeeTotal);
+						map.put("feeTotal", feeTotal);
+						map.put("backFeeTotal", backFeeTotal);
+						map.put("discountsFeeTotal", discountsFeeTotal);
+						map.put("diffFeeTotal", diffFeeTotal);
 					}
-					
 				}
 			}else{
 				msg = "noAbility";
