@@ -954,7 +954,7 @@ public class ZlMainAction extends DispatchAction {
 								map_d.put("cpyDate", gf.getFeeEndDateJj());//费用期限
 								Integer djStatus_temp = gf.getDjStatus();
 								map_d.put("djStatus", djStatus_temp.equals(0) ? "自交" : "代交");//代缴状态
-								if(djStatus.equals(1)){//代缴下才有退换信息
+								if(djStatus_temp.equals(1)){//代缴下才有退换信息
 									map_d.put("backStatus",gf.getBackStatus().equals(0) ? "未完成" : "已完成");//退换状态
 									Double backFee = gf.getBackFee();
 									map_d.put("backFee",backFee);//退换费用
@@ -973,7 +973,23 @@ public class ZlMainAction extends DispatchAction {
 									map_d.put("discountsFee","");
 									map_d.put("backDate","");
 								}
-								map_d.put("feeZd", gf.getFeeUpZd());//缴费账单
+								String feeZdFile = gf.getFeeUpZd();
+								map_d.put("feeZd", feeZdFile);//缴费账单
+								if(!feeZdFile.equals("")){
+									List<Object> list_zd = new ArrayList<Object>();
+									String[] feeZdFileArr = feeZdFile.split(",");
+									for(Integer i = 0 ; i < feeZdFileArr.length ; i++){
+										String zdName = feeZdFileArr[i].substring((feeZdFileArr[i].lastIndexOf("\\") + 1));
+										String zdSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + feeZdFileArr[i]);
+										Map<String,String> map_zd = new HashMap<String,String>();
+										map_zd.put("upPath", feeZdFileArr[i]);
+										map_zd.put("zdName", zdName);
+										map_zd.put("fileSize", zdSize);
+										map_zd.put("downFilePath", feeZdFileArr[i]);
+										list_zd.add(map_zd);
+									}
+									map_d.put("zdInfo", list_zd);
+								}
 								map_d.put("feeBatchNo",gf.getFeeBatchNo());//缴费批次号
 								map_d.put("bankSerialNo",gf.getBankSerialNo());//银行缴费流水号
 								map_d.put("feeRemark", gf.getFeeRemark());//备注
