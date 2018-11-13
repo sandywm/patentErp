@@ -120,6 +120,9 @@ public class ReadExcelFile {
 		 Integer c = 3;
 		 Integer d = 3;
 		 Double a = 5.0;
-		 System.out.println(5.0 + (double)2 / 10);
+		 String bbb = "tongguo:";
+		 String ccc = ":kehuFail";
+		 System.out.println("1: "+bbb.split(":")[0]);
+		 System.out.println("2: "+ccc.split(":")[1]);
 	}
 }

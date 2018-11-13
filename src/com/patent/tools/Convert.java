@@ -97,6 +97,19 @@ public class Convert {
 	}
 	
 	/**
+	 * 保留1位小数的四舍五入
+	 * @description
+	 * @author wm
+	 * @date 2017-6-21 下午05:19:40
+	 * @param inputD
+	 * @return
+	 */
+	public static Double convertInputNumber_5(double inputD){
+		DecimalFormat    df   = new DecimalFormat("######0.0");   
+		return Double.parseDouble(df.format(inputD));
+	}
+	
+	/**
 	 * 保留2位小数的四舍五入(格式化金额)
 	 * @description
 	 * @author wm
