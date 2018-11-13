@@ -992,9 +992,9 @@ public class ZlMainAction extends DispatchAction {
 							if(discountsFeeTotal > 0){
 								discountsFeeTotal = Convert.convertInputNumber_2(discountsFeeTotal);
 							}
-							map.put("gfResult", "success");
+							msg = "success";
 						}else{
-							map.put("gfResult", "noInfo");
+							msg = "noInfo";
 						}
 						diffFeeTotal = Convert.convertInputNumber_2(djFeeTotal - backFeeTotal - discountsFeeTotal);
 						map.put("feeInfo", list_d);
