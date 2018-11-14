@@ -922,22 +922,14 @@ public class ZlMainAction extends DispatchAction {
 								String feeName = gf.getFeeTypeInfoTb().getFeeName();
 								map_d.put("feeId", gf.getId());
 								map_d.put("feeName", feeName);//费用名称
-								List<Object> list_d_sub = new ArrayList<Object>();
+								boolean flag = false;
 								if(feeName.contains("年费")){//可能存在年费滞纳金
 									List<ZlajFeeSubInfoTb> feeSubList = zfm.listInfoByFeeId(gf.getId());
 									if(feeSubList.size() > 0){
-										for(Iterator<ZlajFeeSubInfoTb> it_sub = feeSubList.iterator() ; it_sub.hasNext();){
-											ZlajFeeSubInfoTb subFee = it_sub.next();
-											Map<String,Object> map_d_sub = new HashMap<String,Object>();
-											map_d_sub.put("subFeeName", feeName+"滞纳金");
-											map_d_sub.put("feeRange", subFee.getFeeRange());
-											map_d_sub.put("subFeePrice", subFee.getFeePrice());
-											map_d_sub.put("subFeeRemark", subFee.getFeeRemark());
-											list_d_sub.add(map_d_sub);
-										}
+										flag = true;
 									}
 								}
-								map_d.put("subFeeInfo", list_d_sub);//费用子项（年费滞纳金）--只供参考用
+								map_d.put("subFeeFlag", flag);//费用子项（年费滞纳金）--只供参考用
 								map_d.put("applyUserName", gf.getCpyUserInfo().getUserName());//操作人
 								Double feePrice = gf.getFeePrice();
 								map_d.put("feePrice", feePrice);//费用金额
@@ -975,22 +967,6 @@ public class ZlMainAction extends DispatchAction {
 								}
 								String feeZdFile = gf.getFeeUpZd();
 								map_d.put("feeZd", feeZdFile);//缴费账单
-								if(!feeZdFile.equals("")){
-									List<Object> list_zd = new ArrayList<Object>();
-									String[] feeZdFileArr = feeZdFile.split(",");
-									for(Integer i = 0 ; i < feeZdFileArr.length ; i++){
-										String zdName = feeZdFileArr[i].substring((feeZdFileArr[i].lastIndexOf("\\") + 1));
-										String zdSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + feeZdFileArr[i]);
-										Map<String,String> map_zd = new HashMap<String,String>();
-										map_zd.put("zdName", zdName);
-										map_zd.put("fileSize", zdSize);
-										map_zd.put("downFilePath", feeZdFileArr[i]);
-										list_zd.add(map_zd);
-									}
-									map_d.put("zdInfo", list_zd);
-								}
-								map_d.put("feeBatchNo",gf.getFeeBatchNo());//缴费批次号
-								map_d.put("bankSerialNo",gf.getBankSerialNo());//银行缴费流水号
 								map_d.put("feeRemark", gf.getFeeRemark());//备注
 								list_d.add(map_d);
 								feeTotal += feePrice;
@@ -1025,6 +1001,77 @@ public class ZlMainAction extends DispatchAction {
 			}
 		}else{
 			msg = "noAbility";
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取指定专利收费明细的滞纳金/付账单
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-14 上午08:18:37
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getSubZlInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajFeeInfoManager zfm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		String opt = CommonTools.getFinalStr("opt", request);//zd(账单),znj(滞纳金)
+		Integer feeId = CommonTools.getFinalInteger("feeId", request);//费用明细编号
+		List<Object> list_d = new ArrayList<Object>();
+		String msg = "error";
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(!opt.equals("") && feeId > 0){
+			if(opt.equals("znj")){
+				List<ZlajFeeSubInfoTb> feeSubList = zfm.listInfoByFeeId(feeId);
+				if(feeSubList.size() > 0){
+					msg = "success";
+					for(Iterator<ZlajFeeSubInfoTb> it_sub = feeSubList.iterator() ; it_sub.hasNext();){
+						ZlajFeeSubInfoTb subFee = it_sub.next();
+						Map<String,Object> map_d_sub = new HashMap<String,Object>();
+						map_d_sub.put("subFeeName", subFee.getFeeTypeInfoTb().getFeeName()+"滞纳金");
+						map_d_sub.put("feeRange", subFee.getFeeRange());
+						map_d_sub.put("subFeePrice", subFee.getFeePrice());
+						map_d_sub.put("subFeeRemark", subFee.getFeeRemark());
+						list_d.add(map_d_sub);
+					}
+					map.put("subFeeInfo", list_d);
+				}else{
+					msg = "noInfo";
+				}
+			}else if(opt.equals("zd")){
+				ZlajFeeInfoTb zlf = zfm.getFeeEntityById(feeId);
+				if(zlf != null){
+					String feeZdFile = zlf.getFeeUpZd();
+					if(!feeZdFile.equals("")){
+						msg = "success";
+						List<Object> list_zd = new ArrayList<Object>();
+						String[] feeZdFileArr = feeZdFile.split(",");
+						for(Integer i = 0 ; i < feeZdFileArr.length ; i++){
+							String zdName = feeZdFileArr[i].substring((feeZdFileArr[i].lastIndexOf("\\") + 1));
+							String zdSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + feeZdFileArr[i]);
+							Map<String,String> map_zd = new HashMap<String,String>();
+							map_zd.put("zdName", zdName);
+							map_zd.put("fileSize", zdSize);
+							map_zd.put("downFilePath", feeZdFileArr[i]);
+							list_zd.add(map_zd);
+						}
+						//获取
+						map.put("zdInfo", list_zd);
+						map.put("feeBatchNo",zlf.getFeeBatchNo());//缴费批次号
+						map.put("bankSerialNo",zlf.getBankSerialNo());//银行缴费流水号
+					}else{
+						msg = "noInfo";
+					}
+				}
+			}
 		}
 		map.put("result", msg);
 		this.getJsonPkg(map, response);
