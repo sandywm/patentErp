@@ -254,7 +254,14 @@
 								strHtml += '<span class="comCheckStatus noPasCheckStatus"></span>';
 							}
 							if(d.ajLqStatus == 0){//待领取
-								strHtml += '<span class="waitReceive">[待领取]</span><span class="zlTitleP">'+ d.title +'</span>';
+								if(d.zlCheckStatus == 0){//表示未审核
+									strHtml += '<span class="waitReceive">[待领取][未审核]</span><span class="zlTitleP">'+ d.title +'</span>';
+								}else if(d.zlCheckStatus == 1){
+									strHtml += '<span class="waitReceive">[待领取][已通过]</span><span class="zlTitleP">'+ d.title +'</span>';
+								}else{
+									strHtml += '<span class="waitReceive">[待领取][未通过]</span><span class="zlTitleP">'+ d.title +'</span>';
+								}
+								//strHtml += '<span class="waitReceive">[待领取]</span><span class="zlTitleP">'+ d.title +'</span>';
 								return strHtml;	
 							}else{
 								strHtml += '<span class="hasReceive">[已领取]</span><span class="zlTitleP">'+ d.title +'</span>';

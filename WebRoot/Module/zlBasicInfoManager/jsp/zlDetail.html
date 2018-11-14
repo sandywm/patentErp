@@ -211,7 +211,8 @@
 					upZlFlag : false,
 					fpZlFlag : false,
 					actGetMxFlag : false,
-					isHasFujianFlag : false
+					isHasFujianFlag : false,
+					ajStatus : 0
 				},
 				init : function(){
 					this.onLoad();
@@ -249,12 +250,13 @@
 				        url:'/zlm.do?action=getZlDetail',
 				        success:function (json){
 				        	layer.closeAll('loading');
-				        	//console.log(json)
+				        	console.log(json)
 				        	if(json['result'] == 'success'){
 				        		if(opts == 'basic'){//获取基本信息
 				        			zlId = json.ajId;
 		   			        		_this.renderZlBasicInfo(json);
 				        		}else if(opts == 'lcfz'){//获取流程分配人员
+				        			_this.data.ajStatus = parseFloat(json.ajStatus);
 				        			_this.renderLcFpPeo(json);
 				        		}else if(opts == 'lc'){//获取流程详情
 				        			_this.loadLcDetail(json);
@@ -637,6 +639,8 @@
 						}
 						if(checkUserId == undefined || checkUserId == ''){
 							layer.msg('请选择专利审核人员！', {icon:5,anim:6,time:1500});
+						}else if(cusSuerUserId == undefined || cusSuerUserId==''){
+							layer.msg('请选择客户确认人员！', {icon:5,anim:6,time:1500});
 						}else if(tjUserId == undefined || tjUserId == ''){
 							layer.msg('请选择定稿提交人员！', {icon:5,anim:6,time:1500});
 						}else if(tzsUserId == undefined || tzsUserId ==''){
@@ -649,8 +653,6 @@
 							layer.msg('请选择专利补正审核人员！', {icon:5,anim:6,time:1500});
 						}else if(bhUserId == undefined || bhUserId==''){
 							layer.msg('请选择专利驳回人员！', {icon:5,anim:6,time:1500});
-						}else if(cusSuerUserId == undefined || cusSuerUserId==''){
-							layer.msg('请选择客户确认人员！', {icon:5,anim:6,time:1500});
 						}else{
 							//alert(zxUserId + "=zxUserId-" + checkUserId + "=checkUserId-" + tjUserId + "=tjUserId-" + tzsUserId + "=tzsUserId-" + feeUserId + "=feeUserId-" + bzUserId + "=bzUserId-" + bzshUserId + "=bzshUserId-" + bhUserId + "=bhUserId" + cusSuerUserId + "==cusSuerUserId")
 							var field={zlId:parent.globalZlId,zxUserId:zxUserId,checkUserId:checkUserId,tjUserId:tjUserId,tzsUserId:tzsUserId,
@@ -1186,7 +1188,9 @@
 					}
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
-						strHtml += '<span id="addZxPeople" opt="addZxUser" lcfpId="'+ json.zxUserId +'" class="addSpan fl">添加/编辑</span><div class="layui-form-mid layui-word-aux">(注：如若未指定专利撰写人员，需撰写人员本人自行进行任务领取)</div>';
+						if(_this.data.ajStatus < 7.0){
+							strHtml += '<span id="addZxPeople" opt="addZxUser" lcfpId="'+ json.zxUserId +'" class="addSpan fl">添加/编辑</span><div class="layui-form-mid layui-word-aux">(注：如若未指定专利撰写人员，需撰写人员本人自行进行任务领取)</div>';
+						}
 					}
 					strHtml += '</div></div>';
 					//专利审核人员
@@ -1197,7 +1201,22 @@
 					}
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
-						strHtml += '<span id="addZlShPeople" opt="addZlShUser" lcfpId="'+ json.checkUserId +'" class="addSpan fl">添加/编辑</span>';	
+						if(_this.data.ajStatus < 7.0){
+							strHtml += '<span id="addZlShPeople" opt="addZlShUser" lcfpId="'+ json.checkUserId +'" class="addSpan fl">添加/编辑</span>';	
+						}
+					}
+					strHtml += '</div></div>';
+					//客户确认人员
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>客户确认人员</label>';
+					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="cusSureBox" class="multiBox fl">';
+					if(json.cusCheckUserId != 0){
+						strHtml += '<p id="addCusSureUser_con" userId="'+ json.cusCheckUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.cusCheckUserName +'</p>';
+					}
+					strHtml += '</div>';
+					if(this.data.fpZlFlag){
+						if(_this.data.ajStatus < 7.0){
+							strHtml += '<span id="addCusSure" opt="addCusSureUser" lcfpId="'+ json.cusCheckUserId +'" class="addSpan fl">添加/编辑</span>';
+						}
 					}
 					strHtml += '</div></div>';
 					// 定稿提交人员 
@@ -1208,7 +1227,9 @@
 					}
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
-						strHtml += '<span id="addDinggao" opt="addDingGaoUser" lcfpId="'+ json.tjUserId +'" class="addSpan fl">添加/编辑</span>';
+						if(_this.data.ajStatus < 7.0){
+							strHtml += '<span id="addDinggao" opt="addDingGaoUser" lcfpId="'+ json.tjUserId +'" class="addSpan fl">添加/编辑</span>';
+						}
 					}
 					strHtml += '</div></div>';
 					//导入通知书人员
@@ -1264,17 +1285,6 @@
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
 						strHtml += '<span id="addBohui" opt="addZlBhUser" lcfpId="'+ json.bhUserId +'" class="addSpan fl">添加/编辑</span>';
-					}
-					strHtml += '</div></div>';
-					//客户确认人员
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>客户确认人员</label>';
-					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="cusSureBox" class="multiBox fl">';
-					if(json.cusCheckUserId != 0){
-						strHtml += '<p id="addCusSureUser_con" userId="'+ json.cusCheckUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.cusCheckUserName +'</p>';
-					}
-					strHtml += '</div>';
-					if(this.data.fpZlFlag){
-						strHtml += '<span id="addCusSure" opt="addCusSureUser" lcfpId="'+ json.cusCheckUserId +'" class="addSpan fl">添加/编辑</span>';
 					}
 					strHtml += '</div></div>';
 					if(this.data.fpZlFlag){
@@ -1465,7 +1475,7 @@
 							}},
 							{field : 'backDate', title: '退换时间', width:120, align:'center'},
 							{field : 'discountsFee', title: '优惠费用', width:100, align:'center'},
-							{field : 'feeZd', title: '费用账单', width:100, align:'center'},
+							//{field : 'feeZd', title: '费用账单', width:100, align:'center'},
 							{field : 'feeRemark', title: '备注', width:210, align:'center'},
 							{field : '', title: '操作', width:190, align:'center',fixed:'right',templet:function(d){
 								var strHtml_subFee = '',strHtml_zd = '';
