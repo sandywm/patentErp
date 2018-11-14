@@ -78,5 +78,15 @@ public interface ZlajLcInfoDao {
 	 */
 	List<ZlajLcInfoTb> findLastInfo(Session sess,Integer ajId);
 	
+	/**
+	 * 获取指定专利的专利流程（id降序排列）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-14 下午04:16:56
+	 * @param sess
+	 * @param zlId 专利编号
+	 * @return
+	 */
+	List<ZlajLcInfoTb> findInfoByZlId(Session sess,Integer zlId);
 	
 }

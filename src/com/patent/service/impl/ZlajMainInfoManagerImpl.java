@@ -371,7 +371,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 				if(!sqrId.equals("")){
 					zl.setAjSqrId(sqrId);
 				}
-				if(sqrName.equals("")){
+				if(!sqrName.equals("")){
 					zl.setAjSqrName(sqrName);
 				}
 				if(!fmrId.equals("")){

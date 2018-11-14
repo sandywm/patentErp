@@ -113,5 +113,16 @@ public interface ZlajLcInfoManager {
 	 */
 	boolean updateLcNoInfoById(Integer id,Double lcNo) throws WEBException;
 	
+	/**
+	 * 获取指定专利的专利流程列表（id降序排列）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-14 下午04:18:22
+	 * @param zlId 专利编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajLcInfoTb> listInfoByZlId(Integer zlId) throws WEBException;
+	
 	
 }

@@ -62,4 +62,11 @@ public class ZlajLcInfoDaoImpl implements ZlajLcInfoDao{
 		return sess.createQuery(hql).setFirstResult(0).setMaxResults(1).list();
 	}
 
+	@Override
+	public List<ZlajLcInfoTb> findInfoByZlId(Session sess, Integer zlId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajLcInfoTb as lc where lc.zlajMainInfoTb.id = "+zlId + " order by lc.id desc";
+		return sess.createQuery(hql).list();
+	}
+
 }

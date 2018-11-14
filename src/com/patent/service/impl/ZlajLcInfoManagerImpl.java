@@ -203,4 +203,20 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajLcInfoTb> listInfoByZlId(Integer zlId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return lcDao.findInfoByZlId(sess, zlId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定专利的流程任务(id降序排列)时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

@@ -837,7 +837,7 @@ public class ZlMainAction extends DispatchAction {
 						}
 					}else if(opt.equals("lc")){//流程
 						map = new HashMap<String,Object>();
-						List<ZlajLcInfoTb> lcList = lcm.listLcInfoByAjId(zlId);
+						List<ZlajLcInfoTb> lcList = lcm.listInfoByZlId(zlId);
 						List<Object> list_lc = new ArrayList<Object>();
 						if(lcList.size() > 0){
 							msg = "success";
@@ -1474,10 +1474,16 @@ public class ZlMainAction extends DispatchAction {
 				if(zlList.size() > 0){
 					ZlajMainInfoTb zl = zlList.get(0);
 					if(zl.getAjStopStatus().equals(0)){//案件正常状态下
-						boolean flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId,tjUserId, 
-								tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+						Double ajStatus = Double.parseDouble(zl.getAjStatus());//double类型
+						boolean flag = false;
+						if(ajStatus >= 7){//定稿提交以后---专利撰写、专利审核、客户确认、定稿提交人员不能再进行修改
+							flag = zlm.updateOperatorUserInfoByZlId(zlId, -1, -1, -1,-1, 
+									tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+						}else{
+							flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId,tjUserId, 
+									tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+						}
 						if(flag){
-							Double ajStatus = Double.parseDouble(zl.getAjStatus());//double类型
 							Integer checkUserId_db = zl.getCheckUserId();
 							Integer cusCheckUserId_db = zl.getCusCheckUserId();
 							Integer zxUserId_db = zl.getZxUserId();
@@ -1495,8 +1501,9 @@ public class ZlMainAction extends DispatchAction {
 								double currLcNo = 2.0;
 								String ajTitle = lc.getZlajMainInfoTb().getAjTitle();
 								//案件
-								if(ajStatus < 7){
+								if(ajStatus < 7){//所有人员都可以分配。定稿提交以后---专利撰写、专利审核、客户确认、定稿提交人员不能再进行修改
 									List<ZlajLcMxInfoTb> mxList = mxm.listFirstInfoByLcId(lcId);
+									//1:撰写人
 									if(zxUserId_db.equals(0)){//没有撰写人
 										if(!zxUserId.equals(zxUserId_db)){//需要指定撰写人
 											if(mxList.size() > 0){
@@ -1520,15 +1527,7 @@ public class ZlMainAction extends DispatchAction {
 											mxm.updateEdateById(mxList.get(0).getId(), zxUserId, -1, "", "", "", currDate, "操作人员主动分配",lcPjScore);
 										}
 									}
-									msg = "success";
-								}else{
-									if(!zxUserId.equals(zxUserId_db)){//需要指定撰写人
-										msg = "notUp";//定稿提交以后不能进行修改
-									}else{
-										msg = "success";
-									}
-								}
-								if(ajStatus < 7 && msg.equals("success")){
+									//2:专利审核人员
 									if(checkUserId_db.equals(0)){
 										mxm.addLcMx(lcId, checkUserId, "技术审核人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
 										mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, checkUserId, "cpyUser", "新任务通知：专利审核", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成专利审核工作<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
@@ -1537,6 +1536,7 @@ public class ZlMainAction extends DispatchAction {
 											mxm.addLcMx(lcId, checkUserId, "技术审核人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
 										}
 									}
+									//3:客户确认人员
 									if(cusCheckUserId_db.equals(0)){
 										mxm.addLcMx(lcId, cusCheckUserId, "客户确认人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
 										mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, checkUserId, "cpyUser", "新任务通知：客户确认", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成客户确认对接工作<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
@@ -1545,6 +1545,7 @@ public class ZlMainAction extends DispatchAction {
 											mxm.addLcMx(lcId, cusCheckUserId, "客户确认人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
 										}
 									}
+									//4：定稿提交人员
 									if(tjUserId_db.equals(0)){
 										mxm.addLcMx(lcId, tjUserId, "定稿提交人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
 										mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, tjUserId, "cpyUser", "新任务通知：定稿提交", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成专利提交工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
@@ -1553,55 +1554,53 @@ public class ZlMainAction extends DispatchAction {
 											mxm.addLcMx(lcId, tjUserId, "定稿提交人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
 										}
 									}
-								}else{
-									msg = "notUp";//定稿提交以后不能进行修改
 								}
-								if(msg.equals("success")){
-									if(tzsUserId_db.equals(0)){
-										mxm.addLcMx(lcId, tzsUserId, "通知书人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
-										mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, tzsUserId, "cpyUser", "新任务通知：导入通知书", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成通知书导入工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
-									}else{
-										if(!tzsUserId.equals(tzsUserId_db)){
-											mxm.addLcMx(lcId, tzsUserId, "通知书人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
-										}
+								
+								if(tzsUserId_db.equals(0)){
+									mxm.addLcMx(lcId, tzsUserId, "通知书人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
+									mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, tzsUserId, "cpyUser", "新任务通知：导入通知书", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成通知书导入工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
+								}else{
+									if(!tzsUserId.equals(tzsUserId_db)){
+										mxm.addLcMx(lcId, tzsUserId, "通知书人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
 									}
-									if(feeUserId_db.equals(0)){
-										mxm.addLcMx(lcId, feeUserId, "费用催缴人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
-										mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, feeUserId, "cpyUser", "新任务通知：费用催缴", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成费用催缴工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
-									}else{
-										if(!feeUserId.equals(feeUserId_db)){
-											mxm.addLcMx(lcId, feeUserId, "费用催缴人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
-										}
+								}
+								if(feeUserId_db.equals(0)){
+									mxm.addLcMx(lcId, feeUserId, "费用催缴人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
+									mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, feeUserId, "cpyUser", "新任务通知：费用催缴", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成费用催缴工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
+								}else{
+									if(!feeUserId.equals(feeUserId_db)){
+										mxm.addLcMx(lcId, feeUserId, "费用催缴人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
 									}
-									if(bzUserId_db.equals(0)){
-										mxm.addLcMx(lcId, bzUserId, "补正人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
-										mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, bzUserId, "cpyUser", "新任务通知：专利补正", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成专利补正工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
-									}else{
-										if(!bzUserId.equals(bzUserId_db)){
-											mxm.addLcMx(lcId, bzUserId, "补正人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
-										}
+								}
+								if(bzUserId_db.equals(0)){
+									mxm.addLcMx(lcId, bzUserId, "补正人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
+									mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, bzUserId, "cpyUser", "新任务通知：专利补正", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成专利补正工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
+								}else{
+									if(!bzUserId.equals(bzUserId_db)){
+										mxm.addLcMx(lcId, bzUserId, "补正人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
 									}
-									if(bzshUserId_db.equals(0)){
-										mxm.addLcMx(lcId, bzshUserId, "补正审核人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
-										mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, bzshUserId, "cpyUser", "新任务通知：补正审核", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成专利补正审核工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
-									}else{
-										if(!bzshUserId.equals(bzshUserId_db)){
-											mxm.addLcMx(lcId, bzshUserId, "补正审核人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
-										}
+								}
+								if(bzshUserId_db.equals(0)){
+									mxm.addLcMx(lcId, bzshUserId, "补正审核人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
+									mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, bzshUserId, "cpyUser", "新任务通知：补正审核", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成专利补正审核工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
+								}else{
+									if(!bzshUserId.equals(bzshUserId_db)){
+										mxm.addLcMx(lcId, bzshUserId, "补正审核人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
 									}
-									if(bhUserId_db.equals(0)){
-										mxm.addLcMx(lcId, bhUserId, "驳回人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
-										mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, bhUserId, "cpyUser", "新任务通知：专利驳回", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成专利驳回任务工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
-									}else{
-										if(!bhUserId.equals(bhUserId_db)){
-											mxm.addLcMx(lcId, bhUserId, "驳回人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
-										}
+								}
+								if(bhUserId_db.equals(0)){
+									mxm.addLcMx(lcId, bhUserId, "驳回人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore);
+									mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, bhUserId, "cpyUser", "新任务通知：专利驳回", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成专利驳回任务工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
+								}else{
+									if(!bhUserId.equals(bhUserId_db)){
+										mxm.addLcMx(lcId, bhUserId, "驳回人员修改", currLcNo, currDate, currDate, "", 0, "", "",  0.0, "操作人员修改",lcPjScore);
 									}
 								}
 								//如果人员都分配了，修改人员分配流程完成
 								if(flag_final){
 									lcm.updateComInfoById(lcId, currDate);
 								}
+								msg = "success";
 							}
 						}
 					}else{
@@ -2875,10 +2874,8 @@ public class ZlMainAction extends DispatchAction {
 														if(lcLen > 0){
 															if(lcLen > 9){//一直停留在9
 																lcLen = 9;
-																lcNo = 5.0 + (double)lcLen / 10;
-															}else{
-																lcNo = 5.0 + (double)lcLen / 10 + 0.1;
 															}
+															lcNo = 5.0 + (double)lcLen / 10;
 														}else{
 															lcNo = 5.0;//客户确认
 														}
@@ -2960,7 +2957,7 @@ public class ZlMainAction extends DispatchAction {
 														List<ZlajLcMxInfoTb> mxList_spec = mxm.listSpecInfoInfoByOpt(zlId, "专利审核");
 														Integer mxNum = mxList_spec.size();
 														if(mxNum > 0){//肯定存在记录
-															cum.updateInfoById(zl.getZxUserId(), 1, "", "", mxList_spec.get(mxNum - 1).getLcPjScore());
+															cum.updateInfoById(currUserId, 1, "", "", mxList_spec.get(mxNum - 1).getLcPjScore());
 														}
 													}else{
 														msg = "error";
@@ -2968,7 +2965,6 @@ public class ZlMainAction extends DispatchAction {
 												}
 											}else if(lcNo == 6.0){//案件定稿提交
 												//提交之前需要先判断专利的信息是否填写完成
-												upFlag = lcm.updateComInfoById(lcId, currDate);//修改流程完成时间
 												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//撰写附件（参数），可以在定稿时增加，也可以不增加
 												String zlTitle = Transcode.unescape_new1("zlTitle", request);//定稿时提交的专利标题
 												String sqrId = CommonTools.getFinalStr("sqrId", request);//申请人
@@ -2987,7 +2983,9 @@ public class ZlMainAction extends DispatchAction {
 														String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
 														fjm.addFj(zlId, fjNameArr[i], fjVersion, "定稿文件", fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 													}
-													mxm.updateEdateById(lcMxId, zl.getTjUserId(), zl.getTjUserId(), upZxFile, currDate, "", currDate, taskRemark,-1);
+													mxm.updateEdateById(lcMxId, zl.getTjUserId(), currUserId, upZxFile, currDate, "", currDate, taskRemark,-1);
+													//修改流程完成时间
+													lcm.updateComInfoById(lcId, currDate);
 													//修改必须的信息
 													zlm.updateBasicInfoById(zlId, zlTitle, sqrId, sqrName, fmrId, "", ajFjInfo);
 													lcNo = 7.0;
