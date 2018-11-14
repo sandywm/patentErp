@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlBasicInfoManager/css/lcDetail.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+ 	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+  	<title>查看附件</title>
+</head>
+<body style="background:#fff;">
+	<div class="fujianWrap">
+		<ul class="fujianTit">
+			<li class="fileOneWid">附件名称</li>
+			<li class="fileTwoWid">上传人</li>
+			<li class="fileThreeWid">上传日期</li>
+			<li class="fileTwoWid">文件大小</li>
+			<li class="fileTwoWid">操作</li>
+		</ul>
+		<div id="fujianCon">
+			<ul id="fujianConUl"></ul>
+		</div>
+	</div>
+	
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var lxMxFujian = parent.lxMxFujian;
+		layui.config({
+			base: '/plugins/frame/js/'
+		}).extend({ //设定组件别名
+		    commonScrollBar: 'scrollBar'// 表示模块文件的名字
+		}).use(['layer','jquery','scrollBar'],function(){
+			var $ = layui.jquery,
+				layer = layui.layer,
+				commonScrollBar = layui.scrollBar;
+			function loadFujianList(){
+				var strHtml = '';
+				for(var i=0;i<lxMxFujian.length;i++){
+					strHtml += '<li><p class="fileOneWid ellip" title="'+ lxMxFujian[i].upFileName +'">'+ lxMxFujian[i].upFileName +'</p>';
+					strHtml += '<p class="fileTwoWid">'+ lxMxFujian[i].upUserName +'</p>';
+					strHtml += '<p class="fileThreeWid">'+ lxMxFujian[i].upDate +'</p>';
+					if(lxMxFujian[i].upFileSize != ''){
+						strHtml += '<p class="fileTwoWid">'+ lxMxFujian[i].upFileSize +'</p>';
+					}else{
+						strHtml += '<p class="fileTwoWid">&nbsp;</p>';
+					}
+					strHtml += '<p class="fileTwoWid"><a href="javascript:void(0)" class="downBtn" downFilePath="'+ lxMxFujian[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a></p></li>';
+				}
+				$('#fujianConUl').html(strHtml);
+				addActScrollBar();
+				downFile();
+			}
+			function addActScrollBar(){
+				if($('#fujianCon').height() < $('#fujianConUl').height()){
+					var oScroll = '<div id="scrollParent" class="parentScroll"><div id="scrollSon" class="scrollBar"></div></div>';
+					//创建动态模拟滚动条
+					$('#fujianCon').append(oScroll);
+					commonScrollBar.scrollBar('fujianCon','fujianConUl','scrollParent','scrollSon',25);
+				}
+			}
+			function downFile(){
+				$('.downBtn').on('click',function(){
+					var downFilePath = $(this).attr('downFilePath');
+					layer.load('1');
+					var form = $("<form>");   //定义一个form表单
+					form.attr('style', 'display:none'); //在form表单中添加查询参数
+					form.attr('target', '');
+						form.attr('method', 'post');
+					form.attr('action', "/zlm.do?action=downFile");
+					var input1 = $('<input>');
+					input1.attr('type', 'hidden');
+					input1.attr('name', 'fileUrl');
+					input1.attr('value', escape(downFilePath));
+					$('body').append(form);  //将表单放置在web中 
+					form.append(input1);   //将查询参数控件提交到表单上
+	           		form.submit();
+	           		layer.closeAll('loading');
+				});
+			}
+			$(function(){
+				loadFujianList();
+			});
+		});
+	</script>
+</body> 
+</html>

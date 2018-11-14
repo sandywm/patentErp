@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlBasicInfoManager/css/lcDetail.css" rel="stylesheet" type="text/css"/>
+  	<title>查看账单附件记录</title>
+</head>
+<body style="background:#fff;">
+	<div class="liushuiNum" style="display:none;"></div>
+	<ul id="subFeeTit" class="clearfix">
+		<li class="oneZdWid">账单附件名</li>
+		<li class="twoZdWid">附件大小</li>
+		<li class="twoZdWid">操作</li>
+	</ul>
+	<div id="zdCons">
+		<ul id="zdConUl"></ul>
+	</div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var globalFeeId = parent.globalFeeId;
+		layui.config({
+			base: '/plugins/frame/js/'
+		}).extend({ //设定组件别名
+		    commonScrollBar: 'scrollBar'// 表示模块文件的名字
+		}).use(['jquery','scrollBar','layer'],function(){
+			var $ = layui.jquery,
+				layer = layui.layer,
+				commonScrollBar = layui.scrollBar;
+			var page = {
+				init : function(){
+					this.onLoad();
+				},
+				onLoad : function(){
+					var _this = this,noData='<div class="noData" style="display:block;"><i class="iconfont layui-extend-noData"></i><p>暂无记录<p></div>';
+					$.ajax({
+  						type:'post',
+				        async:false,
+				        dataType:'json',
+				        url:'/zlm.do?action=getSubZlInfo',
+				        data : {opt:'zd',feeId:globalFeeId},
+				        success:function (json){
+				        	layer.closeAll('loading');
+				        	console.log(json)
+				        	if(json['result'] == 'success'){
+				        		var zdInfo = json.zdInfo;
+				        		$('.liushuiNum').show().html('<p>当前账单缴费批次号：<span>'+ json.feeBatchNo +'</span>，银行流水号为：<span>'+ json.bankSerialNo +'</span></p>');
+				        		_this.renderZdInfo(zdInfo);
+				        	}else if(json['result'] == 'noInfo'){
+				        		$('#zdConUl').html(noData).removeClass('hasDataHei').addClass('noDataHei');
+				        		$('.liushuiNum').hide().html('');
+				        	}
+				        }
+  					});
+				},
+				renderZdInfo : function(zdInfo){
+					var strHtml = '';
+					for(var i=0;i<zdInfo.length;i++){
+						strHtml += '<li>';
+						strHtml += '<p class="oneZdWid ellip">'+ zdInfo[i].zdName +'</p>';
+						if(zdInfo[i].fileSize != ''){
+							strHtml += '<p class="twoZdWid">'+ zdInfo[i].fileSize +'</p>';	
+						}else{
+							strHtml += '<p class="twoZdWid">&nbsp;</p>';
+						}
+						strHtml += '<p class="twoZdWid"><a class="downloadBtn downBtn" href="javascript:void(0)" downFilePath="'+ zdInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a></p>';
+					}
+					$('#zdCons').removeClass('noDataHei').addClass('hasDataHei');
+					$('#zdCons ul').html(strHtml);
+					$('#zdCons li:odd').addClass('oddColor');
+					this.addActScrollBar();
+					downFile();
+				},
+				addActScrollBar : function(){
+					if($('#zdCons').height() < $('#zdConUl').height()){
+						var oScroll = '<div id="scrollParent" class="parentScroll"><div id="scrollSon" class="scrollBar"></div></div>';
+						//创建动态模拟滚动条
+						$('#zdCons').append(oScroll);
+						commonScrollBar.scrollBar('zdCons','zdConUl','scrollParent','scrollSon',25);
+					}
+				}
+			};
+			function downFile(){
+				$('.downloadBtn').on('click',function(){
+					var downFilePath = $(this).attr('downFilePath');
+					layer.load('1');
+					var form = $("<form>");   //定义一个form表单
+					form.attr('style', 'display:none'); //在form表单中添加查询参数
+					form.attr('target', '');
+						form.attr('method', 'post');
+					form.attr('action', "/zlm.do?action=downFile");
+					var input1 = $('<input>');
+					input1.attr('type', 'hidden');
+					input1.attr('name', 'fileUrl');
+					input1.attr('value', escape(downFilePath));
+					$('body').append(form);  //将表单放置在web中 
+					form.append(input1);   //将查询参数控件提交到表单上
+	           		form.submit();
+	           		layer.closeAll('loading');
+				});
+			}
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>

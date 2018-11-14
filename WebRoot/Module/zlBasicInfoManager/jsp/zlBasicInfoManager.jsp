@@ -63,8 +63,7 @@
 				data : {
 					addZlFlag : false,
 					upZlFlag : false,
-					fpZlFlag : false,
-					listZlFlag : false
+					fpZlFlag : false
 				},
 				init : function(){
 					//创建tab
@@ -127,17 +126,17 @@
 					var strHtmlTit = '',strHtmlCon = '';
 					strHtmlTit += '<ul class="layui-tab-title">';
 					if(loginType == 'spUser'){
-						strHtmlTit += '<li class="layui-tit layui-tit layui-this" lqStatus="1">专利</li>';
+						strHtmlTit += '<li class="layui-this" lqStatus="1">专利</li>';
 					}else if(loginType == 'cpyUser'){
-						strHtmlTit += '<li class="layui-tit layui-tit layui-this" lqStatus="1">专利</li>';
+						strHtmlTit += '<li class="layui-this" lqStatus="1">专利</li>';
 						if(fpZlFlag == 'true'){
-							strHtmlTit += ' <li class="layui-tit" lqStatus="0">流程分配</li>';
+							strHtmlTit += ' <li lqStatus="0">流程分配</li>';
 						}
 						if(lqZlFlag == 'true'){
-							strHtmlTit += ' <li class="layui-tit" lqStatus="2">撰写任务领取</li>';
+							strHtmlTit += ' <li lqStatus="2">撰写任务领取</li>';
 						}
-						strHtmlTit += ' <li class="layui-tit" lqStatus="3">我的专利</li>';
-						strHtmlTit += ' <li class="layui-tit" lqStatus="4">我的任务</li>';
+						strHtmlTit += ' <li lqStatus="3">我的专利</li>';
+						strHtmlTit += ' <li lqStatus="4">我的任务</li>';
 					}
 					strHtmlTit += '</ul>';
 					strHtmlCon += '<div class="layui-card-body layui-tab-content">';
@@ -259,7 +258,7 @@
 								if(globalLqStatus == 0){//流程分配
 									return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="viewInfo"><i class="layui-icon layui-icon-search"></i>查看</a> <a class="layui-btn layui-btn-xs" lay-event="lcfpFun" zlId="'+ d.id +'"><i class="layui-icon layui-icon-edit"></i>流程分配</a>';
 								}else if(globalLqStatus == 1){//专利任务
-									return '<a class="layui-btn layui-btn-xs"  zlId="'+ d.id +'" lay-event="viewZlInfo"><i class="layui-icon layui-icon-search"></i>查看</a> <a class="layui-btn layui-btn-xs" zlId="'+ d.id +'" lay-event="editZlTask"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
+									return '<a class="layui-btn layui-btn-xs" zlId="'+ d.id +'" lay-event="editZlTask" opts="editZlOpts"><i class="layui-icon layui-icon-edit"></i>查看 / 编辑</a>';
 								}else if(globalLqStatus == 2){//撰写任务领取
 									return '<a class="layui-btn layui-btn-xs" lay-event="lqZlTaskFun"><i class="layui-icon layui-icon-edit"></i>领取</a>';
 								}else if(globalLqStatus == 3){//已增加专利
@@ -319,21 +318,27 @@
 				}
 			}
 			table.on('tool(zlInfoListTable)',function(obj){
-				if(obj.event == 'viewZlInfo'){//查看
-					page.data.listZlFlag = common.getPermission('listZl','',0);
-					if(page.data.listZlFlag){
-						
-					}else{
-						layer.msg('抱歉，您暂无权限查看专利', {icon:5,anim:6,time:1000});
-					}
-				}else if(obj.event == 'editZlTask'){//专利(编辑)
-					page.data.upZlFlag = common.getPermission('upZl','',0);
-					if(page.data.upZlFlag){
-						
-					}else{
-						layer.msg('抱歉，您暂无权限编辑专利', {icon:5,anim:6,time:1000});
-					}
-				}else if(obj.event == 'editZlInfoHasAdd'){//编辑
+				if(obj.event == 'editZlTask'){//专利(查看/编辑)
+					addEditZlOpts = $(this).attr('opts');
+					globalZlId = $(this).attr('zlId');
+					addZlFlag = false;
+					var fullScreenIndex = layer.open({
+						title:'',
+						type: 2,
+					  	area: ['700px', '500px'],
+					  	fixed: true, //不固定
+					  	maxmin: false,
+					  	shadeClose :false,
+					  	closeBtn:0,
+					  	content: '/Module/zlBasicInfoManager/jsp/zlDetail.html',
+					  	end:function(){
+					  		if(addZlFlag){
+					  			loadZlInfoList('initLoad');
+					  		}
+					  	}
+					});	
+					layer.full(fullScreenIndex);
+				}else if(obj.event == 'editZlInfoHasAdd'){//我的专利编辑
 					page.data.upZlFlag = common.getPermission('upZl','',0);
 					if(page.data.upZlFlag){
 						addEditZlOpts = $(this).attr('opts');
@@ -390,7 +395,6 @@
 			$(function(){
 				page.init();
 				loadZlInfoList('initLoad');
-				
 			});
 		});
 		

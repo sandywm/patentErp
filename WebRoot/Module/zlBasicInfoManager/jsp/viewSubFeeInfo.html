@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlBasicInfoManager/css/lcDetail.css" rel="stylesheet" type="text/css"/>
+  	<title>查看滞纳金记录</title>
+</head>
+<body style="background:#fff;">
+	<ul id="subFeeTit" class="clearfix">
+		<li class="oneFeeWid">费用名称</li>
+		<li class="oneFeeWid">缴费时间段</li>
+		<li class="twoFeeWid">滞纳金费用</li>
+		<li class="oneFeeWid">备注</li>
+	</ul>
+	<ul id="subFeeCons"></ul>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var globalFeeId = parent.globalFeeId;
+		layui.use(['jquery','layer'],function(){
+			var $ = layui.jquery,
+				layer = layui.layer;
+			var page = {
+				init : function(){
+					this.onLoad();
+				},
+				onLoad : function(){
+					var _this = this,noData='<div class="noData" style="display:block;"><i class="iconfont layui-extend-noData"></i><p>暂无记录<p></div>';
+					$.ajax({
+  						type:'post',
+				        async:false,
+				        dataType:'json',
+				        url:'/zlm.do?action=getSubZlInfo',
+				        data : {opt:'znj',feeId:globalFeeId},
+				        success:function (json){
+				        	layer.closeAll('loading');
+				        	if(json['result'] == 'success'){
+				        		var subFeeInfo = json.subFeeInfo;
+				        		_this.renderSubFeeInfo(subFeeInfo);
+				        	}else if(json['result'] == 'noInfo'){
+				        		$('#subFeeCons').html(noData);
+				        	}
+				        }
+  					});
+				},
+				renderSubFeeInfo : function(subFeeInfo){
+					var strHtml = '';
+					for(var i=0;i<subFeeInfo.length;i++){
+						strHtml += '<li>';
+						strHtml += '<p class="oneFeeWid ellip">'+ subFeeInfo[i].subFeeName +'</p>';
+						strHtml += '<p class="oneFeeWid ellip">'+ subFeeInfo[i].feeRange +'</p>';
+						strHtml += '<p class="twoFeeWid priceColor">'+ subFeeInfo[i].subFeePrice +'</p>';
+						strHtml += '<p class="oneFeeWid ellip">'+ subFeeInfo[i].subFeeRemark +'</p>';
+					}
+					$('#subFeeCons').html(strHtml);
+					$('#subFeeCons li:odd').addClass('oddColor');
+				}
+			};
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>
