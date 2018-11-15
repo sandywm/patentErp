@@ -154,6 +154,7 @@
 				renderLcFpPeo : function(json){
 					var strHtml = '';
 					//专利撰写人员
+					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><p class="lcfpTipsInfo"><i class="layui-icon layui-icon-speaker"></i>注：被分配的流程人员需要具有流程处理权限的才能进行分配！</p></div>';
 					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">专利撰写人员</label>';
 					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="zxPeopleBox" class="multiBox fl">';
 					if(json.zxUserId != 0){
