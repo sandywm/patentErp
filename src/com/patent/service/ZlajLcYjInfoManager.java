@@ -49,7 +49,7 @@ public interface ZlajLcYjInfoManager {
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajLcYjInfoTb> findPageInfoByOpt(Integer applyUserId,Integer checkStauts,Integer checkUserId,Integer cpyId,Integer pageNo,Integer pageSize)throws WEBException;
+	List<ZlajLcYjInfoTb> listPageInfoByOpt(Integer applyUserId,Integer checkStauts,Integer checkUserId,Integer cpyId,Integer pageNo,Integer pageSize)throws WEBException;
 	
 	/**
 	 * 根据条件获取申请记录条数
@@ -64,4 +64,15 @@ public interface ZlajLcYjInfoManager {
 	 * @throws WEBException
 	 */
 	Integer getCountByOpt(Integer applyUserId,Integer checkStauts,Integer checkUserId,Integer cpyId)throws WEBException;
+
+	/**
+	 * 根据移交流程主键获取移交流程申请信息
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-11-15 下午10:49:51
+	 * @param yjId 主键
+	 * @return
+	 * @throws WEBException
+	 */
+	ZlajLcYjInfoTb getEntityById(Integer yjId)throws WEBException;
 }

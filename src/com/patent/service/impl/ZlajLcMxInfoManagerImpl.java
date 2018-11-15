@@ -244,16 +244,18 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 	}
 
 	@Override
-	public List<ZlajLcMxInfoTb> listSpecInfoByOpt(Integer fzUserId,Integer comStatus,String zlTitle,String ajNoQt, String zlNo,Integer pageNo,Integer pageSize)throws WEBException {
+	public List<ZlajLcMxInfoTb> listLcMxByOpt(Integer fzUserId,
+			Integer comStatus, Integer cpyId, Integer pageNo, Integer pageSize)
+			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return mxDao.findSpecInfoByOpt(sess, fzUserId, comStatus, zlTitle, ajNoQt, zlNo, pageNo, pageSize);
+			return mxDao.findLcMxByOpt(sess, fzUserId, comStatus, cpyId, pageNo, pageSize);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new WEBException("获取指定流程负责人名下的任务列表时出现异常!");
+			throw new WEBException("根据条件分页获取任务记录列表时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}
@@ -261,16 +263,16 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 
 	@Override
 	public Integer getCountByOpt(Integer fzUserId, Integer comStatus,
-			String zlTitle, String ajNoQt, String zlNo) throws WEBException {
+			Integer cpyId) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return mxDao.getCountByOpt(sess, fzUserId, comStatus, zlTitle, ajNoQt, zlNo);
+			return mxDao.getCountByOpt(sess, fzUserId, comStatus, cpyId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new WEBException("获取指定流程负责人名下的任务记录条数时出现异常!");
+			throw new WEBException("根据条件获取任务记录条数时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

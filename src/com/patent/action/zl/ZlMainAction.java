@@ -54,6 +54,7 @@ import com.patent.module.ZlajFeeSubInfoTb;
 import com.patent.module.ZlajFjInfoTb;
 import com.patent.module.ZlajLcInfoTb;
 import com.patent.module.ZlajLcMxInfoTb;
+import com.patent.module.ZlajLcYjInfoTb;
 import com.patent.module.ZlajMainInfoTb;
 import com.patent.module.ZlajTzsInfoTb;
 import com.patent.page.PageConst;
@@ -67,6 +68,7 @@ import com.patent.service.ZlajFeeInfoManager;
 import com.patent.service.ZlajFjInfoManager;
 import com.patent.service.ZlajLcInfoManager;
 import com.patent.service.ZlajLcMxInfoManager;
+import com.patent.service.ZlajLcYjInfoManager;
 import com.patent.service.ZlajMainInfoManager;
 import com.patent.service.ZlajTzsInfoManager;
 import com.patent.tools.CommonTools;
@@ -280,6 +282,7 @@ public class ZlMainAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		ZlajLcYjInfoManager lcyjm = (ZlajLcYjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_YJ_INFO);
 		Integer cpyId = CommonTools.getFinalInteger("cpyId",request);
 		Integer stopStatus = CommonTools.getFinalInteger("stopStatus",request);
 		String ajNoQt = CommonTools.getFinalStr("ajNoQt",request);
@@ -292,7 +295,9 @@ public class ZlMainAction extends DispatchAction {
 		String eDate = CommonTools.getFinalStr("eDate", request);
 		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利，2：撰写任务领取,3：我的专利,4:我的任务,5:任务移交审核）
 		Integer comStatus = CommonTools.getFinalInteger("comStatus", request);//我的任务时传递的参数
+		Integer checkStatus = CommonTools.getFinalInteger("checkStatus", request);//(0:未审核，1：审核通过，2：审核未通过)
 		Integer currLoginUserId = this.getLoginUserId(request);
+		String roleName = this.getLoginRoleName(request);
 		//当任务条件为0时，撰写任务领取，这时需要强制stopStatus为正常（0）
 		if(lqStatus.equals(0)){//撰写任务领取时，专利任务必须时正常状态
 			stopStatus = 0;
@@ -304,7 +309,7 @@ public class ZlMainAction extends DispatchAction {
 			CpyUserInfo cpyUser = cum.getEntityById(currLoginUserId);
 			if(cpyUser != null){
 				cpyId = cpyUser.getCpyInfoTb().getId();
-				if(this.getLoginRoleName(request).equals("管理员")){
+				if(roleName.equals("管理员")){
 					abilityFlag = true;
 				}else{
 					//获取当前用户是否有浏览权限
@@ -316,11 +321,11 @@ public class ZlMainAction extends DispatchAction {
 			abilityFlag = true;
 		}
 		if(abilityFlag){
+			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+			Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
 			if(lqStatus <= 3){
 				Integer count = zlm.getCountByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate,lqStatus,currLoginUserId);
 				if(count > 0){
-					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
-					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
 					List<ZlajMainInfoTb> zlList = zlm.listPageInfoByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, lqStatus, currLoginUserId,pageNo, pageSize);
 					List<Object> list_d = new ArrayList<Object>();
 					for(Iterator<ZlajMainInfoTb> it = zlList.iterator() ; it.hasNext();){
@@ -469,12 +474,13 @@ public class ZlMainAction extends DispatchAction {
 				}else{
 					map.put("msg", "noInfo");
 				}
-			}else if(lqStatus.equals(4)){//我的任务
-				Integer count = mxm.getCountByOpt(currLoginUserId, comStatus, ajTitle, ajNoQt, zlNo);
+			}else if(lqStatus.equals(4)){//我的任务,管理员时叫专利任务
+				if(roleName.equals("管理员")){//管理员可做所有任务
+					currLoginUserId = 0;
+				}
+				Integer count = mxm.getCountByOpt(currLoginUserId, comStatus, cpyId);
 				if(count > 0){
-					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
-					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
-					List<ZlajLcMxInfoTb> unMxList = mxm.listSpecInfoByOpt(currLoginUserId, comStatus, ajTitle, ajNoQt, zlNo,pageNo,pageSize);
+					List<ZlajLcMxInfoTb> unMxList = mxm.listLcMxByOpt(currLoginUserId, comStatus, cpyId, pageNo, pageSize);
 					List<Object> list_d = new ArrayList<Object>();
 					map.put("result", "success");
 					for(Iterator<ZlajLcMxInfoTb> it = unMxList.iterator() ; it.hasNext();){
@@ -492,6 +498,16 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("zlNo", zl.getAjNoGf());//专利申请/专利号
 						map_d.put("ajNoQt", zl.getAjNoQt());//案件编号
 						map_d.put("zlId", zl.getId());//专利编号
+						String zlType = zl.getAjType();
+						String zlTypeChi = "";
+						if(zlType.equals("fm")){
+							zlTypeChi = "发明";
+						}else if(zlType.equals("syxx")){
+							zlTypeChi = "实用新型";
+						}else if(zlType.equals("wg")){
+							zlTypeChi = "外观";
+						}
+						map_d.put("zlType", zlTypeChi);//专利类型
 						map_d.put("lcNo", mx.getLcMxNo());//流程号
 						list_d.add(map_d);
 					}
@@ -502,8 +518,15 @@ public class ZlMainAction extends DispatchAction {
 				}else{
 					map.put("msg", "noInfo");
 				}
-			}else if(lqStatus.equals(5)){//专利任务移交审核
-				
+			}else if(lqStatus.equals(5)){//专利任务移交审核列表（管理员、流程分配人员查看）
+				Integer checkUserId = 0;
+				Integer count = lcyjm.getCountByOpt(0, checkStatus, 0, cpyId);
+				if(count > 0){
+					List<ZlajLcYjInfoTb> yjList = lcyjm.listPageInfoByOpt(0, checkStatus, 0, cpyId, pageNo, pageSize);
+					for(Iterator<ZlajLcYjInfoTb> it = yjList.iterator() ; it.hasNext();){
+						11
+					}
+				}
 			}
 		}
 
@@ -3481,7 +3504,51 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 获取我的任务，如果是管理员获取全部专利的流程任务
+	 * 申请流程移交
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-11-15 下午10:23:19
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward applyYjInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		ZlajLcYjInfoManager lcyjm = (ZlajLcYjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_YJ_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		String roleName = this.getLoginRoleName(request);
+		Integer currUserId = this.getLoginUserId(request);
+		String msg = "error";
+		Integer lcmxId = CommonTools.getFinalInteger("lcmxId", request);//流程移交编号
+		String applyCause = Transcode.unescape_new1("applyCause", request);//申请原因
+		if(this.getLoginType(request).equals("cpyUser")){
+			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
+			if(!roleName.equals("管理员")){//管理员不能操作
+				List<ZlajLcMxInfoTb>  mxList = mxm.listDetailInfoById(lcmxId);
+				if(mxList.size() > 0){
+					if(mxList.get(0).getLcFzUserId().equals(currUserId)){//必须是当前流程负责人才能进行移交
+						Integer yjId = lcyjm.addYj(lcmxId, currUserId, applyCause, 0, cpyId);
+						if(yjId > 0){
+							msg = "success";
+						}
+					}else{
+						msg = "notMatch";//不是当前流程负责人不能移交
+					}
+				}
+			}
+		}
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 处理流程移交（管理员和流程分配人员可处理）
 	 * @description
 	 * @author Administrator
 	 * @date 2018-11-15 上午09:13:51
@@ -3492,10 +3559,10 @@ public class ZlMainAction extends DispatchAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public ActionForward getMyLcTask(ActionMapping mapping, ActionForm form,
+	public ActionForward dealApplyYjInfo(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
-		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcYjInfoManager lcyjm = (ZlajLcYjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_YJ_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
@@ -3503,12 +3570,25 @@ public class ZlMainAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		String roleName = this.getLoginRoleName(request);
 		Integer currUserId = this.getLoginUserId(request);
+		Integer zlId = CommonTools.getFinalInteger("zlId", request);//专利编号
+		Integer yjId = CommonTools.getFinalInteger("yjId", request);//流程移交编号
+		Integer checkStatus = CommonTools.getFinalInteger("checkStatus", request);//审核状态
+		String msg = "error";
 		if(this.getLoginType(request).equals("cpyUser")){
 			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
-			if(roleName.equals("管理员")){//获取当前代理机构下所有专利的当前任务流程
-				//mxm.listSpecInfoByOpt(fzUserId, comStatus, zlTitle, ajNoQt, zlNo, pageNo, pageSize);
+			boolean abilityFlag = false;
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
 			}else{//只获取自己的任务流程
-				
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "fpZl");//只有具有专利流程分配的人员
+			}
+			if(abilityFlag){
+				ZlajLcYjInfoTb lcyj = lcyjm.getEntityById(yjId);
+				if(lcyj != null){
+					11
+				}
+			}else{
+				msg = "noAbility";
 			}
 		}
 		return null;

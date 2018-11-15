@@ -103,32 +103,30 @@ public interface ZlajLcMxInfoDao {
 	List<ZlajLcMxInfoTb> findSpecInfoByOpt(Session sess,Integer zlId,String lcMxName);
 	
 	/**
-	 * 获取指定流程负责人名下的任务列表
-	 * @description
-	 * @author Administrator
-	 * @date 2018-10-26 上午09:56:37
+	 * 根据条件分页获取任务记录列表(新申请撰稿开始)
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-11-15 下午09:14:12
 	 * @param sess
-	 * @param fzUserId 流程负责人
+	 * @param fzUserId 流程负责人编号（0表示全部）
 	 * @param comStatus 完成状态（0：未完成，1：已完成）
-	 * @param zlTitle 专利名称（""表示全部）
-	 * @param ajNoQt 案件编号（""表示全部）
-	 * @param zlNo 专利/申请号（""表示全部）
+	 * @param cpyId 代理机构编号（流程负责人大于0时不用传递）
+	 * @param pageNo
+	 * @param pageSize
 	 * @return
 	 */
-	List<ZlajLcMxInfoTb> findSpecInfoByOpt(Session sess,Integer fzUserId,Integer comStatus,String zlTitle,String ajNoQt, String zlNo,Integer pageNo,Integer pageSize);
+	List<ZlajLcMxInfoTb> findLcMxByOpt(Session sess,Integer fzUserId,Integer comStatus,Integer cpyId,Integer pageNo,Integer pageSize);
 	
 	/**
-	 * 获取指定流程负责人名下的任务记录条数
-	 * @description
-	 * @author Administrator
-	 * @date 2018-10-26 下午04:33:59
+	 * 根据条件获取任务记录条数(新申请撰稿开始)
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-11-15 下午09:15:42
 	 * @param sess
-	 * @param fzUserId 流程负责人
+	 * @param fzUserId 流程负责人编号（0表示全部）
 	 * @param comStatus 完成状态（0：未完成，1：已完成）
-	 * @param zlTitle 专利名称（""表示全部）
-	 * @param ajNoQt 案件编号（""表示全部）
-	 * @param zlNo 专利/申请号（""表示全部）
+	 * @param cpyId 代理机构编号（流程负责人大于0时不用传递）
 	 * @return
 	 */
-	Integer getCountByOpt(Session sess,Integer fzUserId,Integer comStatus,String zlTitle,String ajNoQt, String zlNo);
+	Integer getCountByOpt(Session sess,Integer fzUserId,Integer comStatus,Integer cpyId);
 }

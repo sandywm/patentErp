@@ -79,7 +79,7 @@ public class ZlajLcYjInfoManagerImpl implements ZlajLcYjInfoManager{
 	}
 
 	@Override
-	public List<ZlajLcYjInfoTb> findPageInfoByOpt(Integer applyUserId,
+	public List<ZlajLcYjInfoTb> listPageInfoByOpt(Integer applyUserId,
 			Integer checkStauts, Integer checkUserId, Integer cpyId,
 			Integer pageNo, Integer pageSize) throws WEBException {
 		// TODO Auto-generated method stub
@@ -108,6 +108,22 @@ public class ZlajLcYjInfoManagerImpl implements ZlajLcYjInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据条件获取移交申请信息记录条数时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public ZlajLcYjInfoTb getEntityById(Integer yjId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			yjDao = (ZlajLcYjInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_YJ_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return yjDao.getEntityById(sess, yjId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键获取移交申请信息记录信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

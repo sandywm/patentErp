@@ -2,7 +2,6 @@ package com.patent.service;
 
 import java.util.List;
 
-import org.hibernate.Session;
 
 import com.patent.exception.WEBException;
 import com.patent.module.ZlajLcMxInfoTb;
@@ -146,32 +145,28 @@ public interface ZlajLcMxInfoManager {
 	boolean updateMxNoById(Integer id,Double mxNo) throws WEBException;
 	
 	/**
-	 * 获取指定流程负责人名下的任务列表
-	 * @description
-	 * @author Administrator
-	 * @date 2018-10-26 上午10:58:18
-	 * @param fzUserId 流程负责人
+	 * 根据条件分页获取任务记录列表(新申请撰稿开始)
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-11-15 下午09:14:12
+	 * @param fzUserId 流程负责人编号（0表示全部）
 	 * @param comStatus 完成状态（0：未完成，1：已完成）
-	 * @param zlTitle 专利名称（""表示全部）
-	 * @param ajNoQt 案件编号（""表示全部）
-	 * @param zlNo 专利/申请号（""表示全部）
+	 * @param cpyId 代理机构编号（流程负责人大于0时不用传递）
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajLcMxInfoTb> listSpecInfoByOpt(Integer fzUserId,Integer comStatus,String zlTitle,String ajNoQt, String zlNo,Integer pageNo,Integer pageSize) throws WEBException;
+	List<ZlajLcMxInfoTb> listLcMxByOpt(Integer fzUserId,Integer comStatus, Integer cpyId, Integer pageNo, Integer pageSize) throws WEBException;
 	
 	/**
-	 * 获取指定流程负责人名下的任务记录条数
-	 * @description
-	 * @author Administrator
-	 * @date 2018-10-26 下午04:35:46
-	 * @param fzUserId 流程负责人
+	 * 根据条件获取任务记录条数(新申请撰稿开始)
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-11-15 下午09:15:42
+	 * @param fzUserId 流程负责人编号（0表示全部）
 	 * @param comStatus 完成状态（0：未完成，1：已完成）
-	 * @param zlTitle 专利名称（""表示全部）
-	 * @param ajNoQt 案件编号（""表示全部）
-	 * @param zlNo 专利/申请号（""表示全部）
+	 * @param cpyId 代理机构编号（流程负责人大于0时不用传递）
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer getCountByOpt(Integer fzUserId,Integer comStatus,String zlTitle,String ajNoQt, String zlNo) throws WEBException;
+	Integer getCountByOpt(Integer fzUserId,Integer comStatus, Integer cpyId) throws WEBException;
 }
