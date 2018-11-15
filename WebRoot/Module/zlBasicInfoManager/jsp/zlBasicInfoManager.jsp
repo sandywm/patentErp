@@ -63,7 +63,8 @@
 				data : {
 					addZlFlag : false,
 					upZlFlag : false,
-					fpZlFlag : false
+					fpZlFlag : false,
+					lqZlFlag : false
 				},
 				init : function(){
 					//创建tab
@@ -260,7 +261,7 @@
 								}else if(globalLqStatus == 1){//专利任务
 									return '<a class="layui-btn layui-btn-xs" zlId="'+ d.id +'" lay-event="editZlTask" opts="editZlOpts"><i class="layui-icon layui-icon-edit"></i>查看 / 编辑</a>';
 								}else if(globalLqStatus == 2){//撰写任务领取
-									return '<a class="layui-btn layui-btn-xs" lay-event="lqZlTaskFun"><i class="layui-icon layui-icon-edit"></i>领取</a>';
+									return '<a class="layui-btn layui-btn-xs" zlId="'+ d.id +'" ajTitle = "'+ d.ajTitle +'" lay-event="lqZlTaskFun"><i class="iconfont layui-extend-lingqu"></i>领取</a>';
 								}else if(globalLqStatus == 3){//已增加专利
 									return '<a class="layui-btn layui-btn-xs" lay-event="editZlInfoHasAdd" opts="editZlOpts" zlId="'+ d.id +'"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
 								}
@@ -384,6 +385,45 @@
 						layer.full(fullScreenIndex);
 					}else{
 						layer.msg('抱歉，您暂无权限进行流程分配', {icon:5,anim:6,time:1000});
+					}
+				}else if(obj.event == 'lqZlTaskFun'){//领取专利
+					var zlId = $(this).attr('zlId'),ajTitle = $(this).attr('ajTitle');
+					page.data.lqZlFlag = common.getPermission('lqZl','',0);
+					if(page.data.lqZlFlag){
+						layer.confirm('确定要领取<span style="color:#F47837;">['+ ajTitle +']</span>撰写任务吗？',{
+							title:'提示',
+						  	skin: 'layui-layer-molv',
+						  	btn: ['确定','取消'] //按钮
+						},function(){
+							layer.load('1');
+							$.ajax({
+		    					type:'post',
+		    			        async:false,
+		    			        dataType:'json',
+		    			        data : {zlId : zlId},
+		    			        url:'zlm.do?action=lqZlTask',
+		    			        success:function (json){
+		    			        	layer.closeAll('loading');	
+		    			        	if(json['result'] == 'success'){
+		    			        		layer.msg('领取当前撰写任务成功',{icon:1,time:1000},function(){
+		    			        			loadZlInfoList('initLoad');
+		    			        		});
+		    			       		}else if(json['result'] == 'noAbility'){
+		    			        		layer.msg('抱歉，您暂无权限领取撰写任务',{icon:5,anim:6,time:1500});
+		    			        	}else if(json['result'] == 'error'){
+		    			        		layer.msg('系统错误，请重试',{icon:5,anim:6,time:1000});
+		    			        	}else if(json['result'] == 'outDate'){
+		    			        		layer.msg('抢购期限已过，已不能领取',{icon:5,anim:6,time:1500});
+		    			        	}else if(json['result'] == 'noReceive'){
+		    			        		layer.msg('该撰写任务已被其他员工领取',{icon:5,anim:6,time:1500});
+		    			        	}else if(json['result'] == 'stopStatus'){
+		    			        		layer.msg('当前案件已终止，不能进行撰写任务领取',{icon:5,anim:6,time:1500});
+		    			        	}
+		    			        }
+		    				});
+						});	
+					}else{
+						layer.msg('抱歉，您暂无领取撰写任务的权限', {icon:5,anim:6,time:1000});
 					}
 				}
 			});

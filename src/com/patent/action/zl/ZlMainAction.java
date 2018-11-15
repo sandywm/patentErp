@@ -2247,6 +2247,7 @@ public class ZlMainAction extends DispatchAction {
 										mxm.updateEdateById(lcmx.getId(), currUserId, -1, "", "", "", currDate, "撰写任务已被领取",-1);
 										//修改任务分配流程为完成状态
 										lcm.updateComInfoById(lc.getId(), currDate);
+										zlm.updateOperatorUserInfoByZlId(zlId,-1,currUserId,-1,-1,-1,-1,-1,-1,-1);
 										Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", currDate, lc.getLcCpyDate(), "", "",3.0);
 										mxm.addLcMx(lcId_3, currUserId, "新申请撰稿", 3.0, currDate, "", "", 0, "", "",  0.0, "",-1);
 										//领取成功后把状态修改成3.0

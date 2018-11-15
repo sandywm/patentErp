@@ -250,7 +250,7 @@
 				        url:'/zlm.do?action=getZlDetail',
 				        success:function (json){
 				        	layer.closeAll('loading');
-				        	console.log(json)
+				        	//console.log(json)
 				        	if(json['result'] == 'success'){
 				        		if(opts == 'basic'){//获取基本信息
 				        			zlId = json.ajId;
@@ -1188,7 +1188,7 @@
 					}
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
-						if(_this.data.ajStatus < 7.0){
+						if(this.data.ajStatus < 7.0){
 							strHtml += '<span id="addZxPeople" opt="addZxUser" lcfpId="'+ json.zxUserId +'" class="addSpan fl">添加/编辑</span><div class="layui-form-mid layui-word-aux">(注：如若未指定专利撰写人员，需撰写人员本人自行进行任务领取)</div>';
 						}
 					}
@@ -1201,7 +1201,7 @@
 					}
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
-						if(_this.data.ajStatus < 7.0){
+						if(this.data.ajStatus < 7.0){
 							strHtml += '<span id="addZlShPeople" opt="addZlShUser" lcfpId="'+ json.checkUserId +'" class="addSpan fl">添加/编辑</span>';	
 						}
 					}
@@ -1214,7 +1214,7 @@
 					}
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
-						if(_this.data.ajStatus < 7.0){
+						if(this.data.ajStatus < 7.0){
 							strHtml += '<span id="addCusSure" opt="addCusSureUser" lcfpId="'+ json.cusCheckUserId +'" class="addSpan fl">添加/编辑</span>';
 						}
 					}
@@ -1227,7 +1227,7 @@
 					}
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
-						if(_this.data.ajStatus < 7.0){
+						if(this.data.ajStatus < 7.0){
 							strHtml += '<span id="addDinggao" opt="addDingGaoUser" lcfpId="'+ json.tjUserId +'" class="addSpan fl">添加/编辑</span>';
 						}
 					}
