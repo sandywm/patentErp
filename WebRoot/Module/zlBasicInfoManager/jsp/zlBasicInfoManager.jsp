@@ -32,7 +32,7 @@
   	<script src="/plugins/jquery/jquery.min.js"></script>
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
-    	var fpZlFlag = "${requestScope.fpZlFlag}",lqZlFlag = "${requestScope.lqzLFlag}",loginType=parent.loginType;
+    	var fpZlFlag = "${requestScope.fpZlFlag}",lqZlFlag = "${requestScope.lqzLFlag}",loginType=parent.loginType,roleName=parent.roleName;
 		var addEditZlOpts='',addZlFlag = false,zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0;
 		layui.config({
 			base: '/plugins/frame/js/'
@@ -138,6 +138,10 @@
 						}
 						strHtmlTit += ' <li lqStatus="3">我的专利</li>';
 						strHtmlTit += ' <li lqStatus="4">我的任务</li>';
+						//管理员下增加个移交申请审核
+						if(roleName == '管理员'){
+							strHtmlTit += ' <li lqStatus="5">任务移交审核</li>';
+						}
 					}
 					strHtmlTit += '</ul>';
 					strHtmlCon += '<div class="layui-card-body layui-tab-content">';
@@ -164,6 +168,11 @@
 						strHtmlCon += '<input type="radio" name="taskStatusInp" lay-filter="taskStatusFilter" value="1" title="已完成"/></div>';
 						strHtmlCon += '<div id="noData_4" class="noData"></div>';
 						strHtmlCon += '<table id="zlBasicListTab_4" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
+						//专利移交申请审核
+						if(roleName == '管理员'){
+							strHtmlCon += '<div class="layui-tab-item"><div id="noData_5" class="noData"></div>';
+							strHtmlCon += '<table id="zlBasicListTab_5" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
+						}
 					}
 					strHtmlCon += '</div>';
 					$('#layuiTab').append(strHtmlTit + strHtmlCon);

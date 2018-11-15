@@ -43,13 +43,10 @@
 				<div id="lxMxDetailCon">
 					<div id="mxTit"></div>
 					<ul class="mxDetailTit">
-						<li class="mxOneWid">子节点名称</li>
-						<li class="mxTwoWid">流程负责人</li>
-						<li class="mxThreeWid">开始时间</li>
-						<li class="mxThreeWid">完成时间</li>
-						<li class="mxFiveWid">附件</li>
-						<li class="mxFourWid">备注</li>
-						<li class="mxTwoWid">操作</li>
+						<li>子节点名称</li>
+						<li>流程负责人</li>
+						<li>开始时间</li>
+						<li>完成时间</li>
 					</ul>
 					<div id="mxDetailCon"></div>
 				</div>
@@ -144,7 +141,7 @@
 	<script src="/plugins/layui/layui.js"></script>
 	<script src="/plugins/frame/js/upLoadFiles.js"></script>
 	<script type="text/javascript">
-		var num=0,lxMxFujian=[],tmpEwyqIdArray=[],globalFeeId=0,zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
+		var num=0,tmpEwyqIdArray=[],globalFeeId=0,zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -250,7 +247,7 @@
 				        url:'/zlm.do?action=getZlDetail',
 				        success:function (json){
 				        	layer.closeAll('loading');
-				        	//console.log(json)
+				        	console.log(json)
 				        	if(json['result'] == 'success'){
 				        		if(opts == 'basic'){//获取基本信息
 				        			zlId = json.ajId;
@@ -685,23 +682,38 @@
 					var _this = this;
 					//查看流程明细时间
 					$('.viewDetailBtn').on('click',function(){
-						var lcId = $(this).attr('lcId'),lcName = $(this).attr('lcName');
+						var lcId = $(this).attr('lcId'),lcName = $(this).attr('lcName'),lcNo = $(this).attr('lcNo');
 						$('.closeBtns').attr('opts','closeLcMx');
+						if(lcNo == 2){
+							$('.mxDetailTit').show().addClass('hasPos');
+							$('#mxDetailCon').addClass('hasPos');
+						}else{
+							$('.mxDetailTit').hide().removeClass('hasPos');
+							$('#mxDetailCon').removeClass('hasPos');
+						}
 						$('#lxMxDetailCon').addClass('animation').removeClass('animationClose');
 						$('#mxTit').html(lcName + '--明细详情');
-						_this.getMxDetailInfo(lcId);
+						_this.getMxDetailInfo(lcId,lcNo);
 						_this.data.actGetMxFlag = true;
 					});
 					$('.viewMxBtn').on('click',function(){
 						if(_this.data.actGetMxFlag){//表示当前明细详情层已经被打开，点击主流程标题可直接更换明细详情
-							var lcId = $(this).attr('lcId'),lcName = $(this).attr('lcName');
+							var lcId = $(this).attr('lcId'),lcName = $(this).attr('lcName'),lcNo = $(this).attr('lcNo');
+							if(lcNo == '2'){
+								$('.mxDetailTit').show().addClass('hasPos');
+								$('#mxDetailCon').addClass('hasPos');
+							}else{
+								$('.mxDetailTit').hide().removeClass('hasPos');
+								$('#mxDetailCon').removeClass('hasPos');
+							}
 							$('#mxTit').html(lcName + '--明细详情');
-							_this.getMxDetailInfo(lcId);
+							_this.getMxDetailInfo(lcId,lcNo);
 						}
 					});
 				},
 				//获取主流程对应的明细详情
-				getMxDetailInfo : function(lcId){
+				getMxDetailInfo : function(lcId,lcNo){
+					console.log(lcNo)
 					var _this = this,noData='<div class="noData" style="display:block;"><i class="iconfont layui-extend-noData"></i><p>暂无明细记录<p></div>';
 					$.ajax({
   						type:'post',
@@ -713,7 +725,7 @@
 				        	layer.closeAll('loading');
 				        	console.log(json)
 				        	if(json['result'] == 'success'){
-				        		_this.loadLxMxDetail(json);
+				        		_this.loadLxMxDetail(json,lcNo);
 				        	}else if(json['result'] == 'noInfo'){
 				        		$('#mxDetailCon').html(noData);
 				        	}
@@ -1302,9 +1314,9 @@
 					strHtml += '<ul>';
 					for(var i=0,iLen=lcInfo.length;i<iLen;i++){
 						if(lcInfo[i].comDate != ''){//表示完成
-							strHtml += '<li><p class="oneWid viewMxBtn ellip" lcId="'+ lcInfo[i].lcId +'" lcName="'+ lcInfo[i].lcName +'"><i class="layui-icon layui-icon-ok statusIcon_com" title="已完成"></i>'+ lcInfo[i].lcName +'</p>';
+							strHtml += '<li class="viewMxBtn" lcId="'+ lcInfo[i].lcId +'" lcNo = "'+ lcInfo[i].lcNo +'" lcName="'+ lcInfo[i].lcName +'"><p class="oneWid viewMxBtn ellip"><i class="layui-icon layui-icon-ok statusIcon_com" title="已完成"></i>'+ lcInfo[i].lcName +'</p>';
 						}else{
-							strHtml += '<li><p class="oneWid viewMxBtn ellip" lcId="'+ lcInfo[i].lcId +'" lcName="'+ lcInfo[i].lcName +'"><i class="iconfont layui-extend-jinhangzhong statusIcon" title="进行中"></i>'+ lcInfo[i].lcName +'</p>';
+							strHtml += '<li class="viewMxBtn" lcId="'+ lcInfo[i].lcId +'" lcNo = "'+ lcInfo[i].lcNo +'" lcName="'+ lcInfo[i].lcName +'"><p class="oneWid ellip"><i class="iconfont layui-extend-jinhangzhong statusIcon" title="进行中"></i>'+ lcInfo[i].lcName +'</p>';
 						}
 						strHtml += '<p class="twoWid">'+ lcInfo[i].sDate +'</p>';
 						strHtml += '<p class="twoWid">'+ lcInfo[i].cpyDate +'</p>';
@@ -1318,7 +1330,7 @@
 						}else{
 							strHtml += '<p class="twoWid">&nbsp;</p>';
 						}
-						strHtml += '<p class="threeWid"><a class="viewDetailBtn" href="javascript:void(0)" lcId="'+ lcInfo[i].lcId +'" lcName="'+ lcInfo[i].lcName +'">查看明细</a></p></li>';
+						strHtml += '<p class="threeWid"><a class="viewDetailBtn" href="javascript:void(0)" lcNo="'+lcInfo[i].lcNo  +'" lcId="'+ lcInfo[i].lcId +'" lcName="'+ lcInfo[i].lcName +'">查看明细</a></p></li>';
 					}
 					strHtml +=  '</ul>';
 					$('#lcDetailCon').html(strHtml);
@@ -1327,60 +1339,71 @@
 					this.bindEvent_lc();
 				},
 				//获取流程明细(子流程)
-				loadLxMxDetail : function(json){
+				loadLxMxDetail : function(json,lcNo){
 					var mxInfo = json.mxInfo;
 					var strHtml = '';
-					strHtml += '<ul id="mxDetailConUl">';
-					for(var i=0,iLen = mxInfo.length;i<iLen;i++){
-						strHtml += '<li><p class="mxOneWid">'+ mxInfo[i].mxName +'</p>';
-						if(mxInfo[i].fzUserName != ''){
-							strHtml += '<p class="mxTwoWid">'+ mxInfo[i].fzUserName +'</p>';
-						}else{
-							strHtml += '<p class="mxTwoWid">&nbsp;</p>';
+					//$('#mxDetailCon').html('');
+					if(lcNo == '2'){
+						strHtml += '<ul id="mxDetailConUl">';
+						for(var i=0,iLen = mxInfo.length;i<iLen;i++){
+							strHtml += '<li><p>'+ mxInfo[i].mxName +'</p>';
+							if(mxInfo[i].fzUserName != ''){
+								strHtml += '<p>'+ mxInfo[i].fzUserName +'</p>';
+							}else{
+								strHtml += '<p>&nbsp;</p>';
+							}
+							strHtml += '<p>'+ mxInfo[i].mxSDate +'</p>';
+							if(mxInfo[i].mxEDate != ''){
+								strHtml += '<p>'+ mxInfo[i].mxEDate +'</p>';
+							}else{
+								strHtml += '<p>&nbsp;</p>';
+							}
+							strHtml += '</li>';
 						}
-						strHtml += '<p class="mxThreeWid">'+ mxInfo[i].mxSDate +'</p>';
-						if(mxInfo[i].mxEDate != ''){
-							strHtml += '<p class="mxThreeWid">'+ mxInfo[i].mxEDate +'</p>';
-						}else{
-							strHtml += '<p class="mxThreeWid">&nbsp;</p>';
+						strHtml += '</ul>';
+						$('#mxDetailCon').html(strHtml);
+						$('#mxDetailConUl li:odd').addClass('oddColor');
+					}else{
+						strHtml += '<ul id="mxDetailConUl">';
+						for(var i=0,iLen = mxInfo.length;i<iLen;i++){
+							strHtml += '<li class="otherLi hasFlex"><strong>子节点名称 ：</strong><p>'+ mxInfo[i].mxName +'<p></li>';
+							strHtml += '<li class="otherLi hasFlex"><strong>流程负责人：</strong><p>'+ mxInfo[i].fzUserName +'<p></li>';
+							strHtml += '<li class="otherLi hasFlex"><strong>开始时间：</strong><p>'+ mxInfo[i].mxSDate +'<p></li>';
+							if(mxInfo[i].mxEDate != ''){
+								strHtml += '<li class="otherLi hasFlex"><strong>结束时间：</strong><p>'+ mxInfo[i].mxEDate +'</p></li>';
+							}else{
+								strHtml += '<li class="otherLi hasFlex"><strong>结束时间：</strong><p>暂无</p></li>';
+							}
+							var upFileDetail = mxInfo[i].upFileDetail;
+							strHtml += '<li class="otherLi noFlex clearfix"><strong>附件：</strong>';
+							for(var j=0;j<upFileDetail.length;j++){
+								strHtml += '<p>'+ upFileDetail[j].upFileName +' <a href="javascript:void(0)" class="downLoadBtn layui-btn layui-btn-xs" downFilePath="'+ upFileDetail[j].downFilePath +'">下载</a></p>';
+							}
+							strHtml += '</li>';
+							strHtml += '<li class="otherLi noFlex clearfix"><strong>备注：</strong><p>'+ mxInfo[i].mxRemark +'</p></li>';
 						}
-						if(mxInfo[i].upFile != ''){
-							this.data.isHasFujianFlag = true;
-							strHtml += '<p class="mxFiveWid">'+ mxInfo[i].upFile +'</p>';
-							lxMxFujian = mxInfo[i].upFileDetail;
-						}else{
-							this.data.isHasFujianFlag = false;
-							strHtml += '<p class="mxFiveWid">&nbsp;</p>';
-						}
-						if(mxInfo[i].mxRemark != ''){
-							strHtml += '<p class="mxFourWid ellip">'+ mxInfo[i].mxRemark +'</p>';
-						}else{
-							strHtml += '<p class="mxFourWid">&nbsp;</p>';
-						}
-						strHtml += '<p class="mxTwoWid"><a class="viewFujianBtn" href="javascript:void(0)">查看附件</a></p></li>';
+						strHtml += '</ul>';
+						$('#mxDetailCon').html(strHtml);
+						//downFile();
+						$('.downLoadBtn').on('click',function(){
+							var downFilePath = $(this).attr('downFilePath');
+							layer.load('1');
+							var form = $("<form>");   //定义一个form表单
+							form.attr('style', 'display:none'); //在form表单中添加查询参数
+							form.attr('target', '');
+								form.attr('method', 'post');
+							form.attr('action', "/zlm.do?action=downFile");
+							var input1 = $('<input>');
+							input1.attr('type', 'hidden');
+							input1.attr('name', 'fileUrl');
+							input1.attr('value', escape(downFilePath));
+							$('body').append(form);  //将表单放置在web中 
+							form.append(input1);   //将查询参数控件提交到表单上
+			           		form.submit();
+			           		layer.closeAll('loading');
+						});
 					}
-					$('#mxDetailCon').html(strHtml);
-					$('#mxDetailConUl li:odd').addClass('oddColor');
-					this.viewFujian();
 					this.addActScrollBar();
-				},
-				viewFujian : function(){
-					var _this = this;
-					$('.viewFujianBtn').on('click',function(){
-						if(_this.data.isHasFujianFlag){
-							layer.open({
-								title:'查看附件',
-								type: 2,
-							  	area: ['750px', '350px'],
-							  	fixed: true, //不固定
-							  	maxmin: false,
-							  	shadeClose :false,
-							  	content: '/Module/zlBasicInfoManager/jsp/viewFujian.html'
-							});	
-						}else{
-							layer.msg('暂无上传附件', {icon:5,anim:6,time:1000});
-						}
-					});
 				},
 				//检测高度动态给容器添加模拟滚动条
 				addActScrollBar : function(){
