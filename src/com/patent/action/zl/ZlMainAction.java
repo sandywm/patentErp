@@ -847,6 +847,7 @@ public class ZlMainAction extends DispatchAction {
 								map_d.put("lcId", lc.getId());
 								map_d.put("lcName", lc.getLcMz());
 								map_d.put("cpyDate", lc.getLcCpyDate());
+								map_d.put("lcNo", lc.getLcNo());
 								map_d.put("sDate", lc.getLcSDate());
 								map_d.put("comDate", lc.getLcEDate());
 								map_d.put("gfDate", lc.getLcGfDate());
@@ -1235,33 +1236,32 @@ public class ZlMainAction extends DispatchAction {
 				}
 				map_d.put("mxSDate", mx.getLcMxSDate());
 				map_d.put("mxEDate", mx.getLcMxEDate());
-				String upFile_db = mx.getLcMxUpFile();
-				String upFileName = "";//文件名称
-				String upFileSize = "";//文件大小
-				Integer fileNum = 0;
-				String fileInfo = "";
-				if(!upFile_db.equals("")){
-					String[] upFileArr = upFile_db.split(",");
-					fileNum = upFileArr.length;
-					fileInfo = fileNum+"个";
-					String upUserName = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();//上传人
-					String upDate = mx.getLcMxUpDate();//上传日期
-					List<Object> list_mx_1 = new ArrayList<Object>();
-					for(Integer i = 0 ; i < fileNum ; i++){
-						upFileName = upFileArr[i].substring(upFileArr[i].lastIndexOf("\\")+1,upFileArr[i].length());
-						upFileSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upFileArr[i]);
-						Map<String,String> map_mx = new HashMap<String,String>();
-						map_mx.put("upFileName", upFileName);
-						map_mx.put("upUserName", upUserName);
-						map_mx.put("upDate", upDate);
-						map_mx.put("upFileSize", upFileSize);
-						map_mx.put("downFilePath", upFileArr[i]);
-						list_mx_1.add(map_mx);
+				if(mx.getLcMxNo() != 2){
+					String upFile_db = mx.getLcMxUpFile();
+					String upFileName = "";//文件名称
+					String upFileSize = "";//文件大小
+					Integer fileNum = 0;
+					if(!upFile_db.equals("")){
+						String[] upFileArr = upFile_db.split(",");
+						fileNum = upFileArr.length;
+						String upUserName = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();//上传人
+						String upDate = mx.getLcMxUpDate();//上传日期
+						List<Object> list_mx_1 = new ArrayList<Object>();
+						for(Integer i = 0 ; i < fileNum ; i++){
+							upFileName = upFileArr[i].substring(upFileArr[i].lastIndexOf("\\")+1,upFileArr[i].length());
+							upFileSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upFileArr[i]);
+							Map<String,String> map_mx = new HashMap<String,String>();
+							map_mx.put("upFileName", upFileName);
+							map_mx.put("upUserName", upUserName);
+							map_mx.put("upDate", upDate);
+							map_mx.put("upFileSize", upFileSize);
+							map_mx.put("downFilePath", upFileArr[i]);
+							list_mx_1.add(map_mx);
+						}
+						map_d.put("upFileDetail", list_mx_1);//附件明细（当上传文件存在时出现）
 					}
-					map_d.put("upFileDetail", list_mx_1);//附件明细（当上传文件存在时出现）
+					map_d.put("mxRemark", mx.getLcMxRemark());
 				}
-				map_d.put("upFile", fileInfo);
-				map_d.put("mxRemark", mx.getLcMxRemark());
 				list_d.add(map_d);
 			}
 		}
