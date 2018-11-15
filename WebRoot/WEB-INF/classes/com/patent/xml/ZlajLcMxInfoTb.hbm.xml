@@ -75,5 +75,13 @@
                 <comment>备注</comment>
             </column>
         </property>
+        <set name="lcyjs" inverse="true">
+            <key>
+                <column name="lc_mx_id" not-null="true">
+                    <comment>流程明细编号</comment>
+                </column>
+            </key>
+            <one-to-many class="com.patent.module.ZlajLcYjInfoTb" />
+        </set>
     </class>
 </hibernate-mapping>

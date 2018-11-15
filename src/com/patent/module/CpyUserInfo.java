@@ -37,6 +37,7 @@ public class CpyUserInfo implements java.io.Serializable {
 	private Set<CpyRoleUserInfoTb> cpyRoleUserInfoTbs = new HashSet<CpyRoleUserInfoTb>();
 	private Set<ZlajFjInfoTb> zlajFjInfoTbs = new HashSet<ZlajFjInfoTb>();
 	private Set<ZlajFeeInfoTb> zlajFeeInfoTbs = new HashSet<ZlajFeeInfoTb>();
+	private Set<ZlajLcYjInfoTb> lcyjs = new HashSet<ZlajLcYjInfoTb>();
 
 	// Constructors
 
@@ -275,6 +276,14 @@ public class CpyUserInfo implements java.io.Serializable {
 
 	public void setUserLoginTimes(Integer userLoginTimes) {
 		this.userLoginTimes = userLoginTimes;
+	}
+
+	public Set<ZlajLcYjInfoTb> getLcyjs() {
+		return lcyjs;
+	}
+
+	public void setLcyjs(Set<ZlajLcYjInfoTb> lcyjs) {
+		this.lcyjs = lcyjs;
 	}
 
 }

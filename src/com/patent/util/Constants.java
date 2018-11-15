@@ -80,6 +80,7 @@ public class Constants {
 	public static final String WEB_ZLAJ_TZS_INFO = "zlaj_tzs_info_Web";
 	public static final String WEB_ZLAJ_FJ_INFO = "zlaj_fj_info_Web";
 	public static final String WEB_ZLAJ_FEE_INFO = "zlaj_fee_info_Web";
+	public static final String WEB_ZLAJ_LC_YJ_INFO = "zlaj_lc_yj_info_Web";
 	
 	//-------------------DAO-------------------------//
 	public static final String DAO_CPY_USER_INFO = "cpy_user_info_Dao";
@@ -108,4 +109,5 @@ public class Constants {
 	public static final String DAO_ZLAJ_FEE_INFO = "zlaj_fee_info_Dao";
 	public static final String DAO_FEE_TYPE_INFO = "fee_type_info_Dao";
 	public static final String DAO_ZLAJ_FEE_SUB_INFO = "zlaj_fee_sub_info_Dao";
+	public static final String DAO_ZLAJ_LC_YJ_INFO = "zlaj_lc_yj_info_Dao";
 }

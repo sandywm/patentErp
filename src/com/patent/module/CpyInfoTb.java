@@ -42,7 +42,7 @@ public class CpyInfoTb implements java.io.Serializable {
 	private Set<ZlajMainInfoTb> zlajMainInfoTbs = new HashSet<ZlajMainInfoTb>();
 	private Set<CpyJoinInfoTb> cpyJoinInfoTbs = new HashSet<CpyJoinInfoTb>();
 	private Set<CustomerInfoTb> customerInfoTbs = new HashSet<CustomerInfoTb>();
-
+	private Set<ZlajLcYjInfoTb> lcyjs = new HashSet<ZlajLcYjInfoTb>();
 	// Constructors
 
 	/** default constructor */
@@ -321,7 +321,13 @@ public class CpyInfoTb implements java.io.Serializable {
 	public void setCustomerInfoTbs(Set<CustomerInfoTb> customerInfoTbs) {
 		this.customerInfoTbs = customerInfoTbs;
 	}
+	public Set<ZlajLcYjInfoTb> getLcyjs() {
+		return lcyjs;
+	}
 
+	public void setLcyjs(Set<ZlajLcYjInfoTb> lcyjs) {
+		this.lcyjs = lcyjs;
+	}
 
 
 }

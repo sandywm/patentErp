@@ -290,7 +290,7 @@ public class ZlMainAction extends DispatchAction {
 		String lxr = CommonTools.getFinalStr("lxr", request);
 		String sDate = CommonTools.getFinalStr("sDate", request);
 		String eDate = CommonTools.getFinalStr("eDate", request);
-		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利，2：撰写任务领取,3：我的专利,4:我的任务）
+		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利，2：撰写任务领取,3：我的专利,4:我的任务,5:任务移交审核）
 		Integer comStatus = CommonTools.getFinalInteger("comStatus", request);//我的任务时传递的参数
 		Integer currLoginUserId = this.getLoginUserId(request);
 		//当任务条件为0时，撰写任务领取，这时需要强制stopStatus为正常（0）
@@ -502,6 +502,8 @@ public class ZlMainAction extends DispatchAction {
 				}else{
 					map.put("msg", "noInfo");
 				}
+			}else if(lqStatus.equals(5)){//专利任务移交审核
+				
 			}
 		}
 
@@ -1242,7 +1244,11 @@ public class ZlMainAction extends DispatchAction {
 					String upFileSize = "";//文件大小
 					String[] upFileArr = upFile_db.split(",");
 					Integer fileNum = upFileArr.length;
-					String upUserName = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();//上传人
+					Integer upUserId = mx.getLcMxUpUserId();
+					String upUserName = "";
+					if(upUserId > 0){
+						upUserName = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();//上传人
+					}
 					String upDate = mx.getLcMxUpDate();//上传日期
 					List<Object> list_mx_1 = new ArrayList<Object>();
 					for(Integer i = 0 ; i < fileNum ; i++){
@@ -3469,6 +3475,40 @@ public class ZlMainAction extends DispatchAction {
 
 //		map.put("result", list_d);
 //		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取我的任务，如果是管理员获取全部专利的流程任务
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-15 上午09:13:51
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getMyLcTask(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
+		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		String roleName = this.getLoginRoleName(request);
+		Integer currUserId = this.getLoginUserId(request);
+		if(this.getLoginType(request).equals("cpyUser")){
+			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
+			if(roleName.equals("管理员")){//获取当前代理机构下所有专利的当前任务流程
+				//mxm.listSpecInfoByOpt(fzUserId, comStatus, zlTitle, ajNoQt, zlNo, pageNo, pageSize);
+			}else{//只获取自己的任务流程
+				
+			}
+		}
 		return null;
 	}
 	

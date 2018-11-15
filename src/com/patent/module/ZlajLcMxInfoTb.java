@@ -1,5 +1,8 @@
 package com.patent.module;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * ZlajLcMxInfoTb entity. @author MyEclipse Persistence Tools
  */
@@ -26,6 +29,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 	private Double lcMxFee;
 	private Integer lcPjScore;
 	private String lcMxRemark;
+	private Set<ZlajLcYjInfoTb> lcyjs = new HashSet<ZlajLcYjInfoTb>();
 
 	// Constructors
 
@@ -185,6 +189,14 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 
 	public void setLcPjScore(Integer lcPjScore) {
 		this.lcPjScore = lcPjScore;
+	}
+
+	public Set<ZlajLcYjInfoTb> getLcyjs() {
+		return lcyjs;
+	}
+
+	public void setLcyjs(Set<ZlajLcYjInfoTb> lcyjs) {
+		this.lcyjs = lcyjs;
 	}
 
 }

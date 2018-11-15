@@ -124,5 +124,13 @@
             </key>
             <one-to-many class="com.patent.module.ZlajFeeInfoTb" />
         </set>
+        <set name="lcyjs" inverse="true">
+            <key>
+                <column name="apply_user_id" not-null="true">
+                    <comment>移交人员编号</comment>
+                </column>
+            </key>
+            <one-to-many class="com.patent.module.ZlajLcYjInfoTb" />
+        </set>
     </class>
 </hibernate-mapping>
