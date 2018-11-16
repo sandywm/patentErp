@@ -83,7 +83,7 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 	public List<ZlajLcMxInfoTb> findLcMxByOpt(Session sess, Integer fzUserId,
 			Integer comStatus, Integer cpyId, Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
-		String hql = " from ZlajLcMxInfoTb as lcmx where lcmx.lcMxNo >= 3";
+		String hql = " from ZlajLcMxInfoTb as lcmx where lcmx.lcMxNo >= 3 and lcmx.lcMxNo < 7";
 		if(fzUserId > 0){//指定流程负责人
 			hql += " and lcmx.lcFzUserId = "+fzUserId;
 		}else{//管理员可获取所有，必须要指定代理机构
@@ -105,7 +105,7 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 	public Integer getCountByOpt(Session sess, Integer fzUserId,
 			Integer comStatus, Integer cpyId) {
 		// TODO Auto-generated method stub
-		String hql = "select count(lcmx.id)  from ZlajLcMxInfoTb as lcmx where lcmx.lcMxNo >= 3";
+		String hql = "select count(lcmx.id)  from ZlajLcMxInfoTb as lcmx where lcmx.lcMxNo >= 3 and lcmx.lcMxNo < 7";
 		if(fzUserId > 0){//指定流程负责人
 			hql += " and lcmx.lcFzUserId = "+fzUserId;
 		}else{//管理员可获取所有，必须要指定代理机构

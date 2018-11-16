@@ -294,7 +294,7 @@ public class ZlMainAction extends DispatchAction {
 		String sDate = CommonTools.getFinalStr("sDate", request);
 		String eDate = CommonTools.getFinalStr("eDate", request);
 		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利，2：撰写任务领取,3：我的专利,4:我的/专利任务,5:任务移交记录/审核）
-		Integer comStatus = CommonTools.getFinalInteger("comStatus", request);//我的任务时传递的参数
+		Integer comStatus = CommonTools.getFinalInteger("comStatus", request);//我的任务时传递的参数(0:未完成，已完成)
 		Integer checkStatus = CommonTools.getFinalInteger("checkStatus", request);//(0:未审核，1：审核通过，2：审核未通过)
 		Integer currLoginUserId = this.getLoginUserId(request);
 		String roleName = this.getLoginRoleName(request);
@@ -492,7 +492,7 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("taskName", mx.getLcMxName());//任务名称
 						map_d.put("taskSdate", mx.getLcMxSDate());//任务开始日期
 						map_d.put("taskComDate", mx.getLcMxEDate());//任务完成日期
-						map_d.put("taskEdateCpy", lc.getLcEDate());//任务期限（代理机构）
+						map_d.put("taskEdateCpy", lc.getLcCpyDate());//任务期限（代理机构）
 						map_d.put("taskEdateGf", lc.getLcGfDate());//任务期限（官方）
 						map_d.put("zlTitle", zl.getAjTitle());//专利标题
 						map_d.put("zlNo", zl.getAjNoGf());//专利申请/专利号
@@ -541,7 +541,7 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("zlId", zl.getId());
 						map_d.put("zlTitle", zl.getAjTitle());
 						map_d.put("zlNo", zl.getAjNoGf());//专利申请/专利号
-						map_d.put("ajNoQt", zl.getAjNoQt());//案件编号
+						map_d.put("zlNoQt", zl.getAjNoQt());//案件编号
 						String zlType = zl.getAjType();
 						String zlTypeChi = "";
 						if(zlType.equals("fm")){

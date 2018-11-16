@@ -145,7 +145,7 @@ public interface ZlajLcMxInfoManager {
 	boolean updateMxNoById(Integer id,Double mxNo) throws WEBException;
 	
 	/**
-	 * 根据条件分页获取任务记录列表(新申请撰稿开始)
+	 * 根据条件分页获取任务记录列表(新申请撰稿开始到定稿提交)
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-11-15 下午09:14:12
@@ -158,7 +158,7 @@ public interface ZlajLcMxInfoManager {
 	List<ZlajLcMxInfoTb> listLcMxByOpt(Integer fzUserId,Integer comStatus, Integer cpyId, Integer pageNo, Integer pageSize) throws WEBException;
 	
 	/**
-	 * 根据条件获取任务记录条数(新申请撰稿开始)
+	 * 根据条件获取任务记录条数(新申请撰稿开始到定稿提交)
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-11-15 下午09:15:42
