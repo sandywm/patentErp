@@ -1160,7 +1160,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 获取当前用户有多少操作类型（zx-专利撰写,sc-专利审核,dgtj-定稿提交,tzs-导入通知书,fycj-费用催缴,bz-专利补正,bzsh-补正审核,bh-专利驳回）
+	 * 获取当前用户有多少操作类型（zx-专利撰写,sc-专利审核,cus-客户确认,dgtj-定稿提交,tzs-导入通知书,fycj-费用催缴,bz-专利补正,bzsh-补正审核,bh-专利驳回）
 	 * 为权利移交时使用
 	 * @author  Administrator
 	 * @ModifiedBy  
@@ -1207,6 +1207,14 @@ public class ZlMainAction extends DispatchAction {
 								map_d = new HashMap<String,String>();
 								map_d.put("typeName", "sc");
 								map_d.put("typeNameChi", "专利审核");
+								list_d.add(map_d);
+								yyNum += 1;
+							}
+							//案件没完成提交之前可以客户确认
+							if(currLoginUserId.equals(zl.getCusCheckUserId()) && ajStatus < 7){
+								map_d = new HashMap<String,String>();
+								map_d.put("typeName", "cus");
+								map_d.put("typeNameChi","客户确认");
 								list_d.add(map_d);
 								yyNum += 1;
 							}
@@ -3559,7 +3567,7 @@ public class ZlMainAction extends DispatchAction {
 	}	
 	
 	/**
-	 * 申请流程移交
+	 * 申请流程移交(管理员和流程分配人员不能操作)
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-11-15 下午10:23:19
@@ -3580,19 +3588,35 @@ public class ZlMainAction extends DispatchAction {
 		String msg = "error";
 		Integer lcmxId = CommonTools.getFinalInteger("lcmxId", request);//流程移交编号
 		String applyCause = Transcode.unescape_new1("applyCause", request);//申请原因
+		String lcTask = CommonTools.getFinalStr("lcTask", request);//流程任务
 		if(this.getLoginType(request).equals("cpyUser")){
 			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
 			boolean lcfpFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "fpZl");//只有具有专利流程分配的人员
 			if(roleName.equals("管理员") || lcfpFlag){//管理员和流程分配人员不能操作（直接调用相关流程人员的操作接口）
+				
+			}else{
+				//(zx-专利撰写,sc-专利审核,cus-客户确认,dgtj-定稿提交,tzs-导入通知书,fycj-费用催缴,bz-专利补正,bzsh-补正审核,bh-专利驳回)
 				List<ZlajLcMxInfoTb>  mxList = mxm.listDetailInfoById(lcmxId);
 				if(mxList.size() > 0){
-					if(mxList.get(0).getLcFzUserId().equals(currUserId)){//必须是当前流程负责人才能进行移交
-						Integer yjId = lcyjm.addYj(lcmxId, currUserId, applyCause, 0, cpyId);
-						if(yjId > 0){
+					ZlajLcMxInfoTb mx = mxList.get(0);
+					if(mx.getLcMxNo() >= 7){//定稿提交已完成（之前的流程不在进行移交）
+						if(lcTask.equals("zx") || lcTask.equals("sc") || lcTask.equals("cus") || lcTask.equals("sgtj")){
+							msg = "notApply";
+						}else{
 							msg = "success";
 						}
-					}else{
-						msg = "notMatch";//不是当前流程负责人不能移交
+					}else{//只要没完成定稿提交，所有的流程都能进行移交
+						msg = "success";
+					}
+					if(msg.equals("success")){
+						if(mx.getLcFzUserId().equals(currUserId)){//必须是当前流程负责人才能进行移交
+							Integer yjId = lcyjm.addYj(lcmxId, currUserId, lcTask, applyCause, 0, cpyId);
+							if(yjId > 0){
+								msg = "success";
+							}
+						}else{
+							msg = "notMatch";//不是当前流程负责人不能移交
+						}
 					}
 				}
 			}
@@ -3620,18 +3644,15 @@ public class ZlMainAction extends DispatchAction {
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		ZlajLcYjInfoManager lcyjm = (ZlajLcYjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_YJ_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
-		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
 		MailInfoManager mm = (MailInfoManager) AppFactory.instance(null).getApp(Constants.WEB_MAIL_INFO);
-		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
-		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		String roleName = this.getLoginRoleName(request);
 		Integer currUserId = this.getLoginUserId(request);
-		Integer zlId = CommonTools.getFinalInteger("zlId", request);//专利编号
 		Integer yjId = CommonTools.getFinalInteger("yjId", request);//流程移交编号
 		Integer checkStatus = CommonTools.getFinalInteger("checkStatus", request);//审核状态
+		Integer newFzUserId = CommonTools.getFinalInteger("newFzUserId", request);//新设定的流程负责人
 		String msg = "error";
+		Map<String,String> map = new HashMap<String,String>();
 		if(this.getLoginType(request).equals("cpyUser")){
-			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
 			boolean abilityFlag = false;
 			if(roleName.equals("管理员")){
 				abilityFlag = true;
@@ -3641,12 +3662,60 @@ public class ZlMainAction extends DispatchAction {
 			if(abilityFlag){
 				ZlajLcYjInfoTb lcyj = lcyjm.getEntityById(yjId);
 				if(lcyj != null){
-					
+					boolean flag = lcyjm.updateYjInfoById(lcyj.getId(), checkStatus, currUserId);
+					if(flag){
+						if(checkStatus.equals(1)){//审核通过
+							//需要给指定的流程赋予新的流程负责人员
+							ZlajLcMxInfoTb mx = lcyj.getLcmx();
+							Integer zlId = mx.getZlajLcInfoTb().getZlajMainInfoTb().getId();
+							Integer mxId = mx.getId();
+							//一旦当前流程被其他人完成（管理员完成的情况下就不修改）
+							if(mx.getLcMxEDate().equals("")){
+								mxm.updateEdateById(mxId, newFzUserId, -1, "", "", "", "", "", -1);	
+							}
+							String lcTask = lcyj.getLcName();
+							//(zx-专利撰写,sc-专利审核,cus-客户确认,dgtj-定稿提交,tzs-导入通知书,fycj-费用催缴,bz-专利补正,bzsh-补正审核,bh-专利驳回)
+							//修改专利表中的负责人(必须要知道当前想移交的是那个流程)
+							Integer checkUserId = -1;
+							Integer cusCheckUserId = -1;
+							Integer zxUserId = -1;
+							Integer tjUserId = -1;
+							Integer tzsUserId = -1;
+							Integer feeUserId = -1;
+							Integer bzUserId = -1;
+							Integer bzshUserId = -1;
+							Integer bhUserId = -1;
+							if(lcTask.equals("zx")){
+								zxUserId = currUserId;
+							}else if(lcTask.equals("sc")){
+								checkUserId = currUserId;
+							}else if(lcTask.equals("cus")){
+								cusCheckUserId = currUserId;
+							}else if(lcTask.equals("dgtj")){
+								tjUserId = currUserId;
+							}else if(lcTask.equals("tzs")){
+								tzsUserId = currUserId;
+							}else if(lcTask.equals("fycj")){
+								feeUserId = currUserId;
+							}else if(lcTask.equals("bz")){
+								bzUserId = currUserId;
+							}else if(lcTask.equals("bzsh")){
+								bzshUserId = currUserId;
+							}else if(lcTask.equals("bh")){
+								bhUserId = currUserId;
+							}
+							zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId, 
+									tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+						}
+						msg = "success";
+					}
 				}
 			}else{
 				msg = "noAbility";
 			}
 		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	

@@ -16,6 +16,7 @@ public class ZlajLcYjInfoTb implements java.io.Serializable {
 	private ZlajLcMxInfoTb lcmx;
 	private CpyUserInfo user;
 	private CpyInfoTb cpy;
+	private String lcName;
 	private String applyDate;
 	private String applyCause;
 	private Integer checkStatus;
@@ -32,11 +33,12 @@ public class ZlajLcYjInfoTb implements java.io.Serializable {
 
 	/** minimal constructor */
 	public ZlajLcYjInfoTb(ZlajLcMxInfoTb lcmx, CpyUserInfo user,
-			CpyInfoTb cpy, String applyDate, String applyCause,
+			CpyInfoTb cpy, String lcName, String applyDate, String applyCause,
 			Integer checkStatus, String checkDate, Integer checkUserId) {
 		this.lcmx = lcmx;
 		this.user = user;
 		this.cpy = cpy;
+		this.lcName = lcName;
 		this.applyDate = applyDate;
 		this.applyCause = applyCause;
 		this.checkStatus = checkStatus;
@@ -46,12 +48,13 @@ public class ZlajLcYjInfoTb implements java.io.Serializable {
 
 	/** full constructor */
 	public ZlajLcYjInfoTb(Integer id, ZlajLcMxInfoTb lcmx, CpyUserInfo user,
-			CpyInfoTb cpy, String applyDate, String applyCause,
+			CpyInfoTb cpy, String lcName,String applyDate, String applyCause,
 			Integer checkStatus, String checkDate, Integer checkUserId) {
 		this.id = id;
 		this.lcmx = lcmx;
 		this.user = user;
 		this.cpy = cpy;
+		this.lcName = lcName;
 		this.applyDate = applyDate;
 		this.applyCause = applyCause;
 		this.checkStatus = checkStatus;
@@ -145,6 +148,12 @@ public class ZlajLcYjInfoTb implements java.io.Serializable {
 
 	public void setCheckUserId(Integer checkUserId) {
 		this.checkUserId = checkUserId;
+	}
+	public String getLcName() {
+		return lcName;
+	}
+	public void setLcName(String lcName) {
+		this.lcName = lcName;
 	}
 
 }

@@ -26,7 +26,7 @@ public class ZlajLcYjInfoManagerImpl implements ZlajLcYjInfoManager{
 	Transaction tran = null;
 	
 	@Override
-	public Integer addYj(Integer lcmxId, Integer applyUserId,
+	public Integer addYj(Integer lcmxId, Integer applyUserId,String lcName,
 			String applyCause, Integer checkUserId, Integer cpyId)
 			throws WEBException {
 		// TODO Auto-generated method stub
@@ -38,7 +38,7 @@ public class ZlajLcYjInfoManagerImpl implements ZlajLcYjInfoManager{
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
 			ZlajLcYjInfoTb yj = new ZlajLcYjInfoTb(mxDao.get(sess, lcmxId), uDao.get(sess, applyUserId),
-					cDao.get(sess, cpyId), CurrentTime.getCurrentTime(), applyCause,0, "", checkUserId);
+					cDao.get(sess, cpyId), lcName,CurrentTime.getCurrentTime(), applyCause,0, "", checkUserId);
 			yjDao.save(sess, yj);
 			tran.commit();
 			return yj.getId();

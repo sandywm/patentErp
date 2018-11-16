@@ -25,6 +25,11 @@
                 <comment>代理机构编号</comment>
             </column>
         </many-to-one>
+        <property name="lcName" type="java.lang.String">
+            <column name="lc_name" length="20" not-null="true">
+                <comment>流程名字(zx-专利撰写,sc-专利审核,cus-客户确认,dgtj-定稿提交,tzs-导入通知书,fycj-费用催缴,bz-专利补正,bzsh-补正审核,bh-专利驳回)</comment>
+            </column>
+        </property>
         <property name="applyDate" type="java.lang.String">
             <column name="apply_date" length="30" not-null="true">
                 <comment>申请时间</comment>

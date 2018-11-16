@@ -14,13 +14,14 @@ public interface ZlajLcYjInfoManager {
 	 * @date 2018-11-15 上午10:07:22
 	 * @param lcmxId 流程明细编号
 	 * @param applyUserId 申请人
+	 * @param lcName 流程任务
 	 * @param applyCause 申请原因
 	 * @param checkUserId 审核人员
 	 * @param cpyId 代理机构编号
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addYj(Integer lcmxId,Integer applyUserId,String applyCause,Integer checkUserId,Integer cpyId)throws WEBException;
+	Integer addYj(Integer lcmxId,Integer applyUserId,String lcName,String applyCause,Integer checkUserId,Integer cpyId)throws WEBException;
 	
 	/**
 	 * 审核指定申请的信息
