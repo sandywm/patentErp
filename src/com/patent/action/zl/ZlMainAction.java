@@ -293,7 +293,7 @@ public class ZlMainAction extends DispatchAction {
 		String lxr = CommonTools.getFinalStr("lxr", request);
 		String sDate = CommonTools.getFinalStr("sDate", request);
 		String eDate = CommonTools.getFinalStr("eDate", request);
-		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利，2：撰写任务领取,3：我的专利,4:我的任务,5:任务移交审核）
+		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利，2：撰写任务领取,3：我的专利,4:我的/专利任务,5:任务移交记录/审核）
 		Integer comStatus = CommonTools.getFinalInteger("comStatus", request);//我的任务时传递的参数
 		Integer checkStatus = CommonTools.getFinalInteger("checkStatus", request);//(0:未审核，1：审核通过，2：审核未通过)
 		Integer currLoginUserId = this.getLoginUserId(request);
@@ -496,7 +496,7 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("taskEdateGf", lc.getLcGfDate());//任务期限（官方）
 						map_d.put("zlTitle", zl.getAjTitle());//专利标题
 						map_d.put("zlNo", zl.getAjNoGf());//专利申请/专利号
-						map_d.put("ajNoQt", zl.getAjNoQt());//案件编号
+						map_d.put("zlNoQt", zl.getAjNoQt());//案件编号
 						map_d.put("zlId", zl.getId());//专利编号
 						String zlType = zl.getAjType();
 						String zlTypeChi = "";
@@ -518,13 +518,63 @@ public class ZlMainAction extends DispatchAction {
 				}else{
 					map.put("msg", "noInfo");
 				}
-			}else if(lqStatus.equals(5)){//专利任务移交审核列表（管理员、流程分配人员查看）
-				Integer checkUserId = 0;
-				Integer count = lcyjm.getCountByOpt(0, checkStatus, 0, cpyId);
+			}else if(lqStatus.equals(5)){//流程人员叫任务移交记录，管理员、流程分配人员时叫任务移交审核
+				Integer applyUserId = 0;
+				boolean lcfpFlag = abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "fpZl");//只有具有专利流程分配的人员
+				if(roleName.equals("管理员") || lcfpFlag){//管理员和具有流程分配权限的人员都可进行审核
+					
+				}else{
+					applyUserId = currLoginUserId;
+				}
+				Integer count = lcyjm.getCountByOpt(applyUserId, checkStatus, 0, cpyId);
 				if(count > 0){
-					List<ZlajLcYjInfoTb> yjList = lcyjm.listPageInfoByOpt(0, checkStatus, 0, cpyId, pageNo, pageSize);
+					List<ZlajLcYjInfoTb> yjList = lcyjm.listPageInfoByOpt(applyUserId, checkStatus, 0, cpyId, pageNo, pageSize);
 					for(Iterator<ZlajLcYjInfoTb> it = yjList.iterator() ; it.hasNext();){
-						11
+						ZlajLcYjInfoTb yj = it.next();
+						ZlajLcMxInfoTb mx = yj.getLcmx();
+						ZlajLcInfoTb lc = mx.getZlajLcInfoTb();
+						ZlajMainInfoTb zl = lc.getZlajMainInfoTb();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("yjId", yj.getId());
+						map_d.put("mxId", mx.getId());
+						map_d.put("taskName", mx.getLcMxName());
+						map_d.put("zlId", zl.getId());
+						map_d.put("zlTitle", zl.getAjTitle());
+						map_d.put("zlNo", zl.getAjNoGf());//专利申请/专利号
+						map_d.put("ajNoQt", zl.getAjNoQt());//案件编号
+						String zlType = zl.getAjType();
+						String zlTypeChi = "";
+						if(zlType.equals("fm")){
+							zlTypeChi = "发明";
+						}else if(zlType.equals("syxx")){
+							zlTypeChi = "实用新型";
+						}else if(zlType.equals("wg")){
+							zlTypeChi = "外观";
+						}
+						map_d.put("zlType", zlTypeChi);//专利类型
+						map_d.put("applyUserId", yj.getUser().getId());
+						map_d.put("applyUserName", yj.getUser().getUserName());
+						map_d.put("applyDate", yj.getApplyDate());
+						map_d.put("applyCause", yj.getApplyCause());
+						Integer checkStatus_db = yj.getCheckStatus();
+						String checkDate = "";
+						String checkUserName = "";
+						String checkStatusChi = "";
+						if(checkStatus_db.equals(0)){
+							checkStatusChi = "未审核";
+						}else{
+							if(checkStatus_db.equals(1)){
+								checkStatusChi = "审核通过";
+							}else if(checkStatus_db.equals(2)){
+								checkStatusChi = "审核未通过";
+							}
+							checkDate = CurrentTime.getCurrentTime();
+							checkUserName = cum.getEntityById(yj.getCheckUserId()).getUserName();
+						}
+						map_d.put("checkStatus", checkStatus_db);
+						map_d.put("checkStatusChi", checkStatusChi);
+						map_d.put("checkUserName", checkUserName);
+						map_d.put("checkDate", checkDate);
 					}
 				}
 			}
@@ -3585,7 +3635,7 @@ public class ZlMainAction extends DispatchAction {
 			if(abilityFlag){
 				ZlajLcYjInfoTb lcyj = lcyjm.getEntityById(yjId);
 				if(lcyj != null){
-					11
+					
 				}
 			}else{
 				msg = "noAbility";
