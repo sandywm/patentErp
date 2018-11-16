@@ -474,7 +474,7 @@ public class ZlMainAction extends DispatchAction {
 				}else{
 					map.put("msg", "noInfo");
 				}
-			}else if(lqStatus.equals(4)){//我的任务,管理员时叫专利任务
+			}else if(lqStatus.equals(4)){//我的任务（去完成、任务移交）,管理员时叫专利任务
 				if(roleName.equals("管理员")){//管理员可做所有任务
 					currLoginUserId = 0;
 				}
@@ -527,7 +527,9 @@ public class ZlMainAction extends DispatchAction {
 					applyUserId = currLoginUserId;
 				}
 				Integer count = lcyjm.getCountByOpt(applyUserId, checkStatus, 0, cpyId);
+				List<Object> list_d = new ArrayList<Object>();
 				if(count > 0){
+					map.put("result", "success");
 					List<ZlajLcYjInfoTb> yjList = lcyjm.listPageInfoByOpt(applyUserId, checkStatus, 0, cpyId, pageNo, pageSize);
 					for(Iterator<ZlajLcYjInfoTb> it = yjList.iterator() ; it.hasNext();){
 						ZlajLcYjInfoTb yj = it.next();
@@ -575,11 +577,14 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("checkStatusChi", checkStatusChi);
 						map_d.put("checkUserName", checkUserName);
 						map_d.put("checkDate", checkDate);
+						list_d.add(map_d);
 					}
+					map.put("applyInfo", list_d);
+				}else{
+					map.put("result", "noInfo");
 				}
 			}
 		}
-
 		this.getJsonPkg(map, response);
 		return null;
 	}
@@ -3551,7 +3556,7 @@ public class ZlMainAction extends DispatchAction {
 //		map.put("result", list_d);
 //		this.getJsonPkg(map, response);
 		return null;
-	}
+	}	
 	
 	/**
 	 * 申请流程移交
@@ -3577,7 +3582,8 @@ public class ZlMainAction extends DispatchAction {
 		String applyCause = Transcode.unescape_new1("applyCause", request);//申请原因
 		if(this.getLoginType(request).equals("cpyUser")){
 			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
-			if(!roleName.equals("管理员")){//管理员不能操作
+			boolean lcfpFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "fpZl");//只有具有专利流程分配的人员
+			if(roleName.equals("管理员") || lcfpFlag){//管理员和流程分配人员不能操作（直接调用相关流程人员的操作接口）
 				List<ZlajLcMxInfoTb>  mxList = mxm.listDetailInfoById(lcmxId);
 				if(mxList.size() > 0){
 					if(mxList.get(0).getLcFzUserId().equals(currUserId)){//必须是当前流程负责人才能进行移交
