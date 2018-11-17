@@ -129,4 +129,21 @@ public class ZlajLcYjInfoManagerImpl implements ZlajLcYjInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajLcYjInfoTb> listUnCheckInfoByOpt(String lcTask, Integer zlId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			yjDao = (ZlajLcYjInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_YJ_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return yjDao.findUnCheckInfoByOpt(sess, lcTask, zlId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定专利指定流程的未审核的流程任务申请列表信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

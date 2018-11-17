@@ -82,4 +82,11 @@ public class ZlajLcYjInfoDaoImpl implements ZlajLcYjInfoDao{
 		return CommonTools.longToInt(count_obj);
 	}
 
+	@Override
+	public List<ZlajLcYjInfoTb> findUnCheckInfoByOpt(Session sess, String lcTask,Integer zlId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajLcYjInfoTb as lcyj where lcyj.lcName = '"+lcTask+"' and lcyj.lcmx.zlajLcInfoTb.zlajMainInfoTb.id = "+zlId + " and lcyj.checkStatus = 0";
+		return sess.createQuery(hql).list();
+	}
+
 }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.hibernate.Session;
 
-import com.patent.exception.WEBException;
 import com.patent.module.ZlajLcYjInfoTb;
 
 public interface ZlajLcYjInfoDao {
@@ -72,4 +71,16 @@ public interface ZlajLcYjInfoDao {
 	 * @return
 	 */
 	Integer getCountByOpt(Session sess,Integer applyUserId,Integer checkStauts,Integer checkUserId,Integer cpyId);
+
+	/**
+	 * 获取指定流程
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-11-17 下午08:58:29
+	 * @param sess
+	 * @param lcTask
+	 * @param mxId
+	 * @return
+	 */
+	List<ZlajLcYjInfoTb> findUnCheckInfoByOpt(Session sess,String lcTask,Integer zlId);
 }

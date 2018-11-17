@@ -581,7 +581,7 @@ public class ZlMainAction extends DispatchAction {
 					}
 					map.put("applyInfo", list_d);
 				}else{
-					map.put("result", "noInfo");
+					map.put("msg", "noInfo");
 				}
 			}
 		}
@@ -3482,10 +3482,13 @@ public class ZlMainAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		String roleName = this.getLoginRoleName(request);
 		String zipPath = Transcode.unescape_new1("zipPath", request);//上传的通知书路径cpyUser/u_id/###.zip
+		String upZipName = zipPath.substring(zipPath.lastIndexOf("\\") + 1);//上传的通知书zip名字
 		String filePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + zipPath;
 		String lcNo = "";//当前流程号
 		boolean abilityFlag = false;
 		Integer cpyId = 0;
+		String msg = "error";
+		String currDate = CurrentTime.getStringDate();
 		if(this.getLoginType(request).equals("cpyUser")){
 			//判断权限
 			//获取当前用户是否有修改权限
@@ -3518,18 +3521,12 @@ public class ZlMainAction extends DispatchAction {
 		        	String fwDate = tJson.getFwDate();//发文日期
 		        	String sqrName = tJson.getSqrName();//申请人
 		        	String applyDate = tJson.getApplyDate();//申请日期
-		        	String zlType = tJson.getZlType();//战力类型
+		        	String zlType = tJson.getZlType();//专利类型
 		        	String fjApplyDate = tJson.getFjApplyDate();//费减请求日期
 		        	String fjRecord = tJson.getFjRecord();//费减记录
-		        	String feeDate = tJson.getFeeEdate();//缴费截止日期/补正截止日期 
+		        	String feeEndDateGf = tJson.getFeeEdate();//缴费截止日期/补正截止日期 (官方)
+		        	String feeEndDateCpy = CurrentTime.getFinalDate(feeEndDateGf, Constants.JF_SL_END_DATE_CPY);//缴费截止日期/补正截止日期 (机构)
 		        	String fjRate = tJson.getFjRate();//费减比率 
-		        	List<FeeDetailJson> fdList = tJson.getFdList();//费用明细
-		        	if(fdList.size() > 0){
-		        		for(Integer k = 0 ; k < fdList.size() ; k++){
-		        			FeeDetailJson fdJson = fdList.get(k);
-		        			System.out.println(fdJson.getFeeName()+" :"+fdJson.getFeeAmount());
-		        		}
-		        	}
 		        	String yearNo = tJson.getYearNo();//年度数字
 		        	List<LateFeeJson> lfList = tJson.getLfList();//年费滞纳金
 		        	if(lfList.size() > 0){
@@ -3547,7 +3544,81 @@ public class ZlMainAction extends DispatchAction {
 		        	Integer zlNum = zlList.size();
 		        	if(zlNum > 0){
 		        		if(zlNum.equals(1)){
-		        			
+		        			ZlajMainInfoTb zl = zlList.get(0);
+	    					Integer zlId = zl.getId();
+	    					//只有在案件状态正常时（0）
+							if(zl.getAjStopStatus().equals(0)){
+								//只有导入通知书的人员或者管理员才能导入通知书
+								if(roleName.equals("管理员") || currUserId.equals(zl.getTzsUserId())){
+									if(tzsm.listInfoByOpt(zlId, fwSerial).size() > 0){//有此通知书
+										//无需再增加
+										msg = "uploadExist";//之前已经上传过，无需再次上传
+										map.put("tzsName", tzsName);
+										map.put("zlId", zlId);
+										map.put("ajNoGf", zl.getAjNoGf());
+										map.put("ajTitle", zl.getAjTitle());
+										map.put("readInfo", msg);
+										//删除当前通知书压缩包
+//										FileOpration.deleteFile(finalPath);
+									}else{
+										String upZipPath_final = "cpyUser\\"+zlId+"\\tzs\\"+upZipName; 
+										String applyDate_db = zl.getAjApplyDate();//获取数据库中专利的申请日
+										if(tzsName.equals("专利申请受理通知书")){
+											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.1);//导入通知书期限1个月
+											if(currLcId > 0){
+												mxm.addLcMx(currLcId, currUserId, "导入受理通知书", 7.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
+												//发送邮件
+												mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", "新任务通知：导入费用减缓审批/缴纳申请费通知书", "专利["+zl.getAjTitle()+"]已完成受理通知书导入，请及时完成导入费用减缓审批/缴纳申请费通知书工作");
+												zlm.updateAjNoGfById(zlId, applyDate);//修改专利申请日
+												msg = "success";
+											}
+					        			}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
+					        				if(!applyDate_db.equals("")){
+					        					Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入费用减缓审批/缴纳申请费通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.2);//导入通知书期限1个月
+												if(currLcId > 0){
+													mxm.addLcMx(currLcId, currUserId, "导入费用减缓审批/缴纳申请费通知书", 7.2, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
+													//发送邮件
+													mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getFeeUserId(), "cpyUser", "新任务通知：费用催缴", "专利["+zl.getAjTitle()+"]已完成费用减缓审批/缴纳申请费通知书导入，请及时完成费用催缴工作");
+													//如果是发明专利，需要增加实质审查费
+													if(!fjRate.equals("0.0") && zl.getAjFjInfo() == 0.0){//通知书存在费减并且系统中不存在费减
+//														//存在费减，修改
+														zlm.updateZlFjInfo(zlId, Double.parseDouble(fjRate));
+													}
+													//增加缴纳受理费的任务
+													List<FeeDetailJson> fdList = tJson.getFdList();//费用明细
+										        	if(fdList.size() > 0){
+										        		Integer feeTypeId = 0;
+										        		if(zlType.equals("fm")){
+															feeTypeId = 1;//对应的是发明专利申请费
+														}else if(zlType.equals("syxx")){
+															feeTypeId = 4;//对应的是实用新型专利申请费
+														}else if(zlType.equals("wg")){
+															feeTypeId = 5;//对应的是外观设计专利申请费
+														}
+										        		for(Integer k = 0 ; k < fdList.size() ; k++){
+										        			FeeDetailJson fdJson = fdList.get(k);
+										        			fm.addZLFee(zlId, currUserId, feeTypeId, fdJson.getFeeAmount(), Double.parseDouble(fjRate), feeEndDateCpy, 
+										        					feeEndDateGf, "", 0, cpyId, 0, "","", tzsName, 0, "", 0, "", "", "");
+										        			//增加缴费任务
+										        			System.out.println(fdJson.getFeeName()+" :"+fdJson.getFeeAmount());
+										        		}
+										        	}
+													//如果是发明专利，还需要增加缴纳实质审查费的任务
+													if(zlType.equals("fm")){
+														
+													}
+													msg = "success";
+												}
+					        				}else{//不存在申请日不能导入后续的通知书
+					        					msg = "dateError";
+					        				}
+					        				
+					        			}
+									}
+								}else{
+									msg = "noUpload";
+								}
+							}
 		        		}else{//多个
 		        			
 		        		}
@@ -3610,9 +3681,15 @@ public class ZlMainAction extends DispatchAction {
 					}
 					if(msg.equals("success")){
 						if(mx.getLcFzUserId().equals(currUserId)){//必须是当前流程负责人才能进行移交
-							Integer yjId = lcyjm.addYj(lcmxId, currUserId, lcTask, applyCause, 0, cpyId);
-							if(yjId > 0){
-								msg = "success";
+							//查看指定专利指定流程是否有重复的流程未申请任务
+							List<ZlajLcYjInfoTb> yjList = lcyjm.listUnCheckInfoByOpt(lcTask, mx.getZlajLcInfoTb().getZlajMainInfoTb().getId());
+							if(yjList.size() > 0){
+								msg = "existInfo";//存在未审核的申请
+							}else{
+								Integer yjId = lcyjm.addYj(lcmxId, currUserId, lcTask, applyCause, 0, cpyId);
+								if(yjId > 0){
+									msg = "success";//成功
+								}
 							}
 						}else{
 							msg = "notMatch";//不是当前流程负责人不能移交
@@ -3662,52 +3739,64 @@ public class ZlMainAction extends DispatchAction {
 			if(abilityFlag){
 				ZlajLcYjInfoTb lcyj = lcyjm.getEntityById(yjId);
 				if(lcyj != null){
-					boolean flag = lcyjm.updateYjInfoById(lcyj.getId(), checkStatus, currUserId);
-					if(flag){
-						if(checkStatus.equals(1)){//审核通过
-							//需要给指定的流程赋予新的流程负责人员
+					Integer applyUserId = lcyj.getUser().getId();//申请移交的人
+					if(lcyj.getCheckStatus().equals(0)){//只有未审核的才能进行审核
+						boolean flag = lcyjm.updateYjInfoById(lcyj.getId(), checkStatus, currUserId);
+						if(flag){
+							String checkStatusChi = "审核未通过";
 							ZlajLcMxInfoTb mx = lcyj.getLcmx();
-							Integer zlId = mx.getZlajLcInfoTb().getZlajMainInfoTb().getId();
-							Integer mxId = mx.getId();
-							//一旦当前流程被其他人完成（管理员完成的情况下就不修改）
-							if(mx.getLcMxEDate().equals("")){
-								mxm.updateEdateById(mxId, newFzUserId, -1, "", "", "", "", "", -1);	
+							ZlajMainInfoTb zl = mx.getZlajLcInfoTb().getZlajMainInfoTb();
+							if(checkStatus.equals(1)){//审核通过
+								checkStatusChi = "审核已通过";
+								//需要给指定的流程赋予新的流程负责人员
+								Integer zlId = zl.getId();
+								Integer mxId = mx.getId();
+								//一旦当前流程被其他人完成（管理员完成的情况下就不修改）
+								if(mx.getLcMxEDate().equals("")){
+									mxm.updateEdateById(mxId, newFzUserId, -1, "", "", "", "", "", -1);	
+								}
+								String lcTask = lcyj.getLcName();
+								//(zx-专利撰写,sc-专利审核,cus-客户确认,dgtj-定稿提交,tzs-导入通知书,fycj-费用催缴,bz-专利补正,bzsh-补正审核,bh-专利驳回)
+								//修改专利表中的负责人(必须要知道当前想移交的是那个流程)
+								Integer checkUserId = -1;
+								Integer cusCheckUserId = -1;
+								Integer zxUserId = -1;
+								Integer tjUserId = -1;
+								Integer tzsUserId = -1;
+								Integer feeUserId = -1;
+								Integer bzUserId = -1;
+								Integer bzshUserId = -1;
+								Integer bhUserId = -1;
+								if(lcTask.equals("zx")){
+									zxUserId = currUserId;
+								}else if(lcTask.equals("sc")){
+									checkUserId = currUserId;
+								}else if(lcTask.equals("cus")){
+									cusCheckUserId = currUserId;
+								}else if(lcTask.equals("dgtj")){
+									tjUserId = currUserId;
+								}else if(lcTask.equals("tzs")){
+									tzsUserId = currUserId;
+								}else if(lcTask.equals("fycj")){
+									feeUserId = currUserId;
+								}else if(lcTask.equals("bz")){
+									bzUserId = currUserId;
+								}else if(lcTask.equals("bzsh")){
+									bzshUserId = currUserId;
+								}else if(lcTask.equals("bh")){
+									bhUserId = currUserId;
+								}
+								zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId, 
+										tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+								//给新分配的人员发送邮件
+								mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, newFzUserId, "cpyUser", "流程任务分配", "您已被分配为专利["+zl.getAjTitle()+"]中的"+mx.getLcMxName()+"]流程任务的负责人,请随时关注任务进度");
 							}
-							String lcTask = lcyj.getLcName();
-							//(zx-专利撰写,sc-专利审核,cus-客户确认,dgtj-定稿提交,tzs-导入通知书,fycj-费用催缴,bz-专利补正,bzsh-补正审核,bh-专利驳回)
-							//修改专利表中的负责人(必须要知道当前想移交的是那个流程)
-							Integer checkUserId = -1;
-							Integer cusCheckUserId = -1;
-							Integer zxUserId = -1;
-							Integer tjUserId = -1;
-							Integer tzsUserId = -1;
-							Integer feeUserId = -1;
-							Integer bzUserId = -1;
-							Integer bzshUserId = -1;
-							Integer bhUserId = -1;
-							if(lcTask.equals("zx")){
-								zxUserId = currUserId;
-							}else if(lcTask.equals("sc")){
-								checkUserId = currUserId;
-							}else if(lcTask.equals("cus")){
-								cusCheckUserId = currUserId;
-							}else if(lcTask.equals("dgtj")){
-								tjUserId = currUserId;
-							}else if(lcTask.equals("tzs")){
-								tzsUserId = currUserId;
-							}else if(lcTask.equals("fycj")){
-								feeUserId = currUserId;
-							}else if(lcTask.equals("bz")){
-								bzUserId = currUserId;
-							}else if(lcTask.equals("bzsh")){
-								bzshUserId = currUserId;
-							}else if(lcTask.equals("bh")){
-								bhUserId = currUserId;
-							}
-							zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId, 
-									tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+							msg = "success";
+							//给移交人员发送邮件通知
+							mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, applyUserId, "cpyUser", "流程移交申请审核结果", "您申请的专利["+zl.getAjTitle()+"中的"+mx.getLcMxName()+"]流程任务移交申请已"+checkStatusChi);
 						}
-						msg = "success";
+					}else{
+						msg = "infoChanged";//状态已发生变化，不能进行修改
 					}
 				}
 			}else{
