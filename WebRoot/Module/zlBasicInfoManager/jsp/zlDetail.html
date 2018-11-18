@@ -247,7 +247,7 @@
 				        url:'/zlm.do?action=getZlDetail',
 				        success:function (json){
 				        	layer.closeAll('loading');
-				        	console.log(json)
+				        	//console.log(json)
 				        	if(json['result'] == 'success'){
 				        		if(opts == 'basic'){//获取基本信息
 				        			zlId = json.ajId;
@@ -1180,6 +1180,12 @@
 							delHasAddMethod('delFmrBtn','delFmrOpt');
 						}
 						delHasAddMethod('delJsLxrBtn','delJsLxrOpt');
+						if($('.downloadBtn').length > 0){
+							$('.downloadBtn').on('click',function(){
+								var downFilePath = $(this).attr('downFilePath');
+								common.downFiles(downFilePath);
+							});
+						}
 					}
 					if(json.pubZlName != ''){//编辑首次进来页面判断是否存在已添加的专利任务存在激活重置
 						parent.$('#lqZlIdInp').val(json.pubZlId);//将已经存在数据库的pubZlId赋给父级用于弹窗页面的回显
@@ -1378,7 +1384,7 @@
 							strHtml += '<li class="otherLi noFlex clearfix"><strong>附件：</strong>';
 							if(upFileDetail.length != 0){
 								for(var j=0;j<upFileDetail.length;j++){
-									strHtml += '<p>'+ upFileDetail[j].upFileName +' <a href="javascript:void(0)" class="downLoadBtn layui-btn layui-btn-xs" downFilePath="'+ upFileDetail[j].downFilePath +'">下载</a></p>';
+									strHtml += '<p><i class="layui-icon layui-icon-file"></i>'+ upFileDetail[j].upFileName +' <a href="javascript:void(0)" class="downLoadBtn layui-btn layui-btn-xs" downFilePath="'+ upFileDetail[j].downFilePath +'">下载</a></p>';
 								}
 							}else{
 								strHtml += '<p>暂无附件</p>';
@@ -1390,20 +1396,7 @@
 						$('#mxDetailCon').html(strHtml);
 						$('.downLoadBtn').on('click',function(){
 							var downFilePath = $(this).attr('downFilePath');
-							layer.load('1');
-							var form = $("<form>");   //定义一个form表单
-							form.attr('style', 'display:none'); //在form表单中添加查询参数
-							form.attr('target', '');
-								form.attr('method', 'post');
-							form.attr('action', "/zlm.do?action=downFile");
-							var input1 = $('<input>');
-							input1.attr('type', 'hidden');
-							input1.attr('name', 'fileUrl');
-							input1.attr('value', escape(downFilePath));
-							$('body').append(form);  //将表单放置在web中 
-							form.append(input1);   //将查询参数控件提交到表单上
-			           		form.submit();
-			           		layer.closeAll('loading');
+							common.downFiles(downFilePath);
 						});
 					}
 					this.addActScrollBar();
@@ -1429,7 +1422,11 @@
 					}
 					$('#tzsCon').html(strHtml);
 					$('#tzsCon li:odd').addClass('oddColor');
-					downFile();
+					//下载
+					$('.downLoadBtn').on('click',function(){
+						var downFilePath = $(this).attr('downFilePath');
+						common.downFiles(downFilePath);
+					});
 				},
 				//获取附件详情
 				renderFjDetail : function(json){
@@ -1451,7 +1448,10 @@
 					}
 					$('#fjCon').html(strHtml);
 					$('#fjCon li:odd').addClass('oddColor');
-					downFile();
+					$('.downloadBtn').on('click',function(){
+						var downFilePath = $(this).attr('downFilePath');
+						common.downFiles(downFilePath);
+					});
 				},
 				//获取费用详情
 				renderFyDetail : function(feeInfo){
@@ -1616,31 +1616,29 @@
 						}
 					});
 				}
-				downFile();
+				//downFile();
 			}
 			$(function(){
 				page.init();				
 			});
 		});
-		function downFile(){
-			$('.downloadBtn').on('click',function(){
-				var downFilePath = $(this).attr('downFilePath');
-				layer.load('1');
-				var form = $("<form>");   //定义一个form表单
-				form.attr('style', 'display:none'); //在form表单中添加查询参数
-				form.attr('target', '');
-					form.attr('method', 'post');
-				form.attr('action', "/zlm.do?action=downFile");
-				var input1 = $('<input>');
-				input1.attr('type', 'hidden');
-				input1.attr('name', 'fileUrl');
-				input1.attr('value', escape(downFilePath));
-				$('body').append(form);  //将表单放置在web中 
-				form.append(input1);   //将查询参数控件提交到表单上
-           		form.submit();
-           		layer.closeAll('loading');
-			});
-		}
+		/*function downFile(downFilePath){
+			//layer.load('1');
+			alert(downFilePath)
+			var form = $("<form>");   //定义一个form表单
+			form.attr('style', 'display:none'); //在form表单中添加查询参数
+			form.attr('target', '');
+			form.attr('method', 'post');
+			form.attr('action', "/zlm.do?action=downFile");
+			var input1 = $('<input>');
+			input1.attr('type', 'hidden');
+			input1.attr('name', 'fileUrl');
+			input1.attr('value', escape(downFilePath));
+			$('body').append(form);  //将表单放置在web中 
+			form.append(input1);   //将查询参数控件提交到表单上
+          	form.submit();
+          	//layer.closeAll('loading');
+		}*/
 		//公共删除已添加的方法（技术领域、申请人）
 		function delHasAddMethod(obj,opts){
 			var tmpArray = [];

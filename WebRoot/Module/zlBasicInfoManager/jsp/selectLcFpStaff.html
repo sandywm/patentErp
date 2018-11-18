@@ -46,6 +46,7 @@
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		var globalTypeUser = parent.globalTypeUser;
+		//alert(parent.fzUserId + "---")
 		layui.use(['layer','form','jquery','table'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
@@ -131,7 +132,7 @@
 					var options = '';
 					options += '<input id="jsFieldInp" type="hidden"/>';
 					options += '<select id="jsFieldFilter" lay-filter="jsFieldFilter">';
-					options += '<option value="">请选择技术领域</option>';
+					options += '<option value="">请选择技术领域(全部)</option>';
 					for(var i=0,iLen=listJsData.length;i<iLen;i++){
 						options += '<option value="'+ listJsData[i].jsId +'">'+ listJsData[i].jsName +'</option>';
 					}

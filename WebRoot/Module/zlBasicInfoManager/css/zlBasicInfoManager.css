@@ -175,7 +175,7 @@ body{
 .layui-input-block{
 	margin-left:156px;
 }
-/* ×¨Àû¶îÍâÒªÇó */
+/* ä¸“åˆ©é¢å¤–è¦æ±‚ */
 .noYqData{
 	height:100%;
 	line-height:38px;
@@ -186,7 +186,7 @@ body{
 	margin-right:5px;
 	font-size:16px;
 }
-/* Ìí¼Ó¼¼ÊõÁìÓò */
+/* æ·»åŠ æŠ€æœ¯é¢†åŸŸ */
 #addZyField{
 	height:100%;
 	position:relative;
@@ -397,7 +397,7 @@ body{
 #addFieldLayer{
 	display:none;
 }
-/* ÁªÏµÈË²ã */
+/* è”ç³»äººå±‚ */
 .innerLxrFmrBox{
 	width:98%;
 	min-height:38px;
@@ -461,7 +461,7 @@ body{
 .addNewBtn:hover{
 	color:#F47837;
 }
-/* Ñ¡ÔñÒÑÁìÈ¡×¨ÀûÈÎÎñÁĞ±í */
+/* é€‰æ‹©å·²é¢†å–ä¸“åˆ©ä»»åŠ¡åˆ—è¡¨ */
 .searchPart{
 	width:100%;
 	height:38px;
@@ -578,7 +578,7 @@ body{
 	margin-right:5px;
 	font-size:12px;
 }
-/* Ê¹ÓÃËµÃ÷ */
+/* ä½¿ç”¨è¯´æ˜ */
 .introPart{
 	padding:0 6px;
 }
@@ -592,7 +592,7 @@ body{
 .introPart p{
 	padding:6px 10px 0;
 }
-/* ×¨ÀûÏêÇé */
+/* ä¸“åˆ©è¯¦æƒ… */
 .zlDetaiBody{
 	margin-top:30px;
 }
@@ -635,4 +635,14 @@ body{
 }
 .closeBtns:hover i{
 	color:red;
+}
+.ewyqTips{
+	color:#999;
+	line-height:38px;
+}
+.layui-icon-file{
+	font-size:18px;
+}
+.layui-layer-molv .layui-layer-btn .layui-layer-btn1{
+	background:#fff !important;
 }

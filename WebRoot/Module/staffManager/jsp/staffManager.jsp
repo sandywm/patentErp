@@ -29,7 +29,7 @@
 		  							<div class="layui-input-inline">
 		  								<input id="roleIdInp" type="hidden" value="-1"/>
 		  								 <select id="roleListSel" lay-filter="roleListSel">
-		  								 	<option value="">请选择角色列表</option>
+		  								 	<option value="">请选择角色列表(全部)</option>
 		  								 </select> 
 		  							</div>
 		  						</div>
@@ -37,7 +37,7 @@
 		  							<div class="layui-input-inline">
 		  								<input id="accStatusInp" type="hidden" value="-1"/>
 		  								<select id="accStatusSel" lay-filter="accStatusSel">
-									       	<option value="">请选择账号状态</option>
+									       	<option value="">请选择账号状态(全部)</option>
 									        <option value="0">无效</option>
 							    			<option value="1">有效</option>
 									      </select>
@@ -47,7 +47,7 @@
 		  							<div class="layui-input-inline">
 		  								<input id="lzStatusInp" type="hidden" value="-1"/>
 		  								<select id="lzStatusSel" lay-filter="lzStatusSel">
-									       	<option value="">请选择离职状态</option>
+									       	<option value="">请选择离职状态(全部)</option>
 									         <option value="0">离职</option>
 							    			<option value="1">在职</option>
 									      </select>

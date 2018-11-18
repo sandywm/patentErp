@@ -33,7 +33,7 @@
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
     	var fpZlFlag = "${requestScope.fpZlFlag}",lqZlFlag = "${requestScope.lqzLFlag}",loginType=parent.loginType,roleName=parent.roleName;
-		var addEditZlOpts='',addZlFlag = false,zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0;
+		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -51,7 +51,14 @@
   				var lqStatus = $(this).attr('lqStatus');
   				$('#lqStatusInp').val(lqStatus);
   				globalLqStatus = lqStatus;
-  				globalLqStatus == 0 || globalLqStatus == 1 ? globalWid=180 : globalWid = 100;
+  				if(/*globalLqStatus == 0 ||*/ globalLqStatus == 1 || globalLqStatus == 2){
+  					globalWid=170;
+  				}else if(globalLqStatus == 4){
+  					globalWid=200;
+  				}else{
+  					globalWid = 110;
+  				}
+  				//globalLqStatus == 0 || globalLqStatus == 1 ? globalWid=180 : globalWid = 100;
   				loadZlInfoList('initLoad');
   				if(lqStatus == 1){
   					$('#addZlBtn').show();
@@ -64,24 +71,28 @@
 					addZlFlag : false,
 					upZlFlag : false,
 					fpZlFlag : false,
-					lqZlFlag : false
+					lqZlFlag : false,
+					listZlFlag : false,
+					dealZlFlag : false
 				},
 				init : function(){
 					//创建tab
 					this.createTab();
 					this.bindEvent();
 					this.data.addZlFlag = common.getPermission('addZl','',0);
-					$('#addZlBtn').show();
-					/*$.ajax({
+					this.data.addZlFlag ? $('#addZlBtn').show() : $('#addZlBtn').hide();
+					$.ajax({
   						type:"post",
 				        async:false,
 				        dataType:"json",
-				        data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',lqStatus:loginType == 'spUser' ? -1 : 1},
+				        data:{stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',comStatus:0,lqStatus: 4},
+				        //data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',lqStatus:loginType == 'spUser' ? -1 : 4},
+				        //data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',checkStatus:0,lqStatus: 5},
 				        url:'/zlm.do?action=getPageZlData',
 				        success:function (json){
-				        	//console.log(json)
+				        	console.log(json)
 				        }
-  					});*/
+  					});
 				},
 				bindEvent : function(){
 					var _this = this;
@@ -137,10 +148,16 @@
 							strHtmlTit += ' <li lqStatus="2">撰写任务领取</li>';
 						}
 						strHtmlTit += ' <li lqStatus="3">我的专利</li>';
-						strHtmlTit += ' <li lqStatus="4">我的任务</li>';
+						if(roleName == '管理员'){//查看机构下所有员工的任务
+							strHtmlTit += ' <li lqStatus="4">专利任务</li>';
+						}else{
+							strHtmlTit += ' <li lqStatus="4">我的任务</li>';
+						}
 						//管理员下增加个移交申请审核
-						if(roleName == '管理员'){
+						if(roleName == '管理员' || fpZlFlag == 'true'){
 							strHtmlTit += ' <li lqStatus="5">任务移交审核</li>';
+						}else{
+							strHtmlTit += ' <li lqStatus="5">任务移交记录</li>';
 						}
 					}
 					strHtmlTit += '</ul>';
@@ -187,22 +204,25 @@
 				}
 			};
 			function loadZlInfoList(opts){
-				var lqStatusVal = $('#lqStatusInp').val();
+				var lqStatusVal = $('#lqStatusInp').val(),taskStaVal = $('#taskStaInp').val();
 				if(opts == 'initLoad'){
 					if(loginType == 'spUser'){
 						var field = {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:''};
 					}else{
-						if(lqStatusVal != 4){
+						if(lqStatusVal != 4 && lqStatusVal != 5){
 							var field = {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',lqStatus: lqStatusVal};	
-						}else{
-							var field = {ajTitle:'',ajNoQt:'',zlNo:'',comStatus:0,lqStatus: lqStatusVal};//0未完成(默认)
+						}else if(lqStatusVal == 4){
+							var field = {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',comStatus:taskStaVal,lqStatus: lqStatusVal};//0未完成(默认) 1 已完成
+						}else if(lqStatusVal == 5){
+							//专利移交审核/专利移交记录
+							var field = {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',checkStatus:0,lqStatus: lqStatusVal};
 						}	
 					}
 				}else{
 					var field = {};
 				}
 				layer.load('1');
-				if(lqStatusVal != 4){
+				if(lqStatusVal != 4 && lqStatusVal != 5){
 					table.render({
 						elem: '#zlBasicListTab_'+lqStatusVal,
 						height: 'full-200',
@@ -266,11 +286,11 @@
 							{field : 'zlStatusInfo', title: '案件状态', width:120, align:'center'},
 							{field : '', title: '操作', width:globalWid, fixed: 'right', align:'center',templet : function(d){
 								if(globalLqStatus == 0){//流程分配
-									return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="viewInfo"><i class="layui-icon layui-icon-search"></i>查看</a> <a class="layui-btn layui-btn-xs" lay-event="lcfpFun" zlId="'+ d.id +'"><i class="layui-icon layui-icon-edit"></i>流程分配</a>';
+									return '<a class="layui-btn layui-btn-xs" lay-event="lcfpFun" zlId="'+ d.id +'" ajTitle="'+ d.ajTitle +'" taskOpts="0"><i class="layui-icon layui-icon-edit"></i>流程分配</a>';
 								}else if(globalLqStatus == 1){//专利任务
 									return '<a class="layui-btn layui-btn-xs" zlId="'+ d.id +'" lay-event="editZlTask" opts="editZlOpts"><i class="layui-icon layui-icon-edit"></i>查看 / 编辑</a>';
 								}else if(globalLqStatus == 2){//撰写任务领取
-									return '<a class="layui-btn layui-btn-xs" zlId="'+ d.id +'" ajTitle = "'+ d.ajTitle +'" lay-event="lqZlTaskFun"><i class="iconfont layui-extend-lingqu"></i>领取</a>';
+									return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="viewInfo" zlId="'+ d.id +'" ajTitle="'+ d.ajTitle +'"><i class="layui-icon layui-icon-search"></i>查看</a> <a class="layui-btn layui-btn-xs" zlId="'+ d.id +'" ajTitle = "'+ d.ajTitle +'" lay-event="lqZlTaskFun"><i class="iconfont layui-extend-lingqu"></i>领取</a>';
 								}else if(globalLqStatus == 3){//已增加专利
 									return '<a class="layui-btn layui-btn-xs" lay-event="editZlInfoHasAdd" opts="editZlOpts" zlId="'+ d.id +'"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
 								}
@@ -280,7 +300,7 @@
 							callBackDone(res);
 						}
 					});
-				}else{
+				}else if(lqStatusVal == 4){
 					//加载我的任务
 					table.render({
 						elem: '#zlBasicListTab_'+lqStatusVal,
@@ -295,15 +315,57 @@
 						cols:[[
 							{field : '', title: '序号',type:'numbers', width:60, fixed: 'left' , align:'center'},
 							{field : 'zlTitle', title: '案件标题', width:220, fixed: 'left' , align:'center'},
-							{field : 'ajNoQt ', title: '专利编号', width:150, align:'center'},
+							{field : 'zlNoQt', title: '专利编号', width:150, align:'center'},
 							{field : 'zlNo', title: '专利/申请号', width:150, align:'center'},
+							{field : 'zlType', title: '专利类型', width:150, align:'center'},
 							{field : 'taskName', title: '任务名称', width:180, align:'center'},
 							{field : 'taskSdate', title: '任务开始日期', width:200, align:'center'},
 							{field : 'taskComdate', title: '任务完成日期', width:200, align:'center'},
 							{field : 'taskEdateCpy', title: '任务完成期限(机构)', width:200, align:'center'},
 							{field : 'taskEdateGf', title: '任务完成期限(官方)', width:200, align:'center'},
 							{field : '', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
-								return '<a class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-edit"></i>继续任务</a>';
+								var strHtml = '';
+								strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" zlId="'+ d.zlId +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
+								if(roleName == '管理员' || fpZlFlag == 'true'){
+									if(d.superFlag){
+										strHtml += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="lcfpFun" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'" taskOpts="1" fzUserId="'+ d.fzUserId +'" currLcNo="'+ d.lcNo +'"><i class="layui-icon layui-icon-edit"></i>任务移交</a>';
+									}
+								}else{
+									strHtml += '<a class="layui-btn layui-btn-danger layui-btn-xs"><i style="font-size:20px;" class="iconfont layui-extend-yijiao"></i>移交申请</a>';
+								}
+								return strHtml;
+							}}
+						]],
+						done : function(res){
+							callBackDone(res);
+						}
+					});
+				}else if(lqStatusVal == 5){
+					//加载专利移交申请审核/专利移交申请记录
+					table.render({
+						elem: '#zlBasicListTab_'+lqStatusVal,
+						height: 'full-200',
+						url : '/zlm.do?action=getPageZlData',
+						method : 'post',
+						where:field,
+						page : true,
+						even : true,
+						limit : 10,
+						limits:[10,20,30,40],
+						cols:[[
+							{field : '', title: '序号',type:'numbers', width:60, fixed: 'left' , align:'center'},
+							{field : 'zlTitle', title: '案件标题', width:220, fixed: 'left' , align:'center'},
+							{field : 'ajNoQt', title: '专利编号', width:150, align:'center'},
+							{field : 'zlNo', title: '专利/申请号', width:150, align:'center'},
+							{field : 'zlType', title: '专利类型', width:150, align:'center'},
+							{field : 'taskName', title: '任务名称', width:180, align:'center'},
+							{field : 'applyUserName', title: '申请人姓名', width:200, align:'center'},
+							{field : 'applyDate', title: '申请日期', width:200, align:'center'},
+							{field : 'applyCause', title: '申请原因', width:200, align:'center'},
+							{field : 'checkUserName', title: '审核人姓名', width:200, align:'center'},
+							{field : 'checkDate', title: '审核时间', width:200, align:'center'},
+							{field : '', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
+								return '<a class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-edit"></i>去完成</a> <a class="layui-btn layui-btn-danger layui-btn-xs"><i style="font-size:20px;" class="iconfont layui-extend-yijiao"></i>移交申请</a>';
 							}}
 						]],
 						done : function(res){
@@ -375,10 +437,17 @@
 				}else if(obj.event == 'lcfpFun'){//流程分配
 					page.data.fpZlFlag = common.getPermission('fpZl','',0);
 					if(page.data.fpZlFlag){
+						var ajTitle = $(this).attr('ajTitle');
 						globalZlId = $(this).attr('zlId');
+						globalTaskOpts.taskOpts = $(this).attr('taskOpts');
+						globalTaskOpts.currLcNo = 0;
+						if(globalTaskOpts.taskOpts == '1'){
+							globalTaskOpts.currLcNo = $(this).attr('currLcNo');
+							globalTaskOpts.fzUserId = $(this).attr('fzUserId');
+						}
 						addZlFlag = false;
 						var fullScreenIndex = layer.open({
-							title:'流程分配',
+							title:'['+ ajTitle +']的人员流程分配',
 							type: 2,
 						  	area: ['700px', '500px'],
 						  	fixed: true, //不固定
@@ -386,9 +455,9 @@
 						  	shadeClose :false,
 						  	content: '/Module/zlBasicInfoManager/jsp/lcFp.html',
 						  	end:function(){
-						  		/*if(addZlFlag){
+						  		if(addZlFlag){
 						  			loadZlInfoList('initLoad');
-						  		}*/
+						  		}
 						  	}
 						});	
 						layer.full(fullScreenIndex);
@@ -410,7 +479,7 @@
 		    			        async:false,
 		    			        dataType:'json',
 		    			        data : {zlId : zlId},
-		    			        url:'zlm.do?action=lqZlTask',
+		    			        url:'/zlm.do?action=lqZlTask',
 		    			        success:function (json){
 		    			        	layer.closeAll('loading');	
 		    			        	if(json['result'] == 'success'){
@@ -434,6 +503,34 @@
 					}else{
 						layer.msg('抱歉，您暂无领取撰写任务的权限', {icon:5,anim:6,time:1000});
 					}
+				}else if(obj.event == 'viewInfo'){
+					//查看专利基本信息
+					page.data.listZlFlag = common.getPermission('listZl','',0);
+					if(page.data.listZlFlag){
+						var ajTitle = $(this).attr('ajTitle');
+						globalZlId = $(this).attr('zlId');
+						addZlFlag = false;
+						var fullScreenIndex = layer.open({
+							title:'专利['+ ajTitle +']基本信息',
+							type: 2,
+						  	area: ['700px', '500px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	content: '/Module/zlBasicInfoManager/jsp/zlDetailTxt.html',
+						  	end : function(){
+						  		if(addZlFlag){
+						  			loadZlInfoList('initLoad');
+						  		}
+						  	}
+						});	
+						layer.full(fullScreenIndex);
+					}else{
+						layer.msg('抱歉，您暂无查看专利基本信息的权限', {icon:5,anim:6,time:1000});
+					}
+				}else if(obj.event == 'goCompleteTask'){//做任务
+					//page.data.dealZlFlag = common.getPermission('dealZl','',0);
+					alert("00000000")
 				}
 			});
 			//form 监听获取查看我的任务 未完成/已完成

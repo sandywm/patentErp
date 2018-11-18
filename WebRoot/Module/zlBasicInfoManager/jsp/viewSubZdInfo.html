@@ -16,16 +16,18 @@
 	<div id="zdCons">
 		<ul id="zdConUl"></ul>
 	</div>
+	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		var globalFeeId = parent.globalFeeId;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
+			common : 'common',
 		    commonScrollBar: 'scrollBar'// 表示模块文件的名字
-		}).use(['jquery','scrollBar','layer'],function(){
-			var $ = layui.jquery,
-				layer = layui.layer,
+		}).use(['scrollBar','layer','common'],function(){
+			var layer = layui.layer,
+				common = layui.common,
 				commonScrollBar = layui.scrollBar;
 			var page = {
 				init : function(){
@@ -41,10 +43,11 @@
 				        data : {opt:'zd',feeId:globalFeeId},
 				        success:function (json){
 				        	layer.closeAll('loading');
-				        	console.log(json)
 				        	if(json['result'] == 'success'){
 				        		var zdInfo = json.zdInfo;
-				        		$('.liushuiNum').show().html('<p>当前账单缴费批次号：<span>'+ json.feeBatchNo +'</span>，银行流水号为：<span>'+ json.bankSerialNo +'</span></p>');
+				        		var feeBatchNo = json.feeBatchNo == '' ? '暂无' : json.feeBatchNo;
+				        		var bankSerialNo = json.bankSerialNo == '' ? '暂无' : json.bankSerialNo;
+				        		$('.liushuiNum').show().html('<p>当前账单缴费批次号：<span>'+ feeBatchNo +'</span>，银行流水号为：<span>'+ bankSerialNo +'</span></p>');
 				        		_this.renderZdInfo(zdInfo);
 				        	}else if(json['result'] == 'noInfo'){
 				        		$('#zdConUl').html(noData).removeClass('hasDataHei').addClass('noDataHei');
@@ -69,7 +72,10 @@
 					$('#zdCons ul').html(strHtml);
 					$('#zdCons li:odd').addClass('oddColor');
 					this.addActScrollBar();
-					downFile();
+					$('.downloadBtn').on('click',function(){
+						var downFilePath = $(this).attr('downFilePath');
+						common.downFiles(downFilePath);
+					});
 				},
 				addActScrollBar : function(){
 					if($('#zdCons').height() < $('#zdConUl').height()){
@@ -80,25 +86,6 @@
 					}
 				}
 			};
-			function downFile(){
-				$('.downloadBtn').on('click',function(){
-					var downFilePath = $(this).attr('downFilePath');
-					layer.load('1');
-					var form = $("<form>");   //定义一个form表单
-					form.attr('style', 'display:none'); //在form表单中添加查询参数
-					form.attr('target', '');
-						form.attr('method', 'post');
-					form.attr('action', "/zlm.do?action=downFile");
-					var input1 = $('<input>');
-					input1.attr('type', 'hidden');
-					input1.attr('name', 'fileUrl');
-					input1.attr('value', escape(downFilePath));
-					$('body').append(form);  //将表单放置在web中 
-					form.append(input1);   //将查询参数控件提交到表单上
-	           		form.submit();
-	           		layer.closeAll('loading');
-				});
-			}
 			$(function(){
 				page.init();
 			});

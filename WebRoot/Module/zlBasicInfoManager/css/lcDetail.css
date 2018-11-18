@@ -195,10 +195,7 @@
 	background:#FF5722;
 	opacity:.6;
 }
-.oddColor{
-	background:#f0f0f0;
-}
-/* ²é¿´¸½¼ş */
+/* æŸ¥çœ‹é™„ä»¶ */
 .fujianTit,
 #fujianCon li,
 #tzsCon li,
@@ -294,7 +291,7 @@
 	left:50%;
 	margin-left:-25px;
 }
-/* Í¨ÖªÊé */
+/* é€šçŸ¥ä¹¦ */
 .tzsTit,
 .fjTit{
 	width:100%;
@@ -306,7 +303,7 @@
 #tzsCon li p{
 	width:25%;
 }
-/* ¸½¼ş */
+/* é™„ä»¶ */
 .oneFjWid{
 	width:27%;
 	max-width:27%;
@@ -345,7 +342,7 @@
 .noSubFee{
 	color:#999;
 }
-/* ÖÍÄÉ½ğÁĞ±í */
+/* æ»çº³é‡‘åˆ—è¡¨ */
 #subFeeTit li{
 	height:40px;
 	line-height:40px;
@@ -394,7 +391,7 @@
 .twoZdWid{
 	width:15%;
 }
-/* ËÑË÷²¿·Ö */
+/* æœç´¢éƒ¨åˆ† */
 .searchPart{
 	width:100%;
 	height:45px;

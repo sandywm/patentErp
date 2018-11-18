@@ -45,7 +45,7 @@
 				bindEvent : function(){
 					var _this = this;
 					$('.addCusBtn').on('click',function(){
-						addCustFlag = false;
+						parent.addCustFlag = false;
 						parent.layer.open({
 							title:'增加新申请人(客户)',
 							type: 2,
@@ -58,7 +58,6 @@
 						  		if(parent.addCustFlag){
 						  			_this.data.isClickInpFlag = true;
 						  			_this.loadSqrList();
-						  			_this.bindEvent();
 						  		}
 						  	}
 						});	

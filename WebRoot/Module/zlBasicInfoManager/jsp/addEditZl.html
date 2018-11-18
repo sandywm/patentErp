@@ -123,7 +123,7 @@
 			<label class="layui-form-label">案件额外要求</label>
 			<input id="ajEwyqId" type="hidden" name="ajEwyqId"/>
 			<input id="tmpAjEwyqId" type="hidden"/>
-			<div id="ewyqBpx" class="layui-input-block"></div>
+			<div id="ewyqBpx" class="layui-input-block"><p class="ewyqTips">请先选择专利类型</p></div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">案件备注</label>
@@ -836,13 +836,18 @@
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label">案件额外要求</label>';
 					strHtml += '<input id="ajEwyqId" type="hidden" name="ajEwyqId"/><input id="tmpAjEwyqId" type="hidden"/>';
 					strHtml += '<div id="ewyqBpx" class="layui-input-block">';
-					for(var i=0;i<json.yqInfo.length;i++){
-						if(json.yqInfo[i].checked){
-							strHtml += '<input type="checkbox" name="zlYqInfoInp" lay-filter="ewyqFilter" value="'+ json.yqInfo[i].yqId +'" title="'+ json.yqInfo[i].yaContent +'" lay-skin="primary" checked/>';
-							tmpEwyqIdArray.push(json.yqInfo[i].yqId);
-						}else{
-							strHtml += '<input type="checkbox" name="zlYqInfoInp" lay-filter="ewyqFilter" value="'+ json.yqInfo[i].yqId +'" title="'+ json.yqInfo[i].yaContent +'" lay-skin="primary"/>';	
+					console.log()
+					if(json.yqInfo.length > 0){
+						for(var i=0;i<json.yqInfo.length;i++){
+							if(json.yqInfo[i].checked){
+								strHtml += '<input type="checkbox" name="zlYqInfoInp" lay-filter="ewyqFilter" value="'+ json.yqInfo[i].yqId +'" title="'+ json.yqInfo[i].yaContent +'" lay-skin="primary" checked/>';
+								tmpEwyqIdArray.push(json.yqInfo[i].yqId);
+							}else{
+								strHtml += '<input type="checkbox" name="zlYqInfoInp" lay-filter="ewyqFilter" value="'+ json.yqInfo[i].yqId +'" title="'+ json.yqInfo[i].yaContent +'" lay-skin="primary"/>';	
+							}
 						}
+					}else{
+						strHtml += '<p class="ewyqTips">无专利额外要求</p>';
 					}
 					strHtml += '</div></div>';
 					//案件备注
