@@ -646,3 +646,6 @@ body{
 .layui-layer-molv .layui-layer-btn .layui-layer-btn1{
 	background:#fff !important;
 }
+.hasDoneTask{
+	color:#20a0ff;
+}

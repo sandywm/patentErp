@@ -159,13 +159,12 @@
 				},
 				//获取相关的流程人员
 				renderLcFpPeo : function(json){
-					console.log(json)
 					var strHtml = '';
 					//专利撰写人员
 					strHtml += '<div class="layui-form-item" style="margin:15px 0 -10px 0;">';
 					strHtml += '<p class="lcfpTipsInfo"><i class="layui-icon layui-icon-speaker hasBlink"></i>注：01. 被分配的流程人员需要具有流程处理权限的才能进行分配！</p>';
 					strHtml += '<p class="lcfpTipsInfo bigIndent">02. 正在进行中任务的人员请谨慎更换，一旦更换人员，那么此人员所处理的任务将被移除！</p>';
-					strHtml += '</div>'
+					strHtml += '</div>';
 					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">专利撰写人员</label>';
 					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="zxPeopleBox" class="multiBox fl">';
 					if(json.zxUserId != 0){
@@ -239,26 +238,32 @@
 				//根据当前LcNo来判定当前任务到哪一步了(任务移交/任务移交审核时流程分配用来显示当前人员，其他不显示编辑和添加)
 				judgeLcNo : function(){
 					$('.currLcNo').html(this.data.otherLcStr);
+					$('.addSpan').hide();
 					if(currLcNo >= 3 && currLcNo < 4){ //新申请撰稿  撰稿修改nowLcStatus
 						$('#lcNo3').html(this.data.nowLcStr);
+						$('#addZxPeople').show().html('更换人员');
 					}else if(currLcNo >= 4 && currLcNo < 5){//专利审核
 						$('#lcNo3').html(this.data.hasCompLcStr);
 						$('#lcNo4').html(this.data.nowLcStr);
+						$('#addZlShPeople').show().html('更换人员');
 					}else if(currLcNo >= 5 && currLcNo < 6){//客户确认
 						$('#lcNo3').html(this.data.hasCompLcStr);
 						$('#lcNo4').html(this.data.hasCompLcStr);
 						$('#lcNo5').html(this.data.nowLcStr);
+						$('#addCusSure').show().html('更换人员');
 					}else if(currLcNo >= 6 && currLcNo < 7){//定稿提交
 						$('#lcNo3').html(this.data.hasCompLcStr);
 						$('#lcNo4').html(this.data.hasCompLcStr);
 						$('#lcNo5').html(this.data.hasCompLcStr);
 						$('#lcNo6').html(this.data.nowLcStr);
+						$('#addDinggao').show().html('更换人员');
 					}else if(currLcNo >= 7 && currLcNo < 8){//通知书导入
 						$('#lcNo3').html(this.data.hasCompLcStr);
 						$('#lcNo4').html(this.data.hasCompLcStr);
 						$('#lcNo5').html(this.data.hasCompLcStr);
 						$('#lcNo6').html(this.data.hasCompLcStr);
 						$('#lcNo7').html(this.data.nowLcStr);
+						$('#addTzs').show().html('更换人员');
 					}else if(currLcNo >= 8 && currLcNo < 9){//费用催缴
 						$('#lcNo3').html(this.data.hasCompLcStr);
 						$('#lcNo4').html(this.data.hasCompLcStr);
@@ -266,6 +271,7 @@
 						$('#lcNo6').html(this.data.hasCompLcStr);
 						$('#lcNo7').html(this.data.hasCompLcStr);
 						$('#lcNo8').html(this.data.nowLcStr);
+						$('#addFeiyong').show().html('更换人员');
 					}else if(currLcNo >= 9 && currLcNo < 10){//专利补正
 						$('#lcNo3').html(this.data.hasCompLcStr);
 						$('#lcNo4').html(this.data.hasCompLcStr);
@@ -274,6 +280,7 @@
 						$('#lcNo7').html(this.data.hasCompLcStr);
 						$('#lcNo8').html(this.data.hasCompLcStr);
 						$('#lcNo9').html(this.data.nowLcStr);
+						$('#addBuzheng').show().html('更换人员');
 					}else if(currLcNo >= 10 && currLcNo < 11){//补正审核
 						$('#lcNo3').html(this.data.hasCompLcStr);
 						$('#lcNo4').html(this.data.hasCompLcStr);
@@ -283,6 +290,7 @@
 						$('#lcNo8').html(this.data.hasCompLcStr);
 						$('#lcNo9').html(this.data.hasCompLcStr);
 						$('#lcNo10').html(this.data.nowLcStr);
+						$('#addShBz').show().html('更换人员');
 					}else if(currLcNo >= 11 && currLcNo < 12){//专利驳回
 						$('#lcNo3').html(this.data.hasCompLcStr);
 						$('#lcNo4').html(this.data.hasCompLcStr);
@@ -293,6 +301,7 @@
 						$('#lcNo9').html(this.data.hasCompLcStr);
 						$('#lcNo10').html(this.data.hasCompLcStr);
 						$('#lcNo11').html(this.data.nowLcStr);
+						$('#addBohui').show().html('更换人员');
 					}
 				},
 				commonLayerOpen : function(title){

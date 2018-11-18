@@ -288,7 +288,7 @@
 								if(globalLqStatus == 0){//流程分配
 									return '<a class="layui-btn layui-btn-xs" lay-event="lcfpFun" zlId="'+ d.id +'" ajTitle="'+ d.ajTitle +'" taskOpts="0"><i class="layui-icon layui-icon-edit"></i>流程分配</a>';
 								}else if(globalLqStatus == 1){//专利任务
-									return '<a class="layui-btn layui-btn-xs" zlId="'+ d.id +'" lay-event="editZlTask" opts="editZlOpts"><i class="layui-icon layui-icon-edit"></i>查看 / 编辑</a>';
+									return '<a class="layui-btn layui-btn-xs" zlId="'+ d.id +'" lay-event="editZlTask" opts="editZlOpts" taskOpts="1" fzUserId="'+ d.fzUserId +'" currLcNo="'+ d.lcNo +'"><i class="layui-icon layui-icon-edit"></i>查看 / 编辑</a>';
 								}else if(globalLqStatus == 2){//撰写任务领取
 									return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="viewInfo" zlId="'+ d.id +'" ajTitle="'+ d.ajTitle +'"><i class="layui-icon layui-icon-search"></i>查看</a> <a class="layui-btn layui-btn-xs" zlId="'+ d.id +'" ajTitle = "'+ d.ajTitle +'" lay-event="lqZlTaskFun"><i class="iconfont layui-extend-lingqu"></i>领取</a>';
 								}else if(globalLqStatus == 3){//已增加专利
@@ -324,16 +324,20 @@
 							{field : 'taskEdateCpy', title: '任务完成期限(机构)', width:200, align:'center'},
 							{field : 'taskEdateGf', title: '任务完成期限(官方)', width:200, align:'center'},
 							{field : '', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
-								var strHtml = '';
-								strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" zlId="'+ d.zlId +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
-								if(roleName == '管理员' || fpZlFlag == 'true'){
-									if(d.superFlag){
-										strHtml += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="lcfpFun" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'" taskOpts="1" fzUserId="'+ d.fzUserId +'" currLcNo="'+ d.lcNo +'"><i class="layui-icon layui-icon-edit"></i>任务移交</a>';
+								if(taskStaVal == 0){
+									var strHtml = '';
+									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" zlId="'+ d.zlId +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
+									if(roleName == '管理员' || fpZlFlag == 'true'){
+										if(d.superFlag){
+											strHtml += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="lcfpFun" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'" taskOpts="1" fzUserId="'+ d.fzUserId +'" currLcNo="'+ d.lcNo +'"><i class="iconfont layui-extend-yijiao"></i>任务移交</a>';
+										}
+									}else{
+										strHtml += '<a class="layui-btn layui-btn-danger layui-btn-xs"><i class="iconfont layui-extend-yijiao"></i>移交申请</a>';
 									}
-								}else{
-									strHtml += '<a class="layui-btn layui-btn-danger layui-btn-xs"><i style="font-size:20px;" class="iconfont layui-extend-yijiao"></i>移交申请</a>';
+									return strHtml;
+								}else{//表示当前任务已完成
+									return '<span class="hasDoneTask"><i class="layui-icon layui-icon-ok statusIcon_com"></i>当前任务已完成</span>';
 								}
-								return strHtml;
 							}}
 						]],
 						done : function(res){

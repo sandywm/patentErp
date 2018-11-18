@@ -209,7 +209,10 @@
 					fpZlFlag : false,
 					actGetMxFlag : false,
 					isHasFujianFlag : false,
-					ajStatus : 0
+					ajStatus : 0,
+					nowLcStr : '<i class="iconfont layui-extend-jinhangzhong ingTaskIcon"></i><span class="ingTaskSp">任务正在进行中...</span>',
+					otherLcStr : '<i class="iconfont layui-extend-jinhangzhong"></i><span>任务等待中...</span>',
+					hasCompLcStr : '<i class="layui-icon layui-icon-ok statusIcon_com"></i><span class="hasComSp">任务已完成</span>'
 				},
 				init : function(){
 					this.onLoad();
@@ -1197,9 +1200,13 @@
 					if(!this.data.fpZlFlag){
 						//表示不具有分配权限
 						strHtml += '<div class="noUpTipTxt"><i class="layui-icon layui-icon-face-cry"></i>抱歉，您暂无对此专利分配人员的权限！</div>';
+					}else{
+						strHtml += '<div class="layui-form-item" style="margin:15px 0 -10px 0;">';
+						strHtml += '<p class="lcfpTipsInfo"><i class="layui-icon layui-icon-speaker hasBlink"></i>注：01. 被分配的流程人员需要具有流程处理权限的才能进行分配！</p>';
+						strHtml += '<p class="lcfpTipsInfo bigIndent">02. 正在进行中任务的人员请谨慎更换，一旦更换人员，那么此人员所处理的任务将被移除！</p>';
+						strHtml += '</div>';
 					}
 					//专利撰写人员
-					strHtml += '<div class="layui-form-item"><p class="lcfpTipsInfo"><i class="layui-icon layui-icon-speaker"></i>注：被分配的流程人员需要具有流程处理权限的才能进行分配！</p></div>';
 					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">专利撰写人员</label>';
 					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="zxPeopleBox" class="multiBox fl">';
 					if(json.zxUserId != 0){
@@ -1208,7 +1215,7 @@
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
 						if(this.data.ajStatus < 7.0){
-							strHtml += '<span id="addZxPeople" opt="addZxUser" lcfpId="'+ json.zxUserId +'" class="addSpan fl">添加/编辑</span><div class="layui-form-mid layui-word-aux">(注：如若未指定专利撰写人员，需撰写人员本人自行进行任务领取)</div>';
+							strHtml += '<span id="addZxPeople" opt="addZxUser" lcfpId="'+ json.zxUserId +'" class="addSpan fl">添加/编辑</span><div class="layui-form-mid layui-word-aux">(注：如若未指定专利撰写人员，需撰写人员本人自行进行任务领取)</div><p id="lcNo3" class="currLcNo"></p>';
 						}
 					}
 					strHtml += '</div></div>';
@@ -1221,7 +1228,7 @@
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
 						if(this.data.ajStatus < 7.0){
-							strHtml += '<span id="addZlShPeople" opt="addZlShUser" lcfpId="'+ json.checkUserId +'" class="addSpan fl">添加/编辑</span>';	
+							strHtml += '<span id="addZlShPeople" opt="addZlShUser" lcfpId="'+ json.checkUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo4" class="currLcNo"></p>';	
 						}
 					}
 					strHtml += '</div></div>';
@@ -1234,7 +1241,7 @@
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
 						if(this.data.ajStatus < 7.0){
-							strHtml += '<span id="addCusSure" opt="addCusSureUser" lcfpId="'+ json.cusCheckUserId +'" class="addSpan fl">添加/编辑</span>';
+							strHtml += '<span id="addCusSure" opt="addCusSureUser" lcfpId="'+ json.cusCheckUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo5" class="currLcNo"></p>';
 						}
 					}
 					strHtml += '</div></div>';
@@ -1247,7 +1254,7 @@
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
 						if(this.data.ajStatus < 7.0){
-							strHtml += '<span id="addDinggao" opt="addDingGaoUser" lcfpId="'+ json.tjUserId +'" class="addSpan fl">添加/编辑</span>';
+							strHtml += '<span id="addDinggao" opt="addDingGaoUser" lcfpId="'+ json.tjUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo6" class="currLcNo"></p>';
 						}
 					}
 					strHtml += '</div></div>';
@@ -1259,7 +1266,7 @@
 					}
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
-						strHtml += '<span id="addTzs" opt="addTongZhiShuUser" lcfpId="'+ json.tzsUserId +'" class="addSpan fl">添加/编辑</span>';
+						strHtml += '<span id="addTzs" opt="addTongZhiShuUser" lcfpId="'+ json.tzsUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo7" class="currLcNo"></p>';
 					}
 					strHtml += '</div></div>';
 					//费用催缴人员
@@ -1270,7 +1277,7 @@
 					}
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
-						strHtml += '<span id="addFeiyong" opt="addFeeUser" lcfpId="'+ json.feeUserId +'" class="addSpan fl">添加/编辑</span>';
+						strHtml += '<span id="addFeiyong" opt="addFeeUser" lcfpId="'+ json.feeUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo8" class="currLcNo"></p>';
 					}
 					strHtml += '</div></div>';
 					//专利补正人员
@@ -1281,7 +1288,7 @@
 					}
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
-						strHtml += '<span id="addBuzheng" opt="addBuZhengUser" lcfpId="'+ json.bzUserId +'" class="addSpan fl">添加/编辑</span>';
+						strHtml += '<span id="addBuzheng" opt="addBuZhengUser" lcfpId="'+ json.bzUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo9" class="currLcNo"></p>';
 					}
 					strHtml += '</div></div>';
 					//补正审核人员
@@ -1292,7 +1299,7 @@
 					}
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
-						strHtml += '<span id="addShBz" opt="addBuzhengShUser" lcfpId="'+ json.bzshUserId +'" class="addSpan fl">添加/编辑</span>';
+						strHtml += '<span id="addShBz" opt="addBuzhengShUser" lcfpId="'+ json.bzshUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo10" class="currLcNo"></p>';
 					}
 					strHtml += '</div></div>';
 					//专利驳回人员
@@ -1303,7 +1310,7 @@
 					}
 					strHtml += '</div>';
 					if(this.data.fpZlFlag){
-						strHtml += '<span id="addBohui" opt="addZlBhUser" lcfpId="'+ json.bhUserId +'" class="addSpan fl">添加/编辑</span>';
+						strHtml += '<span id="addBohui" opt="addZlBhUser" lcfpId="'+ json.bhUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo11" class="currLcNo"></p>';
 					}
 					strHtml += '</div></div>';
 					if(this.data.fpZlFlag){
@@ -1311,7 +1318,68 @@
 						strHtml += '<div class="layui-input-block" style="width:75%;text-align:center;"><button type="button" id="saveLcFpBtn" class="layui-btn" style="width:120px;margin-left:0px;">保存</button></div></div>';
 					}
 					$('#addLcFp').html(strHtml);
+					this.judgeLcNo();
 					this.bindEvent_lcfp();
+				},
+				//根据当前LcNo来判定当前任务到哪一步了(任务移交/任务移交审核时流程分配用来显示当前人员，其他不显示编辑和添加)
+				judgeLcNo : function(){
+					var currLcNo = this.data.ajStatus;
+					$('.currLcNo').html(this.data.otherLcStr);
+					if(currLcNo >= 3 && currLcNo < 4){ //新申请撰稿  撰稿修改nowLcStatus
+						$('#lcNo3').html(this.data.nowLcStr);
+					}else if(currLcNo >= 4 && currLcNo < 5){//专利审核
+						$('#lcNo3').html(this.data.hasCompLcStr);
+						$('#lcNo4').html(this.data.nowLcStr);
+					}else if(currLcNo >= 5 && currLcNo < 6){//客户确认
+						$('#lcNo3').html(this.data.hasCompLcStr);
+						$('#lcNo4').html(this.data.hasCompLcStr);
+						$('#lcNo5').html(this.data.nowLcStr);
+					}else if(currLcNo >= 6 && currLcNo < 7){//定稿提交
+						$('#lcNo3').html(this.data.hasCompLcStr);
+						$('#lcNo4').html(this.data.hasCompLcStr);
+						$('#lcNo5').html(this.data.hasCompLcStr);
+						$('#lcNo6').html(this.data.nowLcStr);
+					}else if(currLcNo >= 7 && currLcNo < 8){//通知书导入
+						$('#lcNo3').html(this.data.hasCompLcStr);
+						$('#lcNo4').html(this.data.hasCompLcStr);
+						$('#lcNo5').html(this.data.hasCompLcStr);
+						$('#lcNo6').html(this.data.hasCompLcStr);
+						$('#lcNo7').html(this.data.nowLcStr);
+					}else if(currLcNo >= 8 && currLcNo < 9){//费用催缴
+						$('#lcNo3').html(this.data.hasCompLcStr);
+						$('#lcNo4').html(this.data.hasCompLcStr);
+						$('#lcNo5').html(this.data.hasCompLcStr);
+						$('#lcNo6').html(this.data.hasCompLcStr);
+						$('#lcNo7').html(this.data.hasCompLcStr);
+						$('#lcNo8').html(this.data.nowLcStr);
+					}else if(currLcNo >= 9 && currLcNo < 10){//专利补正
+						$('#lcNo3').html(this.data.hasCompLcStr);
+						$('#lcNo4').html(this.data.hasCompLcStr);
+						$('#lcNo5').html(this.data.hasCompLcStr);
+						$('#lcNo6').html(this.data.hasCompLcStr);
+						$('#lcNo7').html(this.data.hasCompLcStr);
+						$('#lcNo8').html(this.data.hasCompLcStr);
+						$('#lcNo9').html(this.data.nowLcStr);
+					}else if(currLcNo >= 10 && currLcNo < 11){//补正审核
+						$('#lcNo3').html(this.data.hasCompLcStr);
+						$('#lcNo4').html(this.data.hasCompLcStr);
+						$('#lcNo5').html(this.data.hasCompLcStr);
+						$('#lcNo6').html(this.data.hasCompLcStr);
+						$('#lcNo7').html(this.data.hasCompLcStr);
+						$('#lcNo8').html(this.data.hasCompLcStr);
+						$('#lcNo9').html(this.data.hasCompLcStr);
+						$('#lcNo10').html(this.data.nowLcStr);
+					}else if(currLcNo >= 11 && currLcNo < 12){//专利驳回
+						$('#lcNo3').html(this.data.hasCompLcStr);
+						$('#lcNo4').html(this.data.hasCompLcStr);
+						$('#lcNo5').html(this.data.hasCompLcStr);
+						$('#lcNo6').html(this.data.hasCompLcStr);
+						$('#lcNo7').html(this.data.hasCompLcStr);
+						$('#lcNo8').html(this.data.hasCompLcStr);
+						$('#lcNo9').html(this.data.hasCompLcStr);
+						$('#lcNo10').html(this.data.hasCompLcStr);
+						$('#lcNo11').html(this.data.nowLcStr);
+					}
 				},
 				//获取流程明细(主流程)
 				loadLcDetail : function(json){
