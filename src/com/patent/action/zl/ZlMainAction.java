@@ -483,6 +483,10 @@ public class ZlMainAction extends DispatchAction {
 					List<ZlajLcMxInfoTb> unMxList = mxm.listLcMxByOpt(currLoginUserId, comStatus, cpyId, pageNo, pageSize);
 					List<Object> list_d = new ArrayList<Object>();
 					map.put("result", "success");
+					boolean flag = false;
+					if(roleName.equals("管理员") || Ability.checkAuthorization(this.getLoginRoleId(request), "fpZl")){//管理员和流程分配人员标记
+						flag = true;
+					}
 					for(Iterator<ZlajLcMxInfoTb> it = unMxList.iterator() ; it.hasNext();){
 						ZlajLcMxInfoTb mx = it.next();
 						ZlajLcInfoTb lc = mx.getZlajLcInfoTb();
@@ -509,6 +513,12 @@ public class ZlMainAction extends DispatchAction {
 						}
 						map_d.put("zlType", zlTypeChi);//专利类型
 						map_d.put("lcNo", mx.getLcMxNo());//流程号
+						//当前用户是管理员或者流程分配人员并且还是当前任务的负责人（当前任务可以重新分配）
+						if(flag && mx.getLcFzUserId().equals(currLoginUserId)){
+							map_d.put("superFlag", true);
+						}else{
+							map_d.put("superFlag", false);
+						}
 						list_d.add(map_d);
 					}
 					map.put("msg", "success");
