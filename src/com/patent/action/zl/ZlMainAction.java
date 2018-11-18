@@ -494,6 +494,7 @@ public class ZlMainAction extends DispatchAction {
 						Map<String,Object> map_d = new HashMap<String,Object>();
 						map_d.put("mxId", mx.getId());
 						map_d.put("taskName", mx.getLcMxName());//任务名称
+						map_d.put("fzUserId", mx.getLcFzUserId());//流程负责人员
 						map_d.put("taskSdate", mx.getLcMxSDate());//任务开始日期
 						map_d.put("taskComDate", mx.getLcMxEDate());//任务完成日期
 						map_d.put("taskEdateCpy", lc.getLcCpyDate());//任务期限（代理机构）
@@ -3592,7 +3593,7 @@ public class ZlMainAction extends DispatchAction {
 		        	if((j+1) < tjList.size()){//不是最后一个
 						if(!tzsPath.equals(tjList.get(j+1).getZipPath())){//当前内容的通知书和下一个通知书附件不相同（说明不是一个压缩包）
 							//说明当前压缩包内的通知书内容读取完成
-							readFlag = true;11
+							readFlag = true;
 						}
 					}
 		        	//执行动作
