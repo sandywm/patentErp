@@ -39,6 +39,7 @@ public interface ZlajLcMxInfoManager {
 	 * @date 2018-9-2 下午05:38:14
 	 * @param id 主键
 	 * @param fzUserId 流程负责人(-1时不修改)
+	 * @param lcMxName 流程明细名称(""时不修改)
 	 * @param lcMxUpFile 附件(""时不修改)
 	 * @param lcMxUpUserId 上传人(-1时不修改)
 	 * @param lcMxUpDate 上传时间(""时不修改)
@@ -49,7 +50,7 @@ public interface ZlajLcMxInfoManager {
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateEdateById(Integer id,Integer fzUserId,Integer lcMxUpUserId,String lcMxUpFile,
+	boolean updateEdateById(Integer id,Integer fzUserId,String lcMxName,Integer lcMxUpUserId,String lcMxUpFile,
 			String lcMxUpDate,String lcMxUpSize,String eDate, String lcMxRemark,Integer lcPjScore) throws WEBException;
 	
 	/**
