@@ -1639,7 +1639,7 @@ public class ZlMainAction extends DispatchAction {
 												//再查看对应的任务是否完成
 												ZlajLcMxInfoTb mx = zgList.get(0);
 												if(mx.getLcMxEDate().equals("")){//未完成
-													mxm.updateEdateById(mx.getId(), zxUserId, "", -1, "", "", "", currDate, "操作人员主动分配",lcPjScore);
+													mxm.updateEdateById(mx.getId(), zxUserId, "", -1, "", "", "", "", "操作人员主动分配",lcPjScore);
 												}
 											}
 										}
@@ -1657,7 +1657,7 @@ public class ZlMainAction extends DispatchAction {
 												//再查看对应的任务是否完成
 												ZlajLcMxInfoTb mx = zgList.get(0);
 												if(mx.getLcMxEDate().equals("")){//未完成
-													mxm.updateEdateById(mx.getId(), checkUserId, "", -1, "", "", "", currDate, "操作人员主动分配",lcPjScore);
+													mxm.updateEdateById(mx.getId(), checkUserId, "", -1, "", "", "", "", "操作人员主动分配",lcPjScore);
 												}
 											}
 										}
@@ -1675,7 +1675,7 @@ public class ZlMainAction extends DispatchAction {
 												//再查看对应的任务是否完成
 												ZlajLcMxInfoTb mx = zgList.get(0);
 												if(mx.getLcMxEDate().equals("")){//未完成
-													mxm.updateEdateById(mx.getId(), cusCheckUserId, "", -1, "", "", "", currDate, "操作人员主动分配",lcPjScore);
+													mxm.updateEdateById(mx.getId(), cusCheckUserId, "", -1, "", "", "", "", "操作人员主动分配",lcPjScore);
 												}
 											}
 										}
@@ -1693,7 +1693,7 @@ public class ZlMainAction extends DispatchAction {
 												//再查看对应的任务是否完成
 												ZlajLcMxInfoTb mx = zgList.get(0);
 												if(mx.getLcMxEDate().equals("")){//未完成
-													mxm.updateEdateById(mx.getId(), tjUserId, "", -1, "", "", "", currDate, "操作人员主动分配",lcPjScore);
+													mxm.updateEdateById(mx.getId(), tjUserId, "", -1, "", "", "", "", "操作人员主动分配",lcPjScore);
 												}
 											}
 										}
@@ -3595,6 +3595,8 @@ public class ZlMainAction extends DispatchAction {
 							//说明当前压缩包内的通知书内容读取完成
 							readFlag = true;
 						}
+					}else{//最后一个通知书
+						readFlag = true;
 					}
 		        	//执行动作
 		        	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(ajNoGf);
@@ -3618,10 +3620,8 @@ public class ZlMainAction extends DispatchAction {
 										map.put("ajNoGf", zl.getAjNoGf());
 										map.put("ajTitle", zl.getAjTitle());
 										map.put("readInfo", msg);
-										
-										//删除当前通知书压缩包
-//										FileOpration.deleteFile(finalPath);
 									}else{
+//										tzsm.addTzs(zlId, tzsName, fwDate, gfDate, fwSerial, tzsPath);
 										String upZipPath_final = "cpyUser\\"+zlId+"\\tzs\\"+upZipName; 
 										String applyDate_db = zl.getAjApplyDate();//获取数据库中专利的申请日
 										if(tzsName.equals("专利申请受理通知书")){
@@ -3673,9 +3673,10 @@ public class ZlMainAction extends DispatchAction {
 					        				}else{//不存在申请日不能导入后续的通知书
 					        					msg = "dateError";
 					        				}
-					        				
 					        			}
 									}
+									//删除当前通知书压缩包
+//									FileOpration.deleteFile(finalPath);
 								}else{
 									msg = "noUpload";
 								}
