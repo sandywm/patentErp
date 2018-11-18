@@ -1209,14 +1209,15 @@ public class UserAction extends DispatchAction {
 		Integer currLoginUserId = this.getLoginUserId(request);
 		Integer jsId = CommonTools.getFinalInteger("jsId", request);
 		Integer opt = CommonTools.getFinalInteger("opt", request);//opt(0:全部，1:只显示员工列表)
+		Integer taskStatus = CommonTools.getFinalInteger("taskStatus", request);//1:管理员、流程分配人员任务移交或者任务移交审核申请时传递的状态
+		Integer applyUserId = CommonTools.getFinalInteger("applyUserId", request);//流程移交申请人（移交申请、审核时使用）
 		Integer cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
 		String actNameEng = CommonTools.getFinalStr("actNameEng", request);//权限名称
 		List<CpyUserInfo> userList = cum.listValidInfoByOpt(cpyId, jsId, userName,actNameEng);
-		String msg = "";
+		String msg = "success";
 		List<Object> list_d = new ArrayList<Object>();
 		List<Object> list_j = new ArrayList<Object>();
 		Map<String,Object> map = new HashMap<String,Object>();
-		msg = "success";
 		Map<String,Object> map_m = new HashMap<String,Object>();
 		//把管理员加上
 		CpyUserInfo user_m = cum.listManagerInfoByOpt(cpyId, "管理员").get(0);
@@ -1260,6 +1261,11 @@ public class UserAction extends DispatchAction {
 		}
 		map_m.put("userExp", userExp);
 		map_m.put("userExpChi", userExpChi);
+		if(taskStatus.equals(1) && applyUserId.equals(userId_m)){//当是移交申请时当前申请移交工作的人将不能再被选中
+			map_m.put("superFlag", true);
+		}else{
+			map_m.put("superFlag", false);
+		}
 		list_d.add(map_m);
 		if(userList.size() > 0){
 			for(Iterator<CpyUserInfo> it = userList.iterator() ; it.hasNext();){
@@ -1306,6 +1312,11 @@ public class UserAction extends DispatchAction {
 					}
 					map_d.put("userExp", userExp_1);
 					map_d.put("userExpChi", userExpChi_1);
+					if(taskStatus.equals(1) && applyUserId.equals(userId)){//当是移交申请时当前申请移交工作的人将不能再被选中
+						map_d.put("superFlag", true);
+					}else{
+						map_d.put("superFlag", false);
+					}
 					list_d.add(map_d);
 				}
 			}

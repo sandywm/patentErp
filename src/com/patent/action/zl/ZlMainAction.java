@@ -3588,6 +3588,13 @@ public class ZlMainAction extends DispatchAction {
 		        		}
 		        	}
 		        	String tzsPath = tJson.getZipPath();//上传的压缩包位置
+		        	boolean readFlag = false;
+		        	if((j+1) < tjList.size()){//不是最后一个
+						if(!tzsPath.equals(tjList.get(j+1).getZipPath())){//当前内容的通知书和下一个通知书附件不相同（说明不是一个压缩包）
+							//说明当前压缩包内的通知书内容读取完成
+							readFlag = true;11
+						}
+					}
 		        	//执行动作
 		        	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(ajNoGf);
 		        	if(zlList.size() == 0){//说明系统中还没有该专利号的专利/也可能是之前没导入过通知书
@@ -3610,6 +3617,7 @@ public class ZlMainAction extends DispatchAction {
 										map.put("ajNoGf", zl.getAjNoGf());
 										map.put("ajTitle", zl.getAjTitle());
 										map.put("readInfo", msg);
+										
 										//删除当前通知书压缩包
 //										FileOpration.deleteFile(finalPath);
 									}else{
