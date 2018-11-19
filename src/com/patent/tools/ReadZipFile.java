@@ -869,7 +869,7 @@ public class ReadZipFile {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		List<TzsJson> tjList = new ArrayList<TzsJson>();
-		for(int i = 1 ; i <= 10; i++){
+		for(int i = 1 ; i <= 42; i++){
 			List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\11\\"+i+".zip",0,0,0);
 			tjList.addAll(tj);
 		}

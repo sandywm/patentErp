@@ -199,4 +199,16 @@ public interface ZlajFeeInfoManager{
 	 */
 	List<ZlajFeeInfoTb> listAllFeeByOpt(Integer zlId,String feeTypeStatus,Integer djStatus,Integer feeStatus,Integer backStatus,Integer cpyId)throws WEBException;
 	
+	/**
+	 * 获取指定专利指定年度的费用信息
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-19 下午04:08:49
+	 * @param zlId 专利编号
+	 * @param yearNo 年度
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajFeeInfoTb> listYearFeeByOpt(Integer zlId,Integer yearNo)throws WEBException;
+	
 }

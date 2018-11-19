@@ -121,4 +121,16 @@ public interface ZlajFeeInfoDao {
 	 * @return
 	 */
 	List<ZlajFeeInfoTb> findAllFeeByOpt(Session sess,Integer zlId,String feeTypeStatus,Integer djStatus,Integer feeStatus,Integer backStatus,Integer cpyId);
+	
+	/**
+	 * 根据专利获取指定年度的年费信息
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-19 下午04:06:24
+	 * @param sess
+	 * @param zlId 专利编号
+	 * @param yearNo 年度
+	 * @return
+	 */
+	List<ZlajFeeInfoTb> findYearFeeInfoByOpt(Session sess,Integer zlId,Integer yearNo);
 }
