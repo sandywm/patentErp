@@ -2952,7 +2952,14 @@ public class ZlMainAction extends DispatchAction {
 									map.put("fileInfo", list_d);//附件列表
 									map.put("remark", remark);//意见/备注
 								}else{
-									msg = "noInfo";
+									if(lcNo == 3.0){//新申请撰稿时可能没有技术底稿
+										msg = "success";
+										map.put("lcNo", lcNo);//当前流程号
+										map.put("remark", remark);//意见/备注
+									}else{
+										msg = "noInfo";
+									}
+									
 								}
 							}
 						}
@@ -3380,7 +3387,9 @@ public class ZlMainAction extends DispatchAction {
 		        cell.setCellValue("备注");
 				for(Iterator<ZlajFeeInfoTb> it = feeList.iterator() ; it.hasNext();){
 					ZlajFeeInfoTb fee = it.next();
-					
+					HSSFCell cell_data = row.createCell(0); 
+		        	cell_data.setCellStyle(style);
+		        	
 				}
 			}
 		}
