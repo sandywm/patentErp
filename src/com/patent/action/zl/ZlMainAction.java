@@ -2903,6 +2903,7 @@ public class ZlMainAction extends DispatchAction {
 								List<Object> list_d = new ArrayList<Object>();
 								if(!filePath.equals("")){
 									msg = "success";
+									map.put("zlId", zlId);
 									String[] fileTypeArr = fileType.split(":");
 									String[] upUserArr = upUser.split(":");
 									if(fileTypeArr.length == 1){//只存在一种类型的文件
