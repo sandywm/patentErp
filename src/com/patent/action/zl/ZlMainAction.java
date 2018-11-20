@@ -2986,6 +2986,41 @@ public class ZlMainAction extends DispatchAction {
 		return null;
 	}
 	
+	/**
+	 * 手动提交（补正、申请等）
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-11-20 下午08:57:00
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward zdSubmit(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		String roleName = this.getLoginRoleName(request);
+		boolean abilityFlag = false;
+		String opt = CommonTools.getFinalStr("opt", request);//
+		if(this.getLoginType(request).equals("cpyUser")){
+			//判断权限
+			//获取当前用户是否有修改权限
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理
+			}
+			if(abilityFlag){
+				
+			}
+		}
+		return null;
+	}
+	
 	
 	/**
 	 * 流程细节处理
@@ -3242,13 +3277,6 @@ public class ZlMainAction extends DispatchAction {
 													zlm.updateBasicInfoById(zlId, zlTitle, sqrId, sqrName, fmrId, "", ajFjInfo);
 													lcNo = 7.0;
 													zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待导入受理/缴费通知书");
-//													//增加下一个流程
-//													Integer nextLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理通知书", currDate, CurrentTime.getFinalDate(currDate, 30), "", "",7.0);//导入通知书期限1个月
-//													if(nextLcId > 0){
-//														mxm.addLcMx(nextLcId, zl.getTzsUserId(), "导入受理通知书", lcNo, currDate, "", "", 0, "", "", "");
-//														//发送邮件
-//														mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getTzsUserId(), "cpyUser", "新任务通知：导入受理/缴费通知书", "专利["+zl.getAjTitle()+"]审核已完成定稿提交，请及时完成导入受理/缴费通知书工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
-//													}
 													//发送邮件
 													mm.addMail("taslM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getTzsUserId(), "cpyUser", "新任务通知：导入受理/缴费通知书", "专利["+zl.getAjTitle()+"]审核已完成定稿提交，请及时完成导入受理/缴费通知书工作!<br>[<a href='www.baidu.com'>点击前往页面操作</a>]");
 												}else{
@@ -3319,7 +3347,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 获取代理机构下所有的专利的所有费用
+	 * 导出费用到Excel
 	 * @description
 	 * @author Administrator
 	 * @date 2018-10-29 下午04:46:28
@@ -3330,7 +3358,7 @@ public class ZlMainAction extends DispatchAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public ActionForward getAllFeeInfo(ActionMapping mapping, ActionForm form,
+	public ActionForward exportFeeInfoToExcel(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
@@ -3344,7 +3372,11 @@ public class ZlMainAction extends DispatchAction {
 		Double discountsFeeTotal = 0.00;//优惠费用总计
 		if(this.getLoginType(request).equals("cpyUser")){
 			cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();//当前登录人员所在的代理机构
-			List<ZlajFeeInfoTb> feeList = fm.listAllFeeByZlId(zlId, cpyId);
+			String feeTypeStatus = CommonTools.getFinalStr("feeTypeStatus", request);//费用类型（gf,dlf,nf,jlj）
+			Integer djStatus_1 = CommonTools.getFinalInteger("djStatus", request);//代缴状态
+			Integer feeStatus_1 = CommonTools.getFinalInteger("feeStatus", request);//缴费状态
+			Integer backStatus_1 = CommonTools.getFinalInteger("backStatus", request);//退费状态
+			List<ZlajFeeInfoTb> feeList = fm.listAllFeeByOpt(zlId, feeTypeStatus, djStatus_1, feeStatus_1, backStatus_1, cpyId);
 			if(feeList.size() > 0){
 				ZlajMainInfoTb zl  = feeList.get(0).getZlajMainInfoTb();
 				String zlName = zl.getAjTitle();
@@ -3361,14 +3393,12 @@ public class ZlMainAction extends DispatchAction {
 		        HSSFCellStyle style = wb.createCellStyle();  
 		        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
 	            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-	            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
 	            
 	            
 	            HSSFCellStyle style_con = wb.createCellStyle();  
 		        style_con.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
 		        style_con.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-		        style_con.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER); 
-		        style_con.setFillBackgroundColor(HSSFColor.LIGHT_TURQUOISE.index);//设置背景颜色
+		        style_con.setFillForegroundColor(HSSFColor.LIGHT_TURQUOISE.index);//设置背景颜色
 		        
 	            
 	            HSSFFont font_title = wb.createFont();    
