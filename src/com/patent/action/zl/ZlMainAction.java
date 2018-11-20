@@ -8,6 +8,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,9 +27,12 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -2664,7 +2668,8 @@ public class ZlMainAction extends DispatchAction {
 						//获取当前最后一个未完成的流程
 						List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
 						if(lcList.size() > 0){
-							List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lcList.get(0).getId());
+							ZlajLcInfoTb lc = lcList.get(0);
+							List<ZlajLcMxInfoTb> mxList = mxm.listLastInfoByLcId(lc.getId());
 							if(mxList.size() > 0){
 								ZlajLcMxInfoTb lcmx = mxList.get(0);
 								double lcNo = lcmx.getLcMxNo();//流程号
@@ -2900,6 +2905,7 @@ public class ZlMainAction extends DispatchAction {
 					 					list_z.add(map_z);
 									}
 								}
+								
 								List<Object> list_d = new ArrayList<Object>();
 								if(!filePath.equals("")){
 									msg = "success";
@@ -2960,7 +2966,12 @@ public class ZlMainAction extends DispatchAction {
 									}else{
 										msg = "noInfo";
 									}
-									
+								}
+								if(msg.equals("success")){
+									map.put("lcName", lcmx.getLcMxName());
+									map.put("lcFzr", cum.getEntityById(lcmx.getLcFzUserId()).getUserName());
+									map.put("cpyDate", lc.getLcCpyDate());
+									map.put("gfDate", lc.getLcGfDate());
 								}
 							}
 						}
@@ -3321,15 +3332,16 @@ public class ZlMainAction extends DispatchAction {
 	 */
 	public ActionForward getAllFeeInfo(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
-		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
-		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
-		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		Integer currLoginUserId = this.getLoginUserId(request);
 		Integer cpyId = 0;
+		Double feeTotal = 0.00;//费用总计
+		Double djFeeTotal = 0.00;//代缴费用统计
+		Double backFeeTotal = 0.00;//已退费用统计
+		Double diffFeeTotal = 0.00;//未退费用总计
+		Double discountsFeeTotal = 0.00;//优惠费用总计
 		if(this.getLoginType(request).equals("cpyUser")){
 			cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();//当前登录人员所在的代理机构
 			List<ZlajFeeInfoTb> feeList = fm.listAllFeeByZlId(zlId, cpyId);
@@ -3340,61 +3352,366 @@ public class ZlMainAction extends DispatchAction {
 				// 第一步，创建一个webbook，对应一个Excel文件  
 		        HSSFWorkbook wb = new HSSFWorkbook();  
 		        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
-		        HSSFSheet sheet = wb.createSheet(zlName+"_"+zlNo+"_费用清单");  
+		        HSSFSheet sheet = wb.createSheet("费用清单");  
+		        //设置横向打印
+		        sheet.getPrintSetup().setLandscape(true);
 		        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
 		        HSSFRow row = sheet.createRow(0);  
 		        // 第四步，创建单元格，并设置值表头 设置表头居中  
 		        HSSFCellStyle style = wb.createCellStyle();  
 		        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
 	            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-		        HSSFCell cell = row.createCell(0); 
-		        cell.setCellStyle(style);  
+	            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+	            
+	            
+	            HSSFCellStyle style_con = wb.createCellStyle();  
+		        style_con.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+		        style_con.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+		        style_con.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER); 
+		        style_con.setFillBackgroundColor(HSSFColor.LIGHT_TURQUOISE.index);//设置背景颜色
+		        
+	            
+	            HSSFFont font_title = wb.createFont();    
+	            font_title.setFontName("宋体");    
+	            font_title.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
+	            font_title.setFontHeightInPoints((short) 12);//设置字体大小  (备注)
+	            
+	            style.setFont(font_title);
+	            HSSFCell cell = row.createCell(0); 
+		        cell.setCellValue(zlName+"["+zlNo+"]费用清单");
+		        cell.setCellStyle(style); 
+		        sheet.addMergedRegion(new CellRangeAddress(     
+		    		  0, //first row (0-based)  from 行     
+		    		  0, //last row  (0-based)  to 行     
+		              0, //first column (0-based) from 列     
+		              13  //last column  (0-based)  to 列     
+		        ));
+	            
+		        row = sheet.createRow(1);
+		        cell = row.createCell(0); 
+		        cell.setCellStyle(style_con);  
 		        cell.setCellValue("费用名称"); 
 		        cell = row.createCell(1);  
-		        cell.setCellStyle(style);  
+		        cell.setCellStyle(style_con);  
 		        cell.setCellValue("费用金额(RMB)");  
 		        cell = row.createCell(2);  
-		        cell.setCellStyle(style);  
+		        cell.setCellStyle(style_con);  
 		        cell.setCellValue("费减");  
 		        cell = row.createCell(3);  
-		        cell.setCellStyle(style);  
+		        cell.setCellStyle(style_con);  
 		        cell.setCellValue("机构期限");  
 		        cell = row.createCell(4);  
-		        cell.setCellStyle(style);  
+		        cell.setCellStyle(style_con);  
 		        cell.setCellValue("官方期限"); 
 		        cell = row.createCell(5);  
-		        cell.setCellStyle(style);  
+		        cell.setCellStyle(style_con);  
 		        cell.setCellValue("缴费时间"); 
 		        cell = row.createCell(6);  
-		        cell.setCellStyle(style);  
+		        cell.setCellStyle(style_con);  
 		        cell.setCellValue("缴费状态"); 
 		        cell = row.createCell(7);
-		        cell.setCellStyle(style);  
+		        cell.setCellStyle(style_con);  
 		        cell.setCellValue("代缴状态"); 
 		        cell = row.createCell(8);
-		        cell.setCellStyle(style);  
-		        cell.setCellValue("退换费用"); 
+		        cell.setCellStyle(style_con);  
+		        cell.setCellValue("退换状态"); 
 		        cell = row.createCell(9);
-		        cell.setCellStyle(style);  
-		        cell.setCellValue("退换时间"); 
+		        cell.setCellStyle(style_con);  
+		        cell.setCellValue("退换费用"); 
 		        cell = row.createCell(10);
-		        cell.setCellStyle(style);  
-		        cell.setCellValue("优惠费用"); 
+		        cell.setCellStyle(style_con);  
+		        cell.setCellValue("退换时间"); 
 		        cell = row.createCell(11);
-		        cell.setCellStyle(style);  
-		        cell.setCellValue("滞纳金");
+		        cell.setCellStyle(style_con);  
+		        cell.setCellValue("优惠费用"); 
 		        cell = row.createCell(12);
-		        cell.setCellStyle(style);  
+		        cell.setCellStyle(style_con);  
+		        cell.setCellValue("滞纳金");
+		        cell = row.createCell(13);
+		        cell.setCellStyle(style_con);  
 		        cell.setCellValue("备注");
-				for(Iterator<ZlajFeeInfoTb> it = feeList.iterator() ; it.hasNext();){
-					ZlajFeeInfoTb fee = it.next();
-					HSSFCell cell_data = row.createCell(0); 
-		        	cell_data.setCellStyle(style);
+		        Integer lastNum = 1;//上一次滞纳金数量
+		        Integer rowIndex = 2;
+		        Integer lastRow = 0;
+		        for(Integer i = 0 ; i < feeList.size() ; i++){
+		        	ZlajFeeInfoTb fee = feeList.get(i);
+		        	if(i > 0){
+		        		rowIndex += lastNum;
+		        	}
+		        	row = sheet.createRow(rowIndex);//创建行
+		        	List<ZlajFeeSubInfoTb>  feeSubList = fm.listInfoByFeeId(fee.getId());
+		        	Integer feeSubLen = feeSubList.size();//获取该费用下有几个滞纳金子项
+		        	if(feeSubLen.equals(0)){
+		        		feeSubLen = 1;
+		        	}
+		        	lastNum = feeSubLen;
+					lastRow = rowIndex + feeSubLen - 1;
+					
+		        	// 第四步，创建单元格，并设置值  
+		        	HSSFCell cell_data = row.createCell(0); 
+		        	cell_data.setCellStyle(style_con);
+		        	cell_data.setCellValue(fee.getFeeTypeInfoTb().getFeeName());
+		        	if(feeSubLen > 0){
+		        		sheet.addMergedRegion(new CellRangeAddress(     
+			        			rowIndex, //first row (0-based)  from 行     
+			        			lastRow, //last row  (0-based)  to 行     
+			                    0, //first column (0-based) from 列     
+			                    0  //last column  (0-based)  to 列     
+			            )); 
+		        	}
 		        	
+		        	cell_data = row.createCell(1); 
+		        	cell_data.setCellStyle(style_con);
+		        	Double feePrice = fee.getFeePrice();
+		        	cell_data.setCellValue(feePrice);
+		        	sheet.addMergedRegion(new CellRangeAddress(     
+		        			rowIndex, //first row (0-based)  from 行     
+		        			lastRow, //last row  (0-based)  to 行     
+		                    1, //first column (0-based) from 列     
+		                    1  //last column  (0-based)  to 列     
+		            )); 
+		        	feeTotal += feePrice;
+		        	
+		        	cell_data = row.createCell(2); 
+		        	cell_data.setCellStyle(style_con);
+		        	cell_data.setCellValue(fee.getFeeRate());
+		        	sheet.addMergedRegion(new CellRangeAddress(     
+		        			rowIndex, //first row (0-based)  from 行     
+		        			lastRow, //last row  (0-based)  to 行     
+		                    2, //first column (0-based) from 列     
+		                    2  //last column  (0-based)  to 列     
+		            ));  
+		        	
+		        	cell_data = row.createCell(3); 
+		        	cell_data.setCellStyle(style_con);
+		        	cell_data.setCellValue(fee.getFeeEndDateJj());
+		        	sheet.addMergedRegion(new CellRangeAddress(     
+		        			rowIndex, //first row (0-based)  from 行     
+		        			lastRow, //last row  (0-based)  to 行     
+		                    3, //first column (0-based) from 列     
+		                    3  //last column  (0-based)  to 列     
+		            )); 
+		        	
+		        	cell_data = row.createCell(4); 
+		        	cell_data.setCellStyle(style_con);
+		        	cell_data.setCellValue(fee.getFeeEndDateGf());
+		        	sheet.addMergedRegion(new CellRangeAddress(     
+		        			rowIndex, //first row (0-based)  from 行     
+		        			lastRow, //last row  (0-based)  to 行     
+		                    4, //first column (0-based) from 列     
+		                    4  //last column  (0-based)  to 列     
+		            ));
+		        	
+		        	cell_data = row.createCell(5); 
+		        	cell_data.setCellStyle(style_con);
+		        	cell_data.setCellValue(fee.getFeeJnDate());
+		        	sheet.addMergedRegion(new CellRangeAddress(     
+		        			rowIndex, //first row (0-based)  from 行     
+		        			lastRow, //last row  (0-based)  to 行     
+		                    5, //first column (0-based) from 列     
+		                    5  //last column  (0-based)  to 列     
+		            ));  
+		        	
+		        	cell_data = row.createCell(6); 
+		        	cell_data.setCellStyle(style_con);
+		        	Integer feeStatus = fee.getFeeStatus();
+		        	cell_data.setCellValue(feeStatus.equals(0) ? "未交" : "已交");
+		        	sheet.addMergedRegion(new CellRangeAddress(     
+		        			rowIndex, //first row (0-based)  from 行     
+		        			lastRow, //last row  (0-based)  to 行     
+		                    6, //first column (0-based) from 列     
+		                    6  //last column  (0-based)  to 列     
+		            )); 
+		        	
+		        	cell_data = row.createCell(7); 
+		        	cell_data.setCellStyle(style_con);
+		        	Integer djStatus = fee.getDjStatus();
+		        	cell_data.setCellValue(djStatus.equals(0) ? "自交" : "代交");
+		        	sheet.addMergedRegion(new CellRangeAddress(     
+		        			rowIndex, //first row (0-based)  from 行     
+		        			lastRow, //last row  (0-based)  to 行     
+		                    7, //first column (0-based) from 列     
+		                    7  //last column  (0-based)  to 列     
+		            ));
+		        	
+		        	cell_data = row.createCell(8); 
+		        	cell_data.setCellStyle(style_con);
+		        	cell_data.setCellValue(fee.getBackStatus().equals(0) ? "未完成" : "已完成");
+		        	sheet.addMergedRegion(new CellRangeAddress(     
+		        			rowIndex, //first row (0-based)  from 行     
+		        			lastRow, //last row  (0-based)  to 行     
+		                    8, //first column (0-based) from 列     
+		                    8  //last column  (0-based)  to 列     
+		            ));  
+		        	
+		        	cell_data = row.createCell(9); 
+		        	cell_data.setCellStyle(style_con);
+		        	Double backFee = fee.getBackFee();
+		        	cell_data.setCellValue(backFee);
+		        	sheet.addMergedRegion(new CellRangeAddress(     
+		        			rowIndex, //first row (0-based)  from 行     
+		        			lastRow, //last row  (0-based)  to 行     
+		                    9, //first column (0-based) from 列     
+		                    9  //last column  (0-based)  to 列     
+		            )); 
+		        	
+		        	cell_data = row.createCell(10); 
+		        	cell_data.setCellStyle(style_con);
+		        	cell_data.setCellValue(fee.getBackDate());
+		        	sheet.addMergedRegion(new CellRangeAddress(     
+		        			rowIndex, //first row (0-based)  from 行     
+		        			lastRow, //last row  (0-based)  to 行     
+		                    10, //first column (0-based) from 列     
+		                    10  //last column  (0-based)  to 列     
+		            )); 
+		        	
+		        	cell_data = row.createCell(11); 
+		        	cell_data.setCellStyle(style_con);
+		        	Double discountsFee = fee.getDiscountsFee();
+		        	cell_data.setCellValue(discountsFee);
+		        	sheet.addMergedRegion(new CellRangeAddress(     
+		        			rowIndex, //first row (0-based)  from 行     
+		        			lastRow, //last row  (0-based)  to 行     
+		                    11, //first column (0-based) from 列     
+		                    11  //last column  (0-based)  to 列     
+		            )); 
+		        	
+		        	if(djStatus.equals(1)){
+		        		if(feeStatus.equals(1)){//费用为已交状态
+							//计入代缴费用总计
+							djFeeTotal += feePrice;
+							backFeeTotal += backFee;
+							discountsFeeTotal += discountsFee;
+						}
+		        	}
+		        	
+		        	if(feeSubLen > 1){
+		        		for(Integer j = 0 ; j < feeSubLen ; j++){
+		        			ZlajFeeSubInfoTb subFee = feeSubList.get(j);
+		        			if(j > 0){
+		        				row = sheet.createRow(rowIndex+j);//创建行.
+		        			}
+		        			cell_data = row.createCell(12); 
+				        	cell_data.setCellStyle(style_con);
+		        			cell_data.setCellValue("时间段: "+subFee.getFeeRange() + " 滞纳金: "+subFee.getFeePrice());
+		        		}
+		        	}else{
+		        		cell_data = row.createCell(12); 
+			        	cell_data.setCellStyle(style_con);
+		        		cell_data.setCellValue("无");
+		        	}
+		        	
+		        	cell_data = row.createCell(13); 
+		        	cell_data.setCellStyle(style_con);
+		        	cell_data.setCellValue(fee.getFeeRemark());
+		        	sheet.addMergedRegion(new CellRangeAddress(     
+		        			rowIndex, //first row (0-based)  from 行     
+		        			lastRow, //last row  (0-based)  to 行     
+		                    13, //first column (0-based) from 列     
+		                    13  //last column  (0-based)  to 列     
+		            ));
+		        }
+		        if(feeTotal > 0){
+					feeTotal = Convert.convertInputNumber_2(feeTotal);
 				}
+				if(djFeeTotal > 0){
+					djFeeTotal = Convert.convertInputNumber_2(djFeeTotal);
+				}
+				if(backFeeTotal > 0){
+					backFeeTotal = Convert.convertInputNumber_2(backFeeTotal);
+				}
+				if(discountsFeeTotal > 0){
+					discountsFeeTotal = Convert.convertInputNumber_2(discountsFeeTotal);
+				}
+				diffFeeTotal = Convert.convertInputNumber_2(djFeeTotal - backFeeTotal - discountsFeeTotal);
+				row = sheet.createRow(rowIndex+lastNum+2);//创建行.
+				
+				HSSFCell cell_data_1 = row.createCell(3); 
+	        	cell_data_1.setCellStyle(style_con);
+	        	cell_data_1.setCellValue("费用总计：");
+	        	
+	        	cell_data_1 = row.createCell(4); 
+	        	cell_data_1.setCellStyle(style_con);
+	        	cell_data_1.setCellValue(feeTotal);
+	        	
+	        	cell_data_1 = row.createCell(5); 
+	        	cell_data_1.setCellStyle(style_con);
+	        	cell_data_1.setCellValue("代缴费用统计：");
+	        	
+	        	cell_data_1 = row.createCell(6); 
+	        	cell_data_1.setCellStyle(style_con);
+	        	cell_data_1.setCellValue(djFeeTotal);
+	        	
+	        	cell_data_1 = row.createCell(7); 
+	        	cell_data_1.setCellStyle(style_con);
+	        	cell_data_1.setCellValue("已退费用统计：");
+	        	
+	        	cell_data_1 = row.createCell(8); 
+	        	cell_data_1.setCellStyle(style_con);
+	        	cell_data_1.setCellValue(backFeeTotal);
+	        	
+	        	cell_data_1 = row.createCell(9); 
+	        	cell_data_1.setCellStyle(style_con);
+	        	cell_data_1.setCellValue("未退费用统计：");
+	        	
+	        	cell_data_1 = row.createCell(10); 
+	        	cell_data_1.setCellStyle(style_con);
+	        	cell_data_1.setCellValue(diffFeeTotal);
+	        	
+	        	cell_data_1 = row.createCell(11); 
+	        	cell_data_1.setCellStyle(style_con);
+	        	cell_data_1.setCellValue("优惠费用统计：");
+	        	
+	        	cell_data_1 = row.createCell(12); 
+	        	cell_data_1.setCellStyle(style_con);
+	        	cell_data_1.setCellValue(discountsFeeTotal);
+		        // 第六步，将文件存到指定位置
+		    	String absoFilePath = "";//绝对地址
+		    	try  {  
+		        	String fileName = "专利费用清单_"+CurrentTime.getStringTime()+".xls";
+		        	String folder = WebUrl.DATA_URL_PRO + "Module\\excelTemp\\";
+		        	absoFilePath = folder +fileName;
+		        	File file = new File(folder);
+					if(!file.exists()){
+						file.mkdirs();
+					}
+		            FileOutputStream fout = new FileOutputStream(absoFilePath);  
+		            wb.write(fout);  
+		            fout.close();  
+			        //第七步 下载文件到客户端
+			        OutputStream fos = null;
+			        BufferedOutputStream bos = null;
+			        InputStream fis = null;
+			        BufferedInputStream bis = null;
+			        fis = new FileInputStream(new File(absoFilePath));
+					bis = new BufferedInputStream(fis);
+					fos = response.getOutputStream();
+					bos = new BufferedOutputStream(fos);
+					fileName = URLEncoder.encode(fileName,"UTF-8");
+					//这个就就是弹出下载对话框的关键代码
+					response.setHeader("Pragma", "No-cache");
+					response.setHeader("Cache-Control", "No-cache");
+					response.setDateHeader("Expires", 0); 
+			        response.setHeader("Content-disposition","attachment;filename=" +fileName);
+			        response.setContentType("application/x-download");
+			        int bytesRead = 0;
+			        byte[] buffer = new byte[8192];
+			        while ((bytesRead = bis.read(buffer,0,8192)) != -1) {
+			        	fos.write(buffer, 0, bytesRead);
+			        }
+			        fos.flush();
+			        fis.close();
+			        bis.close();
+			        fos.close();
+			        bos.close();
+		        }  
+		        catch (IOException e){  
+		            //e.printStackTrace();  
+		        }
+		      //第七步 删除临时上传的文件
+		      FileOpration.deleteFile(absoFilePath);
 			}
 		}
-		
 		return null;
 	}
 	
