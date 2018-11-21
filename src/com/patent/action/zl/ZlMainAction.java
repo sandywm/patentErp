@@ -2962,6 +2962,7 @@ public class ZlMainAction extends DispatchAction {
 								}else{
 									if(lcNo == 3.0){//新申请撰稿时可能没有技术底稿
 										msg = "success";
+										map.put("zlId", zlId);
 										map.put("lcNo", lcNo);//当前流程号
 										map.put("remark", remark);//意见/备注
 									}else{
@@ -3936,6 +3937,7 @@ public class ZlMainAction extends DispatchAction {
 		Integer cpyId = 0;
 		String msg = "error";
 		String currDate = CurrentTime.getStringDate();
+		Map<String,Object> map = new HashMap<String,Object>();
 		if(this.getLoginType(request).equals("cpyUser")){
 			//判断权限
 			//获取当前用户是否有修改权限
@@ -3949,9 +3951,6 @@ public class ZlMainAction extends DispatchAction {
 				CpyUserInfo user = cum.getEntityById(currUserId);
 				if(user != null){
 					cpyId = user.getCpyInfoTb().getId();
-					
-					
-					Map<String,Object> map = new HashMap<String,Object>();
 					List<TzsJson> tjList = new ArrayList<TzsJson>();
 					//读取通知书
 					for(Integer i = 0 ; i < zipPath.split(",").length ; i++){
@@ -4250,14 +4249,14 @@ public class ZlMainAction extends DispatchAction {
 											if(msg.equals("success")){
 												if(readFlag){
 													//移动上传通知书到指定的位置
-													FileOpration.copyFile(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + tzsPath, WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath_final);
+													FileOpration.copyFile(filePath, WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath_final);
 													//删除临时上传位置
 													FileOpration.deleteFile(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + tzsPath);
 												}
 												tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final);
 											}else{
 												//删除临时上传位置
-												FileOpration.deleteFile(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + tzsPath);
+												FileOpration.deleteFile(filePath);
 											}
 										}
 									}else{
@@ -4268,7 +4267,7 @@ public class ZlMainAction extends DispatchAction {
 			        			
 			        		}
 			        	}else{//不存在
-		    				map.put("readInfo", "noInfo");//该通知书没有匹配到专利
+		    				msg = "noInfo";//该通知书没有匹配到专利
 		    				map.put("tzsName", tzsName);
 							//删除当前通知书压缩包
 							FileOpration.deleteFile(filePath);
@@ -4280,8 +4279,8 @@ public class ZlMainAction extends DispatchAction {
 			}
 		}
 
-//		map.put("result", list_d);
-//		this.getJsonPkg(map, response);
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
 		return null;
 	}	
 	
