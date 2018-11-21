@@ -3257,7 +3257,7 @@ public class ZlMainAction extends DispatchAction {
 												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//撰写附件（参数），可以在定稿时增加，也可以不增加
 												String zlTitle = Transcode.unescape_new1("zlTitle", request);//定稿时提交的专利标题
 												String sqrId = CommonTools.getFinalStr("sqrId", request);//申请人
-												String sqrName = Transcode.unescape_new1("sqrName", request);
+												String sqrName = Transcode.unescape_new1("sqrName", request);//申请人姓名
 												String fmrId = CommonTools.getFinalStr("fmrId", request);//发明人
 												Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减
 												if(!sqrId.equals("") && !fmrId.equals("") && !upZxFile.equals("")){
