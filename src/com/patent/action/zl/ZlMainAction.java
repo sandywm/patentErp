@@ -33,6 +33,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.RegionUtil;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -3347,6 +3348,43 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
+	 * 设置合并单元格后的边框
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-21 上午09:48:01
+	 * @param border
+	 * @param rowIndex
+	 * @param lastRow
+	 * @param firstColumn
+	 * @param lastColumn
+	 * @param sheet
+	 * @param wb
+	 */
+	public void setJoinBorderStyle(int border, Integer rowIndex, Integer lastRow, Integer firstColumn, Integer lastColumn, HSSFSheet sheet, HSSFWorkbook wb){
+		CellRangeAddress region = new CellRangeAddress(rowIndex,lastRow,firstColumn,lastColumn);//first row (0-based)  from 行
+		sheet.addMergedRegion(region);
+		
+        RegionUtil.setBorderBottom(border, region, sheet, wb);   //下边框
+        RegionUtil.setBorderLeft(border, region, sheet, wb);     //左边框
+        RegionUtil.setBorderRight(border, region, sheet, wb);    //右边框
+        RegionUtil.setBorderTop(border, region, sheet, wb);      //上边框
+    }
+	
+	/**
+	 * 设置单个单元格的边框
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-21 上午09:49:59
+	 * @param style
+	 */
+	private void setBorderStyle(HSSFCellStyle style){
+		style.setBorderBottom(HSSFCellStyle.BORDER_THIN); //下边框    
+        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);//左边框    
+        style.setBorderTop(HSSFCellStyle.BORDER_THIN);//上边框    
+        style.setBorderRight(HSSFCellStyle.BORDER_THIN);//右边框 
+	}
+	
+	/**
 	 * 导出费用到Excel
 	 * @description
 	 * @author Administrator
@@ -3395,11 +3433,21 @@ public class ZlMainAction extends DispatchAction {
 	            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
 	            
 	            
+	            HSSFCellStyle style_head = wb.createCellStyle();  
+	            style_head.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+	            style_head.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+	            style_head.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);//设置单元格填充样式，SOLID_FOREGROUND纯色使用前景颜色填充
+	            style_head.setFillForegroundColor(HSSFColor.LIGHT_TURQUOISE.index);//设置背景颜色
+	            this.setBorderStyle(style_head);
+	            
 	            HSSFCellStyle style_con = wb.createCellStyle();  
 		        style_con.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
 		        style_con.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-		        style_con.setFillForegroundColor(HSSFColor.LIGHT_TURQUOISE.index);//设置背景颜色
+		        this.setBorderStyle(style_con);
 		        
+		        HSSFCellStyle style_tj = wb.createCellStyle();  
+		        style_tj.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 创建一个居右格式  
+		        style_tj.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
 	            
 	            HSSFFont font_title = wb.createFont();    
 	            font_title.setFontName("宋体");    
@@ -3410,55 +3458,51 @@ public class ZlMainAction extends DispatchAction {
 	            HSSFCell cell = row.createCell(0); 
 		        cell.setCellValue(zlName+"["+zlNo+"]费用清单");
 		        cell.setCellStyle(style); 
-		        sheet.addMergedRegion(new CellRangeAddress(     
-		    		  0, //first row (0-based)  from 行     
-		    		  0, //last row  (0-based)  to 行     
-		              0, //first column (0-based) from 列     
-		              13  //last column  (0-based)  to 列     
-		        ));
-	            
+		        this.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 0, 0, 0, 13, sheet, wb);
+		        
+		        
 		        row = sheet.createRow(1);
 		        cell = row.createCell(0); 
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("费用名称"); 
 		        cell = row.createCell(1);  
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("费用金额(RMB)");  
 		        cell = row.createCell(2);  
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("费减");  
 		        cell = row.createCell(3);  
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("机构期限");  
 		        cell = row.createCell(4);  
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("官方期限"); 
 		        cell = row.createCell(5);  
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("缴费时间"); 
 		        cell = row.createCell(6);  
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("缴费状态"); 
 		        cell = row.createCell(7);
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("代缴状态"); 
 		        cell = row.createCell(8);
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("退换状态"); 
 		        cell = row.createCell(9);
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("退换费用"); 
 		        cell = row.createCell(10);
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("退换时间"); 
 		        cell = row.createCell(11);
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("优惠费用"); 
 		        cell = row.createCell(12);
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("滞纳金");
 		        cell = row.createCell(13);
-		        cell.setCellStyle(style_con);  
+		        cell.setCellStyle(style_head);  
 		        cell.setCellValue("备注");
 		        Integer lastNum = 1;//上一次滞纳金数量
 		        Integer rowIndex = 2;
@@ -3481,130 +3525,58 @@ public class ZlMainAction extends DispatchAction {
 		        	HSSFCell cell_data = row.createCell(0); 
 		        	cell_data.setCellStyle(style_con);
 		        	cell_data.setCellValue(fee.getFeeTypeInfoTb().getFeeName());
-		        	if(feeSubLen > 0){
-		        		sheet.addMergedRegion(new CellRangeAddress(     
-			        			rowIndex, //first row (0-based)  from 行     
-			        			lastRow, //last row  (0-based)  to 行     
-			                    0, //first column (0-based) from 列     
-			                    0  //last column  (0-based)  to 列     
-			            )); 
-		        	}
+		        	
 		        	
 		        	cell_data = row.createCell(1); 
 		        	cell_data.setCellStyle(style_con);
 		        	Double feePrice = fee.getFeePrice();
 		        	cell_data.setCellValue(feePrice);
-		        	sheet.addMergedRegion(new CellRangeAddress(     
-		        			rowIndex, //first row (0-based)  from 行     
-		        			lastRow, //last row  (0-based)  to 行     
-		                    1, //first column (0-based) from 列     
-		                    1  //last column  (0-based)  to 列     
-		            )); 
+	        		
 		        	feeTotal += feePrice;
 		        	
 		        	cell_data = row.createCell(2); 
 		        	cell_data.setCellStyle(style_con);
 		        	cell_data.setCellValue(fee.getFeeRate());
-		        	sheet.addMergedRegion(new CellRangeAddress(     
-		        			rowIndex, //first row (0-based)  from 行     
-		        			lastRow, //last row  (0-based)  to 行     
-		                    2, //first column (0-based) from 列     
-		                    2  //last column  (0-based)  to 列     
-		            ));  
 		        	
 		        	cell_data = row.createCell(3); 
 		        	cell_data.setCellStyle(style_con);
 		        	cell_data.setCellValue(fee.getFeeEndDateJj());
-		        	sheet.addMergedRegion(new CellRangeAddress(     
-		        			rowIndex, //first row (0-based)  from 行     
-		        			lastRow, //last row  (0-based)  to 行     
-		                    3, //first column (0-based) from 列     
-		                    3  //last column  (0-based)  to 列     
-		            )); 
 		        	
 		        	cell_data = row.createCell(4); 
 		        	cell_data.setCellStyle(style_con);
 		        	cell_data.setCellValue(fee.getFeeEndDateGf());
-		        	sheet.addMergedRegion(new CellRangeAddress(     
-		        			rowIndex, //first row (0-based)  from 行     
-		        			lastRow, //last row  (0-based)  to 行     
-		                    4, //first column (0-based) from 列     
-		                    4  //last column  (0-based)  to 列     
-		            ));
 		        	
 		        	cell_data = row.createCell(5); 
 		        	cell_data.setCellStyle(style_con);
 		        	cell_data.setCellValue(fee.getFeeJnDate());
-		        	sheet.addMergedRegion(new CellRangeAddress(     
-		        			rowIndex, //first row (0-based)  from 行     
-		        			lastRow, //last row  (0-based)  to 行     
-		                    5, //first column (0-based) from 列     
-		                    5  //last column  (0-based)  to 列     
-		            ));  
 		        	
 		        	cell_data = row.createCell(6); 
 		        	cell_data.setCellStyle(style_con);
 		        	Integer feeStatus = fee.getFeeStatus();
 		        	cell_data.setCellValue(feeStatus.equals(0) ? "未交" : "已交");
-		        	sheet.addMergedRegion(new CellRangeAddress(     
-		        			rowIndex, //first row (0-based)  from 行     
-		        			lastRow, //last row  (0-based)  to 行     
-		                    6, //first column (0-based) from 列     
-		                    6  //last column  (0-based)  to 列     
-		            )); 
 		        	
 		        	cell_data = row.createCell(7); 
 		        	cell_data.setCellStyle(style_con);
 		        	Integer djStatus = fee.getDjStatus();
 		        	cell_data.setCellValue(djStatus.equals(0) ? "自交" : "代交");
-		        	sheet.addMergedRegion(new CellRangeAddress(     
-		        			rowIndex, //first row (0-based)  from 行     
-		        			lastRow, //last row  (0-based)  to 行     
-		                    7, //first column (0-based) from 列     
-		                    7  //last column  (0-based)  to 列     
-		            ));
 		        	
 		        	cell_data = row.createCell(8); 
 		        	cell_data.setCellStyle(style_con);
 		        	cell_data.setCellValue(fee.getBackStatus().equals(0) ? "未完成" : "已完成");
-		        	sheet.addMergedRegion(new CellRangeAddress(     
-		        			rowIndex, //first row (0-based)  from 行     
-		        			lastRow, //last row  (0-based)  to 行     
-		                    8, //first column (0-based) from 列     
-		                    8  //last column  (0-based)  to 列     
-		            ));  
 		        	
 		        	cell_data = row.createCell(9); 
 		        	cell_data.setCellStyle(style_con);
 		        	Double backFee = fee.getBackFee();
 		        	cell_data.setCellValue(backFee);
-		        	sheet.addMergedRegion(new CellRangeAddress(     
-		        			rowIndex, //first row (0-based)  from 行     
-		        			lastRow, //last row  (0-based)  to 行     
-		                    9, //first column (0-based) from 列     
-		                    9  //last column  (0-based)  to 列     
-		            )); 
 		        	
 		        	cell_data = row.createCell(10); 
 		        	cell_data.setCellStyle(style_con);
 		        	cell_data.setCellValue(fee.getBackDate());
-		        	sheet.addMergedRegion(new CellRangeAddress(     
-		        			rowIndex, //first row (0-based)  from 行     
-		        			lastRow, //last row  (0-based)  to 行     
-		                    10, //first column (0-based) from 列     
-		                    10  //last column  (0-based)  to 列     
-		            )); 
 		        	
 		        	cell_data = row.createCell(11); 
 		        	cell_data.setCellStyle(style_con);
 		        	Double discountsFee = fee.getDiscountsFee();
 		        	cell_data.setCellValue(discountsFee);
-		        	sheet.addMergedRegion(new CellRangeAddress(     
-		        			rowIndex, //first row (0-based)  from 行     
-		        			lastRow, //last row  (0-based)  to 行     
-		                    11, //first column (0-based) from 列     
-		                    11  //last column  (0-based)  to 列     
-		            )); 
 		        	
 		        	if(djStatus.equals(1)){
 		        		if(feeStatus.equals(1)){//费用为已交状态
@@ -3634,12 +3606,11 @@ public class ZlMainAction extends DispatchAction {
 		        	cell_data = row.createCell(13); 
 		        	cell_data.setCellStyle(style_con);
 		        	cell_data.setCellValue(fee.getFeeRemark());
-		        	sheet.addMergedRegion(new CellRangeAddress(     
-		        			rowIndex, //first row (0-based)  from 行     
-		        			lastRow, //last row  (0-based)  to 行     
-		                    13, //first column (0-based) from 列     
-		                    13  //last column  (0-based)  to 列     
-		            ));
+		        	for(Integer j = 0 ; j <= 13 ; j++){
+		        		if(j != 12){
+		        			this.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, rowIndex, lastRow, j, j, sheet, wb);
+		        		}
+		        	}
 		        }
 		        if(feeTotal > 0){
 					feeTotal = Convert.convertInputNumber_2(feeTotal);
@@ -3654,47 +3625,16 @@ public class ZlMainAction extends DispatchAction {
 					discountsFeeTotal = Convert.convertInputNumber_2(discountsFeeTotal);
 				}
 				diffFeeTotal = Convert.convertInputNumber_2(djFeeTotal - backFeeTotal - discountsFeeTotal);
-				row = sheet.createRow(rowIndex+lastNum+2);//创建行.
 				
-				HSSFCell cell_data_1 = row.createCell(3); 
-	        	cell_data_1.setCellStyle(style_con);
-	        	cell_data_1.setCellValue("费用总计：");
-	        	
-	        	cell_data_1 = row.createCell(4); 
-	        	cell_data_1.setCellStyle(style_con);
-	        	cell_data_1.setCellValue(feeTotal);
-	        	
-	        	cell_data_1 = row.createCell(5); 
-	        	cell_data_1.setCellStyle(style_con);
-	        	cell_data_1.setCellValue("代缴费用统计：");
-	        	
-	        	cell_data_1 = row.createCell(6); 
-	        	cell_data_1.setCellStyle(style_con);
-	        	cell_data_1.setCellValue(djFeeTotal);
-	        	
-	        	cell_data_1 = row.createCell(7); 
-	        	cell_data_1.setCellStyle(style_con);
-	        	cell_data_1.setCellValue("已退费用统计：");
-	        	
-	        	cell_data_1 = row.createCell(8); 
-	        	cell_data_1.setCellStyle(style_con);
-	        	cell_data_1.setCellValue(backFeeTotal);
-	        	
-	        	cell_data_1 = row.createCell(9); 
-	        	cell_data_1.setCellStyle(style_con);
-	        	cell_data_1.setCellValue("未退费用统计：");
-	        	
-	        	cell_data_1 = row.createCell(10); 
-	        	cell_data_1.setCellStyle(style_con);
-	        	cell_data_1.setCellValue(diffFeeTotal);
-	        	
-	        	cell_data_1 = row.createCell(11); 
-	        	cell_data_1.setCellStyle(style_con);
-	        	cell_data_1.setCellValue("优惠费用统计：");
-	        	
-	        	cell_data_1 = row.createCell(12); 
-	        	cell_data_1.setCellStyle(style_con);
-	        	cell_data_1.setCellValue(discountsFeeTotal);
+				row = sheet.createRow(rowIndex+lastNum);//创建行.
+				HSSFCell cell_data_1 = row.createCell(0); 
+				this.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, rowIndex+lastNum, rowIndex+lastNum, 0, 13, sheet, wb);
+				
+				row = sheet.createRow(rowIndex+lastNum+1);//创建行.
+				cell_data_1 = row.createCell(0); 
+				cell_data_1.setCellValue("费用总计："+feeTotal + "  代缴费用统计：" + djFeeTotal + "  已退费用统计：" + backFeeTotal + "  未退费用统计：" + diffFeeTotal + "  优惠费用统计：" + discountsFeeTotal);
+				cell_data_1.setCellStyle(style_tj); 
+		        this.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, rowIndex+lastNum+1, rowIndex+lastNum+1, 0, 13, sheet, wb);
 		        // 第六步，将文件存到指定位置
 		    	String absoFilePath = "";//绝对地址
 		    	try  {  
