@@ -33,7 +33,7 @@
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
     	var fpZlFlag = "${requestScope.fpZlFlag}",lqZlFlag = "${requestScope.lqzLFlag}",loginType=parent.loginType,roleName=parent.roleName;
-		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0;
+		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='';
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -326,7 +326,7 @@
 							{field : '', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
 								if(taskStaVal == 0){
 									var strHtml = '';
-									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" zlId="'+ d.zlId +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
+									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
 									if(roleName == '管理员' || fpZlFlag == 'true'){
 										if(d.superFlag){
 											strHtml += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="lcfpFun" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'" taskOpts="1" fzUserId="'+ d.fzUserId +'" currLcNo="'+ d.lcNo +'"><i class="iconfont layui-extend-yijiao"></i>任务移交</a>';
@@ -534,7 +534,27 @@
 					}
 				}else if(obj.event == 'goCompleteTask'){//做任务
 					//page.data.dealZlFlag = common.getPermission('dealZl','',0);
-					alert("00000000")
+					var ajTitle = $(this).attr('ajTitle');
+					globalZlId = $(this).attr('zlId');
+					globalZlTit = ajTitle;
+					addZlFlag = false;
+					var fullScreenIndex = layer.open({
+						//专利['+ ajTitle +']任务详情
+						title:'',
+						type: 2,
+					  	area: ['700px', '500px'],
+					  	fixed: true, //不固定
+					  	maxmin: false,
+					  	shadeClose :false,
+					  	closeBtn: 0,
+					  	content: '/Module/zlBasicInfoManager/jsp/zlTaskDetail.html',
+					  	end : function(){
+					  		if(addZlFlag){
+					  			loadZlInfoList('initLoad');
+					  		}
+					  	}
+					});	
+					layer.full(fullScreenIndex);
 				}
 			});
 			//form 监听获取查看我的任务 未完成/已完成

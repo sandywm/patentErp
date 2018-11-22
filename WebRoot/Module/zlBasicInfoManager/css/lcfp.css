@@ -208,10 +208,16 @@ body{
 	font-size:16px;
 }
 .currLcNo span.ingTaskSp,
-.currLcNo i.ingTaskIcon{
+.currLcNo i.ingTaskIcon,
+.nowTaskPeo,
+.nowTaskIcon{
 	color:#F47837;
 }
 .currLcNo span.hasComSp,
 .currLcNo i.statusIcon_com{
 	color:#20a0ff;
+}
+.nowTaskIcon{
+	font-size:18px;
+	font-weight:600;
 }

@@ -492,6 +492,8 @@
 							layer.msg('请添加申请人', {icon:5,anim:6,time:1000});
 						}else if(ajJsLxrIdVal == ''){
 							layer.msg('请添加技术联系人', {icon:5,anim:6,time:1000});
+						}else if(cpyDateInpVal == ''){
+							layer.msg('定稿提交截止时间不能为空', {icon:5,anim:6,time:1000});
 						}else{
 							if($('.innerYxqBox').length > 0){
 								var strResult = _this.getYxqId();

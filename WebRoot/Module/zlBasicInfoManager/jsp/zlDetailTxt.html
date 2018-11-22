@@ -13,6 +13,7 @@
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
+		//alert(parent.taskDetailOpt)
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -173,7 +174,9 @@
 					}
 					strHtml += '</div></div></li>';
 					strHtml += '</ul>';
-					strHtml += '<div class="lqBtn"><a class="lqTaskBtn noLqBtn" href="javascript:void(0)" zlId="'+ json.ajId +'" ajTitle = "'+ json.ajTitle +'"><i class="iconfont layui-extend-lingqu"></i>领取</a></div>';
+					if(parent.taskDetailOpt == undefined){//表示是从撰写任务领查看明细动作进来的
+						strHtml += '<div class="lqBtn"><a class="lqTaskBtn noLqBtn" href="javascript:void(0)" zlId="'+ json.ajId +'" ajTitle = "'+ json.ajTitle +'"><i class="iconfont layui-extend-lingqu"></i>领取</a></div>';	
+					}
 					$('#zlDetailTxtBox').html(strHtml);
 					//下载
 					$('.downloadBtn').on('click',function(){

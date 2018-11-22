@@ -27,9 +27,14 @@
 		<div id="lcFpTaskPar" class="lcFpCon">
 			<table id="lcFpSon" class="layui-table" lay-filter="userInfoTable"></table>
 			<script type="text/html" id="radioTpl">
-  				<label class="labelMod">
-					<span class="likeCheckSpan hasBorRad"><b class="layui-icon layui-icon-ok" style="margin-left:0px;"></b></span>
-				</label>
+				{{#  if(!d.superFlag){ }}
+					<label class="labelMod">
+						<span class="likeCheckSpan hasBorRad"><b class="layui-icon layui-icon-ok" style="margin-left:0px;"></b></span>
+					</label>
+				{{#  } else { }}
+					<i class="iconfont layui-extend-jinhangzhong nowTaskIcon hasBlink"></i>
+				{{#  } }}
+  				
 			</script>
 			<script type="text/html" id="sexTpl">
   				{{#  if(d.userSex === '女'){ }}
@@ -45,7 +50,8 @@
 	</div>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var globalTypeUser = parent.globalTypeUser,fzUserId = parent.fzUserId;
+		var globalTypeUser = parent.globalTypeUser,fzUserId = parent.fzUserId,taskOpts = parent.taskOpts;
+		//alert(typeof taskOpts)
 		layui.use(['layer','form','jquery','table'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
@@ -81,10 +87,18 @@
 					var _this = this,noData='<div class="noData" style="display:block;"><i class="iconfont layui-extend-noData"></i><p>暂无员工<p></div>';
 					layer.load('1');
 					if(opts == 'initLoad'){
-						var field = {userName:'',jsId:'',opt:0,actNameEng:'dealZl'};
+						if(taskOpts != 0 && taskOpts != undefined){//移交人员、移交审核下移交人员
+							var field = {userName:'',jsId:'',opt:0,actNameEng:'dealZl',taskStatus:1,applyUserId:fzUserId};
+						}else{
+							var field = {userName:'',jsId:'',opt:0,actNameEng:'dealZl'};
+						}
 					}else{
 						var jsId = $('#jsFieldInp').val(),userName=$.trim($('#lqZlTitleInp').val());
-						var field = {userName:escape(userName),jsId:jsId,opt:0,actNameEng:'dealZl'};
+						if(taskOpts != 0 && taskOpts != undefined){//移交人员、移交审核下移交人员
+							var field = {userName:escape(userName),jsId:jsId,opt:0,actNameEng:'dealZl',taskStatus:1,applyUserId:fzUserId};
+						}else{
+							var field = {userName:escape(userName),jsId:jsId,opt:0,actNameEng:'dealZl'};
+						}	
 					}
 					$.ajax({
   						type:'post',
@@ -110,11 +124,6 @@
 				        	}else if(json['userResult'] == 'noInfo'){
 				        		$('.lcFpCon ul').html(noData);
 				        		$('.botSaveBox').hide();
-				        		$('#scrollParent').remove();
-				        		$('#lcFpSon').animate({'top':0});
-								common.getId('lcFpTaskPar').onmousewheel = function(){
-									return false;
-								};
 				        	}
 				        }
   					});
@@ -148,7 +157,13 @@
 						cellMinWidth : 100,
 						cols : [[
 							{field : '', title: '', align:'center',width:70,templet:'#radioTpl'},
-							{field : 'userName', title: '员工姓名', align:'center',width:110},
+							{field : 'userName', title: '员工姓名', align:'center',width:180,templet : function(d){
+								if(d.superFlag){
+									return d.userName + '[<span class="nowTaskPeo">当前任务执行者</span>]';
+								}else{
+									return d.userName;
+								}
+							}},
 							{field : 'userSex', title: '性别', align:'center',width:110,templet: '#sexTpl'},
 							{field : 'scFiledName', title:'擅长领域', align:'center',width:205,templet : function(d){
 								if(d.scFiledName != ''){
@@ -177,30 +192,32 @@
 				value == '' ? $('#jsFieldInp').val('') : $('#jsFieldInp').val(value);
 			});
 			table.on('row(userInfoTable)', function(obj){
-				var data = obj.data;			   
-			    $('.likeCheckSpan').removeClass('hasActive');
-			    $(this).find('.likeCheckSpan').addClass('hasActive');
-			    obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
-				page.data.userId = data.userId;
-				var strHtml = '<p id="'+ globalTypeUser +'_con" userId="'+ data.userId +'"><i class="layui-icon layui-icon-username"></i>'+  data.userName +'</p>';
-				if(globalTypeUser == 'addZxUser'){//增加专利撰写人员
-					parent.$('#zxPeopleBox').html(strHtml);
-				}else if(globalTypeUser == 'addZlShUser'){//专利审查人员
-					parent.$('#zlShBox').html(strHtml);
-				}else if(globalTypeUser == 'addDingGaoUser'){//定稿提交人员
-					parent.$('#dingGaoBox').html(strHtml);
-				}else if(globalTypeUser == 'addTongZhiShuUser'){//导入通知书人员
-					parent.$('#tzsBox').html(strHtml);
-				}else if(globalTypeUser == 'addFeeUser'){//费用催缴人员
-					parent.$('#feiyongBox').html(strHtml);
-				}else if(globalTypeUser == 'addBuZhengUser'){//专利补正人员
-					parent.$('#buzhengBox').html(strHtml);
-				}else if(globalTypeUser == 'addBuzhengShUser'){//补正审核人员
-					parent.$('#shBzBox').html(strHtml);
-				}else if(globalTypeUser == 'addZlBhUser'){//专利驳回人员
-					parent.$('#bohuiBox').html(strHtml);
-				}else if(globalTypeUser == 'addCusSureUser'){//客户确认人员
-					parent.$('#cusSureBox').html(strHtml);
+				var data = obj.data;
+				if(!data.superFlag){		   
+				    $('.likeCheckSpan').removeClass('hasActive');
+				    $(this).find('.likeCheckSpan').addClass('hasActive');
+				    obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+					page.data.userId = data.userId;
+					var strHtml = '<p id="'+ globalTypeUser +'_con" userId="'+ data.userId +'"><i class="layui-icon layui-icon-username"></i>'+  data.userName +'</p>';
+					if(globalTypeUser == 'addZxUser'){//增加专利撰写人员
+						parent.$('#zxPeopleBox').html(strHtml);
+					}else if(globalTypeUser == 'addZlShUser'){//专利审查人员
+						parent.$('#zlShBox').html(strHtml);
+					}else if(globalTypeUser == 'addDingGaoUser'){//定稿提交人员
+						parent.$('#dingGaoBox').html(strHtml);
+					}else if(globalTypeUser == 'addTongZhiShuUser'){//导入通知书人员
+						parent.$('#tzsBox').html(strHtml);
+					}else if(globalTypeUser == 'addFeeUser'){//费用催缴人员
+						parent.$('#feiyongBox').html(strHtml);
+					}else if(globalTypeUser == 'addBuZhengUser'){//专利补正人员
+						parent.$('#buzhengBox').html(strHtml);
+					}else if(globalTypeUser == 'addBuzhengShUser'){//补正审核人员
+						parent.$('#shBzBox').html(strHtml);
+					}else if(globalTypeUser == 'addZlBhUser'){//专利驳回人员
+						parent.$('#bohuiBox').html(strHtml);
+					}else if(globalTypeUser == 'addCusSureUser'){//客户确认人员
+						parent.$('#cusSureBox').html(strHtml);
+					}
 				}
 			});
 			$(function(){
