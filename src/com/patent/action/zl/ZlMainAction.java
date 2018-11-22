@@ -2873,36 +2873,48 @@ public class ZlMainAction extends DispatchAction {
 										map_z.put("sqrId", sqrId);//申请人信息
 										String fmrId = zl.getAjFmrId();
 					 					String fmrName = "";
+					 					
+					 					String sqrFmrId = "";//发明人对应的申请人
 					 					if(!fmrId.equals("")){
 					 						String[] fmrIdArr = fmrId.split(",");
 					 						for(Integer i = 0 ; i < fmrIdArr.length ; i++){
 					 							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
 					 							if(cList.size() > 0){
-					 								fmrName += cList.get(0).getCusFmrName() + ",";
+					 								CustomerFmrInfoTb fmr = cList.get(0);
+					 								fmrName += fmr.getCusFmrName() + ",";
+					 								sqrFmrId += fmr.getCustomerInfoTb().getId() + ",";
 					 							}
 					 						}
 					 						if(!fmrName.equals("")){
 					 							fmrName = fmrName.substring(0, fmrName.length() - 1);
+					 							sqrFmrId = sqrFmrId.substring(0, sqrFmrId.length() - 1);
 					 						}
 					 					}
-					 					map_z.put("fmrName", fmrName);//发明人信息
-					 					map_z.put("fmrId", fmrId);//发明人信息
+					 					map_z.put("fmrId", fmrId);
+					 					map_z.put("fmrName", fmrName);
+					 					map_z.put("sqrFmrId", sqrFmrId);
+										
 										String lxrId = zl.getAjLxrId();
 					 					String lxrName = "";
+					 					String sqrLxrId = "";//联系人对应的申请人
 					 					if(!lxrId.equals("")){
 					 						String[] lxrIdArr = lxrId.split(",");
 					 						for(Integer j = 0 ; j < lxrIdArr.length ; j++){
 					 							List<CustomerLxrInfoTb> clList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
 					 							if(clList.size() > 0){
-					 								lxrName += clList.get(0).getCusLxrName() + ",";
+					 								CustomerLxrInfoTb lxr = clList.get(0);
+					 								lxrName += lxr.getCusLxrName() + ",";
+					 								sqrLxrId += lxr.getCustomerInfoTb().getId() + ",";
 					 							}
 					 						}
 					 						if(!lxrName.equals("")){
 					 							lxrName = lxrName.substring(0, lxrName.length() - 1);
+					 							sqrLxrId = sqrLxrId.substring(0, sqrLxrId.length() - 1);
 					 						}
 					 					}
-					 					map_z.put("lxrName", lxrName);//联系人信息
-					 					map_z.put("lxrId", lxrId);//联系人信息
+					 					map_z.put("lxrId", lxrId);
+					 					map_z.put("lxrName", lxrName);
+					 					map_z.put("sqrLxrId", sqrLxrId);
 					 					list_z.add(map_z);
 									}
 								}
