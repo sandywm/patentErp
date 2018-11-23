@@ -197,7 +197,7 @@
 						nowHtml_jud += '<input type="radio" name="adviceRad" lay-filter="isPassFilter" value="0" title="退回修改">';
 						nowHtml_jud += '<input type="radio" name="adviceRad" lay-filter="isPassFilter" value="6" title="审核通过"></div>';
 						nowHtml_jud += '<p id="judgeStar"></p>';
-						$('.judgeBox').html(nowHtml_jud);
+						$('.judgeBox').addClass('shenheHei').html(nowHtml_jud);
 						form.render();
 						this.judgeScore();
 					}else if(lcNo >= 5 && lcNo < 6){
@@ -257,18 +257,23 @@
 						nowHtml_sub += '<span id="addFmrBtn" opts="addFmrOpts" class="addSpan fl">添加/编辑发明人</span></div></div></div>';
 						nowHtml_sub += '<div class="layui-form-item hasMargTop"><label class="layui-form-label titLabel">是否费减：</label><input id="rateInp" type="hidden"/>';
 						nowHtml_sub += '<div class="layui-input-block fixHeiDiv hasLinHei">';
-						nowHtml_sub += '<input type="radio" name="feeRateInp" value="0" title="无费减"><input type="radio" name="feeRateInp" value="0.7" title="70%"><input type="radio" name="feeRateInp" value="0.85" title="85%"></div></div>';
-						$('.judgeBox').show().html(nowHtml_sub);
+						nowHtml_sub += '<input type="radio" name="feeRateInp" value="0" lay-filter="isHasFeeRateFilter" title="无费减"><input type="radio" name="feeRateInp" lay-filter="isHasFeeRateFilter" value="0.7" title="70%"><input type="radio" name="feeRateInp" lay-filter="isHasFeeRateFilter" value="0.85" title="85%"></div></div>';
+						$('.judgeBox').addClass('dinggaoHei').show().html(nowHtml_sub);
 						form.render();
+						this.isHasFeeRateSel();
 					}
 					selectFileUpload();
 					this.bindEvent(lcNo);
-					delHasAddMethod('delSqrBtn','delSqrOpt');
-					if(zlInfo[0].lxrId != ''){
-						delHasAddMethod('delLxrBtn','delLxrOpt');
-					}
-					if(zlInfo[0].fmrId != ''){
-						delHasAddMethod('delFmrBtn','delFmrOpt');
+					if(zlInfo != undefined){
+						if(zlInfo.length > 0){
+							delHasAddMethod('delSqrBtn','delSqrOpt');
+							if(zlInfo[0].lxrId != ''){
+								delHasAddMethod('delLxrBtn','delLxrOpt');
+							}
+							if(zlInfo[0].fmrId != ''){
+								delHasAddMethod('delFmrBtn','delFmrOpt');
+							}
+						}
 					}
 				},
 				loadCurrStep : function(lcNo){
@@ -390,6 +395,11 @@
 						data.value == 0 ? $('#adviceInp').val(0) : $('#adviceInp').val(1);
 					});
 				},
+				isHasFeeRateSel : function(){
+					form.on('radio(isHasFeeRateFilter)', function(data){
+						$('#rateInp').val(data.value);
+					});
+				},
 				bindEvent : function(lcNo){
 					var _this = this;
 					//关闭整个弹层
@@ -504,6 +514,35 @@
 							var field = {zlId : globalZlId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),cusCheckStatus:adviceInpVal};
 						}else if(lcNo == 6){
 							//定稿提交
+							var sqrName='',ajTitleVal = $.trim($('#ajTitleInp').val()),
+								ajSqrIdVal = $('#ajSqrId').val(),//案件申请人
+								ajLxrIdVal = $('#ajLxrId').val(),//案件联系人
+								ajFmrIdVal = $('#ajFmrId').val(),//案件发明人
+								rateInpVal = $('#rateInp').val();//是否费减
+							ajSqrIdVal = _this.getIdStr('delSqrBtn','sqrattrid');
+							sqrName = _this.getIdStr('delSqrBtn','sqrattrname');
+							ajLxrIdVal = _this.getIdStr('delLxrBtn','lxridattr');
+							ajFmrIdVal = _this.getIdStr('delFmrBtn','fmridattr');
+							if(ajTitleVal == ''){
+								layer.msg('案件标题不能为空', {icon:5,anim:6,time:1000});
+								return;
+							}else if(ajSqrIdVal == ''){
+								layer.msg('请添加申请人', {icon:5,anim:6,time:1000});
+								return;
+							}else if(ajLxrIdVal == ''){
+								layer.msg('请添加联系人', {icon:5,anim:6,time:1000});
+								return;
+							}else if(ajFmrIdVal == ''){
+								layer.msg('请添加发明人', {icon:5,anim:6,time:1000});
+								return;
+							}else if(rateInpVal == ''){
+								layer.msg('请选择是否要费减', {icon:5,anim:6,time:1000});
+								return;
+							}else if($('#fujianInp').val() == ''){
+								layer.msg('请上传定稿文件',{icon:5,anim:6,time:1500});
+								return;
+							}
+							var field = {zlId : globalZlId,zlTitle:ajTitleVal,sqrId:ajSqrIdVal,sqrName:sqrName,fmrId:ajFmrIdVal,ajFjInfo:rateInpVal,taskRemark:'',upZxFile:$('#fujianInp').val()};
 						}
 						$.ajax({
 	  						type:'post',

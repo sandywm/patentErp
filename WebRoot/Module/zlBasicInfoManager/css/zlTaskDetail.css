@@ -373,11 +373,17 @@ body{
 	width:120px;
 }
 .judgeBox{
-	height:40px;
-	line-height:40px;
 	color:#666;
 	margin:10px 0;
 	display:none;
+}
+.shenheHei{
+	height:40px;
+	line-height:40px;
+}
+.dinggaoHei{
+	height:auto;
+	margin-bottom:15px;
 }
 .judgeBox span,
 .isPassBox,
@@ -407,9 +413,10 @@ body{
 	padding:9px 0;
 	color:#666;
 }
-.oneBlank{
+.judgeBox span.oneBlank{
 	width:7px;
 	display:inline-block;
+	float:none;
 }
 .fixHeiDiv,
 .inpHeiDiv{
@@ -434,7 +441,7 @@ body{
 	cursor:pointer;
 }
 .hasMargTop{
-	margin-top:15px;	
+	margin-top:10px;	
 }
 .fixHeiDiv .multiBox p span{
 	float:left;
@@ -453,9 +460,8 @@ body{
 .fixHeiDiv .addSpan{
 	cursor:pointer;
 	color:#009688;
-	/*line-height:38px;
-	margin-top:9px;*/
 	display:block;
+	margin-top:10px;
 }
 .fixHeiDiv .addSpan:hover{
 	color:#F47837;

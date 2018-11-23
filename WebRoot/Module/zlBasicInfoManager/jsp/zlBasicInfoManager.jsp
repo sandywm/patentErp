@@ -85,7 +85,7 @@
   						type:"post",
 				        async:false,
 				        dataType:"json",
-				        data:{stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',comStatus:0,lqStatus: 4},
+				        data:{stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',comStatus:1,lqStatus: 4},
 				        //data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',lqStatus:loginType == 'spUser' ? -1 : 4},
 				        //data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',checkStatus:0,lqStatus: 5},
 				        url:'/zlm.do?action=getPageZlData',
@@ -182,7 +182,11 @@
 						//我的任务对应内容 
 						strHtmlCon += '<div class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="taskStaInp" type="hidden" value="0"/>';
 						strHtmlCon += '<input type="radio" name="taskStatusInp" lay-filter="taskStatusFilter" value="0" title="未完成" checked/>';
-						strHtmlCon += '<input type="radio" name="taskStatusInp" lay-filter="taskStatusFilter" value="1" title="已完成"/></div>';
+						strHtmlCon += '<input type="radio" name="taskStatusInp" lay-filter="taskStatusFilter" value="1" title="已完成"/>';
+						if(roleName == '管理员'){//管理员这块对任务这块已完成和未完成记录做个特别说明
+							strHtmlCon += '<p class="tipsInfoTask"><i class="layui-icon layui-icon-tips"></i> <span>未完成：管理员只能查看自己完成的流程任务</span> <span>已完成：</span>管理员可以操作专利的所有流程任务</p>';
+						}
+						strHtmlCon += '</div>';
 						strHtmlCon += '<div id="noData_4" class="noData"></div>';
 						strHtmlCon += '<table id="zlBasicListTab_4" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 						//专利移交申请审核
@@ -320,7 +324,7 @@
 							{field : 'zlType', title: '专利类型', width:150, align:'center'},
 							{field : 'taskName', title: '任务名称', width:180, align:'center'},
 							{field : 'taskSdate', title: '任务开始日期', width:200, align:'center'},
-							{field : 'taskComdate', title: '任务完成日期', width:200, align:'center'},
+							{field : 'taskComDate', title: '任务完成日期', width:200, align:'center'},
 							{field : 'taskEdateCpy', title: '任务完成期限(机构)', width:200, align:'center'},
 							{field : 'taskEdateGf', title: '任务完成期限(官方)', width:200, align:'center'},
 							{field : '', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
