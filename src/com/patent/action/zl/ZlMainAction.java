@@ -526,7 +526,10 @@ public class ZlMainAction extends DispatchAction {
 				}
 			}else if(lqStatus.equals(4)){//我的任务（去完成、任务移交）,管理员时叫专利任务
 				if(roleName.equals("管理员")){//管理员可做所有任务
-					currLoginUserId = 0;
+					if(comStatus.equals(0)){
+						currLoginUserId = 0;
+					}
+					//已完成状态时获取的是自己完成的任务列表
 				}
 				Integer count = mxm.getCountByOpt(currLoginUserId, comStatus, cpyId);
 				if(count > 0){
