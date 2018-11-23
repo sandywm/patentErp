@@ -4333,7 +4333,7 @@ public class ZlMainAction extends DispatchAction {
 				if(mxList.size() > 0){
 					ZlajLcMxInfoTb mx = mxList.get(0);
 					if(mx.getLcMxNo() >= 7){//定稿提交已完成（之前的流程不在进行移交）
-						if(lcTask.equals("zx") || lcTask.equals("sc") || lcTask.equals("cus") || lcTask.equals("sgtj")){
+						if(lcTask.equals("zx") || lcTask.equals("sc") || lcTask.equals("cus") || lcTask.equals("dgtj")){
 							msg = "notApply";
 						}else{
 							msg = "success";
