@@ -2948,7 +2948,7 @@ public class ZlMainAction extends DispatchAction {
 											String lastFjName = fileName_curr.substring(lastIndex+1, fileName_curr.length());
 											Integer lastIndex_1 = lastFjName.indexOf(".");
 											String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());//文件格式
-											String fjSize = FileOpration.getFileSize(filePath + fjNameArr[i]);//文件大小
+											String fjSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + fjNameArr[i]);//文件大小
 											String downFilePath = fjNameArr[i];
 											map_f.put("fileName", fileName_curr);
 											map_f.put("fjGs", fjGs);
@@ -2969,7 +2969,7 @@ public class ZlMainAction extends DispatchAction {
 												String lastFjName = fileName_curr.substring(lastIndex+1, fileName_curr.length());
 												Integer lastIndex_1 = lastFjName.indexOf(".");
 												String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());//文件格式
-												String fjSize = FileOpration.getFileSize(filePath + fjNameArr_sub[j]);//文件大小
+												String fjSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + fjNameArr_sub[j]);//文件大小
 												String downFilePath = fjNameArr_sub[j];
 												map_f.put("fileName", fileName_curr);
 												map_f.put("fjGs", fjGs);
