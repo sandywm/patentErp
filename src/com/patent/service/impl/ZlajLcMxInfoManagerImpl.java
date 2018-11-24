@@ -31,7 +31,7 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 			tran = sess.beginTransaction();
 			ZlajLcMxInfoTb mxInfo = new ZlajLcMxInfoTb(fzUserId, lcDao.get(sess, lcId),
 					lcMxName, lcMxNo, lcMxSDate, lcMxEDate,lcMxUpFile, lcMxUpUserId, lcMxUpDate,
-					lcMxUpSize, lcMxFee, lcMxRemark,lcPjScore);
+					lcMxUpSize, lcMxFee, lcMxRemark,lcPjScore,-1);
 			mxDao.save(sess, mxInfo);
 			tran.commit();
 			return mxInfo.getId();
@@ -276,6 +276,31 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据条件获取任务记录条数时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateYjCheckStatus(Integer lcmxId, Integer checkStatus)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajLcMxInfoTb mx = mxDao.get(sess, lcmxId);
+			if(mx != null){
+				mx.setYjCheckStatus(checkStatus);
+				mxDao.update(sess, mx);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改指定流程明细编号的移交审核状态时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

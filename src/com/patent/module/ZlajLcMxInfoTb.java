@@ -29,6 +29,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 	private Double lcMxFee;
 	private Integer lcPjScore;
 	private String lcMxRemark;
+	private Integer yjCheckStatus;
 	private Set<ZlajLcYjInfoTb> lcyjs = new HashSet<ZlajLcYjInfoTb>();
 
 	// Constructors
@@ -41,7 +42,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 	public ZlajLcMxInfoTb(Integer lcFzUserId, ZlajLcInfoTb zlajLcInfoTb,
 			String lcMxName, Double lcMxNo, String lcMxSDate, String lcMxEDate,
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,
-			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore) {
+			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore,Integer yjCheckStatus) {
 		this.lcFzUserId = lcFzUserId;
 		this.zlajLcInfoTb = zlajLcInfoTb;
 		this.lcMxName = lcMxName;
@@ -55,13 +56,14 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 		this.lcMxRemark = lcMxRemark;
 		this.lcMxFee =  lcMxFee;
 		this.lcPjScore = lcPjScore;
+		this.yjCheckStatus = yjCheckStatus;
 	}
 
 	/** full constructor */
 	public ZlajLcMxInfoTb(Integer id,Integer lcFzUserId, ZlajLcInfoTb zlajLcInfoTb,
 			String lcMxName, Double lcMxNo, String lcMxSDate, String lcMxEDate,
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,
-			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore) {
+			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore,Integer yjCheckStatus) {
 		this.lcFzUserId = lcFzUserId;
 		this.zlajLcInfoTb = zlajLcInfoTb;
 		this.lcMxName = lcMxName;
@@ -75,6 +77,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 		this.lcMxRemark = lcMxRemark;
 		this.lcMxFee =  lcMxFee;
 		this.lcPjScore = lcPjScore;
+		this.yjCheckStatus = yjCheckStatus;
 	}
 
 	// Property accessors
@@ -197,6 +200,14 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 
 	public void setLcyjs(Set<ZlajLcYjInfoTb> lcyjs) {
 		this.lcyjs = lcyjs;
+	}
+
+	public Integer getYjCheckStatus() {
+		return yjCheckStatus;
+	}
+
+	public void setYjCheckStatus(Integer yjCheckStatus) {
+		this.yjCheckStatus = yjCheckStatus;
 	}
 
 }

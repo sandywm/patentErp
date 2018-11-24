@@ -1416,6 +1416,17 @@ public class ZlMainAction extends DispatchAction {
 					}
 					map_d.put("upFileDetail", list_mx_1);//附件明细（当上传文件存在时出现）
 					map_d.put("mxRemark", mx.getLcMxRemark());
+					if(mx.getLcMxNo() >= 4 && mx.getLcMxNo() < 5){//专利审核
+						map_d.put("lcPjScore", mx.getLcPjScore());//评分
+					}else if(mx.getLcMxNo() >= 5 && mx.getLcMxNo() < 6){//客户确认
+						//获取该专利的下一个流程，如果是定稿提交则表示客户确认通过，如果是撰稿修改这表示客户确认没通过
+						Integer cusCheckStatus = mx.getLcPjScore();
+						if(cusCheckStatus.equals(0)){
+							map_d.put("cusCheckStatus", "客户确认未通过");
+						}else{
+							map_d.put("cusCheckStatus", "客户确认通过");
+						}
+					}
 				}
 				list_d.add(map_d);
 			}
@@ -3204,7 +3215,7 @@ public class ZlMainAction extends DispatchAction {
 												String upZxFile = CommonTools.getFinalStr("upZxFile", request);//撰写附件（参数）
 												//需要确认客户确认这块有没有上传的新文件
 												
-												mxm.updateEdateById(lcMxId, currUserId, "", currUserId, upZxFile, currDate, "", currDate, taskRemark,-1);
+												mxm.updateEdateById(lcMxId, currUserId, "", currUserId, upZxFile, currDate, "", currDate, taskRemark,cusCheckStatus);//把客户确认的状态暂存在评分里面
 												if(!upZxFile.equals("")){//上传文件不为空
 													String[] fjNameArr = upZxFile.split(",");
 													for(Integer i = 0 ; i < fjNameArr.length ; i++){
@@ -4349,6 +4360,7 @@ public class ZlMainAction extends DispatchAction {
 							}else{
 								Integer yjId = lcyjm.addYj(lcmxId, currUserId, lcTask, applyCause, 0, cpyId);
 								if(yjId > 0){
+									mxm.updateYjCheckStatus(lcmxId, 0);
 									msg = "success";//成功
 								}
 							}
@@ -4406,12 +4418,14 @@ public class ZlMainAction extends DispatchAction {
 						if(flag){
 							String checkStatusChi = "审核未通过";
 							ZlajLcMxInfoTb mx = lcyj.getLcmx();
+							Integer mxId = mx.getId();
+							mxm.updateYjCheckStatus(mxId, checkStatus);
 							ZlajMainInfoTb zl = mx.getZlajLcInfoTb().getZlajMainInfoTb();
 							if(checkStatus.equals(1)){//审核通过
 								checkStatusChi = "审核已通过";
 								//需要给指定的流程赋予新的流程负责人员
 								Integer zlId = zl.getId();
-								Integer mxId = mx.getId();
+								
 								//一旦当前流程被其他人完成（管理员完成的情况下就不修改）
 								if(mx.getLcMxEDate().equals("")){
 									mxm.updateEdateById(mxId, newFzUserId, "", -1, "", "", "", "", "", -1);	
@@ -4428,23 +4442,23 @@ public class ZlMainAction extends DispatchAction {
 								Integer bzUserId = -1;
 								Integer bzshUserId = -1;
 								Integer bhUserId = -1;
-								if(lcTask.equals("zx")){
+								if(lcTask.equals("新申请撰稿") || lcTask.equals("撰稿修改")){
 									zxUserId = currUserId;
-								}else if(lcTask.equals("sc")){
+								}else if(lcTask.equals("专利审核")){
 									checkUserId = currUserId;
-								}else if(lcTask.equals("cus")){
+								}else if(lcTask.equals("客户确认")){
 									cusCheckUserId = currUserId;
-								}else if(lcTask.equals("dgtj")){
+								}else if(lcTask.equals("定稿提交")){
 									tjUserId = currUserId;
-								}else if(lcTask.equals("tzs")){
+								}else if(lcTask.equals("导入通知书")){
 									tzsUserId = currUserId;
-								}else if(lcTask.equals("fycj")){
+								}else if(lcTask.equals("费用催缴")){
 									feeUserId = currUserId;
-								}else if(lcTask.equals("bz")){
+								}else if(lcTask.equals("专利补正")){
 									bzUserId = currUserId;
-								}else if(lcTask.equals("bzsh")){
+								}else if(lcTask.equals("补正审核")){
 									bzshUserId = currUserId;
-								}else if(lcTask.equals("bh")){
+								}else if(lcTask.equals("专利驳回")){
 									bhUserId = currUserId;
 								}
 								zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId, 

@@ -104,6 +104,8 @@ public interface ZlajLcMxInfoDao {
 	
 	/**
 	 * 根据条件分页获取任务记录列表(新申请撰稿开始)
+	 * 如果是未完成的就还需要获取所有没有移交任务或者移交审核未通过的
+	 * 如果是已完成的就不须有后续条件
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-11-15 下午09:14:12
@@ -119,6 +121,8 @@ public interface ZlajLcMxInfoDao {
 	
 	/**
 	 * 根据条件获取任务记录条数(新申请撰稿开始)
+	 * 如果是未完成的就还需要获取所有没有移交任务或者移交审核未通过的
+	 * 如果是已完成的就不须有后续条件
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-11-15 下午09:15:42

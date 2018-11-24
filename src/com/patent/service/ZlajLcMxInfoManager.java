@@ -147,6 +147,8 @@ public interface ZlajLcMxInfoManager {
 	
 	/**
 	 * 根据条件分页获取任务记录列表(新申请撰稿开始)
+	 * 如果是未完成的就还需要获取所有没有移交任务或者移交审核未通过的
+	 * 如果是已完成的就不须有后续条件
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-11-15 下午09:14:12
@@ -160,6 +162,8 @@ public interface ZlajLcMxInfoManager {
 	
 	/**
 	 * 根据条件获取任务记录条数(新申请撰稿开始)
+	 * 如果是未完成的就还需要获取所有没有移交任务或者移交审核未通过的
+	 * 如果是已完成的就不须有后续条件
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-11-15 下午09:15:42
@@ -170,4 +174,16 @@ public interface ZlajLcMxInfoManager {
 	 * @throws WEBException
 	 */
 	Integer getCountByOpt(Integer fzUserId,Integer comStatus, Integer cpyId) throws WEBException;
+	
+	/**
+	 * 修改指定流程明细编号的移交审核状态
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-24 上午11:07:11
+	 * @param lcmxId 主键
+	 * @param checkStatus 审核状态（0：未审核，1:审核通过，2：审核未通过）
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateYjCheckStatus(Integer lcmxId,Integer checkStatus) throws WEBException;
 }

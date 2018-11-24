@@ -70,6 +70,11 @@
                 <comment>流程评分（只有技术审核才用到，默认-1）</comment>
             </column>
         </property>
+        <property name="yjCheckStatus" type="java.lang.Integer">
+            <column name="yj_check_status" default="-1">
+                <comment>移交申请的审核状态（-1：无申请（默认），0：未审核，1:审核通过，2：审核未通过）</comment>
+            </column>
+        </property>
         <property name="lcMxRemark" type="java.lang.String">
             <column name="lc_mx_remark" length="100">
                 <comment>备注</comment>
