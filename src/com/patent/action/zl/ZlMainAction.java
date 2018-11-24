@@ -4319,21 +4319,20 @@ public class ZlMainAction extends DispatchAction {
 		String roleName = this.getLoginRoleName(request);
 		Integer currUserId = this.getLoginUserId(request);
 		String msg = "error";
-		Integer lcmxId = CommonTools.getFinalInteger("lcmxId", request);//流程移交编号
+		Integer lcmxId = CommonTools.getFinalInteger("lcmxId", request);//流程明细编号
 		String applyCause = Transcode.unescape_new1("applyCause", request);//申请原因
-		String lcTask = CommonTools.getFinalStr("lcTask", request);//流程任务
 		if(this.getLoginType(request).equals("cpyUser")){
 			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
 			boolean lcfpFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "fpZl");//只有具有专利流程分配的人员
 			if(roleName.equals("管理员") || lcfpFlag){//管理员和流程分配人员不能操作（直接调用相关流程人员的操作接口）
 				
 			}else{
-				//(zx-专利撰写,sc-专利审核,cus-客户确认,dgtj-定稿提交,tzs-导入通知书,fycj-费用催缴,bz-专利补正,bzsh-补正审核,bh-专利驳回)
 				List<ZlajLcMxInfoTb>  mxList = mxm.listDetailInfoById(lcmxId);
 				if(mxList.size() > 0){
 					ZlajLcMxInfoTb mx = mxList.get(0);
+					String lcTask = mx.getLcMxName();
 					if(mx.getLcMxNo() >= 7){//定稿提交已完成（之前的流程不在进行移交）
-						if(lcTask.equals("zx") || lcTask.equals("sc") || lcTask.equals("cus") || lcTask.equals("dgtj")){
+						if(lcTask.equals("新申请撰稿") || lcTask.equals("撰稿修改") || lcTask.equals("专利审核") || lcTask.equals("客户确认") || lcTask.equals("定稿提交")){
 							msg = "notApply";
 						}else{
 							msg = "success";
