@@ -4447,23 +4447,23 @@ public class ZlMainAction extends DispatchAction {
 								Integer bzshUserId = -1;
 								Integer bhUserId = -1;
 								if(lcTask.equals("新申请撰稿") || lcTask.equals("撰稿修改")){
-									zxUserId = currUserId;
+									zxUserId = newFzUserId;
 								}else if(lcTask.equals("专利审核")){
-									checkUserId = currUserId;
+									checkUserId = newFzUserId;
 								}else if(lcTask.equals("客户确认")){
-									cusCheckUserId = currUserId;
+									cusCheckUserId = newFzUserId;
 								}else if(lcTask.equals("定稿提交")){
-									tjUserId = currUserId;
+									tjUserId = newFzUserId;
 								}else if(lcTask.equals("导入通知书")){
-									tzsUserId = currUserId;
+									tzsUserId = newFzUserId;
 								}else if(lcTask.equals("费用催缴")){
-									feeUserId = currUserId;
+									feeUserId = newFzUserId;
 								}else if(lcTask.equals("专利补正")){
-									bzUserId = currUserId;
+									bzUserId = newFzUserId;
 								}else if(lcTask.equals("补正审核")){
-									bzshUserId = currUserId;
+									bzshUserId = newFzUserId;
 								}else if(lcTask.equals("专利驳回")){
-									bhUserId = currUserId;
+									bhUserId = newFzUserId;
 								}
 								zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId, 
 										tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
