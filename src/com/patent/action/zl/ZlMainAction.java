@@ -643,7 +643,10 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("checkDate", checkDate);
 						list_d.add(map_d);
 					}
-					map.put("applyInfo", list_d);
+					map.put("msg", "success");
+					map.put("data", list_d);
+					map.put("count", count);
+					map.put("code", 0);
 				}else{
 					map.put("msg", "noInfo");
 				}
