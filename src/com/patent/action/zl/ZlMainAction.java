@@ -641,6 +641,7 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("checkStatusChi", checkStatusChi);
 						map_d.put("checkUserName", checkUserName);
 						map_d.put("checkDate", checkDate);
+						map_d.put("lcNo", mx.getLcMxNo());
 						list_d.add(map_d);
 					}
 					map.put("msg", "success");
