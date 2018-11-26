@@ -569,9 +569,9 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("lcNo", mx.getLcMxNo());//流程号
 						//当前用户是管理员或者流程分配人员并且还是当前任务的负责人（当前任务可以重新分配）
 						if(flag && mx.getLcFzUserId().equals(this.getLoginUserId(request))){
-							map_d.put("superFlag", true);
+							map_d.put("applyFlag", true);
 						}else{
-							map_d.put("superFlag", false);
+							map_d.put("applyFlag", false);
 						}
 						list_d.add(map_d);
 					}

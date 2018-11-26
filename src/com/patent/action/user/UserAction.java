@@ -1262,9 +1262,9 @@ public class UserAction extends DispatchAction {
 		map_m.put("userExp", userExp);
 		map_m.put("userExpChi", userExpChi);
 		if(taskStatus.equals(1) && applyUserId.equals(userId_m)){//当是移交申请时当前申请移交工作的人将不能再被选中
-			map_m.put("superFlag", true);
+			map_m.put("applyFlag", true);
 		}else{
-			map_m.put("superFlag", false);
+			map_m.put("applyFlag", false);
 		}
 		list_d.add(map_m);
 		if(userList.size() > 0){
