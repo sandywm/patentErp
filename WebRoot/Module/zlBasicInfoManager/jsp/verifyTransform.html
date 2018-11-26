@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlBasicInfoManager/css/verifyTranform.css" rel="stylesheet" type="text/css"/>
+  	<title>移交申请审核</title>
+</head>
+<body style="background:#fff;">
+	<div class="verifyBox">
+		<p id="applyCauseP"></p>
+		<div class="isPassWrap layui-form">
+			<input type="hidden" id="checkStatusInp"/>
+			<input type="hidden" id="newFzUserId"/>
+			<div class="verifyPass">
+				<div class="inpBox passBox">
+					<input type="radio" name="verifyInp" lay-filter="verifyFilter" value="1" title="通过"/>
+				</div>
+				<div class="changePeo">
+					<div>
+						<span class="currPeo"></span>
+						<i class="iconfont layui-extend-zhuanyi"></i>
+						<span id="ingChangePeo" class="ingChangePeo"><i class="layui-icon layui-icon-help hasBlink"></i></span>
+						<a href="javascript:void(0)" class="changePeoBtn">更换人员</a>
+					</div>
+				</div>
+			</div>
+			<div class="verifyNoPass">
+				<div class="inpBox noPassBox">
+					<input type="radio" name="verifyInp" lay-filter="verifyFilter" value="2" title="不通过"/>
+				</div>
+			</div>
+		</div>
+		<div class="btnWrap">
+			<button class="layui-btn layui-btn-normal saveBtns">保存</button>
+		</div>
+	</div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var applyCause = parent.globalTaskOpts.applyCause,applyName = parent.globalTaskOpts.applyName;
+		layui.use(['layer','jquery','form'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				form = layui.form;
+			var page = {
+				data : {
+					initClickFlag : false
+				},
+				init : function(){
+					this.onLoad();
+					this.bindEvent();
+				},
+				onLoad : function(){
+					$('#applyCauseP').html('申请原因：' + applyCause);
+					$('.currPeo').html(applyName);
+				},
+				bindEvent : function(){
+					$('.changePeoBtn').on('click',function(){
+						parent.clickOptsFlag = true;
+						parent.layer.open({
+							title:'更换人员',
+							type: 2,
+						  	area: ['900px', '510px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	content: '/Module/zlBasicInfoManager/jsp/selectLcFpStaff.html'
+						});	
+					});
+					$('.saveBtns').on('click',function(){
+						if($('#checkStatusInp').val() == ''){
+							layer.msg('请选择审核状态', {icon:5,anim:6,time:1500});
+						}else if($('#checkStatusInp').val() == 1 && $('#newFzUserId').val() == ''){
+							layer.msg('请选择一个更换人员', {icon:5,anim:6,time:1500});
+						}else{
+							layer.load('1');
+							$.ajax({
+		  						type:'post',
+						        async:false,
+						        dataType:'json',
+						        data : {yjId:parent.globalTaskOpts.yjId,checkStatus:$('#checkStatusInp').val(),newFzUserId:$('#newFzUserId').val()},
+						        url:'/zlm.do?action=dealApplyYjInfo',
+						        success:function (json){
+						        	layer.closeAll('loading');
+						        	if(json['result'] == 'success'){
+						        		layer.msg('审核成功',{icon:1,time:1000},function(){
+						        			var index= parent.layer.getFrameIndex(window.name);
+						        			parent.addZlFlag = true;
+						        			parent.layer.close(index);
+						        		});
+						        	}else if(json['result'] == 'infoChanged'){
+						        		layer.msg('状态已发生变化，不能进行修改', {icon:5,anim:6,time:1500});
+						        	}else if(json['result'] == 'noAbility'){
+						        		layer.msg('抱歉，您暂无任务移交审核的权限', {icon:5,anim:6,time:1500});
+						        	}
+						        }
+		  					});
+						}
+					});
+				}
+			};
+			form.on('radio(verifyFilter)', function(data){
+				$('#checkStatusInp').val(data.value);
+				if(data.value == 1){
+					$('.passBox').stop().animate({'top':0},260,function(){
+						$('.changePeo').stop().show().animate({'opacity':1},260);
+					});
+					page.data.initClickFlag = true;
+				}else{
+					if(page.data.initClickFlag){
+						$('.changePeo').stop().animate({'opacity':0},260,function(){
+							$('.changePeo').hide();
+							$('.passBox').stop().animate({'top':45},260);
+							$('#newFzUserId').val('');
+							$('#ingChangePeo').html('<i class="layui-icon layui-icon-help hasBlink"></i>');
+						});
+					}
+				}
+			}); 
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>

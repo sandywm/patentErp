@@ -1,0 +1,38 @@
+@import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
+.titStrong{
+	width:100%;
+	height:35px;
+	line-height:35px;
+	display:block;
+	text-indent:25px;
+	font-size:15px;
+	color:#F47837;
+	font-weight:normal;
+	border-bottom:1px solid #e6e6e6;
+	margin-bottom:10px;
+	position:relative;
+}
+.titStrong i{
+	font-size:22px;
+	position:absolute;
+	left:-25px;
+	top:0;
+}
+.hasPos{
+	position:relative;
+}
+.diyInp{
+	width:380px;
+	position:absolute;
+	left:65px;
+	top:1px;
+	display:none;
+}
+.hasAlign{
+	width:100%;
+	text-align:center;
+}
+.subBtn{
+	width:100px;
+	display:inline-block;
+}
