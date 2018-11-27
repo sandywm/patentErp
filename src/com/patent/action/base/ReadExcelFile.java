@@ -114,8 +114,6 @@ public class ReadExcelFile {
 //		String version = last_1.substring(0, lastIndex_1);
 //		String suffix = last_1.substring(lastIndex_1+1, last_1.length());
 //		System.out.println(version + "       "+suffix);
-		Double aa = 1.5;
-		Double bb = 1.50;
 //		File file = new File("e:\\发明-补正通知书1.zip");
 //		 if (file.exists()) { //文件存在时          
 //			 System.out.println(true);
@@ -126,13 +124,6 @@ public class ReadExcelFile {
 //		 File file = new File("D:\\Program Files\\Apache Software Foundation\\Tomcat 7.0\\webapps\\patentErp\\Module\\uploadFile\\appUser\\1\\1\\外观设计-受理+费用减缓你通知书.zip");
 //		 System.out.println(file.getName());
 //		 new FileInputStream(file);
-		 String aaa = "2017301654572";
-		 Integer c = 3;
-		 Integer d = 3;
-		 Double a = 5.0;
-		 String bbb = "tongguo:";
-		 String ccc = ":kehuFail";
-		 System.out.println(a != 5);
 		 
 		 
 		// 第一步，创建一个webbook，对应一个Excel文件  
