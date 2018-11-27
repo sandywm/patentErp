@@ -70,6 +70,7 @@
 					        <tr><th>附件名</th>
 					        <th>大小</th>
 					        <th>状态</th>
+					        <th>进度</th>
 					        <th>操作</th>
 					      </tr></thead>
 					      <tbody id="upLoadFileList"></tbody>
@@ -88,18 +89,19 @@
 	</div>
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
-	<script src="/plugins/frame/js/upLoadFiles.js"></script>
 	<script type="text/javascript">
 		var globalZlId = parent.globalZlId,zlTit = parent.globalZlTit,taskDetailOpt='',upSuccSrcArray = [],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
-			common : 'common'
-		}).use(['layer','rate','form','common'],function(){
+			common : 'common',
+			globalUpload: 'upLoadFiles'
+		}).use(['layer','rate','form','common','upLoadFiles'],function(){
 			var layer = layui.layer,
 				rate = layui.rate,
 				form = layui.form,
-				common = layui.common;
+				common = layui.common,
+				globalUpload = layui.upLoadFiles;
 			var page = {
 				data : {
 					cpyDate : '',
@@ -617,14 +619,10 @@
 				}
 			};
 			function selectFileUpload(){
-				var upLoadFileList = $('#upLoadFileList'),url = '';
-				/*if(addEditZlOpts == 'editZlOpts'){//编辑已增加的专利
-					url = '/upload.do?action=uploadFile&ajId=' + zlId + '&fileType=dg';
-				}else{*///增加专利
-					url = '/upload.do?action=uploadFile&ajId='+ globalZlId +'&fileType=fj';
-				//}
-				$('#selFileBtn').upfile(url);
-				if(/*addEditZlOpts == 'editZlOpts' &&*/ $('.deleteBtn_edit').length > 0){//表示编辑的时候执行附件删除动作
+				var upLoadFileList = $('#upLoadFileList'),url = '',fileType = 'doc|docx|wps|xls|xlsx|txt|pdf|pptx|ppt|zip|rar|dwg|eml|jpg|png|bmp|gif|jpeg|vsd|vsdx';
+				url = '/upload.do?action=uploadFile&ajId='+ globalZlId +'&fileType=fj';
+				globalUpload.uploadFiles(url,5,fileType);
+				if($('.deleteBtn_edit').length > 0){//表示编辑的时候执行附件删除动作
 					$('.deleteBtn_edit').on('click',function(){
 						$(this).parent().parent().remove();
 						if($('.deleteBtn_edit').length == 0){

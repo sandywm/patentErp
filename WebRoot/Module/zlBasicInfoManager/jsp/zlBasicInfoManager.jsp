@@ -333,7 +333,7 @@
 							{field : 'taskComDate', title: '任务完成日期', width:200, align:'center'},
 							{field : 'taskEdateCpy', title: '任务完成期限(机构)', width:200, align:'center'},
 							{field : 'taskEdateGf', title: '任务完成期限(官方)', width:200, align:'center'},
-							{field : '', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
+							{field : 'sets', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
 								if(taskStaVal == 0){
 									var strHtml = '';
 									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
@@ -352,6 +352,9 @@
 						]],
 						done : function(res){
 							callBackDone(res);
+							if(taskStaVal == 1){
+								$('.layui-table-box').find('[data-field="sets"]').css('display','none');
+							}
 						}
 					});
 				}else if(lqStatusVal == 5){

@@ -7,6 +7,7 @@
 	<meta http-equiv="description" content="专利申请系统首页"/>
 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
 	<link href="/css/diyReset.css" rel="stylesheet" type="text/css"/>
+	<link href="/css/common.css" rel="stylesheet" type="text/css"/>
 	<link href="/css/index.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/layui/css/modules/layui-icon-extend/iconfont.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>

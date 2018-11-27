@@ -139,15 +139,15 @@
 	</div>
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
-	<script src="/plugins/frame/js/upLoadFiles.js"></script>
 	<script type="text/javascript">
 		var num=0,tmpEwyqIdArray=[],globalFeeId=0,zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
 		    common: 'common',// 表示模块文件的名字
-		    commonScrollBar: 'scrollBar'// 表示模块文件的名字
-		}).use(['layer','form','laydate','table','element','common','scrollBar','rate'],function(){
+		    commonScrollBar: 'scrollBar',// 表示模块文件的名字
+		    globalUpload: 'upLoadFiles'
+		}).use(['layer','form','laydate','table','element','common','upLoadFiles','scrollBar','rate'],function(){
 			var layer = layui.layer,
 				form = layui.form,
 				element = layui.element,
@@ -155,7 +155,8 @@
 				common = layui.common,
 				table = layui.table,
 				commonScrollBar = layui.scrollBar,
-				rate = layui.rate;
+				rate = layui.rate,
+				globalUpload = layui.upLoadFiles;
 			//tab点击事件的监听
   			element.on('tab(zlDetailFilter)', function(data){
   				if(data.index == 1){
@@ -515,9 +516,12 @@
 								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length == 0){
 									//表示用户选择了文件并且全部上传了
 									isHasUpLoadFlag = true;
-								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0){
-									//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传
+								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0 && errorTypeFlag == false){
+									//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传(格式都是正确的时候)
 									isHasUpLoadFlag = false;
+								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0 && errorTypeFlag == true){
+									//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传(格式有部分不正确，用户如果没有点击删除不正确按钮，点击保存直接保存)
+									isHasUpLoadFlag = true;
 								}
 								if(isHasUpLoadFlag){
 									upSuccSrcArray.length = 0;
@@ -536,7 +540,7 @@
 								//表示增加专利
 								var url = '/zlm.do?action=addZlData';	
 			   				}
-			   				console.log(ajTitleVal + "--" +zlTypeInpVal + "-" + ajFieldIdVal + "-" + ajSqAddressVal + "--" + ajSqrIdVal + "-" + ajLxrIdVal+"-"+ajFmrIdVal+"-"+yxqDetailInpVal+"-"+ajEwyqIdVal+"-"+ajRemarkVal+"-"+$('#fujianInp').val()+"-"+cpyDateInpVal+"-pubZlId=="+pubZlIdInpVal + "-----sqrNmme----" + sqrName)
+			   				//console.log(ajTitleVal + "--" +zlTypeInpVal + "-" + ajFieldIdVal + "-" + ajSqAddressVal + "--" + ajSqrIdVal + "-" + ajLxrIdVal+"-"+ajFmrIdVal+"-"+yxqDetailInpVal+"-"+ajEwyqIdVal+"-"+ajRemarkVal+"-"+$('#fujianInp').val()+"-"+cpyDateInpVal+"-pubZlId=="+pubZlIdInpVal + "-----sqrNmme----" + sqrName)
 			   				var field = {ajTitle:escape(ajTitleVal),
 												ajType:zlTypeInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 												ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
@@ -1143,7 +1147,7 @@
 						strHtml += '<div class="layui-form-item"><label class="layui-form-label">案件附件</label><input id="fujianInp" name="zlUpCl" type="hidden"/>';
 					}
 					strHtml += '<div class="layui-input-block"><table class="layui-table"><thead>';
-					strHtml += '<tr><th>附件名</th><th>大小</th><th>状态</th><th>操作</th></tr></thead>';
+					strHtml += '<tr><th>附件名</th><th>大小</th><th>状态</th><th>进度</th><th>操作</th></tr></thead>';
 					strHtml += '<tbody id="upLoadFileList">';
 					var zlUpClArray = json.upFile;
 					for(var i=0;i<zlUpClArray.length;i++){
@@ -1151,6 +1155,9 @@
 						strHtml += '<td>'+ zlUpClArray[i].fileName +'</td>';
 						strHtml += '<td>'+ zlUpClArray[i].fileSize +'</td>';
 						strHtml += '<td><span style="color: #5FB878;">上传成功</span></td>';
+						strHtml += '<td style="width:120px;"><div class="layui-progress layui-progress-big" lay-showpercent="true">';
+						strHtml += '<div class="layui-progress-bar progressBarBg" lay-percent="100%" style="width:100%;"><span class="layui-progress-text">100%</span></div></div>';
+						strHtml += '</td>';
 						strHtml += '<td>';
 						strHtml += '<input class="uploadInpHid" name="hasUpSuccInp" value="'+ zlUpClArray[i].upPath +'" type="hidden"/>';
 						if(this.data.upZlFlag){
@@ -1715,13 +1722,13 @@
 				}
 			});
 			function selectFileUpload(){
-				var upLoadFileList = $('#upLoadFileList'),url = '';
+				var upLoadFileList = $('#upLoadFileList'),url = '',fileType = 'doc|docx|wps|xls|xlsx|txt|pdf|pptx|ppt|zip|rar|dwg|eml|jpg|png|bmp|gif|jpeg|vsd|vsdx';
 				if(addEditZlOpts == 'editZlOpts'){//编辑已增加的专利
 					url = '/upload.do?action=uploadFile&ajId=' + zlId + '&fileType=dg';
 				}else{//增加专利
 					url = '/upload.do?action=uploadFile&ajId=0&fileType=dg';
 				}
-				$('#selFileBtn').upfile(url);
+				globalUpload.uploadFiles(url,5,fileType);
 				if(addEditZlOpts == 'editZlOpts' && $('.deleteBtn_edit').length > 0){//表示编辑的时候执行附件删除动作
 					$('.deleteBtn_edit').on('click',function(){
 						$(this).parent().parent().remove();
@@ -1730,7 +1737,6 @@
 						}
 					});
 				}
-				//downFile();
 			}
 			$(function(){
 				page.init();				

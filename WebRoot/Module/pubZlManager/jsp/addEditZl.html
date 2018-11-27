@@ -49,6 +49,7 @@
 			        <tr><th>附件名</th>
 			        <th>大小</th>
 			        <th>状态</th>
+			        <th>进度</th>
 			        <th>操作</th>
 			      </tr></thead>
 			      <tbody id="upLoadFileList"></tbody>
@@ -64,13 +65,18 @@
 	</div>
 	<script src="/plugins/jquery/jquery-1.7.2.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
-	<script src="/plugins/frame/js/upLoadFiles.js"></script>
 	<script type="text/javascript">
 		var upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,zlId=0,pubId = parent.globalPubId;
-		layui.use(['layer','form'],function(){
+		layui.config({
+			base: '/plugins/frame/js/'
+		}).extend({ //设定组件别名
+			common: 'common',// 表示模块文件的名字
+		    globalUpload: 'upLoadFiles'// 表示模块文件的名字
+		}).use(['layer','form','upLoadFiles','common'],function(){
 			var layer = layui.layer,
-				//$ = layui.jquery,
-				form = layui.form;
+				form = layui.form,
+				common = layui.common,
+				globalUpload = layui.upLoadFiles;
 			var page = {
 				data : {
 					zlCheckStatus : 0
@@ -123,9 +129,12 @@
 								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length == 0){
 									//表示用户选择了文件并且全部上传了
 									isHasUpLoadFlag = true;
-								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0){
-									//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传
+								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0 && errorTypeFlag == false){
+									//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传(格式都是正确的时候)
 									isHasUpLoadFlag = false;
+								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0 && errorTypeFlag == true){
+									//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传(格式有部分不正确，用户如果没有点击删除不正确按钮，点击保存直接保存)
+									isHasUpLoadFlag = true;
 								}
 								if(isHasUpLoadFlag){
 									upSuccSrcArray.length = 0;
@@ -242,7 +251,7 @@
 					//<input id="fujianInp" name="zlUpCl" value="'+ json.zlUpCl +'" type="hidden"/>
 					strHtml += '<label class="layui-form-label"></label><input id="fujianInp" name="zlUpCl" value="" type="hidden"/>';
 					strHtml += '<div class="layui-input-block">';
-					strHtml += '<table class="layui-table"><thead><tr><th>附件名</th><th>大小</th><th>状态</th><th>操作</th></tr></thead>';
+					strHtml += '<table class="layui-table"><thead><tr><th>附件名</th><th>大小</th><th>状态</th><th>进度</th><th>操作</th></tr></thead>';
 					strHtml += '<tbody id="upLoadFileList">';
 					var zlUpClArray = json.zlUpCl;
 					for(var i=0;i<zlUpClArray.length;i++){
@@ -250,7 +259,10 @@
 						strHtml += '<td>'+ zlUpClArray[i].fileName +'</td>';
 						strHtml += '<td>'+ zlUpClArray[i].fileSize +'</td>';
 						strHtml += '<td><span style="color: #5FB878;">上传成功</span></td>';
-						strHtml += '<td>';
+						strHtml += '<td style="width:120px;"><div class="layui-progress layui-progress-big" lay-showpercent="true">';
+						strHtml += '<div class="layui-progress-bar progressBarBg" lay-percent="100%" style="width:100%;"><span class="layui-progress-text">100%</span></div></div>';
+						strHtml += '</td>';
+						strHtml += '<td>';	
 						strHtml += '<input class="uploadInpHid" name="hasUpSuccInp" value="'+ zlUpClArray[i].zlUpClPath +'" type="hidden"/>';
 						strHtml += '<button class="layui-btn layui-btn-xs layui-btn-danger deleteBtn deleteBtn_edit">删除</button>';
 						strHtml += '<button class="layui-btn layui-btn-xs downloadBtn" downFilePath="'+ zlUpClArray[i].downFilePath +'">下载</button></td>';
@@ -267,21 +279,24 @@
 					$('#addNewZl').html(strHtml);
 					form.render();
 					selectFileUpload();//编辑时渲染结构完成调用上传方法
+					$('.downloadBtn').on('click',function(){
+						var downFilePath = $(this).attr('downFilePath');
+						common.downFiles(downFilePath);
+					});
 				}
 			};
-			
 			form.on('radio(zlTypeFilter)', function(data){
 				var value = data.value;
 				$('#zlTypeInp').val(value);
 			});
 			function selectFileUpload(){
-				var upLoadFileList = $('#upLoadFileList'),url = '';
+				var upLoadFileList = $('#upLoadFileList'),url = '',fileType = 'doc|docx|wps|xls|xlsx|txt|pdf|pptx|ppt|zip|rar|dwg|eml|jpg|png|bmp|gif|jpeg|vsd|vsdx';
 				if(addEditZlOpts == 'editZlOpts'){//编辑已增加的专利
 					url = '/upload.do?action=uploadFile&ajId=' + zlId;
 				}else{//增加专利
 					url = '/upload.do?action=uploadFile&ajId=0';
 				}
-				$('#selFileBtn').upfile(url);
+				globalUpload.uploadFiles(url,5,fileType);
 				if(addEditZlOpts == 'editZlOpts' && $('.deleteBtn_edit').length > 0){//表示编辑的时候执行附件删除动作
 					$('.deleteBtn_edit').on('click',function(){
 						$(this).parent().parent().remove();
@@ -290,21 +305,6 @@
 						}
 					});
 				}
-				$('.downloadBtn').on('click',function(){
-					var downFilePath = $(this).attr('downFilePath');
-					var form = $("<form>");   //定义一个form表单
-					form.attr('style', 'display:none'); //在form表单中添加查询参数
-					form.attr('target', '');
- 					form.attr('method', 'post');
-					form.attr('action', "/zlm.do?action=downFile");
-					var input1 = $('<input>');
-					input1.attr('type', 'hidden');
-					input1.attr('name', 'fileUrl');
-					input1.attr('value', escape(downFilePath));
-					$('body').append(form);  //将表单放置在web中 
-					form.append(input1);   //将查询参数控件提交到表单上
-            		form.submit();
-				});
 			}
 			$(function(){
 				page.init();

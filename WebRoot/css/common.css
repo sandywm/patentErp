@@ -95,3 +95,9 @@
     -ms-animation: blink 1s linear infinite;
     -o-animation: blink 1s linear infinite;
 }
+.reloadBtn_sel{
+	margin-right:10px;
+}
+.progressBarBg{
+	background:#5FB878;
+}
