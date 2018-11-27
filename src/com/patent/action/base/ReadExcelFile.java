@@ -3,6 +3,7 @@ package com.patent.action.base;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -10,8 +11,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+
 import com.alibaba.fastjson.JSON;
 import com.patent.tools.CurrentTime;
+import com.patent.util.WebUrl;
 
 import jxl.*;
 import jxl.read.biff.BiffException;
@@ -123,5 +133,73 @@ public class ReadExcelFile {
 		 String bbb = "tongguo:";
 		 String ccc = ":kehuFail";
 		 System.out.println(a != 5);
+		 
+		 
+		// 第一步，创建一个webbook，对应一个Excel文件  
+	        HSSFWorkbook wb = new HSSFWorkbook();  
+	        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
+	        HSSFSheet sheet = wb.createSheet("费用清单");  
+	        //设置横向打印
+	        sheet.getPrintSetup().setLandscape(true);
+	        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
+	        HSSFRow row = sheet.createRow(0);  
+	        // 第四步，创建单元格，并设置值表头 设置表头居中  
+	        HSSFCellStyle style = wb.createCellStyle();  
+	        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+	        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER); 
+	        
+	        HSSFCellStyle style_error = wb.createCellStyle();  
+	        style_error.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+	        style_error.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER); 
+	        
+	        HSSFFont font_title = wb.createFont();    
+            font_title.setFontName("宋体");    
+            font_title.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
+            font_title.setFontHeightInPoints((short) 12);//设置字体大小  (备注)
+            font_title.setColor(HSSFColor.RED.index);
+            style_error.setFont(font_title);
+            
+            HSSFCell cell = row.createCell(0); 
+	        cell.setCellValue("费用清单");
+	        cell.setCellStyle(style); 
+	        
+	        cell = row.createCell(1); 
+	        cell.setCellValue("费用明细");
+	        cell.setCellStyle(style); 
+	        
+	        row = sheet.createRow(1);
+	        cell = row.createCell(0); 
+	        cell.setCellStyle(style_error);  
+	        cell.setCellValue("aaaa"); 
+	        
+	        cell = row.createCell(1); 
+	        cell.setCellStyle(style_error);  
+	        cell.setCellValue("aaaa"); 
+	        
+	        row = sheet.createRow(2);
+	        cell = row.createCell(0); 
+	        cell.setCellStyle(style);  
+	        cell.setCellValue("bbbb");
+	        
+	        cell = row.createCell(1); 
+	        cell.setCellStyle(style);  
+	        cell.setCellValue("aaaa"); 
+	        
+	        String fileName = "专利费用清单_"+CurrentTime.getStringTime()+".xls";
+	        String folder = "d:\\"+fileName;
+//        	File file = new File(folder);
+//			if(!file.exists()){
+//				file.mkdirs();
+//			}
+            FileOutputStream fout = new FileOutputStream(folder);  
+            try {
+				wb.write(fout);
+				 fout.close();  
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}  
+           
+		 
 	}
 }
