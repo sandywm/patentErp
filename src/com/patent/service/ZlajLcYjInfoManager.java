@@ -88,4 +88,17 @@ public interface ZlajLcYjInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajLcYjInfoTb> listUnCheckInfoByOpt(String lcTask,Integer zlId)throws WEBException;
+	
+	/**
+	 * 获取指定专利、申请人、流程任务的流程移交实体（未审核）
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-11-27 下午08:40:06
+	 * @param applyUserId 申请人
+	 * @param lcTask 流程任务
+	 * @param zlId 专利编号
+	 * @return
+	 * @throws WEBException
+	 */
+	ZlajLcYjInfoTb getEntityByOpt(Integer applyUserId,String lcTask,Integer zlId)throws WEBException;
 }

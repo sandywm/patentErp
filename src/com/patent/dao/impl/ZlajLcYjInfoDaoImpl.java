@@ -89,4 +89,18 @@ public class ZlajLcYjInfoDaoImpl implements ZlajLcYjInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public ZlajLcYjInfoTb findEntityByOpt(Session sess, Integer applyUserId,
+			String lcTask, Integer zlId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajLcYjInfoTb as lcyj where lcyj.lcName = '"+lcTask+"'";
+		hql += " and lcyj.lcmx.zlajLcInfoTb.zlajMainInfoTb.id = "+zlId + " and lcyj.checkStatus = 0";
+		hql += " and lcyj.user.id = "+applyUserId;
+		List<ZlajLcYjInfoTb> yjList = sess.createQuery(hql).list();
+		if(yjList.size() > 0){
+			return yjList.get(0);
+		}
+		return null;
+	}
+
 }

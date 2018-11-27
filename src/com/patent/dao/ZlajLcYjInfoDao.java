@@ -83,4 +83,17 @@ public interface ZlajLcYjInfoDao {
 	 * @return
 	 */
 	List<ZlajLcYjInfoTb> findUnCheckInfoByOpt(Session sess,String lcTask,Integer zlId);
+	
+	/**
+	 * 获取指定专利、申请人、流程任务的流程移交实体（未审核）
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-11-27 下午08:35:31
+	 * @param sess
+	 * @param applyUserId 申请人
+	 * @param lcTask 流程任务
+	 * @param zlId 专利编号
+	 * @return
+	 */
+	ZlajLcYjInfoTb findEntityByOpt(Session sess,Integer applyUserId,String lcTask,Integer zlId);
 }

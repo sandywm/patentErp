@@ -146,4 +146,21 @@ public class ZlajLcYjInfoManagerImpl implements ZlajLcYjInfoManager{
 		}
 	}
 
+	@Override
+	public ZlajLcYjInfoTb getEntityByOpt(Integer applyUserId, String lcTask,
+			Integer zlId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			yjDao = (ZlajLcYjInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_YJ_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return yjDao.findEntityByOpt(sess, applyUserId, lcTask, zlId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定专利、申请人、流程任务的流程移交实体（未审核）信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }
