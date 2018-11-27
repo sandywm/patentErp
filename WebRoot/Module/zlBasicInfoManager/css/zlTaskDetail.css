@@ -1,7 +1,7 @@
 @import url("../../../css/common.css");
 @import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
 body{
-	margin-top:42px;
+	margin-top:50px;
 }
 .layui-card-header{
 	width:100%;
@@ -475,44 +475,4 @@ body{
 }
 .hasMinHei{
 	min-height:100px;
-}
-
-
-@keyframes blink{
-  0% {opacity: 1;}
-  50%{opacity: 1;}
-  50.01%{opacity: 0;} /* 注意这里定义50.01%立刻透明度为0，可以设置闪烁效果 */
-  100%{opacity: 0;}
-}
-/* 添加兼容性前缀 */
-@-webkit-keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 1; }
-    50.01% { opacity: 0; }
-    100% { opacity: 0; }
-}
-@-moz-keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 1; }
-    50.01% { opacity: 0; }
-    100% { opacity: 0; }
-}
-@-ms-keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 1; }
-    50.01% { opacity: 0; }
-    100% { opacity: 0; }
-}
-@-o-keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 1; }
-    50.01% { opacity: 0; }
-    100% { opacity: 0; }
-}
-.hasBlink {
-    animation: blink 1.5s linear infinite; 
-    -webkit-animation: blink 1.5s linear infinite;
-    -moz-animation: blink 1s linear infinite;
-    -ms-animation: blink 1s linear infinite;
-    -o-animation: blink 1s linear infinite;
 }

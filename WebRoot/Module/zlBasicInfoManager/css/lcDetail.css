@@ -441,3 +441,24 @@
 .oddColor{
 	background:#f0f0f0;
 }
+.hasNoTxt{
+	color:#999;
+}
+.notPassTxt{
+	color:#FF5722;
+	position:relative;
+	padding-left:22px;
+}
+.notPassTxt i{
+	font-size:18px;
+	position:absolute;
+	left:0;
+	top:0;
+	font-weight:600;
+}
+.cusPassTxt{
+	color:#1e923f;
+}
+.cusNoPassTxt{
+	color:#FF5722;
+}

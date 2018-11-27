@@ -147,14 +147,15 @@
 		}).extend({ //设定组件别名
 		    common: 'common',// 表示模块文件的名字
 		    commonScrollBar: 'scrollBar'// 表示模块文件的名字
-		}).use(['layer','form','laydate','table','element','common','scrollBar'],function(){
+		}).use(['layer','form','laydate','table','element','common','scrollBar','rate'],function(){
 			var layer = layui.layer,
 				form = layui.form,
 				element = layui.element,
 				laydate = layui.laydate,
 				common = layui.common,
 				table = layui.table,
-				commonScrollBar = layui.scrollBar;
+				commonScrollBar = layui.scrollBar,
+				rate = layui.rate;
 			//tab点击事件的监听
   			element.on('tab(zlDetailFilter)', function(data){
   				if(data.index == 1){
@@ -934,7 +935,6 @@
 					//案件技术领域
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>案件技术领域</label><div class="layui-input-block fixHeiDiv clearfix">';
 					strHtml += '<div id="fieldBox" class="multiBox fl">';
-					//var strJsId = '';
 					for(var i=0;i<json.jsFieldInfo.length;i++){
 						if(json.jsFieldInfo[i].checked){
 							strHtml += '<p id="fieldId_'+ json.jsFieldInfo[i].jsId +'" jffieldattrid="'+ json.jsFieldInfo[i].jsId +'" class="delFieldBtn"><span>'+ json.jsFieldInfo[i].jsName +'</span><i class="layui-icon layui-icon-close"></i></p>';	
@@ -1391,7 +1391,7 @@
 					strHtml += '<ul>';
 					for(var i=0,iLen=lcInfo.length;i<iLen;i++){
 						if(lcInfo[i].comDate != ''){//表示完成
-							strHtml += '<li class="viewMxBtn" lcId="'+ lcInfo[i].lcId +'" lcNo = "'+ lcInfo[i].lcNo +'" lcName="'+ lcInfo[i].lcName +'"><p class="oneWid viewMxBtn ellip"><i class="layui-icon layui-icon-ok statusIcon_com" title="已完成"></i>'+ lcInfo[i].lcName +'</p>';
+							strHtml += '<li class="viewMxBtn" lcId="'+ lcInfo[i].lcId +'" lcNo = "'+ lcInfo[i].lcNo +'" lcName="'+ lcInfo[i].lcName +'"><p class="oneWid ellip"><i class="layui-icon layui-icon-ok statusIcon_com" title="已完成"></i>'+ lcInfo[i].lcName +'</p>';
 						}else{
 							strHtml += '<li class="viewMxBtn" lcId="'+ lcInfo[i].lcId +'" lcNo = "'+ lcInfo[i].lcNo +'" lcName="'+ lcInfo[i].lcName +'"><p class="oneWid ellip"><i class="iconfont layui-extend-jinhangzhong statusIcon" title="进行中"></i>'+ lcInfo[i].lcName +'</p>';
 						}
@@ -1419,7 +1419,7 @@
 				loadLxMxDetail : function(json,lcNo){
 					var mxInfo = json.mxInfo;
 					var strHtml = '';
-					if(lcNo == '2'){
+					if(lcNo == 2){
 						strHtml += '<ul id="mxDetailConUl">';
 						for(var i=0,iLen = mxInfo.length;i<iLen;i++){
 							strHtml += '<li><p>'+ mxInfo[i].mxName +'</p>';
@@ -1457,13 +1457,57 @@
 									strHtml += '<p><i class="layui-icon layui-icon-file"></i>'+ upFileDetail[j].upFileName +' <a href="javascript:void(0)" class="downLoadBtn layui-btn layui-btn-xs" downFilePath="'+ upFileDetail[j].downFilePath +'">下载</a></p>';
 								}
 							}else{
-								strHtml += '<p>暂无附件</p>';
+								strHtml += '<p class="hasNoTxt">暂无附件</p>';
 							}
 							strHtml += '</li>';
+							if(lcNo >=4 && lcNo < 5 ){//增加专利审核审核意见
+								strHtml += '<li class="otherLi hasFlex"><strong>审核意见：</strong>';
+								if(mxInfo[i].lcPjScore == 0){//审核未通过
+									strHtml += '<p class="notPassTxt"><i class="layui-icon layui-icon-face-cry"></i>未通过，退回修改</p>';
+								}else{
+									var lcScoreVal = 0;
+									if(mxInfo[i].lcPjScore == -1){
+										strHtml += '<p class="hasNoTxt">暂未审核</p>';
+									}else if(mxInfo[i].lcPjScore == 1){
+										lcScoreVal = 1;
+										strHtml += '<p id="judgeStar">一般</p>';
+									}else if(mxInfo[i].lcPjScore == 2){
+										lcScoreVal = 2;
+										strHtml += '<p id="judgeStar">良</p>';
+									}else if(mxInfo[i].lcPjScore == 5){
+										lcScoreVal = 5;
+										strHtml += '<p id="judgeStar">优秀</p>';
+									}
+								}
+								strHtml += '</li>';
+							}else if(lcNo >=5 && lcNo < 6){//客户确认增加客户审核意见
+								strHtml += '<li class="otherLi hasFlex"><strong>审核意见：</strong>';
+								if(mxInfo[i].cusCheckStatus == '客户确认通过'){
+									strHtml += '<p class="cusPassTxt">客户确认通过</p>';
+								}else{
+									strHtml += '<p class="cusNoPassTxt">客户审核未通过</p>';
+								}
+								strHtml += '</li>';
+							}
 							strHtml += '<li class="otherLi noFlex clearfix"><strong>备注：</strong><p>'+ mxInfo[i].mxRemark +'</p></li>';
 						}
 						strHtml += '</ul>';
 						$('#mxDetailCon').html(strHtml);
+						rate.render({
+						    elem: '#judgeStar'
+						    ,value: lcScoreVal
+						    ,length:3
+						    ,text: true
+						    ,readonly: true
+						    ,setText: function(value){ //自定义文本的回调
+						      var arrs = {
+						        '1': '一般'
+						        ,'2': '良'
+						        ,'3': '优'
+						      };
+						      this.span.text(arrs[value]);
+						    }
+						});
 						$('.downLoadBtn').on('click',function(){
 							var downFilePath = $(this).attr('downFilePath');
 							common.downFiles(downFilePath);
@@ -1692,23 +1736,6 @@
 				page.init();				
 			});
 		});
-		/*function downFile(downFilePath){
-			//layer.load('1');
-			alert(downFilePath)
-			var form = $("<form>");   //定义一个form表单
-			form.attr('style', 'display:none'); //在form表单中添加查询参数
-			form.attr('target', '');
-			form.attr('method', 'post');
-			form.attr('action', "/zlm.do?action=downFile");
-			var input1 = $('<input>');
-			input1.attr('type', 'hidden');
-			input1.attr('name', 'fileUrl');
-			input1.attr('value', escape(downFilePath));
-			$('body').append(form);  //将表单放置在web中 
-			form.append(input1);   //将查询参数控件提交到表单上
-          	form.submit();
-          	//layer.closeAll('loading');
-		}*/
 		//公共删除已添加的方法（技术领域、申请人）
 		function delHasAddMethod(obj,opts){
 			var tmpArray = [];

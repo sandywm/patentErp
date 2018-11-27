@@ -255,7 +255,6 @@ body{
 .verifyTxt p span{
 	left:0;
 	top:16px;
-	background:pink;
 }
 .verifyTxt p span.noVerifySpan{
 	background:#c2c2c2;

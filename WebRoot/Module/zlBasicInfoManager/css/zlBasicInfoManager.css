@@ -667,3 +667,56 @@ body{
 	top:0;
 	font-weight:600;
 }
+.hasColor{
+	color:#FF5722;
+}
+.layui-layer-title{
+	padding:0 35px 0 20px !important;
+}
+.verifyTxt{
+	height:100%;
+	line-height:40px;
+	position:absolute;
+	left:310px;
+	top:0px;
+	z-index:100;
+	opacity:.8;
+}
+.verifyTxt p{
+	float:left;
+	margin-right:15px;
+	position:relative;
+	padding-left:13px;
+	color:#999;
+}
+.notCheckStatus,
+.hasCheckStatus,
+.noPasCheckStatus,
+.verifyTxt p span{
+	width:8px;
+	height:8px;
+	border-radius:50%;
+	position:absolute;
+}
+.verifyTxt p span{
+	left:0;
+	top:16px;
+}
+.notCheckStatus,
+.hasCheckStatus,
+.noPasCheckStatus{
+	left:5px;
+	top:10px;
+}
+.verifyTxt p span.noVerifySpan,
+.notCheckStatus{
+	background:#c2c2c2;
+}
+.verifyTxt p span.pasVerifySpan,
+.hasCheckStatus{
+	background:#5FB878;
+}
+.verifyTxt p span.noPasVerifySpan,
+.noPasCheckStatus{
+	background:#FF5722;
+}

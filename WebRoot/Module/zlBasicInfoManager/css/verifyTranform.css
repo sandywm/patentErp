@@ -1,0 +1,91 @@
+@import url("../../../css/common.css");
+@import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
+
+#applyCauseP{
+	padding:10px 0;
+	background:#f0f0f0;
+	text-indent:10px;
+	margin-bottom:10px;
+}
+.isPassWrap{
+	height:130px;
+	position:relative;
+}
+.verifyPass,
+.verifyNoPass{
+	float:left;
+	width:50%;
+	height:100%;
+	box-sizing:border-box;
+	position:relative;
+}
+.verifyPass{
+	border-right:1px solid #e6e6e6;
+}
+.inpBox{
+	width:100px;
+	position:absolute;
+	left:50%;
+	margin-left:-55px;
+}
+.passBox{
+	top:45px;
+}
+.noPassBox{
+	top:45px;
+}
+.changePeo{
+	width:100%;
+	text-align:center;
+	position:absolute;
+	left:0;
+	top:55px;
+	display:none;
+	opacity:0;
+	filter:alpha(opacity=0);
+}
+.changePeo div{
+	color:#666;
+	height:24px;
+	line-height:24px;
+}
+.changePeo div span{
+	float:left;
+	display:inline-block;
+	padding:0px 6px;
+}
+.changePeo div span.currPeo{
+	color:#20a0ff;
+	border:1px solid rgba(32,160,255,.2);
+	background:rgba(32,160,255,.1);
+	margin-left:25px;
+	opacity:.7;
+	filter:alpha(opacity=70)
+}
+.changePeo div span.ingChangePeo{
+	border:1px dashed rgba(32,160,255,.6);
+	background:rgba(32,160,255,.1);
+	height:24px;
+	color:#20a0ff;
+}
+.changePeo div i.layui-extend-zhuanyi{
+	font-size:18px;
+	float:left;
+	margin:0 3px;
+}
+.changePeo div a{
+	float:left;
+	margin-left:10px;
+	color:#20a0ff;
+}
+.changePeo div a:hover{
+	color:#FF5722;
+}
+.btnWrap{
+	text-align:center;
+	margin-top:10px;
+}
+.saveBtns{
+	width:100px;
+	display:inline-block;
+}

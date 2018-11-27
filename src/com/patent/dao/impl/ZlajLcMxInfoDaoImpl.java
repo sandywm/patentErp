@@ -91,7 +91,7 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 		}
 		if(comStatus.equals(0)){//未完成
 			//需要获取所有没有移交任务或者移交审核未通过的
-			hql += " and lcmx.lcMxEDate = '' and (lcmx.yjCheckStatus = -1 or lcmx.yjCheckStatus = 2)" ;
+			hql += " and lcmx.lcMxEDate = '' and lcmx.yjCheckStatus != 0" ;
 		}else if(comStatus.equals(1)){
 			hql += " and lcmx.lcMxEDate != ''";
 		}
@@ -113,8 +113,8 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.cpyInfoTb.id = "+cpyId;
 		}
 		if(comStatus.equals(0)){//未完成
-			//需要获取所有没有移交任务或者移交审核未通过的
-			hql += " and lcmx.lcMxEDate = '' and (lcmx.yjCheckStatus = -1 or lcmx.yjCheckStatus = 2)" ;
+			//需要获取所有没有移交任务或者移交审核通过/未通过的
+			hql += " and lcmx.lcMxEDate = '' and lcmx.yjCheckStatus != 0" ;
 		}else if(comStatus.equals(1)){
 			hql += " and lcmx.lcMxEDate != ''";
 		}
