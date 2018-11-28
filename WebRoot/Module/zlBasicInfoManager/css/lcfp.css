@@ -155,57 +155,30 @@ body{
 	margin-right:5px;
 	font-size:12px;
 }
-@keyframes blink{
-  0% {opacity: 1;}
-  50%{opacity: 1;}
-  50.01%{opacity: 0;} /* 注意这里定义50.01%立刻透明度为0，可以设置闪烁效果 */
-  100%{opacity: 0;}
-}
-/* 添加兼容性前缀 */
-@-webkit-keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 1; }
-    50.01% { opacity: 0; }
-    100% { opacity: 0; }
-}
-@-moz-keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 1; }
-    50.01% { opacity: 0; }
-    100% { opacity: 0; }
-}
-@-ms-keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 1; }
-    50.01% { opacity: 0; }
-    100% { opacity: 0; }
-}
-@-o-keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 1; }
-    50.01% { opacity: 0; }
-    100% { opacity: 0; }
-}
-.hasBlink {
-    animation: blink 1s linear infinite; 
-    -webkit-animation: blink 1s linear infinite;
-    -moz-animation: blink 1s linear infinite;
-    -ms-animation: blink 1s linear infinite;
-    -o-animation: blink 1s linear infinite;
-}
 .currLcNo{
 	float:left;
 	margin-top:9px;
 	position:relative;
-	text-indent:18px;
 	color:#999;
-	margin-left:5px;
+	margin-left:18px;
 }
-.currLcNo i{
+.currLcNo i.layui-extend-jinhangzhong{
 	position:absolute;
 	left:-18px;
 	top:2px;
 	font-size:16px;
+}
+.transTips{
+	margin-left:10px;
+	color:#F47837;
+	position:relative;
+	padding-left:18px;
+}
+.transTips i{
+	position:absolute;
+	left:0;
+	top:2px;
+	font-weight:600;
 }
 .currLcNo span.ingTaskSp,
 .currLcNo i.ingTaskIcon,
