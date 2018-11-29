@@ -194,17 +194,27 @@ public class ZlMainAction extends DispatchAction {
 						msg = "ability";
 					}else if(lcNameEng.equals("sc") && currLoginUserId.equals(zl.getCheckUserId())){
 						msg = "ability";
-					}else if(lcNameEng.equals("dgtj") && currLoginUserId.equals(zl.getZxUserId())){
+					}else if(lcNameEng.equals("cus") && currLoginUserId.equals(zl.getCusCheckUserId())){
 						msg = "ability";
-					}else if(lcNameEng.equals("tzs") && currLoginUserId.equals(zl.getZxUserId())){
+					}else if(lcNameEng.equals("dgtj") && currLoginUserId.equals(zl.getTjUserId())){
 						msg = "ability";
-					}else if(lcNameEng.equals("fycj") && currLoginUserId.equals(zl.getZxUserId())){
+					}else if(lcNameEng.equals("tzs")){//通知书可以多专利批量导入
+						if(zlm.listInfoByOpt(lcNameEng, currLoginUserId, cpyId).size() > 0){
+							msg = "ability";
+						}else{
+							msg = "noAbility";
+						}
+					}else if(lcNameEng.equals("fycj")){//费用催缴可以多专利同时增加
+						if(zlm.listInfoByOpt(lcNameEng, currLoginUserId, cpyId).size() > 0){
+							msg = "ability";
+						}else{
+							msg = "noAbility";
+						}
+					}else if(lcNameEng.equals("bz") && currLoginUserId.equals(zl.getBzUserId())){
 						msg = "ability";
-					}else if(lcNameEng.equals("bz") && currLoginUserId.equals(zl.getZxUserId())){
+					}else if(lcNameEng.equals("bzsh") && currLoginUserId.equals(zl.getBzshUserId())){
 						msg = "ability";
-					}else if(lcNameEng.equals("bzsh") && currLoginUserId.equals(zl.getZxUserId())){
-						msg = "ability";
-					}else if(lcNameEng.equals("bh") && currLoginUserId.equals(zl.getZxUserId())){
+					}else if(lcNameEng.equals("bh") && currLoginUserId.equals(zl.getBhUserId())){
 						msg = "ability";
 					}else{
 						msg = "noAbility";
@@ -4533,6 +4543,7 @@ public class ZlMainAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
+	
 	
 	/**
 	 * 下载文件

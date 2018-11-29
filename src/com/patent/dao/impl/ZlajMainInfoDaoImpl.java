@@ -155,4 +155,17 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<ZlajMainInfoTb> findInfoByOpt(Session sess, String lcNameEng,
+			Integer userId, Integer cpyId) {
+		// TODO Auto-generated method stub
+		String hql = "from ZlajMainInfoTb as zl where zl.cpyInfoTb.id = "+cpyId;
+		if(lcNameEng.equals("tzs")){//导入通知书
+			hql += " and zl.tzsUserId = "+userId;
+		}else if(lcNameEng.equals("fycj")){//费用催缴
+			hql += " and zl.feeUserId = "+userId;
+		}
+		return sess.createQuery(hql).list();
+	}
+
 }

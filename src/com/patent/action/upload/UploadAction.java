@@ -144,7 +144,16 @@ public class UploadAction extends DispatchAction {
 					boolean abilityFlag_2 = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//修改专利的能上传
 					abilityFlag = abilityFlag_1 || abilityFlag_2;
 				}else{
+					//撰稿人员、专利审核人员、客户确认人员、定稿提交、补正提交、补正审核人员上传的都是附件类
 					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理
+					//通知书导入人员上传的是tzs类，费用催缴人员上传的是pj类
+//					if(abilityFlag){//所有流程人员必须具有dealZl的权限
+//						if(fileType.equals("tzs")){
+//							
+//						}else if(fileType.equals("pj")){
+//							
+//						}
+//					}
 				}
 			}
 		}else{

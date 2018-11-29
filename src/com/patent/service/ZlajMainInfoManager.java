@@ -297,4 +297,17 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateZlFjInfo(Integer zlId,Double fjRate) throws WEBException;
+	
+	/**
+	 * 获取指定用户、指定代理机构、指定流程任务的专利列表（获取指定人是否具有通知书导入和费用催缴流程任务）
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-11-29 下午10:13:54
+	 * @param lcNameEng 流程任务（tzs,fycj）--(通知书导入、费用催缴)
+	 * @param userId 指定员工
+	 * @param cpyId 指定代理机构
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajMainInfoTb> listInfoByOpt(String lcNameEng,Integer userId,Integer cpyId) throws WEBException;
 }

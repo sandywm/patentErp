@@ -130,4 +130,16 @@ public interface ZlajMainInfoDao {
 	 */
 	List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess,String zlTitle,String sqrName,String zlType,Integer cpyId);
 	
+	/**
+	 * 获取指定用户、指定代理机构、指定流程任务的专利列表（获取指定人是否具有通知书导入和费用催缴流程任务）
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-11-29 下午10:04:03
+	 * @param sess
+	 * @param lcNameEng 流程任务（tzs,fycj）--(通知书导入、费用催缴)
+	 * @param userId 指定员工
+	 * @param cpyId 指定代理机构
+	 * @return
+	 */
+	List<ZlajMainInfoTb> findInfoByOpt(Session sess,String lcNameEng,Integer userId,Integer cpyId);
 }

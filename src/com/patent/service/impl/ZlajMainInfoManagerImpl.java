@@ -466,4 +466,21 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajMainInfoTb> listInfoByOpt(String lcNameEng, Integer userId,
+			Integer cpyId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return zlDao.findInfoByOpt(sess, lcNameEng, userId, cpyId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定用户、指定代理机构、指定流程任务的专利列表（获取指定人是否具有通知书导入和费用催缴流程任务）时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }
