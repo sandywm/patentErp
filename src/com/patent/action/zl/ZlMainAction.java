@@ -168,15 +168,13 @@ public class ZlMainAction extends DispatchAction {
 	public ActionForward getAbilityFlag(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String actNameEng = CommonTools.getFinalStr("actNameEng", request);
-		boolean abilityFlag = false;
 		String msg = "";
 		if(!actNameEng.equals("")){
 			if(this.getLoginRoleName(request).equals("管理员")){
-				abilityFlag = true;
+				msg = "ability";
 			}else{
 				//获取当前用户是否有修改权限
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), actNameEng);
-				if(abilityFlag){
+				if(Ability.checkAuthorization(this.getLoginRoleId(request), actNameEng)){
 					if(actNameEng.equals("dealZl")){//专利流程处理
 						//需要判断当前流程操作的人员是否和和原定的流程操作人员符合
 						CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
