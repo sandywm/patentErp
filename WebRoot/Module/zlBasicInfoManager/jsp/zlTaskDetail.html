@@ -149,7 +149,7 @@
 				},
 				loadTaskLcDetail : function(fileInfo,zlInfo,lcNo){
 					var prevHtml = '',nowHtml_jud = '',nowHtml_sub = '',nowHtml_cus='';
-					if(lcNo >= 3 && lcNo < 6){
+					if(lcNo >= 3 && lcNo <= 6){
 						prevHtml += '<div class="prevTit"><p class="showHideBtn" isOpen="true"><i class="iconfont layui-extend-taskComp"></i>任务详情<i class="iconfont layui-extend-more rotateIcon"></i></p><a class="viewZlDetail" href="javascript:void(0)" opts="byTaskDetailOpt"><i class="layui-icon layui-icon-search"></i>专利详情</a></div>';
 						prevHtml += '<div class="pervWrap"><div class="detailPrevCon">';
 						prevHtml += '<ul class="basicInfoUl">';
@@ -213,7 +213,7 @@
 						this.judgeByCustom();
 					}else if(lcNo == 6){//定稿提交
 						//备注去除
-						$('.remarkWrap').remove();
+						//$('.remarkWrap').remove();
 						var sqrName  = zlInfo[0].sqrName.split(',');
 						nowHtml_sub += '<div class="layui-form-item"><label class="layui-form-label titLabel">案件标题：</label>';
 						nowHtml_sub += '<div class="layui-input-block inpHeiDiv"><input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)"  value="'+ zlInfo[0].zlTitle +'" maxlength="40" autocomplete="off" class="layui-input"/></div></div>';
