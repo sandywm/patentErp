@@ -19,6 +19,7 @@
 		
 	</div>
 	<div class="importCon">
+		<input id="fujianInp" name="zlUpCl" type="hidden"/>
 		<table class="layui-table">
 	      <thead class="tHead">
 	        <tr><th>附件名</th>
@@ -33,6 +34,7 @@
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
+		var upSuccSrcArray = [];
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -55,6 +57,33 @@
 					});
 					$('.readTzsBtn').on('click',function(){
 						//读取通知书动作
+						var isHasUpLoadFlag = false;
+						if($('.deleteBtn').length > 0){
+							if($('input[name="hasUpSuccInp"]').length == 0){//表示用户选择了文件，但是没有点击上传
+								isHasUpLoadFlag = false;
+							}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length == 0){
+								//表示用户选择了文件并且全部上传了
+								isHasUpLoadFlag = true;
+							}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0 && errorTypeFlag == false){
+								//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传(格式都是正确的时候)
+								isHasUpLoadFlag = false;
+							}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0 && errorTypeFlag == true){
+								//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传(格式有部分不正确，用户如果没有点击删除不正确按钮，点击保存直接保存)
+								isHasUpLoadFlag = true;
+							}
+							if(isHasUpLoadFlag){
+								upSuccSrcArray.length = 0;
+								$('input[name="hasUpSuccInp"]').each(function(i){
+									upSuccSrcArray.push($('input[name="hasUpSuccInp"]').eq(i).val());
+								});
+								$('#fujianInp').val(upSuccSrcArray.join(','));
+							}else{
+								layer.msg('您有未上传的附件，请先上传附件',{icon:5,anim:6,time:1000});
+								return;
+							}
+						}
+						//console.log($('#fujianInp').val());
+						
 					});
 				},
 				upLoadTzs : function(){

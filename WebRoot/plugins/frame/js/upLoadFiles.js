@@ -129,7 +129,7 @@ layui.define(['element','jquery','upload'],function(exports){
 				      //alreadyUploadFiles[index]=res.data && res.data[0];//缓存已上传的文件
 				      $('#upListAction').hide();
 				      if(isShowDelFlag){//批量导入通知书 上传成功后隐藏/移除 删除按钮
-				    	  tr.find('.deleteBtn_sel').remove();
+				    	  tr.find('.deleteBtn_sel').hide();
 						  $('.hasSelWords').html('已选择' + (noUpDoneLen + hasUpDoneLen) + '个文件, '+ (noUpDoneLen-1) +'个未上传，' + (hasUpDoneLen+1) + "已上传");
 				      }
 				      return delete this.files[index]; //删除文件队列已经上传成功的文件
