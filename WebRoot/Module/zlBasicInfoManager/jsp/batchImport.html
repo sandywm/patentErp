@@ -86,9 +86,17 @@
 								}
 							}
 							//执行ajax
-							//console.log($('#fujianInp').val());
-							
-							
+							var upFilePath = $('#fujianInp').val();
+							$.ajax({
+								type:"post",
+								dataType:"json",
+								async:false,
+								data:{zipPath:upFilePath},
+								url:"/zlm.do?action=dealTzsDetail",
+								success:function(json){
+									console.log(json);
+								}
+							});
 						}
 					});
 				},

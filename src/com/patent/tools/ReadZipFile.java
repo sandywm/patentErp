@@ -112,6 +112,15 @@ public class ReadZipFile {
 	            }else{
 //	            	Map<String,Object> map_d = new HashMap<String,Object>();
 	            	String fileName = ze.getName();
+//	            	System.out.println(fileName);
+//	            	String fileName_start = fileName.substring(0,fileName.indexOf("\\"));
+//	            	String fileName_end = fileName.substring(fileName.lastIndexOf("\\") + 1);
+//	            	System.out.println(fileName_end);
+//	            	System.out.println(fileName_start+"\\"+fileName_start+"\\"+fileName_start+"\\");
+//	            	if(fileName.endsWith(".tif")){
+//	            		System.out.println("复制");
+//	            		FileOpration.copyFile(fileName, "e:\\abc\\"+fileName_end);
+//	            	}
 	            	if(fileName.endsWith("XML") || fileName.endsWith("xml")){
 	                    ZipEntry zip = zf.getEntry(ze.getName());
 	                    InputStream inputstream = null;
@@ -869,8 +878,8 @@ public class ReadZipFile {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		List<TzsJson> tjList = new ArrayList<TzsJson>();
-		for(int i = 1 ; i <= 42; i++){
-			List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\11\\"+i+".zip",0,0,0);
+		for(int i = 222 ; i <= 223; i++){
+			List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\"+i+".zip",0,0,0);
 			tjList.addAll(tj);
 		}
 //		Collections.sort(tjList);
