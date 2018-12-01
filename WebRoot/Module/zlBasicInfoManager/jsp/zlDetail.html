@@ -212,10 +212,10 @@
 					actGetMxFlag : false,
 					isHasFujianFlag : false,
 					ajStatus : 0,
-					nowLcStr : '<i class="iconfont layui-extend-jinhangzhong ingTaskIcon"></i><span class="ingTaskSp">任务正在进行中...</span>',
-					otherLcStr : '<i class="iconfont layui-extend-jinhangzhong"></i><span>任务等待中...</span>',
+					nowLcStr : '<i class="iconfont layui-extend-jinhangzhong ingTaskIcon"></i><span class="ingTaskSp">任务正在进行中<span class="dotting"></span></span>',
+					otherLcStr : '<i class="iconfont layui-extend-jinhangzhong"></i><span>任务等待中<span class="dotting"></span></span>',
 					hasCompLcStr : '<i class="layui-icon layui-icon-ok statusIcon_com"></i><span class="hasComSp">任务已完成</span>',
-					applyTransStr : '<span class="transTips"><i class="layui-icon layui-icon-tips"></i>任务移交申请等待审核中...</span>'
+					applyTransStr : '<span class="transTips"><i class="layui-icon layui-icon-tips"></i>任务移交申请等待审核中<span class="dotting"></span></span>'
 				},
 				init : function(){
 					this.onLoad();
@@ -1141,7 +1141,7 @@
 					//案件附件
 						strHtml += '<div class="layui-form-item"><label class="layui-form-label">案件附件</label><div class="layui-input-block">';
 						strHtml += '<button type="button" class="layui-btn layui-btn-normal" id="selFileBtn">选择文件</button>';
-						strHtml += '  <span class="noticeSpan">注：附件中单个图片大小不能超过5M，单个文件大小不能超过10M (非必填项)</span>';
+						strHtml += '  <span class="noticeSpan">注：附件中单个图片大小不能超过5M，单个文件大小不能超过10M (非必填项)，最多可上传5个文件</span>';
 						strHtml += '<button type="button" class="layui-btn" id="upListAction">上传附件</button></div></div>';
 						strHtml += '<div class="layui-form-item"><input id="fujianInp" name="zlUpCl" type="hidden"/>';
 					}else{

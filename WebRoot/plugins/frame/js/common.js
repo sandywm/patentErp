@@ -53,6 +53,3 @@ layui.define(function(exports){
     //输出接口
     exports('common', obj);
 });
-function downFile(downFilePath){
-	
-}

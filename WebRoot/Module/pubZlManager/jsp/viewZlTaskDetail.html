@@ -19,11 +19,16 @@
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		var pubId = parent.globalPubId,loginType = parent.loginType,outDateFlag=false;
-		layui.use(['layer','jquery','form','upload'],function(){
+		layui.config({
+			base: '/plugins/frame/js/'
+		}).extend({ //设定组件别名
+			common: 'common'// 表示模块文件的名字
+		}).use(['layer','jquery','form','upload','common'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
 				form = layui.form,
-				upload = layui.upload;
+				upload = layui.upload,
+				common = layui.common;
 			var page = {
 				init : function(){
 					this.onLoad();
@@ -153,22 +158,6 @@
 	        			});
 						form.render();
 					});
-					//下载附件
-					$('.downloadBtn').on('click',function(){
-						var downFilePath = $(this).attr('downFilePath');
-						var form = $("<form>");   //定义一个form表单
-						form.attr('style', 'display:none'); //在form表单中添加查询参数
-						form.attr('target', '');
-	 					form.attr('method', 'post');
-						form.attr('action', "/zlm.do?action=downFile");
-						var input1 = $('<input>');
-						input1.attr('type', 'hidden');
-						input1.attr('name', 'fileUrl');
-						input1.attr('value', escape(downFilePath));
-						$('body').append(form);  //将表单放置在web中 
-						form.append(input1);   //将查询参数控件提交到表单上
-	            		form.submit();
-					});
 				},
 				//渲染任务详情结构
 				renderViewPubZlDetail : function(json){
@@ -208,7 +197,7 @@
 					strHtml += '<li class="specHeiLi clearfix"><div class="innerPar clearfix"><p>专利描述</p><p><span>'+ json.zlContent +'</span></p></div></li>';
 					strHtml += '<li class="fujianLi clearfix"><div class="innerPar clearfix" style="width:100%;"><p>附件</p><p class="fujianWrap">';
 					for(var i=0;i<json.zlUpCl.length;i++){
-						strHtml += '<span><i class="layui-icon layui-icon-file"></i> '+ json.zlUpCl[i].fileName +' ('+ json.zlUpCl[i].fileSize +') <button class="layui-btn layui-btn-normal layui-btn-xs downLoadBtn" downFilePath="'+ json.zlUpCl[i].downFilePath +'">下载</button></span>';
+						strHtml += '<span><i class="layui-icon layui-icon-file"></i> '+ json.zlUpCl[i].fileName +' ('+ json.zlUpCl[i].fileSize +') <button class="layui-btn layui-btn-normal layui-btn-xs downloadBtn" downFilePath="'+ json.zlUpCl[i].downFilePath +'">下载</button></span>';
 					}
 					strHtml += '</p></div></li>';
 					strHtml += '<li><div class="innerPar"><p>领取人</p><p>'+ json.lqrName +'</p></div>';
@@ -228,6 +217,11 @@
 						receiveHisHtml += '<ul>';
 						$('#receiveHisWrap').html(receiveHisHtml);
 					}
+					$('.downloadBtn').on('click',function(){
+						var downFilePath = $(this).attr('downFilePath');
+						alert(downFilePath)
+						common.downFiles(downFilePath);
+					});
 				}
 			};
 			form.on('radio(verifyStaFilter)', function(data){

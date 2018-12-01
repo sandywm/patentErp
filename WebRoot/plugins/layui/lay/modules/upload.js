@@ -239,8 +239,9 @@ layui.define("layer",function(e) {
             }
         },
         y = function() {
-            if ("choose" !== t && !l.auto || (l.choose && l.choose(g), "choose" !== t)) return l.before && l.before(g),
-            a.ie ? a.ie > 9 ? u() : c() : void u()
+            if ("choose" !== t && !l.auto || (l.choose && l.choose(g), "choose" !== t)) 
+            	//return l.before && l.before(g),a.ie ? a.ie > 9 ? u() : c() : void u()
+            	return "choose" === t ? l.choose && l.choose(g) : ((l.before && l.before(g)) === false ? '' : a.ie ? a.ie > 9 ? u() : c() : void u())
         };
         if (v = 0 === v.length ? r.value.match(/[^\/\\]+\..+/g) || [] || "": v, 0 !== v.length) {
             switch (l.accept) {
@@ -260,7 +261,7 @@ layui.define("layer",function(e) {
                 if (layui.each(v,
                 function(e, i) {
                     RegExp("\\w\\.(" + (h || "jpg|png|gif|bmp|jpeg$") + ")", "i").test(escape(i)) || (n = !0)
-                }), n) return o.msg("选择的图片中包含不支持的格式"),
+                }), n) return o.msg("选择的文件中包含不支持的格式"),
                 r.value = ""
             }
             if (o.fileLength = function() {

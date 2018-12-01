@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlBasicInfoManager/css/batchImport.css" rel="stylesheet" type="text/css"/>
+  	<title>通知书批量导入</title>
+</head>
+<body style="background:#fff;">
+	<div class="importBtn">
+		<p><i class="iconfont layui-extend-daoru"></i>通知书批量导入</p>
+		<button class="layui-btn readTzsBtn" style="position:absolute;right:50px;top:3px;">读取通知书</button>
+		<a class="closeBtns" href="javascript:void(0)"><i class="layui-icon layui-icon-close"></i></a>
+	</div>
+	<div class="importConTit">
+		<button type="button" class="layui-btn layui-btn-normal" id="selFileBtn">选择文件</button> 
+		<span class="noticeSpan">注：通知书单个文件大小不能超过10M，最多可上传20个通知书文件,文件必须是.zip格式的！ <em class="hasSelWords"></em></span>
+		<button type="button" class="layui-btn" id="upListAction">上传通知书</button>
+		
+	</div>
+	<div class="importCon">
+		<table class="layui-table">
+	      <thead class="tHead">
+	        <tr><th>附件名</th>
+	        <th>大小</th>
+	        <th>状态</th>
+	        <th>进度</th>
+	        <th>操作</th>
+	      </tr></thead>
+	      <tbody id="upLoadFileList"></tbody>
+	    </table>
+	</div>
+	<script src="/plugins/jquery/jquery.min.js"></script>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.config({
+			base: '/plugins/frame/js/'
+		}).extend({ //设定组件别名
+		    globalUpload: 'upLoadFiles'
+		}).use(['layer','upload','upLoadFiles'],function(){
+			var layer = layui.layer,
+				upload = layui.upload,
+				globalUpload = layui.upLoadFiles;
+				
+			var page = {
+				init : function(){
+					this.bindEvent();
+					this.upLoadTzs();
+				},
+				bindEvent : function(){
+					//关闭当前弹窗
+					$('.closeBtns').on('click',function(){
+						var index= parent.layer.getFrameIndex(window.name);
+						parent.layer.close(index);
+					});
+					$('.readTzsBtn').on('click',function(){
+						//读取通知书动作
+					});
+				},
+				upLoadTzs : function(){
+					var url = '/upload.do?action=uploadFile&ajId=0&fileType=tzs',fileType='zip';
+					globalUpload.uploadFiles(url,20,fileType,true);
+				}
+			};
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>

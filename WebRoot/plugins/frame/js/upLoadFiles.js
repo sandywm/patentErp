@@ -1,21 +1,20 @@
-var errorTypeFlag = false;
+var errorTypeFlag = false,selFileNum = 0;
 layui.define(['element','jquery','upload'],function(exports){
 	var element = layui.element,
 	upload = layui.upload;
 	var obj = {
-		uploadFiles : function(url,maxNumber,fileType){
-			//console.log(url)
+		uploadFiles : function(url,maxNumber,fileType,isShowDelFlag){
 			var imageListView = $('#upLoadFileList')
 			 ,alreadyUploadFiles={}//记录已经上传成功的文件相对路径（后台返回）
 			//,maxNumber=5//这里设置自己允许最大上传数
 			,uploadListIns=upload.render({
 				  elem : '#selFileBtn'
 				  ,url: url//这里设置自己的上传接口
-				  ,accept: 'file'
+				  ,accept: 'images'
 				  ,exts : fileType
 				  ,multiple: true
 				  ,auto: false
-				  ,size:10240
+				  //,size:10240
 				  ,number: maxNumber
 				  ,bindAction: '#upListAction' 
 				 	,xhr:xhrOnProgress
@@ -25,35 +24,26 @@ layui.define(['element','jquery','upload'],function(exports){
 				  ,errorMsg: function(content){
 				  	layer.msg(content, {icon: 2, shift: 6});
 				  }
+				  ,before : function(obj){
+					  var that = this;
+					  //假如用户分了两次或者多次上传若个干文件，那么，用已经上传的文件和当前已经选中的文件的数量相加和maxNum做比较
+					  $('#upListAction').hide();
+					  var hasUpDoneLen = $('.hasUpDone').length;
+					  var noUpDoneLen = $('.noUpDone').length;
+					  if((hasUpDoneLen + noUpDoneLen) > maxNumber){
+						  that.errorMsg('最多只能上传'+ maxNumber +'个文件');
+						  return false;
+					  }
+				  }
 				  ,choose: function(obj){
-				  	var that = this;
-				  	//检查是否已经成功上传了maxNumber个图片
-				  	//获取上传成功的文件：
-				  	var alreadyUploadFilesLength = Object.keys(alreadyUploadFiles).length;
-				  	if(alreadyUploadFilesLength>=maxNumber){
-				  		that.errorMsg('同时最多只能上传的数量为：'+maxNumber + "个");
-				  		return false;
-				  	}
+				  	  var that = this;
 				      //读取本地文件
 				      obj.preview(function(index, file, result){
 				      	var files = that.files = obj.pushFile(); //将每次选择的文件追加到文件队列
 				      	var fileNames = file.name.split('.')[0]; 
 						var fileType = file.name.substr(file.name.lastIndexOf('.'));
 						var size = file.size;
-				       var alreadyChooseFileLength = 0;
-				       if(that.files){//已经选择，未上传的文件
-				       	$.each(that.files, function(){
-				       		alreadyChooseFileLength++;
-				       	});
-				       }
-				       if((alreadyUploadFilesLength + alreadyChooseFileLength) > maxNumber){
-				       	that.errorMsg('同时最多只能上传的数量为：'+maxNumber);
-				       	delete that.files[index];	
-				       	delete files[index];
-				       	uploadListIns.config.elem.next()[0].value = '';
-				   		return false;
-				       }
-				       if(fileNames.length > 50){
+				        if(fileNames.length > 50){
 							layer.msg('上传的文件名不能超过50个字符',{icon:5,anim:6,time:1000});
 		    				return;
 						}
@@ -70,7 +60,7 @@ layui.define(['element','jquery','upload'],function(exports){
 			    				return;
 			    			}
 			    		}
-				       var tr = $(['<tr id="upload-'+ index +'">',
+				       var tr = $(['<tr class="hasSelTr noUpDone" id="upload-'+ index +'">',
 						'<td>'+ file.name +'</td>',
 						'<td>'+ (file.size/1014).toFixed(1) +'kb</td>',
 						'<td>等待上传</td>',
@@ -87,10 +77,30 @@ layui.define(['element','jquery','upload'],function(exports){
 						'<button class="layui-btn layui-btn-xs layui-btn-danger deleteBtn deleteBtn_sel">删除</button>',
 						'</td>',
 						'</tr>'].join(''));
+					    var noUpDoneLen = $('.noUpDone').length;
+					    var hasUpDoneLen = $('.hasUpDone').length;
+				        if(isShowDelFlag){
+				        	$('.hasSelWords').html('已选择' + ((noUpDoneLen+1) + hasUpDoneLen) + '个文件,' + (noUpDoneLen+1) + '个未上传，' + hasUpDoneLen + "个已上传");
+				        }
 				     	//删除
 				        tr.find('.deleteBtn_sel').on('click', function(){
+				        	var noUpDoneLen = $('.noUpDone').length,hasUpDoneLen = $('.hasUpDone').length;
+				        	if(isShowDelFlag){
+				        		$('.hasSelWords').html('已选择' + ((noUpDoneLen-1) + hasUpDoneLen) + '个文件,' + (noUpDoneLen-1) + '个未上传，' + hasUpDoneLen + "个已上传");
+					    	    if(noUpDoneLen == 1 && hasUpDoneLen == 0){//一个都未上传
+					    	    	$('.hasSelWords').html('');
+					    	    }else if(noUpDoneLen == 1 && hasUpDoneLen != 0){//一部分上传 然后重新选择了一些文件但并没有上传
+					    	    	$('#upListAction').hide();
+					    	    	$('.hasSelWords').html('已选择' + ((noUpDoneLen-1) + hasUpDoneLen) + '个文件,' + (noUpDoneLen-1) + '个未上传，' + hasUpDoneLen + "个已上传");
+					    	    }
+					        }
+				        	if(noUpDoneLen != 0 && hasUpDoneLen != 0 && hasUpDoneLen < maxNumber){
+				        		if((noUpDoneLen+hasUpDoneLen) == (maxNumber+1)){
+				        			$('#upListAction').show();
+				        		}
+				        	}
 				        	delete files[index]; //删除对应的文件
-				            tr.remove();
+				            tr.remove();				            
 				            uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
 				        	if($('.reloadBtn_sel').length == 0){
 				        		$('#upListAction').hide();
@@ -108,14 +118,20 @@ layui.define(['element','jquery','upload'],function(exports){
 				  	});
 				  }
 				  ,done: function(res, index, upload){
+					  layer.closeAll('loading');
 				    if(res.msg == 'success'){ //上传成功
 				      var tr = imageListView.find('tr#upload-'+ index)
-				      ,tds = tr.children();
+				      ,tds = tr.children(),noUpDoneLen = $('.noUpDone').length,hasUpDoneLen = $('.hasUpDone').length;
+				      tr.removeClass('noUpDone').addClass("hasUpDone");
 				      tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
 				      tds.eq(4).find('.uploadInpHid').attr('name','hasUpSuccInp');
 				      tds.eq(4).find('.uploadInpHid').val(res.data[0].src);
-				      alreadyUploadFiles[index]=res.data && res.data[0];//缓存已上传的文件
+				      //alreadyUploadFiles[index]=res.data && res.data[0];//缓存已上传的文件
 				      $('#upListAction').hide();
+				      if(isShowDelFlag){//批量导入通知书 上传成功后隐藏/移除 删除按钮
+				    	  tr.find('.deleteBtn_sel').remove();
+						  $('.hasSelWords').html('已选择' + (noUpDoneLen + hasUpDoneLen) + '个文件, '+ (noUpDoneLen-1) +'个未上传，' + (hasUpDoneLen+1) + "已上传");
+				      }
 				      return delete this.files[index]; //删除文件队列已经上传成功的文件
 				    }else if(res.msg == 'suffixError'){
 						layer.msg('上传异常或选中文件不包括支持的格式！请稍后重试',{icon:5,anim:6,time:1500});

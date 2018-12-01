@@ -22,7 +22,8 @@
   				<div class="layui-card">
   					<div id="layuiTab" class="layui-tab layui-tab-brief" lay-filter="zlWrapFilter">
   						<input type="hidden" id="lqStatusInp" value="1"/>
-  						<a id="addZlBtn" class="posAbs newAddBtn" opts="addZlOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加新专利</a>
+  						<!--  a id="addZlBtn" class="posAbs newAddBtn" opts="addZlOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加新专利</a-->
+  						<a id="importBtn" style="display:block;" class="posAbs newAddBtn" href="javascript:void(0)"><i class="iconfont layui-extend-daoru"></i>批量导入通知书</a>
 						<i class="iconfont layui-extend-bangzhu helpIcon" title="帮助"></i>
 					</div>   
   				</div>
@@ -32,7 +33,7 @@
   	<script src="/plugins/jquery/jquery.min.js"></script>
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
-    	var fpZlFlag = "${requestScope.fpZlFlag}",lqZlFlag = "${requestScope.lqzLFlag}",loginType=parent.loginType,roleName=parent.roleName;
+    	var loginType=parent.loginType,roleName=parent.roleName;
 		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0,globalLcMxId:0,applyCause:'',applyName:'',yjId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
 		layui.config({
 			base: '/plugins/frame/js/'
@@ -65,6 +66,11 @@
   				}else{
   					$('#addZlBtn').hide();
   				}
+  				if(lqStatus == 6 && page.data.dealZlFlag){
+  					$('#importBtn').show();
+  				}else{
+  					$('#importBtn').hide();
+  				}
  			});
 			var page = {
 				data : {
@@ -76,11 +82,14 @@
 					dealZlFlag : false
 				},
 				init : function(){
+					this.data.fpZlFlag = common.getPermission('fpZl','',0);
+					this.data.lqZlFlag = common.getPermission('lqZl','',0);
+					this.data.addZlFlag = common.getPermission('addZl','',0);
+					this.data.dealZlFlag = common.getPermission('dealZl','tzs',0);
+					this.data.addZlFlag ? $('#addZlBtn').show() : $('#addZlBtn').hide();
 					//创建tab
 					this.createTab();
 					this.bindEvent();
-					this.data.addZlFlag = common.getPermission('addZl','',0);
-					this.data.addZlFlag ? $('#addZlBtn').show() : $('#addZlBtn').hide();
 					$.ajax({
   						type:"post",
 				        async:false,
@@ -133,6 +142,28 @@
 							layer.msg('抱歉，您暂无权限增加新专利', {icon:5,anim:6,time:1000});
 						}
 					});
+					$('#importBtn').on('click',function(){
+						if(_this.data.dealZlFlag){
+							var fullScreenIndex = layer.open({
+								title:'',
+								type: 2,
+							  	area: ['700px', '500px'],
+							  	fixed: true, //不固定
+							  	maxmin: false,
+							  	shadeClose :false,
+							  	closeBtn:0,
+							  	content: '/Module/zlBasicInfoManager/jsp/batchImport.html',
+							  	end:function(){
+							  		/*if(addZlFlag){
+							  			loadZlInfoList('initLoad');
+							  		}*/
+							  	}
+							});	
+							layer.full(fullScreenIndex);
+						}else{
+							layer.msg('抱歉，您暂无批量导入通知书的权限', {icon:5,anim:6,time:1000});
+						}
+					});
 				},
 				//创建tab
 				createTab : function(){
@@ -142,10 +173,10 @@
 						strHtmlTit += '<li class="layui-this" lqStatus="1">专利</li>';
 					}else if(loginType == 'cpyUser'){
 						strHtmlTit += '<li class="layui-this" lqStatus="1">专利</li>';
-						if(fpZlFlag == 'true'){
+						if(this.data.fpZlFlag == true){
 							strHtmlTit += ' <li lqStatus="0">流程分配</li>';
 						}
-						if(lqZlFlag == 'true'){
+						if(this.data.lqZlFlag == true){
 							strHtmlTit += ' <li lqStatus="2">撰写任务领取</li>';
 						}
 						strHtmlTit += ' <li lqStatus="3">我的专利</li>';
@@ -155,8 +186,9 @@
 							strHtmlTit += ' <li lqStatus="4">我的任务</li>';
 						}
 						//管理员下增加个移交申请审核
-						if(roleName == '管理员' || fpZlFlag == 'true'){
+						if(roleName == '管理员' || this.data.fpZlFlag == true){
 							strHtmlTit += ' <li lqStatus="5">任务移交审核</li>';
+							strHtmlTit += ' <li lqStatus="6">通知书批量导入</li>';
 						}else{
 							strHtmlTit += ' <li lqStatus="5">任务移交记录</li>';
 						}
@@ -169,11 +201,11 @@
 					}else if(loginType == 'cpyUser'){
 						strHtmlCon += '<div class="layui-tab-item layui-show"><div id="noData_1" class="noData"></div>';
 						strHtmlCon += '<table id="zlBasicListTab_1" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
-						if(fpZlFlag == 'true'){
+						if(this.data.fpZlFlag == true){
 							strHtmlCon += '<div class="layui-tab-item"><div id="noData_0" class="noData"></div>';
 							strHtmlCon += '<table id="zlBasicListTab_0" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 						}
-						if(lqZlFlag == 'true'){
+						if(this.data.lqZlFlag == true){
 							strHtmlCon += '<div class="layui-tab-item"><div id="noData_2" class="noData"></div>';
 							strHtmlCon += '<table id="zlBasicListTab_2" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 						}
@@ -190,16 +222,17 @@
 						strHtmlCon += '</div>';
 						strHtmlCon += '<div id="noData_4" class="noData"></div>';
 						strHtmlCon += '<table id="zlBasicListTab_4" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
-						//专利移交申请审核
-						//if(roleName == '管理员'){
-							strHtmlCon += '<div class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="tranStatusInp" type="hidden" value="0"/>';
-							strHtmlCon += '<div class="verifyTxt"><p><span class="noVerifySpan"></span>未审核</p><p><span class="pasVerifySpan"></span>审核已通过</p><p><span class="noPasVerifySpan"></span>审核未通过</p></div>';
-							strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="0" title="未审核" checked/>';
-							strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="1" title="审核通过"/>';
-							strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="2" title="审核未通过"/></div>';
-							strHtmlCon += '<div id="noData_5" class="noData"></div>';
-							strHtmlCon += '<table id="zlBasicListTab_5" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
-						//}
+						//专利移交申请审核/记录
+						strHtmlCon += '<div class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="tranStatusInp" type="hidden" value="0"/>';
+						strHtmlCon += '<div class="verifyTxt"><p><span class="noVerifySpan"></span>未审核</p><p><span class="pasVerifySpan"></span>审核已通过</p><p><span class="noPasVerifySpan"></span>审核未通过</p></div>';
+						strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="0" title="未审核" checked/>';
+						strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="1" title="审核通过"/>';
+						strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="2" title="审核未通过"/></div>';
+						strHtmlCon += '<div id="noData_5" class="noData"></div>';
+						strHtmlCon += '<table id="zlBasicListTab_5" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
+						//通知书批量导入
+						strHtmlCon += '<div class="layui-tab-item"><div id="noData_6" class="noData"></div>';
+						strHtmlCon += '<table id="zlBasicListTab_6" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 					}
 					strHtmlCon += '</div>';
 					$('#layuiTab').append(strHtmlTit + strHtmlCon);
@@ -232,7 +265,7 @@
 					var field = {};
 				}
 				layer.load('1');
-				if(lqStatusVal != 4 && lqStatusVal != 5){
+				if(lqStatusVal != 4 && lqStatusVal != 5 && lqStatusVal != 6){
 					table.render({
 						elem: '#zlBasicListTab_'+lqStatusVal,
 						height: 'full-200',
@@ -336,8 +369,8 @@
 							{field : 'sets', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
 								if(taskStaVal == 0){
 									var strHtml = '';
-									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
-									if(roleName == '管理员' || fpZlFlag == 'true'){
+									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" lcNo="'+ d.lcNo +'" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
+									if(roleName == '管理员' || this.data.fpZlFlag == true){
 										if(d.applyFlag){
 											strHtml += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="lcfpFun" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'" taskOpts="1" fzUserId="'+ d.fzUserId +'" currLcNo="'+ d.lcNo +'"><i class="iconfont layui-extend-yijiao"></i>任务移交</a>';
 										}
@@ -392,7 +425,7 @@
 							{field : 'checkUserName', title: '审核人姓名', width:200, align:'center'},
 							{field : 'checkDate', title: '审核时间', width:200, align:'center'},
 							{field : 'set', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
-								if(roleName == '管理员' || fpZlFlag == 'true'){
+								if(roleName == '管理员' || this.data.fpZlFlag == true){
 									return '<a lay-event="verifyFun" class="layui-btn layui-btn-xs" zlId="'+ d.zlId +'" yjId="'+ d.yjId +'" applyUserName="'+ d.applyUserName +'" applyCause="'+ d.applyCause +'" taskOpts="1" ajTitle="'+ d.zlTitle +'" lcTask="'+ d.taskName +'" fzUserId="'+ d.applyUserId +'"><i class="layui-icon layui-icon-vercode"></i>审核</a>';
 								}
 								//return '<a class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-edit"></i>去完成</a> <a class="layui-btn layui-btn-danger layui-btn-xs"><i style="font-size:20px;" class="iconfont layui-extend-yijiao"></i>移交申请</a>';
@@ -400,11 +433,13 @@
 						]],
 						done : function(res){
 							callBackDone(res);
-							if($('#tranStatusInp').val() == 1 || $('#tranStatusInp').val() == 2 || roleName != '管理员' || fpZlFlag != 'true'){
+							if($('#tranStatusInp').val() == 1 || $('#tranStatusInp').val() == 2 || roleName != '管理员' || page.data.fpZlFlag == true){
 								$('.layui-table-box').find('[data-field="set"]').css('display','none');
 							}
 						}
 					});
+				}else if(lqStatusVal == 6){//通知书批量导入
+					layer.closeAll('loading');
 				}
 				function callBackDone(res){
 					layer.closeAll('loading');
@@ -538,8 +573,8 @@
 					}
 				}else if(obj.event == 'viewInfo'){
 					//查看专利基本信息
-					page.data.listZlFlag = common.getPermission('listZl','',0);
-					if(page.data.listZlFlag){
+					//page.data.listZlFlag = common.getPermission('listZl','',0);
+					//if(page.data.listZlFlag){
 						var ajTitle = $(this).attr('ajTitle');
 						globalZlId = $(this).attr('zlId');
 						addZlFlag = false;
@@ -558,31 +593,54 @@
 						  	}
 						});	
 						layer.full(fullScreenIndex);
-					}else{
+					/*}else{
 						layer.msg('抱歉，您暂无查看专利基本信息的权限', {icon:5,anim:6,time:1000});
-					}
+					}*/
 				}else if(obj.event == 'goCompleteTask'){//做任务
-					//page.data.dealZlFlag = common.getPermission('dealZl','',0);
-					var ajTitle = $(this).attr('ajTitle');
+					var ajTitle = $(this).attr('ajTitle'),currLcNo = $(this).attr('lcNo'),lcTaskName = '';
 					globalZlId = $(this).attr('zlId');
 					globalZlTit = ajTitle;
 					addZlFlag = false;
-					var fullScreenIndex = layer.open({
-						title:'',
-						type: 2,
-					  	area: ['700px', '500px'],
-					  	fixed: true, //不固定
-					  	maxmin: false,
-					  	shadeClose :false,
-					  	closeBtn: 0,
-					  	content: '/Module/zlBasicInfoManager/jsp/zlTaskDetail.html',
-					  	end : function(){
-					  		if(addZlFlag){
-					  			loadZlInfoList('initLoad');
-					  		}
-					  	}
-					});	
-					layer.full(fullScreenIndex);
+					if(currLcNo >= 3 && currLcNo < 4){//新申请撰稿 撰稿修改
+						lcTaskName = 'zx';
+					}else if(currLcNo >= 4 && currLcNo < 5){//专利审核 专利复审
+						lcTaskName = 'sc';
+					}else if(currLcNo >= 5 && currLcNo < 6){//客户确认
+						lcTaskName = 'cus';
+					}else if(currLcNo >= 6 && currLcNo < 7){//定稿提交
+						lcTaskName = 'dgtj';
+					}/*else if(currLcNo >= 7 && currLcNo < 8){//通知书导入
+						lcTaskName = 'tzs';
+					}else if(currLcNo >= 8 && currLcNo < 9){//费用催缴
+						lcTaskName = 'fycj';
+					}else if(currLcNo >= 9 && currLcNo < 10){//专利补正
+						lcTaskName = 'bz';
+					}else if(currLcNo >= 10 && currLcNo < 11){//补正审核
+						lcTaskName = 'bzsh';
+					}else if(currLcNo >= 11 && currLcNo < 12){//专利驳回
+						lcTaskName = 'bh';
+					}*/
+					page.data.dealZlFlag = common.getPermission('dealZl',lcTaskName,globalZlId);
+					if(page.data.dealZlFlag){
+						var fullScreenIndex = layer.open({
+							title:'',
+							type: 2,
+						  	area: ['700px', '500px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	closeBtn: 0,
+						  	content: '/Module/zlBasicInfoManager/jsp/zlTaskDetail.html',
+						  	end : function(){
+						  		if(addZlFlag){
+						  			loadZlInfoList('initLoad');
+						  		}
+						  	}
+						});	
+						layer.full(fullScreenIndex);
+					}else{
+						layer.msg('抱歉，您暂无处理该任务的权限', {icon:5,anim:6,time:1000});
+					}
 				}else if(obj.event == 'transferFun'){
 					globalTaskOpts.globalLcMxId = $(this).attr('lcmxid');
 					var ajTitle = $(this).attr('ajTitle'),lcTask = $(this).attr('lctask');
