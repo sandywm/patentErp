@@ -44,6 +44,7 @@
 				},
 				bindEvent : function(){
 					var _this = this;
+					this.inpChecked();
 					$('.addCusBtn').on('click',function(){
 						parent.addCustFlag = false;
 						parent.layer.open({
@@ -58,34 +59,11 @@
 						  		if(parent.addCustFlag){
 						  			_this.data.isClickInpFlag = true;
 						  			_this.loadSqrList();
+						  			_this.inpChecked();
 						  		}
 						  	}
 						});	
 					});
-					if(noDataFlag == false){//表示存在数据
-						$('input[name=sqrInp]').on('click',function(){
-							var strHtml = '';
-							var checkStatus = this.checked;
-							var hasCheckId = $(this).val(),sqrNames = $(this).attr('sqrNames');
-							if(checkStatus){
-								$('.tipInfo').hide();
-								$(this).prev().addClass('hasActive');
-								strHtml += '<p id="hasSelP_'+ hasCheckId +'" sqrIdNum="'+ hasCheckId +'" class="listP"><strong class="ellip">'+ sqrNames +'</strong>';
-								strHtml += '<a class="moveUpDown fl"></a>';
-								strHtml += '<i id="'+ hasCheckId +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
-								$('.hasSelSqrList').append(strHtml);
-							
-							}else{
-								$('#hasSelP_'+hasCheckId).remove();
-								if($('.listP').length == 0){
-									$('.tipInfo').show();
-								}
-								$(this).prev().removeClass('hasActive');
-							}
-							_this.sqrOrder();
-							_this.delSelSqr();
-						});
-					}
 					//保存已添加到的新的申请人
 					$('#saveZlBtn').on('click',function(){
 						var hasCheckedLen = $('input[name=sqrInp]:checked').length;
@@ -144,6 +122,34 @@
 					        parent.delHasAddMethod('delSqrBtn','delSqrOpt');
 						}
 					});
+				},
+				//input的选中动作
+				inpChecked : function(){
+					var _this = this;
+					if(noDataFlag == false){//表示存在数据
+						$('input[name=sqrInp]').on('click',function(){
+							var strHtml = '';
+							var checkStatus = this.checked;
+							var hasCheckId = $(this).val(),sqrNames = $(this).attr('sqrNames');
+							if(checkStatus){
+								$('.tipInfo').hide();
+								$(this).prev().addClass('hasActive');
+								strHtml += '<p id="hasSelP_'+ hasCheckId +'" sqrIdNum="'+ hasCheckId +'" class="listP"><strong class="ellip">'+ sqrNames +'</strong>';
+								strHtml += '<a class="moveUpDown fl"></a>';
+								strHtml += '<i id="'+ hasCheckId +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
+								$('.hasSelSqrList').append(strHtml);
+							
+							}else{
+								$('#hasSelP_'+hasCheckId).remove();
+								if($('.listP').length == 0){
+									$('.tipInfo').show();
+								}
+								$(this).prev().removeClass('hasActive');
+							}
+							_this.sqrOrder();
+							_this.delSelSqr();
+						});
+					}
 				},
 				//删除已选择的、
 				delSelSqr : function(){
