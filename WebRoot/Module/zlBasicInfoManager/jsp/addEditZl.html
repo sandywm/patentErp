@@ -169,6 +169,7 @@
 		</div>
 	</div>
 	<script src="/plugins/jquery/jquery-1.7.2.min.js"></script>
+	<script src="/Module/zlBasicInfoManager/js/delMethod.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		var num=0,tmpEwyqIdArray=[],zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
@@ -304,6 +305,9 @@
 								lxrIdArray.push($('#lxrBox p').eq(i).attr('id'));
 								lxrIdNum.push($('#lxrBox p').eq(i).attr('id').split('_')[1]);
 							});
+						}else{
+							lxrIdArray.length = 0;
+							lxrIdNum.length = 0;
 						}
 					});
 					//添加发明人
@@ -318,6 +322,9 @@
 								fmrIdArray.push($('#fmrBox p').eq(i).attr('id'));
 								fmrIdNum.push($('#fmrBox p').eq(i).attr('id').split('_')[1]);
 							});
+						}else{
+							fmrIdArray.length = 0;
+							fmrIdNum.length = 0;
 						}
 					});
 					//添加技术联系人
@@ -332,6 +339,9 @@
 								jsLxrIdArray.push($('#techLxrBox p').eq(i).attr('id'));
 								jsLxrIdNum.push($('#techLxrBox p').eq(i).attr('id').split('_')[1]);
 							});
+						}else{
+							jsLxrIdArray.length = 0;
+							jsLxrIdNum.length = 0;
 						}
 					});
 					//添加优先权
@@ -736,11 +746,13 @@
 					strHtml += '<div id="sqrBox" class="multiBox fl">';
 					var tmpArraySqrId = json.sqrId.split(',');
 					var tmpArraySqrName = json.sqrName.split(',');
+					sqrIdArray = tmpArraySqrId;
+					sqrTxtArray = tmpArraySqrName;
 					for(var i=0;i<tmpArraySqrName.length;i++){
 						strHtml += '<p id="sqrId_'+ tmpArraySqrId[i] +'" sqrattrname="'+ tmpArraySqrName[i] +'" sqrattrid="'+ tmpArraySqrId[i] +'" class="delSqrBtn"><span>'+ tmpArraySqrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 						sqrArray.push('sqrId_'+tmpArraySqrId[i]);
-						sqrIdArray.push(tmpArraySqrId[i]);
-						sqrTxtArray.push(tmpArraySqrName[i]);
+						//sqrIdArray.push(tmpArraySqrId[i]);
+						//sqrTxtArray.push(tmpArraySqrName[i]);
 					}
 					strHtml += '</div><span id="addSqrBtn" class="addSpan fl">添加/编辑申请人</span>';
 					strHtml += '</div></div>';
@@ -752,10 +764,9 @@
 						var tmpArrayLxrId = json.lxrId.split(',');
 						var tmpArrayLxrName = json.lxrName.split(',');
 						var tmpArraySqrLxrId = json.sqrLxrId.split(',');
-						if(tmpArrayLxrId != 0){
-							for(var i=0;i<tmpArrayLxrName.length;i++){
-								strHtml += '<p id="lxrId_'+ tmpArrayLxrId[i] +'" lxridattr="'+ tmpArrayLxrId[i] +'" sqrids="'+ tmpArraySqrLxrId[i] +'" class="lxFmTag delLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrLxrId[i] +'"><span>'+ tmpArrayLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
-							}
+						lxrIdNum = tmpArrayLxrId;
+						for(var i=0;i<tmpArrayLxrName.length;i++){
+							strHtml += '<p id="lxrId_'+ tmpArrayLxrId[i] +'" lxridattr="'+ tmpArrayLxrId[i] +'" sqrids="'+ tmpArraySqrLxrId[i] +'" class="lxFmTag delLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrLxrId[i] +'"><span>'+ tmpArrayLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 						}
 					}
 					strHtml += '</div><span id="addlxrBtn" opts="addLxrOpts" class="addSpan fl">添加/编辑联系人</span></div>';
@@ -768,6 +779,7 @@
 						var tmpArrayFmrId = json.fmrId.split(',');
 						var tmpArrayFmrName = json.fmrName.split(',');
 						var tmpArraySqrFmrId = json.sqrFmrId.split(',');
+						fmrIdNum = tmpArrayFmrId;
 						for(var i=0;i<tmpArrayFmrName.length;i++){
 							strHtml += '<p id="fmrId_'+ tmpArrayFmrId[i] +'" fmridattr="'+ tmpArrayFmrId[i] +'" sqrids="'+ tmpArraySqrFmrId[i] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrFmrId[i] +'"><span>'+ tmpArrayFmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 						}	
@@ -782,6 +794,7 @@
 						var tmpArrayJsLxrId = json.jsLxrId.split(',');
 						var tmpArrayJsLxrName = json.jsLxrName.split(',');
 						var tmpArraySqrJsLxrId = json.sqrJsrId.split(',');
+						jsLxrIdNum = tmpArrayJsLxrId;
 						for(var i=0;i<tmpArrayJsLxrName.length;i++){
 							strHtml += '<p id="fmrId_'+ tmpArrayJsLxrId[i] +'" fmridattr="'+ tmpArrayJsLxrId[i] +'" sqrids="'+ tmpArraySqrJsLxrId[i] +'" class="lxFmTag delJsLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrJsLxrId[i] +'"><span>'+ tmpArrayJsLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 						}
@@ -981,60 +994,6 @@
 				page.init();				
 			});
 		});
-		//公共删除已添加的方法（技术领域、申请人）
-		function delHasAddMethod(obj,opts){
-			var tmpArray = [];
-			$('.'+ obj).on('click',function(){
-				var objId = $(this).attr('id'),lxrLen = $('#lxrBox p').length,fmrLen = $('#fmrBox p').length,jsLxrLen = $('#techLxrBox p').length;
-				var objSqrId = '';
-				if(opts == 'delFieldOpt'){
-					tmpArray = fieldArray;
-				}else if(opts == 'delSqrOpt'){
-					tmpArray = sqrArray;
-					objSqrId = $(this).attr('id').split('_')[1];
-				}else if(opts == 'delLxrOpt'){
-					tmpArray = lxrIdArray;
-				}else if(opts == 'delFmrOpt'){
-					tmpArray = fmrIdArray;
-				}else if(opts == 'delJsLxrOpt'){
-					tmpArray = jsLxrIdArray;
-				}
-				for(var i=0;i<tmpArray.length;i++){
-					if(objId == tmpArray[i]){
-						tmpArray.splice(i,1);
-						if(opts == 'delSqrOpt'){
-							sqrIdArray.splice(i,1);
-							sqrTxtArray.splice(i,1);
-						}
-					}
-				}
-				$(this).remove();
-				if(opts == 'delSqrOpt'){
-					if(lxrLen > 0){
-						$('input[name=myParSqr_'+ objSqrId +']').parent().remove();
-						//删除后还应该检测下当前下是否还存在lxr 假如不存在 应该将数组清空
-						if($('#lxrBox p').length == 0){
-							lxrIdArray.length = 0;
-							lxrIdNum.length = 0;
-						}
-					}
-					if(fmrLen > 0){
-						$('input[name=myParSqr_'+ objSqrId +']').parent().remove();
-						if($('#fmrBox p').length == 0){
-							fmrIdArray.length = 0;
-							fmrIdNum.length = 0;
-						}
-					}
-					if(jsLxrLen > 0){
-						$('input[name=myParSqr_'+ objSqrId +']').parent().remove();
-						if($('#techLxrBox p').length == 0){
-							jsLxrIdArray.length = 0;
-							jsLxrIdNum.length = 0;
-						}
-					}
-				}
-			});
-		}
 	</script>
 </body> 
 </html>

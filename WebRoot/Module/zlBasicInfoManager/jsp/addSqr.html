@@ -33,6 +33,7 @@
 				form = layui.form;
 			var page = {
 				data : {
+					cancelSelSqrId : [],
 					isClickInpFlag : false //用来检测进来时是否点击了增加申请人然后用来匹配当点击inp但未保存input选中的匹配
 				},
 				init : function(){
@@ -93,30 +94,13 @@
 							for(var i=0;i<tmpSqrTxt.length;i++){
 								strHtml += '<p id="sqrId_'+ tmpSqrId[i] +'" sqrAttrId="'+ tmpSqrId[i] +'" sqrAttrName="'+ tmpSqrTxt[i] +'" class="delSqrBtn"><span>'+ tmpSqrTxt[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 							}
-							/*if(parent.lxrIdArray.length != 0 || parent.fmrIdArray.length != 0){
-								//alert(tmpSqrId)
-								var newStrHtml = '';
-								parent.$('.lxFmTag').each(function(j){
-									for(var i=0;i<tmpSqrId.length;i++){
-										if(parent.$('.lxFmTag').eq(j).attr('sqrids') != tmpSqrId[i]){
-											//alert(parent.$('.lxFmTag').eq(j).html())
-											//parent.$('#lxrBox').html();
-											//console.log(parent.$('.lxrFmrInpHid').eq(j).parent().html())
-											//parent.$('#lxrBox').html(parent.$('.lxFmTag').eq(j).html());
-											//parent.$('.lxFmTag').eq(j).remove();
-											//console.log(parent.$('.lxrFmrInpHid').eq(j).parent().attr('id'));
-											//parent.$('.lxrFmrInpHid').eq(j).parent().remove();
-											//parent.$('input[name=myParSqr_'+ tmpSqrId[i] +']').parent().remove();
-											//return false;
-											//console.log(parent.$('.lxrFmrInpHid').eq(j).html())
-											//newStrHtml += '<p></p>';
-										}
+							if(parent.lxrIdNum.length != 0 || parent.fmrIdNum.length != 0 || parent.jsLxrIdNum.length != 0){
+								if(_this.data.cancelSelSqrId.length != 0){//用户取消了之前选中的
+									for(var i=0,iLen=_this.data.cancelSelSqrId.length;i<iLen;i++){
+										parent.$('input[name=myParSqr_'+ _this.data.cancelSelSqrId[i] +']').parent().remove();
 									}
-									//alert(parent.$('.lxrFmrInpHid').eq(j).attr('name').split('_')[1] + "--input")
-									
-								});		
-								
-							}*/
+								}
+							}
 							parent.$('#sqrBox').html(strHtml);
 					        parent.layer.close(index);
 					        parent.delHasAddMethod('delSqrBtn','delSqrOpt');
@@ -125,7 +109,7 @@
 				},
 				//input的选中动作
 				inpChecked : function(){
-					var _this = this;
+					var _this = this,tmpSqrIdStr = '';
 					if(noDataFlag == false){//表示存在数据
 						$('input[name=sqrInp]').on('click',function(){
 							var strHtml = '';
@@ -138,13 +122,22 @@
 								strHtml += '<a class="moveUpDown fl"></a>';
 								strHtml += '<i id="'+ hasCheckId +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
 								$('.hasSelSqrList').append(strHtml);
-							
+								if(parent.sqrIdArray.length != 0 && _this.data.cancelSelSqrId.length != 0){//第二次进来（点击保存后）
+									for(var i=0;i<_this.data.cancelSelSqrId.length;i++){
+										if(hasCheckId == _this.data.cancelSelSqrId[i]){
+											_this.data.cancelSelSqrId.splice(i,1);
+										}
+									}
+								}
 							}else{
 								$('#hasSelP_'+hasCheckId).remove();
 								if($('.listP').length == 0){
 									$('.tipInfo').show();
 								}
 								$(this).prev().removeClass('hasActive');
+								if(parent.sqrIdArray.length != 0){//第二次进来（点击保存后）
+									_this.data.cancelSelSqrId.push(hasCheckId);
+								}
 							}
 							_this.sqrOrder();
 							_this.delSelSqr();

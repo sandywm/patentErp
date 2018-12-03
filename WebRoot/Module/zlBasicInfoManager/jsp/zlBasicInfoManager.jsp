@@ -22,8 +22,8 @@
   				<div class="layui-card">
   					<div id="layuiTab" class="layui-tab layui-tab-brief" lay-filter="zlWrapFilter">
   						<input type="hidden" id="lqStatusInp" value="1"/>
-  						<!--  a id="addZlBtn" class="posAbs newAddBtn" opts="addZlOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加新专利</a-->
-  						<a id="importBtn" style="display:block;" class="posAbs newAddBtn" href="javascript:void(0)"><i class="iconfont layui-extend-daoru"></i>批量导入通知书</a>
+  						<a id="addZlBtn" class="posAbs newAddBtn" opts="addZlOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加新专利</a>
+  						<a id="importBtn" style="display:none;" class="posAbs newAddBtn" href="javascript:void(0)"><i class="iconfont layui-extend-daoru"></i>批量导入通知书</a>
 						<i class="iconfont layui-extend-bangzhu helpIcon" title="帮助"></i>
 					</div>   
   				</div>

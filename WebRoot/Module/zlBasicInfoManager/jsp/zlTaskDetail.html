@@ -88,6 +88,7 @@
 		</div>
 	</div>
 	<script src="/plugins/jquery/jquery.min.js"></script>
+	<script src="/Module/zlBasicInfoManager/js/delMethod.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		var globalZlId = parent.globalZlId,zlTit = parent.globalZlTit,taskDetailOpt='',upSuccSrcArray = [],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
@@ -212,8 +213,6 @@
 						form.render();
 						this.judgeByCustom();
 					}else if(lcNo == 6){//定稿提交
-						//备注去除
-						//$('.remarkWrap').remove();
 						var sqrName  = zlInfo[0].sqrName.split(',');
 						nowHtml_sub += '<div class="layui-form-item"><label class="layui-form-label titLabel">案件标题：</label>';
 						nowHtml_sub += '<div class="layui-input-block inpHeiDiv"><input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)"  value="'+ zlInfo[0].zlTitle +'" maxlength="40" autocomplete="off" class="layui-input"/></div></div>';
@@ -237,6 +236,7 @@
 							var lxrName = lxrName = zlInfo[0].lxrName.split(',');
 							var tmpArrayLxrId = zlInfo[0].lxrId.split(',');
 							var tmpArraySqrLxrId = zlInfo[0].sqrLxrId.split(',');
+							lxrIdNum = tmpArrayLxrId;
 							for(var i=0;i<lxrName.length;i++){
 								nowHtml_sub += '<p id="lxrId_'+ tmpArrayLxrId[i] +'" class="lxFmTag delLxrBtn" lxridattr="'+ tmpArrayLxrId[i] +'" sqrids="'+ tmpArraySqrLxrId[i] +'"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrLxrId[i] +'"><span>'+ lxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 							}
@@ -251,6 +251,7 @@
 							var fmrName = zlInfo[0].fmrName.split(',');
 							var tmpArrayFmrId = zlInfo[0].fmrId.split(',');
 							var tmpArraySqrFmrId = zlInfo[0].sqrFmrId.split(',');
+							fmrIdNum = tmpArrayFmrId;
 							for(var i=0;i<fmrName.length;i++){
 								nowHtml_sub += '<p id="fmrId_'+ tmpArrayFmrId[i] +'" fmridattr="'+ tmpArrayFmrId[i] +'" sqrids="'+ tmpArraySqrFmrId[i] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrFmrId[i] +'"><span>'+ fmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 							}
@@ -308,14 +309,7 @@
 						$('#stepFive').addClass('active hasBlink');
 						$('#moveLine').css({'width':'81%'});
 						$('.addFileTips').html('请添加客户确认书');
-					}/*else if(lcNo > 5 && lcNo < 6){//客户复审
-						$('#stepOne').addClass('active').find('span').html(this.data.isCompIcon);
-						$('#stepTwo').addClass('active').find('span').html(this.data.isCompIcon);
-						$('#stepThree').addClass('active').find('span').html(this.data.isCompIcon);
-						$('#stepFour').addClass('active hasBlink');
-						$('#moveLine').css({'width':'59%'});
-						$('.addFileTips').html('请添审核意见书');
-					}*/else if(lcNo == 6){//定稿提交
+					}else if(lcNo == 6){//定稿提交
 						$('#stepOne').addClass('active').find('span').html(this.data.isCompIcon);
 						$('#stepTwo').addClass('active').find('span').html(this.data.isCompIcon);
 						$('#stepThree').addClass('active').find('span').html(this.data.isCompIcon);
@@ -433,6 +427,9 @@
 								lxrIdArray.push($('#lxrBox p').eq(i).attr('id'));
 								lxrIdNum.push($('#lxrBox p').eq(i).attr('id').split('_')[1]);
 							});
+						}else{
+							lxrIdArray.length = 0;
+							lxrIdNum.length = 0;
 						}
 					});
 					//添加发明人
@@ -447,6 +444,9 @@
 								fmrIdArray.push($('#fmrBox p').eq(i).attr('id'));
 								fmrIdNum.push($('#fmrBox p').eq(i).attr('id').split('_')[1]);
 							});
+						}else{
+							fmrIdArray.length = 0;
+							fmrIdNum.length = 0;
 						}
 					});
 					//保存任务
@@ -635,60 +635,6 @@
 				page.onLoad();
 			});
 		});
-		//公共删除已添加的方法（技术领域、申请人）
-		function delHasAddMethod(obj,opts){
-			var tmpArray = [];
-			$('.'+ obj).on('click',function(){
-				var objId = $(this).attr('id'),lxrLen = $('#lxrBox p').length,fmrLen = $('#fmrBox p').length,jsLxrLen = $('#techLxrBox p').length;
-				var objSqrId = '';
-				if(opts == 'delFieldOpt'){
-					tmpArray = fieldArray;
-				}else if(opts == 'delSqrOpt'){
-					tmpArray = sqrArray;
-					objSqrId = $(this).attr('id').split('_')[1];
-				}else if(opts == 'delLxrOpt'){
-					tmpArray = lxrIdArray;
-				}else if(opts == 'delFmrOpt'){
-					tmpArray = fmrIdArray;
-				}else if(opts == 'delJsLxrOpt'){
-					tmpArray = jsLxrIdArray;
-				}
-				for(var i=0;i<tmpArray.length;i++){
-					if(objId == tmpArray[i]){
-						tmpArray.splice(i,1);
-						if(opts == 'delSqrOpt'){
-							sqrIdArray.splice(i,1);
-							sqrTxtArray.splice(i,1);
-						}
-					}
-				}
-				$(this).remove();
-				if(opts == 'delSqrOpt'){
-					if(lxrLen > 0){
-						$('input[name=myParSqr_'+ objSqrId +']').parent().remove();
-						//删除后还应该检测下当前下是否还存在lxr 假如不存在 应该将数组清空
-						if($('#lxrBox p').length == 0){
-							lxrIdArray.length = 0;
-							lxrIdNum.length = 0;
-						}
-					}
-					if(fmrLen > 0){
-						$('input[name=myParSqr_'+ objSqrId +']').parent().remove();
-						if($('#fmrBox p').length == 0){
-							fmrIdArray.length = 0;
-							fmrIdNum.length = 0;
-						}
-					}
-					if(jsLxrLen > 0){
-						$('input[name=myParSqr_'+ objSqrId +']').parent().remove();
-						if($('#techLxrBox p').length == 0){
-							jsLxrIdArray.length = 0;
-							jsLxrIdNum.length = 0;
-						}
-					}
-				}
-			});
-		}
 	</script>
 </body> 
 </html>
