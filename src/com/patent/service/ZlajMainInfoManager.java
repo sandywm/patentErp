@@ -287,7 +287,7 @@ public interface ZlajMainInfoManager {
 	boolean updateZlApplyDate(Integer zlId,String applyDate) throws WEBException;
 	
 	/**
-	 * 修改专利费减详情(发明专利有效)
+	 * 修改专利费减详情
 	 * @description
 	 * @author Administrator
 	 * @date 2018-9-28 上午10:44:03

@@ -217,14 +217,6 @@
             </key>
             <one-to-many class="com.patent.module.ZlajFjInfoTb" />
         </set>
-        <set name="zlajTzsInfoTbs" inverse="true">
-            <key>
-                <column name="aj_id" not-null="true">
-                    <comment>案卷编号</comment>
-                </column>
-            </key>
-            <one-to-many class="com.patent.module.ZlajTzsInfoTb" />
-        </set>
         <set name="zlajFeeInfoTbs" inverse="true">
             <key>
                 <column name="zl_id" not-null="true">

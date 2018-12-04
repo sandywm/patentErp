@@ -2,6 +2,8 @@ package com.patent.service;
 
 import java.util.List;
 
+import org.hibernate.Session;
+
 import com.patent.exception.WEBException;
 import com.patent.module.ZlajTzsInfoTb;
 
@@ -18,13 +20,18 @@ public interface ZlajTzsInfoManager {
 	 * @param gfrDate 官方绝限日
 	 * @param fwSerial 发文序号
 	 * @param tzsPath 通知书上传路径
+	 * @param uploadUserId 上传人
+	 * @param readStatus 读取状态（0：失败，1：成功）
+	 * @param readDetail 读取详情
+	 * @param cpyId 代理机构编号
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addTzs(Integer zlId,String tzsName,String fwrDate,String gfrDate,String fwSerial,String tzsPath) throws WEBException;
+	Integer addTzs(Integer zlId,String tzsName,String fwrDate,String gfrDate,String fwSerial,String tzsPath,
+			Integer uploadUserId,Integer readStatus,String readDetail,Integer cpyId) throws WEBException;
 	
 	/**
-	 * 根据案件编号获取所有的通知书信息列表
+	 * 根据案件编号获取所有的通知书信息列表(读取成功的)
 	 * @description
 	 * @author wm
 	 * @date 2018-9-3 上午10:25:57
@@ -46,7 +53,7 @@ public interface ZlajTzsInfoManager {
 	ZlajTzsInfoTb getEntityById(Integer id) throws WEBException;
 	
 	/**
-	 * 根据专利编号、通知书发文序号获取通知书信息列表
+	 * 根据专利编号、通知书发文序号获取读取成功的通知书信息列表(读取成功的)
 	 * @description
 	 * @author Administrator
 	 * @date 2018-10-9 上午09:53:53
@@ -56,4 +63,32 @@ public interface ZlajTzsInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajTzsInfoTb> listInfoByOpt(Integer zlId,String fwSerial) throws WEBException;
+	
+	/**
+	 * 根据条件分页获取读取专利通知书列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-3 下午05:05:26
+	 * @param cpyId 代理机构编号
+	 * @param zlId 专利编号（0表示全部）
+	 * @param readStatus 读取状态（0：表示全部，1：读取成功，2:读取失败）
+	 * @param pageNo
+	 * @param pageSize
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajTzsInfoTb> listPageInfoByOpt(Integer cpyId,Integer zlId,Integer readStatus,Integer pageNo,Integer pageSize) throws WEBException;
+	
+	/**
+	 * 根据条件获取读取专利通知书记录条数
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-3 下午05:05:29
+	 * @param cpyId 代理机构编号
+	 * @param zlId 专利编号（0表示全部）
+	 * @param readStatus 读取状态（0：表示全部，1：读取成功，2:读取失败）
+	 * @return
+	 * @throws WEBException
+	 */
+	Integer getCountByOpt(Integer cpyId,Integer zlId,Integer readStatus) throws WEBException;
 }

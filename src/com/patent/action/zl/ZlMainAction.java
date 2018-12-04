@@ -339,6 +339,7 @@ public class ZlMainAction extends DispatchAction {
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		ZlajLcYjInfoManager lcyjm = (ZlajLcYjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_YJ_INFO);
+		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
 		Integer cpyId = CommonTools.getFinalInteger("cpyId",request);
 		Integer stopStatus = CommonTools.getFinalInteger("stopStatus",request);
 		String ajNoQt = CommonTools.getFinalStr("ajNoQt",request);
@@ -349,9 +350,10 @@ public class ZlMainAction extends DispatchAction {
 		String lxr = CommonTools.getFinalStr("lxr", request);
 		String sDate = CommonTools.getFinalStr("sDate", request);
 		String eDate = CommonTools.getFinalStr("eDate", request);
-		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利，2：撰写任务领取,3：我的专利,4:我的/专利任务,5:任务移交记录/审核）
+		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利，2：撰写任务领取,3：我的专利,4:我的/专利任务,5:任务移交记录/审核）,6:通知书上传列表
 		Integer comStatus = CommonTools.getFinalInteger("comStatus", request);//我的任务时传递的参数(0:未完成，已完成)
 		Integer checkStatus = CommonTools.getFinalInteger("checkStatus", request);//(0:未审核，1：审核通过，2：审核未通过)
+		Integer readStatus =  CommonTools.getFinalInteger("readStatus", request);//通知书读取状态(0:全部，1：读取成功，2：读取失败)
 		Integer currLoginUserId = this.getLoginUserId(request);
 		String roleName = this.getLoginRoleName(request);
 		//当任务条件为0时，撰写任务领取，这时需要强制stopStatus为正常（0）
@@ -657,7 +659,51 @@ public class ZlMainAction extends DispatchAction {
 				}else{
 					map.put("msg", "noInfo");
 				}
+			}else if(lqStatus.equals(6)){//上传通知书读取列表
+				Integer count = tzsm.getCountByOpt(cpyId, 0, readStatus);
+				if(count > 0){
+					List<ZlajTzsInfoTb> tzsList = tzsm.listPageInfoByOpt(cpyId, 0, readStatus, pageNo, pageSize);
+					List<Object> list_d = new ArrayList<Object>();
+					for(Iterator<ZlajTzsInfoTb> it = tzsList.iterator() ; it.hasNext();){
+						ZlajTzsInfoTb tzs = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						Integer zlId = tzs.getAjId();
+						map_d.put("zlId", zlId);
+						if(zlId > 0){
+							List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
+							if(zlList.size() > 0){
+								ZlajMainInfoTb zl = zlList.get(0);
+								map_d.put("zlName", zl.getAjTitle());
+								map_d.put("zlNo", zl.getAjNoGf());
+							}
+						}
+						map_d.put("zlName", "");
+						map_d.put("zlNo", "");
+						map_d.put("tzsName", tzs.getTzsName());
+						map_d.put("tzsFwr", tzs.getTzsGfr());
+						map_d.put("fwSerial", tzs.getFwSerial());
+						map_d.put("tzsPath", tzs.getTzsPath());
+						map_d.put("uploadUserName", tzs.getUser().getUserName());
+						map_d.put("uploadTime", tzs.getUploadTime());
+						Integer readStatus_db = tzs.getReadStatus();
+						if(readStatus_db.equals(1)){
+							map_d.put("readStatusChi", "读取成功");
+						}else{
+							map_d.put("readStatusChi", "读取失败");
+						}
+						map_d.put("readDetail", tzs.getReadDetail());
+						list_d.add(map_d);
+					}
+					map.put("msg", "success");
+					map.put("data", list_d);
+					map.put("count", count);
+					map.put("code", 0);
+				}else{
+					map.put("msg", "noInfo");
+				}
+				
 			}
+				
 		}
 		this.getJsonPkg(map, response);
 		return null;
@@ -4093,6 +4139,7 @@ public class ZlMainAction extends DispatchAction {
 			        		zlList = zlm.listSpecInfoByOpt(zlName, sqrName, zlType,cpyId);
 			        	}
 			        	Integer zlNum = zlList.size();
+			        	String tzsPath_tmp = tzsPath.replace(path_pre, "");
 			        	if(zlNum > 0){
 			        		ZlajMainInfoTb zl = null;
 			        		if(zlNum.equals(1)){
@@ -4112,18 +4159,25 @@ public class ZlMainAction extends DispatchAction {
 			        		Integer zlId = 0;
 			        		if(zl != null){
 			        			zlId = zl.getId();
-			        			if(tzsm.listInfoByOpt(zlId, fwSerial).size() > 0){//有此通知书
+			        			List<ZlajTzsInfoTb> tzsList = tzsm.listInfoByOpt(zlId, fwSerial);
+			        			if(tzsList.size() > 0){//有此通知书
 									//无需再增加
-			        				readResult = "uploadExist";//之前已经上传过，无需再次上传
-									if(readFlag){
-										//删除临时上传位置
-										FileOpration.deleteFile(tzsPath);
-									}
+			        				readResult = "uploadExist";//之前已读取过该通知书，无需再次上传
+			        				tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, tzsList.get(0).getTzsPath(),currUserId,0,"之前已读取过该通知书，无需再次读取",cpyId);
+//			        				看以后需要删除不？
+//									if(readFlag){
+//										//删除临时上传位置
+//										FileOpration.deleteFile(tzsPath);
+//									}
 								}else{
 									lcNo = Double.parseDouble(zl.getAjStatus());//当前专利流程号
-									String tzsPath_tmp = tzsPath.replace(path_pre, "");
 									tzsPath_tmp = tzsPath_tmp.substring(tzsPath_tmp.lastIndexOf("\\") + 1);
-									String upZipPath_final = "cpyUser\\"+zlId+"\\tzs\\"+tzsPath_tmp; 
+									String path_pre_1 = "cpyUser\\"+zlId+"\\tzs\\";
+									File file = new File(path_pre + path_pre_1);
+									if(!file.exists()){
+						    			file.mkdirs();
+						    		}
+									String upZipPath_final = path_pre_1+tzsPath_tmp; 
 									String applyDate_db = zl.getAjApplyDate();//获取数据库中专利的申请日
 									if(tzsName.equals("专利申请受理通知书")){
 										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.1);//导入通知书期限1个月
@@ -4292,6 +4346,7 @@ public class ZlMainAction extends DispatchAction {
 																feeCpyDate = feeEndDateCpy;
 																feeGfDate = feeEndDateGf;
 																yearFee = fdJson.getFeeAmount();
+																fjRate_real = fjRate_final;
 															}else{//第二次缴费时不存在通知书，需要通过第一次通知书中的信息进行计算
 																yearFee = CommonTools.getYearFee(m, zlType);
 																feeCpyDate = CurrentTime.getFinalDate(yearFee_sDate, Constants.JF_SL_END_DATE_CPY);
@@ -4331,6 +4386,7 @@ public class ZlMainAction extends DispatchAction {
 							        		}
 				        				}else{//不存在申请日不能导入后续的通知书
 				        					readResult = "dateError";
+				        					tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "指定专利无申请日，无法进行读取", cpyId);
 				        				}
 				        			}else if(tzsName.equals("缴费通知书")){//缴费通知书
 				        				readResult = "success";
@@ -4365,6 +4421,9 @@ public class ZlMainAction extends DispatchAction {
 						        				}
 					    		        	}
 				        				}
+				        			}else{//未收录该通知书的读取方法
+				        				readResult = "noReadTzs";//系统还未学习该通知书的读取方法
+				        				tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "系统还未学习该通知书的读取方法", cpyId);
 				        			}
 									if(readResult.equals("success")){
 										if(readFlag){
@@ -4373,20 +4432,21 @@ public class ZlMainAction extends DispatchAction {
 											//删除临时上传位置
 											FileOpration.deleteFile(tzsPath);
 										}
-										tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final);
+										tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 1, "读取成功", cpyId);
 									}else{
 										//删除临时上传位置
-										FileOpration.deleteFile(tzsPath);
+										//FileOpration.deleteFile(tzsPath);
 									}
 								}
 			        		}else{//案件被终止无法再识别通知书
 			        			readResult =  "ajStop";
+			        			tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "案件被终止无法再识别通知书", cpyId);
 							}
 							map_d.put("result", readResult);
 							map_d.put("tzsName", tzsName);
 							map_d.put("zlId", zlId);
-							map_d.put("ajNoGf", zl.getAjNoGf());
-							map_d.put("ajTitle", zl.getAjTitle());
+							map_d.put("ajNoGf", ajNoGf);
+							map_d.put("ajTitle", zlName);
 							list_d.add(map_d);
 			        	}else{//不存在
 			        		readResult = "noInfo";//该通知书没有匹配到专利
@@ -4395,8 +4455,9 @@ public class ZlMainAction extends DispatchAction {
 		    				map_d.put("ajNoGf", ajNoGf);
 		    				map_d.put("ajTitle", zlName);
 		    				list_d.add(map_d);
+		    				tzsm.addTzs(0, tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "没有匹配到专利", cpyId);
 							//删除当前通知书压缩包
-							FileOpration.deleteFile(tzsPath);
+							//FileOpration.deleteFile(tzsPath);
 			        	}
 					}
 				}

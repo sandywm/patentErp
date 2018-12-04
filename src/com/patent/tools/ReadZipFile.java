@@ -317,10 +317,14 @@ public class ReadZipFile {
 	        					}
 	        				}
 	        			}
+	        			inputstream.close();
 	            	}
 	            }
 	        }
-	        
+	        zin.close();
+	        check.close();
+	        fileInputStream.close();
+	        zf.close();
 //	        map.put("readInfo", list_d);
 //	        if(list_d.size() > 0){//存在内容
 //            	List<ZlajMainInfoTb> zlList = new ArrayList<ZlajMainInfoTb>();

@@ -6,6 +6,7 @@ import org.hibernate.Session;
 
 import com.patent.dao.ZlajTzsInfoDao;
 import com.patent.module.ZlajTzsInfoTb;
+import com.patent.tools.CommonTools;
 
 @SuppressWarnings("unchecked")
 public class ZlajTzsInfoDaoImpl implements ZlajTzsInfoDao{
@@ -48,7 +49,7 @@ public class ZlajTzsInfoDaoImpl implements ZlajTzsInfoDao{
 	@Override
 	public List<ZlajTzsInfoTb> findInfoByAjId(Session sess, Integer ajId) {
 		// TODO Auto-generated method stub
-		String hql = " from ZlajTzsInfoTb as tzs where tzs.zlajMainInfoTb.id = "+ajId;
+		String hql = " from ZlajTzsInfoTb as tzs where tzs.ajId = "+ajId + "  and tzs.readStatus = 1";
 		return sess.createQuery(hql).list();
 	}
 
@@ -56,8 +57,41 @@ public class ZlajTzsInfoDaoImpl implements ZlajTzsInfoDao{
 	public List<ZlajTzsInfoTb> findInfoByOpt(Session sess, Integer ajId,
 			String fwSerial) {
 		// TODO Auto-generated method stub
-		String hql = " from ZlajTzsInfoTb as tzs where tzs.zlajMainInfoTb.id = "+ajId + " and tzs.fwSerial = '"+fwSerial+"'";
+		String hql = " from ZlajTzsInfoTb as tzs where  tzs.ajId = "+ajId + " and tzs.fwSerial = '"+fwSerial+"' and tzs.readStatus = 1";
 		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public List<ZlajTzsInfoTb> findPageInfoByOpt(Session sess, Integer cpyId,
+			Integer zlId, Integer readStatus, Integer pageNo, Integer pageSize) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajTzsInfoTb as tzs where tzs.cpy.id = "+cpyId;
+		if(zlId > 0){
+			hql += " and tzs.zlajMainInfoTb.id = "+zlId;
+		}
+		if(!readStatus.equals(2)){
+			hql += " and tzs.readStatus = "+readStatus;
+		}
+		int offset = (pageNo - 1) * pageSize;
+		if (offset < 0) {
+			offset = 0;
+		}
+		return sess.createQuery(hql).setFirstResult(offset).setMaxResults(pageSize).list();
+	}
+
+	@Override
+	public Integer getCountByOpt(Session sess, Integer cpyId, Integer zlId,
+			Integer readStatus) {
+		// TODO Auto-generated method stub
+		String hql = "select count(tzs.id) from ZlajTzsInfoTb as tzs where tzs.cpy.id = "+cpyId;
+		if(zlId > 0){
+			hql += " and tzs.ajId = "+zlId;
+		}
+		if(!readStatus.equals(2)){
+			hql += " and tzs.readStatus = "+readStatus;
+		}
+		Object count_obj = sess.createQuery(hql).uniqueResult();
+		return CommonTools.longToInt(count_obj);
 	}
 
 }

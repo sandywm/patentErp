@@ -10,11 +10,11 @@
             <column name="id" />
             <generator class="native" />
         </id>
-        <many-to-one name="zlajMainInfoTb" class="com.patent.module.ZlajMainInfoTb" lazy="false">
-            <column name="aj_id" not-null="true">
+        <property name="ajId" type="java.lang.Integer">
+            <column name="aj_id" length="20" not-null="true">
                 <comment>案卷编号</comment>
             </column>
-        </many-to-one>
+        </property>
         <property name="tzsName" type="java.lang.String">
             <column name="tzs_name" length="50" not-null="true">
                 <comment>通知书名称</comment>
@@ -38,6 +38,26 @@
         <property name="tzsPath" type="java.lang.String">
             <column name="tzs_path" length="50">
                 <comment>通知书上传路径</comment>
+            </column>
+        </property>
+        <many-to-one name="user" class="com.patent.module.CpyUserInfo" lazy="false">
+            <column name="upload_user_id" not-null="true">
+                <comment>上传人员编号</comment>
+            </column>
+        </many-to-one>
+        <property name="uploadTime" type="java.lang.String">
+            <column name="upload_time" length="50" not-null="true">
+                <comment>通知书上传时间</comment>
+            </column>
+        </property>
+        <property name="readStatus" type="java.lang.Integer">
+            <column name="read_status" length="20" not-null="true">
+                <comment>读取状态（0：读取失败，1：读取成功）</comment>
+            </column>
+        </property>
+         <property name="readDetail" type="java.lang.String">
+            <column name="read_detail" length="100" not-null="true">
+                <comment>读取详情</comment>
             </column>
         </property>
     </class>

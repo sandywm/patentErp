@@ -56,7 +56,6 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private Integer ajAddUserId;
 	private Set<ZlajLcInfoTb> zlajLcInfoTbs = new HashSet<ZlajLcInfoTb>();
 	private Set<ZlajFjInfoTb> zlajFjInfoTbs = new HashSet<ZlajFjInfoTb>();
-	private Set<ZlajTzsInfoTb> zlajTzsInfoTbs = new HashSet<ZlajTzsInfoTb>();
 	private Set<ZlajFeeInfoTb> zlajFeeInfoTbs = new HashSet<ZlajFeeInfoTb>();
 
 	// Constructors
@@ -322,14 +321,6 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	public void setZlajFjInfoTbs(Set<ZlajFjInfoTb> zlajFjInfoTbs) {
 		this.zlajFjInfoTbs = zlajFjInfoTbs;
-	}
-
-	public Set<ZlajTzsInfoTb> getZlajTzsInfoTbs() {
-		return zlajTzsInfoTbs;
-	}
-
-	public void setZlajTzsInfoTbs(Set<ZlajTzsInfoTb> zlajTzsInfoTbs) {
-		this.zlajTzsInfoTbs = zlajTzsInfoTbs;
 	}
 
 	public Integer getAjStopStatus() {

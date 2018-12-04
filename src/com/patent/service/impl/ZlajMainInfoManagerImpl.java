@@ -449,12 +449,10 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			tran = sess.beginTransaction();
 			ZlajMainInfoTb zl = zlDao.get(sess, zlId);
 			if(zl != null){
-				if(zl.getAjType().equals("fm")){
-					zl.setAjFjInfo(fjRate);
-					zlDao.update(sess, zl);
-					tran.commit();
-					return true;
-				}
+				zl.setAjFjInfo(fjRate);
+				zlDao.update(sess, zl);
+				tran.commit();
+				return true;
 			}
 			return false;
 		} catch (Exception e) {
