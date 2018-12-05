@@ -201,6 +201,11 @@
                 <comment>案件终止人类型(cpyUser,appUser)</comment>
             </column>
         </property>
+        <property name="zlLevel" type="java.lang.Integer">
+            <column name="zl_level" length="20">
+                <comment>专利难易度（1:简单,2:困难,3：很难）</comment>
+            </column>
+        </property>
         <set name="zlajLcInfoTbs" inverse="true">
             <key>
                 <column name="aj_id" not-null="true">

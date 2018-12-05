@@ -54,6 +54,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private String ajStopUserType;
 	private String ajAddDate;
 	private Integer ajAddUserId;
+	private Integer zlLevel;
 	private Set<ZlajLcInfoTb> zlajLcInfoTbs = new HashSet<ZlajLcInfoTb>();
 	private Set<ZlajFjInfoTb> zlajFjInfoTbs = new HashSet<ZlajFjInfoTb>();
 	private Set<ZlajFeeInfoTb> zlajFeeInfoTbs = new HashSet<ZlajFeeInfoTb>();

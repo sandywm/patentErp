@@ -154,6 +154,60 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
+	 * 获取代理机构编号组合（组合专利编号用）
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-12-5 下午09:52:58
+	 * @param cpyId 代理机构号
+	 * @param num 数字规格
+	 * @return
+	 */
+	private String getCpyStr(Integer cpyId,Integer num){
+		if(num.equals(5)){//组合成5位数个数
+			if(cpyId >= 1 && cpyId < 10){
+				return "0000"+cpyId;
+			}else if(cpyId >= 10 && cpyId < 100){
+				return "000"+cpyId;
+			}else if(cpyId >= 100 && cpyId < 1000){
+				return "00"+cpyId;
+			}else if(cpyId >= 1000 && cpyId < 10000){
+				return "0"+cpyId;
+			}else{
+				return cpyId.toString();
+			}
+		}
+		return "";
+	}
+	
+	/**
+	 * 获取专利个数组合（组合专利编号用）
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-12-5 下午10:02:38
+	 * @param zlNum 专利数
+	 * @param num 数字规格
+	 * @return
+	 */
+	private String getZlNumStr(Integer zlNum,Integer num){
+		if(num.equals(6)){//组合成6位数个数
+			if(zlNum >= 1 && zlNum < 10){
+				return "00000"+zlNum;
+			}else if(zlNum >= 10 && zlNum < 100){
+				return "0000"+zlNum;
+			}else if(zlNum >= 100 && zlNum < 1000){
+				return "000"+zlNum;
+			}else if(zlNum >= 1000 && zlNum < 10000){
+				return "00"+zlNum;
+			}else if(zlNum >= 10000 && zlNum < 100000){
+				return "0"+zlNum;
+			}else{
+				return zlNum.toString();
+			}
+		}
+		return "";
+	}
+	
+	/**
 	 * 获取当前用户有无指定的操作权限
 	 * @description
 	 * @author Administrator
@@ -1950,7 +2004,6 @@ public class ZlMainAction extends DispatchAction {
 		Integer cpyId = 0;
 		String currNextAjNo = "";
 		String msg = "error";
-		String nextNumStr = "";
 		Map<String,String> map = new HashMap<String,String>();
 		if(this.getLoginType(request).equals("cpyUser")){
 			cpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
@@ -1960,30 +2013,22 @@ public class ZlMainAction extends DispatchAction {
 				List<ZlajMainInfoTb> zlList = zlm.listFirstInfoByOpt(cpyId,ajType,currYear);
 				String varCon = "";
 				if(ajType.equals("fm")){
-					varCon = "01";
+					varCon = "1";
 				}else if(ajType.equals("syxx")){
-					varCon = "02";
+					varCon = "2";
 				}else if(ajType.equals("wg")){
-					varCon = "03";
+					varCon = "3";
 				}
 				msg = "success";
+				String cpyIdStr = this.getCpyStr(cpyId, 5);
 				if(zlList.size() > 0){
-					String ajNo = zlList.get(0).getAjNo();//20180100011--201802
-					String str1 = ajNo.substring(0,6);
-					String str2 = ajNo.substring(6, 10);
+					//格式cpyId(00001)年费(2018)专利类型(1)专利个数(000001)
+					String ajNo_prev = zlList.get(0).getAjNo();//0000120181000001
+					String str2 = ajNo_prev.substring(10);
 					Integer nextNum = Integer.parseInt(str2) + 1;
-					if(nextNum > 1000){
-						nextNumStr = nextNum + "";
-					}else if(nextNum > 100){
-						nextNumStr = "0" + nextNum;
-					}else if(nextNum > 10){
-						nextNumStr = "00" + nextNum;
-					}else if(nextNum > 1){
-						nextNumStr = "000" + nextNum;
-					}
-					currNextAjNo = str1 + nextNumStr + "." + cpyId;
+					currNextAjNo = cpyIdStr + currYear + varCon + this.getZlNumStr(nextNum, 6);
 				}else{
-					currNextAjNo = currYear + varCon + "0001" + "." + cpyId;
+					currNextAjNo = cpyIdStr + currYear + varCon + "000001";
 				}
 				map.put("currNextAjNo", currNextAjNo);
 			}
@@ -2014,8 +2059,8 @@ public class ZlMainAction extends DispatchAction {
 		ZlajLcInfoManager lcm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		Integer cpyId = 0;
-		String nextNumStr = "";
 		String ajNoQt = "";
 		String ajNo = "";
 		String msg = "error";
@@ -2069,65 +2114,68 @@ public class ZlMainAction extends DispatchAction {
 						if(ajType.equals("fmxx")){
 							ajType = "fm,syxx";
 						}
+						String zlNoGf = "";
+						String ajTitle = Transcode.unescape_new("ajTitle", request);
+						String ajFieldId = CommonTools.getFinalStr("ajFieldId", request);
+						String ajSqrId  = CommonTools.getFinalStr("ajSqrId", request);
+						String ajSqrName = Transcode.unescape_new1("ajSqrName", request);
+						String ajFmrId  = CommonTools.getFinalStr("ajFmrId", request);
+						String ajLxrId = CommonTools.getFinalStr("ajLxrId", request);
+						String jsLxrId = CommonTools.getFinalStr("jsLxrId", request);
+						String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
+						String yxqDetail = CommonTools.getFinalStr("yxqDetail", request);
+						String ajUpload = CommonTools.getFinalStr("ajUpload", request);//单个专利时
+						String ajRemark =  Transcode.unescape_new("ajRemark", request);
+						String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
+						String cpyDate = CommonTools.getFinalStr("cpyDate", request);//内部期限(前期资料提交完成时间)
+						String sDate = CurrentTime.getStringDate();//开始日期
+						Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减（当受理通知书丢失的时候可以手动增加，最好是导入受理通知书）
+						if(!ajSqrId.equals("")){//费减只有在申请人存在的时候才能进行设置
+							ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);
+						}
+						String dlFee = CommonTools.getFinalStr("dlFee", request);//代理费(100-100000)的整数
+						String ajApplyDate = "";
 						String[] ajTypeArr = ajType.split(",");
 						for(Integer i = 0 ; i < ajTypeArr.length ; i++){
 							ajType = ajTypeArr[i];
 							if(cpyId > 0 && !ajType.equals("")){
 								if(ajType.equals("fm")){
-									varCon = "01";
+									varCon = "1";
 								}else if(ajType.equals("syxx")){
-									varCon = "02";
+									varCon = "2";
 								}else if(ajType.equals("wg")){
-									varCon = "03";
+									varCon = "3";
 								}
 								List<ZlajMainInfoTb> zlList = zlm.listFirstInfoByOpt(cpyId,ajType,currYear);
+								String cpyIdStr = this.getCpyStr(cpyId, 5);
 								if(zlList.size() > 0){
-									String ajNo_prev = zlList.get(0).getAjNo();//20180100011--201802
-									String str1 = ajNo_prev.substring(0,6);
-									String str2 = ajNo_prev.substring(6, 10);
+									//格式cpyId(00001)年费(2018)专利类型(1)专利个数(000001)
+									String ajNo_prev = zlList.get(0).getAjNo();//0000120181000001
+									String str2 = ajNo_prev.substring(10);
 									Integer nextNum = Integer.parseInt(str2) + 1;
-									if(nextNum > 1000){
-										nextNumStr = nextNum + "";
-									}else if(nextNum > 100){
-										nextNumStr = "0" + nextNum;
-									}else if(nextNum > 10){
-										nextNumStr = "00" + nextNum;
-									}else if(nextNum > 1){
-										nextNumStr = "000" + nextNum;
-									}
-									ajNoQt = str1 + nextNumStr + "." + cpyId;
-									ajNo =  str1 + nextNumStr + cpyId;
+									ajNoQt = cpyIdStr + currYear + varCon + this.getZlNumStr(nextNum, 6);
 								}else{
-									ajNoQt = currYear + varCon + "0001" + "." + cpyId;
-									ajNo = currYear + varCon + "0001" + cpyId;
+									ajNoQt = cpyIdStr + currYear + varCon + "000001";
 								}
-								
-								String zlNoGf = "";
-								String ajTitle = Transcode.unescape_new("ajTitle", request);
-								String ajFieldId = CommonTools.getFinalStr("ajFieldId", request);
-								String ajSqrId  = CommonTools.getFinalStr("ajSqrId", request);
-								String ajSqrName = Transcode.unescape_new1("ajSqrName", request);
-								String ajFmrId  = CommonTools.getFinalStr("ajFmrId", request);
-								String ajLxrId = CommonTools.getFinalStr("ajLxrId", request);
-								String jsLxrId = CommonTools.getFinalStr("jsLxrId", request);
-								String ajSqAddress = Transcode.unescape_new("ajSqAddress", request);
-								String yxqDetail = CommonTools.getFinalStr("yxqDetail", request);
-								String ajUpload = CommonTools.getFinalStr("ajUpload", request);
-								
-								String ajRemark =  Transcode.unescape_new("ajRemark", request);
-								String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
-								String cpyDate = CommonTools.getFinalStr("cpyDate", request);//内部期限(前期资料提交完成时间)
-								String sDate = CurrentTime.getStringDate();//开始日期
-								Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减（当受理通知书丢失的时候可以手动增加，最好是导入受理通知书）
-								if(!ajSqrId.equals("")){//费减只有在申请人存在的时候才能进行设置
-									ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);
+								ajNo = ajNoQt;
+								if(ajTypeArr.length == 2){//发明+新型
+									if(ajType.equals("fm")){
+										ajUpload = CommonTools.getFinalStr("fmPath", request);
+										dlFee = CommonTools.getFinalStr("dlFee_fm", request);//发明的代理费
+									}else{//实用新型
+										ajUpload = CommonTools.getFinalStr("xxPath", request);
+										dlFee = CommonTools.getFinalStr("dlFee_xx", request);//新型的代理费
+									}
 								}
-								String ajApplyDate = "";
 								Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, 
 										yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "2.0", "流程人员分配", pubZlId,0,0,0,0,0,0,0,0,0,cpyId,currLoginUserId);
 								if(zlId > 0){
 									if(pubZlId > 0){
 										pzm.updateAjIdById(pubZlId, zlId);
+										//增加代理费用
+										String jfDate = CurrentTime.getFinalDate(sDate, Constants.DL_FEE_DAYS);
+										fm.addZLFee(zlId, currLoginUserId, feeType, Double.parseDouble(dlFee), 0.0, jfDate, jfDate, "", 0, 
+												cpyId, 1, "", "", "", 0, "", 0, "", "", "", "", "");
 									}
 									//增加流程
 									Integer lcId_1 = lcm.addLcInfo(zlId, "专利案件录入", "专利案件录入", sDate, cpyDate, sDate, "",1.0);
@@ -2268,6 +2316,7 @@ public class ZlMainAction extends DispatchAction {
 		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
 		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		String msg = "error";
 		Map<String,String> map = new HashMap<String,String>();
 		boolean abilityFlag = false;
@@ -2342,32 +2391,24 @@ public class ZlMainAction extends DispatchAction {
 							}	
 							if(msg.equals("success")){////专利类型发生变化，需要重新获取专利号
 								if(ajType.equals("fm")){
-									varCon = "01";
+									varCon = "1";
 								}else if(ajType.equals("syxx")){
-									varCon = "02";
+									varCon = "2";
 								}else if(ajType.equals("wg")){
-									varCon = "03";
+									varCon = "3";
 								}
 								List<ZlajMainInfoTb> zlList_1 = zlm.listFirstInfoByOpt(cpyId,ajType,currYear);
+								String cpyIdStr = this.getCpyStr(cpyId, 5);
 								if(zlList_1.size() > 0){
-									String ajNo_prev = zlList_1.get(0).getAjNo();//20180100011--201802
-									String str1 = ajNo_prev.substring(0,6);
-									String str2 = ajNo_prev.substring(6, 10);
+									//格式cpyId(00001)年费(2018)专利类型(1)专利个数(000001)
+									String ajNo_prev = zlList.get(0).getAjNo();//0000120181000001
+									String str2 = ajNo_prev.substring(10);
 									Integer nextNum = Integer.parseInt(str2) + 1;
-									if(nextNum > 1000){
-										nextNumStr = nextNum + "";
-									}else if(nextNum > 100){
-										nextNumStr = "0" + nextNum;
-									}else if(nextNum > 10){
-										nextNumStr = "00" + nextNum;
-									}else if(nextNum > 1){
-										nextNumStr = "000" + nextNum;
-									}
-									ajNoQt = str1 + nextNumStr + "." + cpyId;
-									ajNo =  str1 + nextNumStr + cpyId;
+									ajNoQt = cpyIdStr + currYear + varCon + this.getZlNumStr(nextNum, 6);
 								}else{
-									ajNoQt = currYear + varCon + "0001" + "." + cpyId;
+									ajNoQt = cpyIdStr + currYear + varCon + "000001";
 								}
+								ajNo = ajNoQt;
 							}
 						}else{//类型没变，案件编号就不需要变化，需要判断专利任务有无发生变化
 							//首先判断原来有没有关联专利任务
@@ -2494,6 +2535,12 @@ public class ZlMainAction extends DispatchAction {
 										lcm.updateLcBasicInfoById(lcList.get(0).getId(), "", "", "", cpyDate, "");
 									}
 								}
+							}
+							List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(zlId, feeTypeId);
+							if(feeList.size() > 0){//存在代理费用
+								Integer 
+							}else{//没有就增加代理费
+								
 							}
 						}
 					}
