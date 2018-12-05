@@ -3407,8 +3407,9 @@ public class ZlMainAction extends DispatchAction {
 												String sqrId = CommonTools.getFinalStr("sqrId", request);//申请人
 												String sqrName = Transcode.unescape_new1("sqrName", request);//申请人姓名
 												String fmrId = CommonTools.getFinalStr("fmrId", request);//发明人
+												String lxrId = CommonTools.getFinalStr("lxrId", request);//联系人
 												Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减
-												if(!sqrId.equals("") && !fmrId.equals("") && !upZxFile.equals("")){
+												if(!sqrId.equals("") && !fmrId.equals("") && !lxrId.equals("")){
 													//增加附件信息
 													String[] fjNameArr = upZxFile.split(",");
 													for(Integer i = 0 ; i < fjNameArr.length ; i++){
@@ -3424,7 +3425,7 @@ public class ZlMainAction extends DispatchAction {
 													//修改流程完成时间
 													lcm.updateComInfoById(lcId, currDate);
 													//修改必须的信息
-													zlm.updateBasicInfoById(zlId, zlTitle, sqrId, sqrName, fmrId, "", ajFjInfo);
+													zlm.updateBasicInfoById(zlId, zlTitle, sqrId, sqrName, fmrId, lxrId, ajFjInfo);
 													lcNo = 7.0;
 													zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待导入受理/缴费通知书");
 													//发送邮件
