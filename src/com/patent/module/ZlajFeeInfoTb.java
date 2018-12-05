@@ -39,6 +39,8 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	private Double discountsFee;//优惠费用
 	private String feeBatchNo;
 	private String bankSerialNo;
+	private String fpDate;
+	private String fpNo;
 	private Set<ZlajFeeSubInfoTb> zlajFeeSubInfoTbs = new HashSet<ZlajFeeSubInfoTb>();
 
 	// Constructors
@@ -52,7 +54,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
 			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus,
-			String backDate,Double backFee,Integer backStatus,Double discountsFee,String feeBatchNo,String bankSerialNo) {
+			String backDate,Double backFee,Integer backStatus,Double discountsFee,String feeBatchNo,String bankSerialNo,String fpDate,String fpNo) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -76,6 +78,8 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.discountsFee = discountsFee;
 		this.feeBatchNo = feeBatchNo;
 		this.bankSerialNo = bankSerialNo;
+		this.fpDate = fpDate;
+		this.fpNo = fpNo;
 	}
 
 	/** full constructor */
@@ -83,7 +87,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
 			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus,
-			String backDate,Double backFee,Integer backStatus,Double discountsFee,String feeBatchNo,String bankSerialNo) {
+			String backDate,Double backFee,Integer backStatus,Double discountsFee,String feeBatchNo,String bankSerialNo,String fpDate,String fpNo) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -107,6 +111,8 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.discountsFee = discountsFee;
 		this.feeBatchNo = feeBatchNo;
 		this.bankSerialNo = bankSerialNo;
+		this.fpDate = fpDate;
+		this.fpNo = fpNo;
 	}
 
 	// Property accessors
@@ -309,6 +315,22 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	public void setDiscountsFee(Double discountsFee) {
 		this.discountsFee = discountsFee;
+	}
+
+	public String getFpDate() {
+		return fpDate;
+	}
+
+	public void setFpDate(String fpDate) {
+		this.fpDate = fpDate;
+	}
+
+	public String getFpNo() {
+		return fpNo;
+	}
+
+	public void setFpNo(String fpNo) {
+		this.fpNo = fpNo;
 	}
 
 }

@@ -6,6 +6,8 @@ import org.hibernate.Session;
 
 import com.patent.dao.ZlajFeeInfoDao;
 import com.patent.module.ZlajFeeInfoTb;
+import com.patent.tools.CommonTools;
+import com.patent.tools.CurrentTime;
 
 @SuppressWarnings("unchecked")
 public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
@@ -122,6 +124,50 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		// TODO Auto-generated method stub
 		String hql = " from ZlajFeeInfoTb as zlf where zlf.zlajMainInfoTb.id = "+zlId + " and zlf.yearFeeNo = "+yearNo;
 		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public List<ZlajFeeInfoTb> findInfoByOpt(Session sess, Integer cpyId,
+			Integer feeStatus, Integer diffDays,String zlNo,String ajNo,Integer cusId,Integer pageNo, Integer pageSize) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId + " and zlf.feeStatus = "+feeStatus;
+		if(!zlNo.equals("")){
+			hql += " and zlf.zlajMainInfoTb.ajNoGf = '"+zlNo+"'";
+		}else if(!ajNo.equals("")){
+			hql += " and zlf.zlajMainInfoTb.ajNo = '"+ajNo+"'";
+		}
+		if(cusId > 0){
+			hql += " and FIND_IN_SET("+cusId+",zlf.zlajMainInfoTb.ajSqrId) > 0";
+		}
+		if(feeStatus.equals(0)){//未缴费的费用列表时专利必须在正常状态下
+			if(diffDays >= 0){
+				hql += " and TO_DAYS('"+CurrentTime.getStringDate()+"') - TO_DAYS(zlf.zlajMainInfoTb.feeEndDateJj) <= "+diffDays;
+			}
+			hql += " and zlf.zlajMainInfoTb.ajStopStatus = 0 order by zlf.zlajMainInfoTb.feeEndDateJj asc";
+			return sess.createQuery(hql).list();
+		}else{
+			int offset = (pageNo - 1) * pageSize;
+			if (offset < 0) {
+				offset = 0;
+			}
+			return sess.createQuery(hql).setFirstResult(offset).setMaxResults(pageSize).list();
+		}
+	}
+
+	@Override
+	public Integer getCountByOpt(Session sess, Integer cpyId,String zlNo,String ajNo,Integer cusId) {
+		// TODO Auto-generated method stub
+		String hql ="select count(cu.id) from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId;
+		if(!zlNo.equals("")){
+			hql += " and zlf.zlajMainInfoTb.ajNoGf = '"+zlNo+"'";
+		}else if(!ajNo.equals("")){
+			hql += " and zlf.zlajMainInfoTb.ajNo = '"+ajNo+"'";
+		}
+		if(cusId > 0){
+			hql += " and FIND_IN_SET("+cusId+",zlf.zlajMainInfoTb.ajSqrId) > 0";
+		}
+		Object count_obj = sess.createQuery(hql).uniqueResult();
+		return CommonTools.longToInt(count_obj);
 	}
 
 }

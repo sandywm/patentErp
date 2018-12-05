@@ -101,7 +101,7 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			Double feePrice, Double feeRate,String feeEndDateCpy, String feeEndDateGf,
 			String feeRemark, Integer feeStatus, Integer cpyId,Integer djStatus, String feeJnDate, 
 			String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus,
-			String backDate,String feeBatchNo,String bankSerialNo)
+			String backDate,String feeBatchNo,String bankSerialNo,String fpDate,String fpNo)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -115,7 +115,7 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			ZlajFeeInfoTb zlFee = new ZlajFeeInfoTb(ftDao.getTypeEntityById(sess, geeTypeId), uDao.get(sess, appUserId),
 					cDao.get(sess, cpyId), zlDao.get(sess, zlId), feePrice, feeRate,feeEndDateCpy,
 					feeEndDateGf, feeRemark, feeStatus,djStatus, feeJnDate, feeUpZd,tzsArea,yearFeeNo,feeRange,addStatus,
-					backDate,0.0,0,0.0,feeBatchNo,bankSerialNo);
+					backDate,0.0,0,0.0,feeBatchNo,bankSerialNo,fpDate,fpNo);
 			fDao.save(sess, zlFee);
 			tran.commit();
 			return zlFee.getId();
@@ -325,6 +325,76 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("获取指定专利指定年度的费用信息时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateFeeInfoById(Integer feeId, String feeBatchNo,
+			String bankSerialNo, String fpDate, String fpNo)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajFeeInfoTb zlFee = fDao.getFeeEntityById(sess, feeId);
+			if(zlFee != null){
+				if(!feeBatchNo.equals("")){
+					zlFee.setFeeBatchNo(feeBatchNo);
+				}
+				if(!bankSerialNo.equals("")){
+					zlFee.setBankSerialNo(bankSerialNo);				
+								}
+				if(!fpDate.equals("")){
+					zlFee.setFpDate(fpDate);
+				}
+				if(!fpNo.equals("")){
+					zlFee.setFpNo(fpNo);
+				}
+				fDao.update(sess, zlFee);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键修改费用的缴费批次号、银行缴费流水号、开票时间、票号信息时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<ZlajFeeInfoTb> listInfoByOpt(Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,Integer pageNo,Integer pageSize)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fDao.findInfoByOpt(sess, cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, pageNo, pageSize);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据条件分页/不分页获取费用列表（获取未缴费的费用列表时专利必须在正常状态下）信息时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public Integer getCountByOpt(Integer cpyId,String zlNo,String ajNo,Integer cusId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fDao.getCountByOpt(sess, cpyId, zlNo, ajNo, cusId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定代理机构下已缴费的费用记录条数（专利正常条件下）信息时出现异常");
 		} finally{
 			HibernateUtil.closeSession();
 		}

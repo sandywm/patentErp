@@ -2783,6 +2783,15 @@ public class ZlMainAction extends DispatchAction {
 				List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
 				if(zlList.size() > 0){
 					ZlajMainInfoTb zl = zlList.get(0);
+					String zlType = zl.getAjType();
+					String zlTypeChi = "";
+					if(zlType.equals("fm")){
+						zlTypeChi = "发明";
+					}else if(zlType.equals("syxx")){
+						zlTypeChi = "实用新型";
+					}else if(zlType.equals("wg")){
+						zlTypeChi = "外观";
+					}
 					if(zl.getAjStopStatus().equals(0)){//只有在案件状态正常时（0）
 						//获取当前最后一个未完成的流程
 						List<ZlajLcInfoTb> lcList = lcm.listLastInfoByAjId(zlId);
@@ -3065,6 +3074,7 @@ public class ZlMainAction extends DispatchAction {
 											map_f.put("fjGs", fjGs);
 											map_f.put("fjSize", fjSize);
 											map_f.put("fileType", fileType);
+											map_f.put("zlType",zlTypeChi);
 											map_f.put("downFilePath", downFilePath);
 											map_f.put("upUser", upUser);
 											list_d.add(map_f);
@@ -3086,6 +3096,7 @@ public class ZlMainAction extends DispatchAction {
 												map_f.put("fjGs", fjGs);
 												map_f.put("fjSize", fjSize);
 												map_f.put("fileType", fileTypeArr[i]);
+												map_f.put("zlType",zlTypeChi);
 												map_f.put("downFilePath", downFilePath);
 												map_f.put("upUser", upUserArr[i]);
 												list_d.add(map_f);
@@ -4222,7 +4233,7 @@ public class ZlMainAction extends DispatchAction {
 								        				if(ftList.size() > 0){
 								        					feeTypeId = ftList.get(0).getId();
 								        					fm.addZLFee(zlId, currUserId, feeTypeId, fdJson.getFeeAmount(), Double.parseDouble(fjRate), feeEndDateCpy, 
-										        					feeEndDateGf, "", 0, cpyId, 0, "","", tzsName, 0, "", 0, "", "", "");
+										        					feeEndDateGf, "", 0, cpyId, 0, "","", tzsName, 0, "", 0, "", "", "","","");
 										        			//增加缴费任务------------------------
 								        				}else{
 								        					readResult = "noFeeType";//无此类型费用
@@ -4237,7 +4248,7 @@ public class ZlMainAction extends DispatchAction {
 														String feeEndDate_gf = CurrentTime.getFinalDate(finalDate, -1);
 														String feeEndDate_cpy = CurrentTime.getFinalDate(feeEndDate_gf, Constants.JF_SL_END_DATE_CPY);//代理机构比官方绝限提前天数
 														double scFee_final  = Double.parseDouble(fjRate) * Constants.SC_FEE;
-														fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 0, "","", tzsName, 0, "", 0, "", "", "");
+														fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 0, "","", tzsName, 0, "", 0, "", "", "","","");
 														//增加缴费任务------------------------
 													}
 												}
@@ -4366,7 +4377,7 @@ public class ZlMainAction extends DispatchAction {
 																}
 															}
 															fm.addZLFee(zlId, currUserId, feeTypeId, Convert.convertInputNumber_2(yearFee), fjRate_real,feeCpyDate, 
-																	feeGfDate, "", 0, cpyId, 0, "", "",tzsName,m,feeRange,0,"","","");
+																	feeGfDate, "", 0, cpyId, 0, "", "",tzsName,m,feeRange,0,"","","","","");
 								        					//增加缴费任务------------------------
 								        				}else{
 								        					readResult = "noFeeType";//无此类型费用
@@ -4377,7 +4388,7 @@ public class ZlMainAction extends DispatchAction {
 							        				if(ftList.size() > 0){
 						        						feeTypeId = ftList.get(0).getId();
 							        					fm.addZLFee(zlId, currUserId, feeTypeId, fdJson.getFeeAmount(), Double.parseDouble(fjRate), feeEndDateCpy, 
-									        					feeEndDateGf, "", 0, cpyId, 0, "","", tzsName, 0, "", 0, "", "", "");
+									        					feeEndDateGf, "", 0, cpyId, 0, "","", tzsName, 0, "", 0, "", "", "","","");
 							        					//增加缴费任务------------------------
 							        				}else{
 							        					readResult = "noFeeType";//无此类型费用
@@ -4644,6 +4655,74 @@ public class ZlMainAction extends DispatchAction {
 		return null;
 	}
 	
+	/**
+	 * 获取当前代理机构的费用情况
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-5 上午09:28:33
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getAllFeeInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		ZlajLcYjInfoManager lcyjm = (ZlajLcYjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_YJ_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		String roleName = this.getLoginRoleName(request);
+		String msg = "error";
+		Integer currUserId = this.getLoginUserId(request);
+		Map<String,String> map = new HashMap<String,String>();
+		if(this.getLoginType(request).equals("cpyUser")){
+			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
+			boolean abilityFlag = false;
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{//只获取自己的任务流程
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listFee");//只有具有浏览权限的人员
+			}
+			if(abilityFlag){
+				Integer feeStatus = CommonTools.getFinalInteger("feeStatus", request);//费用缴纳状态（0未交，1：已交）
+				Integer diffDays = CommonTools.getFinalInteger("diffDays", request);//代理机构缴费截止日期距当前日期天数小于等于指定的天数
+				String zlNo = CommonTools.getFinalStr("zlNo", request);
+				String ajNo = CommonTools.getFinalStr("ajNo", request);
+				Integer cusId = CommonTools.getFinalInteger("cusId", request);
+				
+				List<ZlajFeeInfoTb> zlfList = new ArrayList<ZlajFeeInfoTb>();
+				if(feeStatus.equals(0)){
+					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, 0, 0);
+				}else{
+					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
+					if(fm.getCountByOpt(cpyId, zlNo, ajNo, cusId) > 0){
+						zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, pageNo, pageSize);
+					}
+				}
+				if(zlfList.size() > 0){
+					List<Object> list_d = new ArrayList<Object>();
+					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
+						ZlajFeeInfoTb zlf = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
+						map_d.put("zlNo", zl.getAjNoGf());
+						map_d.put("ajNo", zl.getAjNo());
+						map_d.put("zlName", zl.getAjTitle());
+						map_d.put("sqrName", zl.getAjSqrName());
+						map_d.put("feeName", zlf.getFeeTypeInfoTb().getFeeName());
+						map_d.put("feeEndDateJj", zlf.getFeeEndDateJj());
+						map_d.put("feeEndDateGf", zlf.getFeeEndDateGf());
+						map_d.put("feePrice", zlf.getFeePrice());
+						
+					}
+				}
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * 下载文件

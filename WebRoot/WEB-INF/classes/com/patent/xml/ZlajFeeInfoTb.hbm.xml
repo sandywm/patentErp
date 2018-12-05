@@ -125,6 +125,16 @@
                 <comment>银行缴费流水号</comment>
             </column>
         </property>
+         <property name="fpDate" type="java.lang.String">
+            <column name="fp_date" length="20">
+                <comment>开票时间</comment>
+            </column>
+        </property>
+         <property name="fpNo" type="java.lang.String">
+            <column name="fp_no" length="50">
+                <comment>票号</comment>
+            </column>
+        </property>
         <set name="zlajFeeSubInfoTbs" inverse="true">
             <key>
                 <column name="fee_id" not-null="true">

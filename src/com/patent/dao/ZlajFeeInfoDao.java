@@ -133,4 +133,36 @@ public interface ZlajFeeInfoDao {
 	 * @return
 	 */
 	List<ZlajFeeInfoTb> findYearFeeInfoByOpt(Session sess,Integer zlId,Integer yearNo);
+	
+	/**
+	 * 根据条件分页/不分页获取费用列表（获取未缴费的费用列表时专利必须在正常状态下）
+	 * @description 未交费状态下时按照代理机构期限升序排列
+	 * @author Administrator
+	 * @date 2018-12-5 上午10:49:41
+	 * @param sess
+	 * @param cpyId 代理机构编号
+	 * @param feeStatus 费用缴纳状态--在未交费的状态下不分页
+	 * @param diffDays 距离代理机构期限天数(-1表示全部)--只在未缴纳费用中使用
+	 * @param zlNo 专利/申请号(""表示全部)
+	 * @param ajNo 案件编号(""表示全部)
+	 * @param cusId 客户/申请人编号(0表示全部)
+	 * @param pageNo 页码
+	 * @param pageSize 每页记录条数
+	 * @return
+	 */
+	List<ZlajFeeInfoTb> findInfoByOpt(Session sess,Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,Integer pageNo,Integer pageSize);
+	
+	/**
+	 * 获取指定代理机构下已缴费的费用记录条数
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-5 上午10:50:06
+	 * @param sess
+	 * @param cpyId 代理机构编号
+	 * @param zlNo 专利/申请号(""表示全部)
+	 * @param ajNo 案件编号(""表示全部)
+	 * @param cusId 客户/申请人编号(0表示全部)
+	 * @return
+	 */
+	Integer getCountByOpt(Session sess,Integer cpyId,String zlNo,String ajNo,Integer cusId);
 }
