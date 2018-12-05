@@ -3419,7 +3419,7 @@ public class ZlMainAction extends DispatchAction {
 														Integer lastIndex_1 = lastFjName.indexOf(".");
 														String fjVersion = lastFjName.substring(0, lastIndex_1);
 														String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-														fjm.addFj(zlId, fjNameArr[i], fjVersion, "定稿文件", fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
+														fjm.addFj(zlId, fjNameArr[i], fjVersion, "定稿补充文件", fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 													}
 													mxm.updateEdateById(lcMxId, zl.getTjUserId(),"",  currUserId, upZxFile, currDate, "", currDate, taskRemark,-1);
 													//修改流程完成时间
