@@ -141,9 +141,9 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		}
 		if(feeStatus.equals(0)){//未缴费的费用列表时专利必须在正常状态下
 			if(diffDays >= 0){
-				hql += " and TO_DAYS('"+CurrentTime.getStringDate()+"') - TO_DAYS(zlf.zlajMainInfoTb.feeEndDateJj) <= "+diffDays;
+				hql += " and TO_DAYS(zlf.feeEndDateJj) - TO_DAYS('"+CurrentTime.getStringDate()+"') <= "+diffDays;
 			}
-			hql += " and zlf.zlajMainInfoTb.ajStopStatus = 0 order by zlf.zlajMainInfoTb.feeEndDateJj asc";
+			hql += " and zlf.zlajMainInfoTb.ajStopStatus = 0 order by zlf.feeEndDateJj asc";
 			return sess.createQuery(hql).list();
 		}else{
 			int offset = (pageNo - 1) * pageSize;
@@ -157,7 +157,7 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 	@Override
 	public Integer getCountByOpt(Session sess, Integer cpyId,String zlNo,String ajNo,Integer cusId) {
 		// TODO Auto-generated method stub
-		String hql ="select count(cu.id) from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId;
+		String hql ="select count(zlf.id) from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId + " and zlf.feeStatus = 1";
 		if(!zlNo.equals("")){
 			hql += " and zlf.zlajMainInfoTb.ajNoGf = '"+zlNo+"'";
 		}else if(!ajNo.equals("")){

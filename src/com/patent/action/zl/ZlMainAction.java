@@ -4706,6 +4706,7 @@ public class ZlMainAction extends DispatchAction {
 				}
 				if(zlfList.size() > 0){
 					List<Object> list_d = new ArrayList<Object>();
+					String currDate = CurrentTime.getStringDate();
 					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
 						ZlajFeeInfoTb zlf = it.next();
 						Map<String,Object> map_d = new HashMap<String,Object>();
@@ -4715,8 +4716,16 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("zlName", zl.getAjTitle());
 						map_d.put("sqrName", zl.getAjSqrName());
 						map_d.put("feeName", zlf.getFeeTypeInfoTb().getFeeName());
-						map_d.put("feeEndDateJj", zlf.getFeeEndDateJj());
-						map_d.put("feeEndDateGf", zlf.getFeeEndDateGf());
+						String feeEndDateJj = zlf.getFeeEndDateJj();
+						String feeEndDateGf = zlf.getFeeEndDateGf();
+						if(feeStatus.equals(0)){
+							Integer diffDays_jj = CurrentTime.compareDate(currDate,feeEndDateJj);
+							Integer diffDays_gf = CurrentTime.compareDate(currDate,feeEndDateGf);
+							map_d.put("diffDays_jj", diffDays_jj);
+							map_d.put("diffDays_Gf", diffDays_gf);
+						}
+						map_d.put("feeEndDateJj", feeEndDateJj);
+						map_d.put("feeEndDateGf", feeEndDateGf);
 						map_d.put("feePrice", zlf.getFeePrice());
 						map_d.put("feeBatchNo", zlf.getFeeBatchNo());
 						map_d.put("bankSerialNo", zlf.getBankSerialNo());
