@@ -3411,15 +3411,17 @@ public class ZlMainAction extends DispatchAction {
 												Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减
 												if(!sqrId.equals("") && !fmrId.equals("") && !lxrId.equals("")){
 													//增加附件信息
-													String[] fjNameArr = upZxFile.split(",");
-													for(Integer i = 0 ; i < fjNameArr.length ; i++){
-														String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
-														Integer lastIndex = fileName.lastIndexOf("_");
-														String lastFjName = fileName.substring(lastIndex+1, fileName.length());
-														Integer lastIndex_1 = lastFjName.indexOf(".");
-														String fjVersion = lastFjName.substring(0, lastIndex_1);
-														String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-														fjm.addFj(zlId, fjNameArr[i], fjVersion, "定稿补充文件", fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
+													if(!upZxFile.equals("")){
+														String[] fjNameArr = upZxFile.split(",");
+														for(Integer i = 0 ; i < fjNameArr.length ; i++){
+															String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
+															Integer lastIndex = fileName.lastIndexOf("_");
+															String lastFjName = fileName.substring(lastIndex+1, fileName.length());
+															Integer lastIndex_1 = lastFjName.indexOf(".");
+															String fjVersion = lastFjName.substring(0, lastIndex_1);
+															String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
+															fjm.addFj(zlId, fjNameArr[i], fjVersion, "定稿补充文件", fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
+														}
 													}
 													mxm.updateEdateById(lcMxId, zl.getTjUserId(),"",  currUserId, upZxFile, currDate, "", currDate, taskRemark,-1);
 													//修改流程完成时间
@@ -4670,14 +4672,11 @@ public class ZlMainAction extends DispatchAction {
 	 */
 	public ActionForward getAllFeeInfo(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
-		ZlajLcYjInfoManager lcyjm = (ZlajLcYjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_YJ_INFO);
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		String roleName = this.getLoginRoleName(request);
-		String msg = "error";
 		Integer currUserId = this.getLoginUserId(request);
-		Map<String,String> map = new HashMap<String,String>();
+		Map<String,Object> map = new HashMap<String,Object>();
 		if(this.getLoginType(request).equals("cpyUser")){
 			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
 			boolean abilityFlag = false;
@@ -4694,12 +4693,14 @@ public class ZlMainAction extends DispatchAction {
 				Integer cusId = CommonTools.getFinalInteger("cusId", request);
 				
 				List<ZlajFeeInfoTb> zlfList = new ArrayList<ZlajFeeInfoTb>();
+				Integer count = 0;
 				if(feeStatus.equals(0)){
 					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, 0, 0);
 				}else{
 					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
 					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
-					if(fm.getCountByOpt(cpyId, zlNo, ajNo, cusId) > 0){
+					count = fm.getCountByOpt(cpyId, zlNo, ajNo, cusId);
+					if(count > 0){
 						zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, pageNo, pageSize);
 					}
 				}
@@ -4717,11 +4718,22 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("feeEndDateJj", zlf.getFeeEndDateJj());
 						map_d.put("feeEndDateGf", zlf.getFeeEndDateGf());
 						map_d.put("feePrice", zlf.getFeePrice());
-						
+						map_d.put("feeBatchNo", zlf.getFeeBatchNo());
+						map_d.put("bankSerialNo", zlf.getBankSerialNo());
+						map_d.put("fpDate", zlf.getFpDate());
+						map_d.put("fpNo", zlf.getFpNo());
+						list_d.add(map_d);
 					}
+					map.put("msg", "success");
+					map.put("data", list_d);
+					map.put("count", count);
+					map.put("code", 0);
+				}else{
+					map.put("msg", "noInfo");
 				}
 			}
 		}
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
