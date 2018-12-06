@@ -34,7 +34,7 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 			tran = sess.beginTransaction();
 			CpyInfoTb cpy = new CpyInfoTb(cpyName, Convert.getFirstSpell(cpyName),cpyAddress, cpyProv,cpyCity, cpyFr, cpyYyzz, cpyLxr,
 					lxrTel, lxrEmail, cpySubId, cpyParId, cpyUrl,cpyProfile,signDate,
-					endDate, hotStatus, cpyLevel,0);	
+					endDate, hotStatus, cpyLevel,0,"","","","","","","");
 			cDao.save(sess, cpy);
 			tran.commit();
 			return cpy.getId();

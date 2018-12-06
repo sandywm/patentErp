@@ -35,6 +35,14 @@ public class CpyInfoTb implements java.io.Serializable {
 	private Integer hotStatus;
 	private Integer cpyLevel;
 	private Integer zlNum;
+	private String bankAccountName;
+	private String bankName;
+	private String bankNo;
+	private String saleBonus;
+	private String dlFeeFm;
+	private String dlFeeXx;
+	private String dlFeeWg;
+	
 	private Set<CpyRoleInfoTb> cpyRoleInfoTbs = new HashSet<CpyRoleInfoTb>();
 	private Set<JsFiledInfoTb> jsFiledInfoTbs = new HashSet<JsFiledInfoTb>();
 	private Set<ZlajFeeInfoTb> zlajFeeInfoTbs = new HashSet<ZlajFeeInfoTb>();
@@ -54,7 +62,8 @@ public class CpyInfoTb implements java.io.Serializable {
 			String cpyCity, String cpyFr, String cpyYyzz, String cpyLxr,
 			String lxrTel, String lxrEmail, String cpySubId, Integer cpyParId,
 			String cpyUrl, String cpyProfile, String signDate, String endDate,
-			Integer hotStatus, Integer cpyLevel,Integer zlNum) {
+			Integer hotStatus, Integer cpyLevel,Integer zlNum,String bankAccountName,
+			String bankName,String bankNo,String saleBonus,String dlFeeFm,String dlFeeXx,String dlFeeWg) {
 		this.cpyName = cpyName;
 		this.cpyNamePy = cpyNamePy;
 		this.cpyAddress = cpyAddress;
@@ -77,11 +86,12 @@ public class CpyInfoTb implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public CpyInfoTb(Integer id,String cpyName, String cpyNamePy,String cpyAddress, String cpyProv,
+	public CpyInfoTb(Integer id, String cpyName, String cpyNamePy,String cpyAddress, String cpyProv,
 			String cpyCity, String cpyFr, String cpyYyzz, String cpyLxr,
 			String lxrTel, String lxrEmail, String cpySubId, Integer cpyParId,
 			String cpyUrl, String cpyProfile, String signDate, String endDate,
-			Integer hotStatus, Integer cpyLevel,Integer zlNum) {
+			Integer hotStatus, Integer cpyLevel,Integer zlNum,String bankAccountName,
+			String bankName,String bankNo,String saleBonus,String dlFeeFm,String dlFeeXx,String dlFeeWg) {
 		this.id = id;
 		this.cpyName = cpyName;
 		this.cpyNamePy = cpyNamePy;
@@ -102,6 +112,13 @@ public class CpyInfoTb implements java.io.Serializable {
 		this.hotStatus = hotStatus;
 		this.cpyLevel = cpyLevel;
 		this.zlNum = zlNum;
+		this.bankAccountName = bankAccountName;
+		this.bankName = bankName;
+		this.bankNo = bankNo;
+		this.saleBonus = saleBonus;
+		this.dlFeeFm = dlFeeFm;
+		this.dlFeeXx = dlFeeXx;
+		this.dlFeeWg = dlFeeWg;
 	}
 
 	// Property accessors
@@ -327,6 +344,62 @@ public class CpyInfoTb implements java.io.Serializable {
 
 	public void setLcyjs(Set<ZlajLcYjInfoTb> lcyjs) {
 		this.lcyjs = lcyjs;
+	}
+
+	public String getBankAccountName() {
+		return bankAccountName;
+	}
+
+	public void setBankAccountName(String bankAccountName) {
+		this.bankAccountName = bankAccountName;
+	}
+
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
+	public String getBankNo() {
+		return bankNo;
+	}
+
+	public void setBankNo(String bankNo) {
+		this.bankNo = bankNo;
+	}
+
+	public String getSaleBonus() {
+		return saleBonus;
+	}
+
+	public void setSaleBonus(String saleBonus) {
+		this.saleBonus = saleBonus;
+	}
+
+	public String getDlFeeFm() {
+		return dlFeeFm;
+	}
+
+	public void setDlFeeFm(String dlFeeFm) {
+		this.dlFeeFm = dlFeeFm;
+	}
+
+	public String getDlFeeXx() {
+		return dlFeeXx;
+	}
+
+	public void setDlFeeXx(String dlFeeXx) {
+		this.dlFeeXx = dlFeeXx;
+	}
+
+	public String getDlFeeWg() {
+		return dlFeeWg;
+	}
+
+	public void setDlFeeWg(String dlFeeWg) {
+		this.dlFeeWg = dlFeeWg;
 	}
 
 

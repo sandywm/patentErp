@@ -105,6 +105,43 @@
                 <comment>已增加的专利数</comment>
             </column>
         </property>
+        
+        <property name="bankAccountName" type="java.lang.String">
+            <column name="bank_account_name" not-null="true">
+                <comment>银行账户名</comment>
+            </column>
+        </property>
+        <property name="bankName" type="java.lang.String">
+            <column name="bank_name" not-null="true">
+                <comment>开户行</comment>
+            </column>
+        </property>
+        <property name="bankNo" type="java.lang.String">
+            <column name="bank_no" not-null="true">
+                <comment>账号</comment>
+            </column>
+        </property>
+        <property name="saleBonus" type="java.lang.String">
+            <column name="sale_bonus" not-null="true">
+                <comment>销售提成比例</comment>
+            </column>
+        </property>
+        <property name="dlFeeFm" type="java.lang.String">
+            <column name="dl_fee_fm" not-null="true">
+                <comment>发明专利代理费</comment>
+            </column>
+        </property>
+        <property name="dlFeeXx" type="java.lang.String">
+            <column name="dl_fee_xx" not-null="true">
+                <comment>新型专利代理费</comment>
+            </column>
+        </property>
+        <property name="dlFeeWg" type="java.lang.String">
+            <column name="dl_fee_wg" not-null="true">
+                <comment>外观专利代理费</comment>
+            </column>
+        </property>
+        
         <set name="cpyRoleInfoTbs" inverse="true">
             <key>
                 <column name="cpy_id" not-null="true">
