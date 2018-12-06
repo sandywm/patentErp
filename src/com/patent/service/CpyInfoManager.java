@@ -173,4 +173,43 @@ public interface CpyInfoManager {
 	 */
 	boolean updateZlNumById(Integer id,Integer newNum)throws WEBException;
 	
+	/**
+	 * 根据主键修改代理机构银行信息
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-12-6 下午11:27:57
+	 * @param id 主键
+	 * @param bankAccountName 银行账户名
+	 * @param bankName 开户行
+	 * @param bankNo 账号
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateCpyBankInfoById(Integer id,String bankAccountName,String bankName,String bankNo)throws WEBException;
+	
+	/**
+	 * 根据主键修改销售提成比例
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-12-6 下午11:30:21
+	 * @param id 主键
+	 * @param saleBonus 提成比例
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateCpySaleBonusById(Integer id,String saleBonus)throws WEBException;
+	
+	/**
+	 * 根据主键修改代理机构代理费
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-12-6 下午11:31:27
+	 * @param id 主键
+	 * @param dlFeeFm 发明专利代理费
+	 * @param dlFeeXx 实用新型专利代理费
+	 * @param dlFeeWg 外观专利代理费
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateCpyDlFeeById(Integer id,String dlFeeFm,String dlFeeXx,String dlFeeWg)throws WEBException;
 }

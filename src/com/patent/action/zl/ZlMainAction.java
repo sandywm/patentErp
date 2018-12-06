@@ -3685,7 +3685,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 导出费用到Excel
+	 * 导出费用到Excel--指定专利
 	 * @description
 	 * @author Administrator
 	 * @date 2018-10-29 下午04:46:28
@@ -4855,6 +4855,7 @@ public class ZlMainAction extends DispatchAction {
 				if(zlfList.size() > 0){
 					List<Object> list_d = new ArrayList<Object>();
 					String currDate = CurrentTime.getStringDate();
+					Double feeTotal = 0d;
 					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
 						ZlajFeeInfoTb zlf = it.next();
 						Map<String,Object> map_d = new HashMap<String,Object>();
@@ -4866,6 +4867,7 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("feeName", zlf.getFeeTypeInfoTb().getFeeName());
 						String feeEndDateJj = zlf.getFeeEndDateJj();
 						String feeEndDateGf = zlf.getFeeEndDateGf();
+						Double feePrice = zlf.getFeePrice();
 						if(feeStatus.equals(0)){
 							Integer diffDays_jj = CurrentTime.compareDate(currDate,feeEndDateJj);
 							Integer diffDays_gf = CurrentTime.compareDate(currDate,feeEndDateGf);
@@ -4874,13 +4876,15 @@ public class ZlMainAction extends DispatchAction {
 						}
 						map_d.put("feeEndDateJj", feeEndDateJj);
 						map_d.put("feeEndDateGf", feeEndDateGf);
-						map_d.put("feePrice", zlf.getFeePrice());
+						map_d.put("feePrice", feePrice);
+						feeTotal = Convert.convertInputNumber_2(feeTotal + feePrice);
 						map_d.put("feeBatchNo", zlf.getFeeBatchNo());
 						map_d.put("bankSerialNo", zlf.getBankSerialNo());
 						map_d.put("fpDate", zlf.getFpDate());
 						map_d.put("fpNo", zlf.getFpNo());
 						list_d.add(map_d);
 					}
+					map.put("feeTotal", feeTotal);//应缴费总计
 					map.put("msg", "success");
 					map.put("data", list_d);
 					map.put("count", count);
@@ -4893,6 +4897,56 @@ public class ZlMainAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
+	
+	/**
+	 * 导出未缴费清单到excel(上交国家局/客户)
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-12-7 上午12:01:40
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward exportFeeInfoToExcel_1(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		String roleName = this.getLoginRoleName(request);
+		Integer currUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(this.getLoginType(request).equals("cpyUser")){
+			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
+			boolean abilityFlag = false;
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{//只获取自己的任务流程
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listFee");//只有具有浏览权限的人员
+			}
+			if(abilityFlag){
+				Integer feeStatus = CommonTools.getFinalInteger("feeStatus", request);//费用缴纳状态（0未交，1：已交）
+				Integer diffDays = CommonTools.getFinalInteger("diffDays", request);//代理机构缴费截止日期距当前日期天数小于等于指定的天数
+				String zlNo = CommonTools.getFinalStr("zlNo", request);
+				String ajNo = CommonTools.getFinalStr("ajNo", request);
+				Integer cusId = CommonTools.getFinalInteger("cusId", request);
+				
+				List<ZlajFeeInfoTb> zlfList = new ArrayList<ZlajFeeInfoTb>();
+				if(feeStatus.equals(0)){//未交费用
+					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, 0, 0);
+					if(zlfList.size() > 0){
+						for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
+							ZlajFeeInfoTb zlf = it.next();
+							
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	
 	/**
 	 * 下载文件

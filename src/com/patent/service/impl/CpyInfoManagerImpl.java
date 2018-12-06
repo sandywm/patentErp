@@ -267,4 +267,83 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 		}
 	}
 
+	@Override
+	public boolean updateCpyBankInfoById(Integer id, String bankAccountName,
+			String bankName, String bankNo) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CpyInfoTb cpy = cDao.get(sess, id);
+			if(cpy != null){
+				cpy.setBankAccountName(bankAccountName);
+				cpy.setBankName(bankName);
+				cpy.setBankNo(bankNo);
+				cDao.update(sess, cpy);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据主键修改代理机银行信息出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateCpySaleBonusById(Integer id, String saleBonus)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CpyInfoTb cpy = cDao.get(sess, id);
+			if(cpy != null){
+				cpy.setSaleBonus(saleBonus);
+				cDao.update(sess, cpy);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据主键修改代理机销售提成比例时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateCpyDlFeeById(Integer id, String dlFeeFm,
+			String dlFeeXx, String dlFeeWg) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CpyInfoTb cpy = cDao.get(sess, id);
+			if(cpy != null){
+				cpy.setDlFeeFm(dlFeeFm);
+				cpy.setDlFeeXx(dlFeeXx);
+				cpy.setDlFeeWg(dlFeeWg);
+				cDao.update(sess, cpy);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new  WEBException("根据主键根据主键修改代理机构代理费时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }
