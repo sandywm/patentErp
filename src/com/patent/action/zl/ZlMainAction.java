@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -993,6 +994,7 @@ public class ZlMainAction extends DispatchAction {
 						String ajStatus = zl.getAjStatus();
 						Double zlStatus = Double.parseDouble(ajStatus);
 						map.put("ajStatus", ajStatus);
+						map.put("zlLevel", zl.getZlLevel());
 						map.put("checkUserId", checkUserId);
 						if(checkUserId > 0){
 							CpyUserInfo cUser = cum.getEntityById(checkUserId);
@@ -1775,6 +1777,7 @@ public class ZlMainAction extends DispatchAction {
 				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "fpZl");
 			}
 			if(abilityFlag){
+				Integer zlLevel = CommonTools.getFinalInteger("zlLevel", request);//1,2,3
 				Integer cpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
 				//可以修改任意操作人员(强制修改)
 				cusCheckUserId = CommonTools.getFinalInteger("cusCheckUserId", request);
@@ -1799,6 +1802,13 @@ public class ZlMainAction extends DispatchAction {
 									tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
 						}
 						if(flag){
+							//修改专利难易度
+							Integer zlLevel_db = zl.getZlLevel();
+							if(zlLevel > 0){
+								if(!zlLevel.equals(zlLevel_db)){
+									zlm.updateZlLevelById(zlId, zlLevel);
+								}
+							}
 							Integer checkUserId_db = zl.getCheckUserId();
 							Integer cusCheckUserId_db = zl.getCusCheckUserId();
 							Integer zxUserId_db = zl.getZxUserId();
@@ -2134,6 +2144,7 @@ public class ZlMainAction extends DispatchAction {
 							ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);
 						}
 						String dlFee = CommonTools.getFinalStr("dlFee", request);//代理费(100-100000)的整数
+						Integer zlLevel = CommonTools.getFinalInteger("zlLevel", request);//1,2,3
 						String ajApplyDate = "";
 						String[] ajTypeArr = ajType.split(",");
 						for(Integer i = 0 ; i < ajTypeArr.length ; i++){
@@ -2168,13 +2179,13 @@ public class ZlMainAction extends DispatchAction {
 									}
 								}
 								Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, 
-										yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "2.0", "流程人员分配", pubZlId,0,0,0,0,0,0,0,0,0,cpyId,currLoginUserId);
+										yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "2.0", "流程人员分配", pubZlId,0,0,0,0,0,0,0,0,0,cpyId,currLoginUserId,zlLevel);
 								if(zlId > 0){
 									if(pubZlId > 0){
 										pzm.updateAjIdById(pubZlId, zlId);
-										//增加代理费用
+										//增加代理费用（id=90）
 										String jfDate = CurrentTime.getFinalDate(sDate, Constants.DL_FEE_DAYS);
-										fm.addZLFee(zlId, currLoginUserId, feeType, Double.parseDouble(dlFee), 0.0, jfDate, jfDate, "", 0, 
+										fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(dlFee), 0.0, jfDate, jfDate, "", 0, 
 												cpyId, 1, "", "", "", 0, "", 0, "", "", "", "", "");
 									}
 									//增加流程
@@ -2341,7 +2352,7 @@ public class ZlMainAction extends DispatchAction {
 					String ajType = CommonTools.getFinalStr("ajType", request);
 					//在专利定稿提交前且专利状态正常下可以进行专利基本信息修改
 					if(Double.parseDouble(zl.getAjStatus()) < 7 && zl.getAjStopStatus().equals(0)){
-						String varCon = "",nextNumStr = "";
+						String varCon = "";
 						String currYear = CurrentTime.getYear();
 						Integer pubId_base = zl.getPubZlId();//原先关联的专利任务
 						if(!zl.getAjType().equals(ajType)){//类型变化，案件编号就需要变
@@ -2482,6 +2493,7 @@ public class ZlMainAction extends DispatchAction {
 						if(!ajSqrId.equals("")){//案件费减只有在申请人存在的条件下才能进行设置（一般情况下不建议修改，需要通过受理通知书自动修改）
 							ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);
 						}
+						String dlFee_inp = CommonTools.getFinalStr("dlFee", request);//代理费
 						Integer upUserId = -1;
 						String upFileDate = "";
 						if(!ajUpload.equals(zl.getAjUpload())){//上传资料发生变化
@@ -2536,11 +2548,39 @@ public class ZlMainAction extends DispatchAction {
 									}
 								}
 							}
-							List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(zlId, feeTypeId);
-							if(feeList.size() > 0){//存在代理费用
-								Integer 
+							List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(zlId, 90);
+							if(feeList.size() > 0){//存在代理费用(id=90)
+								ZlajFeeInfoTb fee = feeList.get(0);
+								Double dlFee_db = fee.getFeePrice();
+								Pattern pattern = Pattern.compile("[0-9]*");
+								boolean flag = pattern.matcher(dlFee_inp).matches();
+								if(flag){
+									Double deFee = Double.parseDouble(dlFee_inp);
+									if(deFee >= 100 && deFee <= 100000){
+										if(!dlFee_db.equals(deFee)){
+											if(fee.getBackStatus().equals(1)){//客户已交完代理费就不能再修改
+												flag = false;
+											}else{//未交完，但是修改的费用不能小于客户实交费用
+												Double backFee = fee.getBackFee();
+												if(deFee < backFee){
+													flag = false;
+												}else{
+													Integer feeId = fee.getId();
+													fm.updateFeePriceById(feeId, deFee);
+													if(deFee.equals(backFee)){//新修改的费用和客户已交费用相同，说明这笔费用就交完了
+														//如果相等--修改客户已交完代理费
+														fm.updateBackFeeInfoById(feeId, fee.getBackDate(), backFee, 1, 0d);
+													}
+												}
+											}
+										}
+									}
+								}
 							}else{//没有就增加代理费
-								
+								//增加代理费用（id=90）
+								String jfDate = CurrentTime.getFinalDate(zl.getAjAddDate(), Constants.DL_FEE_DAYS);
+								fm.addZLFee(zlId, currUserId, 90, Double.parseDouble(dlFee_inp), 0.0, jfDate, jfDate, "", 0, 
+										cpyId, 1, "", "", "", 0, "", 0, "", "", "", "", "");
 							}
 						}
 					}
@@ -2553,6 +2593,57 @@ public class ZlMainAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
+	
+	/**
+	 * 检查输入的代理费是否合理1：客户已交完代理费就不能再修改，2：未交完，但是修改的费用不能小于客户已交费用,3:费用必须在100-100000之间的正整数
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-6 上午10:17:34
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward checkInpDlFee(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		Integer zlId = CommonTools.getFinalInteger("zlId", request);
+		String dlFee = CommonTools.getFinalStr("dlFee",request);
+		Integer status = 0;//正常
+		Map<String,Integer> map = new HashMap<String,Integer>();
+		List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(zlId, 90);
+		if(feeList.size() > 0){//存在代理费用(id=90)
+			Pattern pattern = Pattern.compile("[0-9]*");
+			boolean flag = pattern.matcher(dlFee).matches();
+			if(flag){
+				Double dlFee_inp = Double.parseDouble(dlFee);
+				if(dlFee_inp >= 100 && dlFee_inp <= 100000){
+					ZlajFeeInfoTb fee = feeList.get(0);
+					Double dlFee_db = fee.getFeePrice();
+					if(!dlFee_db.equals(dlFee_inp)){
+						if(fee.getBackStatus().equals(1)){//客户已交完代理费就不能再修改
+							status = 1;
+						}else{//未交完，但是修改的费用不能小于客户实交费用
+							if(dlFee_inp < fee.getBackFee()){
+								status = 2;
+							}
+						}
+					}
+				}else{
+					status = 3;//费用必须在100到100000之间
+				}
+			}else{
+				status = 3;//费用必须在100到100000之间
+			}
+		}
+		map.put("result", status);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
 	
 	/**
 	 * 抢购专利撰写任务

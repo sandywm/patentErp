@@ -261,4 +261,16 @@ public interface ZlajFeeInfoManager{
 	 */
 	Integer getCountByOpt(Integer cpyId,String zlNo,String ajNo,Integer cusId)throws WEBException;
 	
+	/**
+	 * 根据费用编号修改费用金额
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-6 上午09:33:40
+	 * @param feeId
+	 * @param newFeePrice 费用金额
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateFeePriceById(Integer feeId,Double newFeePrice)throws WEBException;
+	
 }

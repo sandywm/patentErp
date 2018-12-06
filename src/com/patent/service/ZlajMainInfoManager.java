@@ -45,6 +45,7 @@ public interface ZlajMainInfoManager {
 	 * @param bzshUserId 案件补正审核人员
 	 * @param bhUserId 案件驳回人员
 	 * @param ajAddUserId 案件录入人员
+	 * @param zlLevel 专利难易度
 	 * @return
 	 * @throws WEBException
 	 */
@@ -53,7 +54,7 @@ public interface ZlajMainInfoManager {
 			String ajFmrId, String ajLxrId, String jsLxrId,Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
-			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId) throws WEBException;
+			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId,Integer zlLevel) throws WEBException;
 	
 	/**
 	 * 根据条件分页获取专利列表(ID降序)
@@ -310,4 +311,16 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajMainInfoTb> listInfoByOpt(String lcNameEng,Integer userId,Integer cpyId) throws WEBException;
+	
+	/**
+	 * 修改专利的难易度
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-6 上午11:18:00
+	 * @param zlId 专利编号
+	 * @param zlLevel 专利难易度（0不修改）
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateZlLevelById(Integer zlId,Integer zlLevel) throws WEBException;
 }

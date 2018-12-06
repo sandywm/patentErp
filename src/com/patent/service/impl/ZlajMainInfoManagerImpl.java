@@ -26,7 +26,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			String ajFmrId, String ajLxrId, String jsLxrId,Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId, Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
-			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId)
+			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId,Integer zlLevel)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -37,7 +37,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			ZlajMainInfoTb zl = new ZlajMainInfoTb(cDao.get(sess, cpyId), ajNo, ajNoQt, ajNoGf,
 					ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, ajYxqDetail,
 					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, ajStatusChi, 0,0,pubZlId,"","","",CurrentTime.getStringDate(),checkUserId,zxUserId,cusCheckUserId,
-					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId);
+					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId,zlLevel);
 			zlDao.save(sess, zl);
 			tran.commit();
 			return zl.getId();
@@ -476,6 +476,33 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("获取指定用户、指定代理机构、指定流程任务的专利列表（获取指定人是否具有通知书导入和费用催缴流程任务）时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateZlLevelById(Integer zlId, Integer zlLevel)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajMainInfoTb zl = zlDao.get(sess, zlId);
+			if(zl != null){
+				if(zlLevel > 0){
+					zl.setZlLevel(zlLevel);
+					zlDao.update(sess, zl);
+					tran.commit();
+					return true;
+				}
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键修改专利难易度时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

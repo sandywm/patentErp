@@ -400,5 +400,32 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 		}
 	}
 
+	@Override
+	public boolean updateFeePriceById(Integer feeId, Double newFeePrice)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajFeeInfoTb zlFee = fDao.getFeeEntityById(sess, feeId);
+			if(zlFee != null){
+				if(newFeePrice > 0){
+					zlFee.setFeePrice(newFeePrice);
+				}
+				fDao.update(sess, zlFee);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键修改费用金额信息时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 
 }

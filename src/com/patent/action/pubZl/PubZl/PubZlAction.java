@@ -724,13 +724,14 @@ public class PubZlAction extends DispatchAction {
 			String zlContent = Transcode.unescape_new("zlContent", request);
 			String zlType = CommonTools.getFinalStr("zlType", request);
 			String zlUpCl = Transcode.unescape_new1("zlUpCl", request);
+			Integer currUserId = this.getLoginUserId(request);
 			if(zlType.equals("fm") || zlType.equals("syxx") || zlType.equals("wg")){
 				Integer pzId = pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, zlType, zlUpCl, CurrentTime.getStringDate());
 				if(pzId > 0){
 					//如果存在上传的文件，需要移动
 					if(!zlUpCl.equals("")){
 						String[] upFileArr = zlUpCl.split(",");
-						String newPath =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\appUser\\" + this.getLoginUserId(request) + "\\" + pzId;
+						String newPath =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\appUser\\" + currUserId + "\\" + pzId;
 						File file = new File(newPath);
 						if(!file.exists()){
 			    			file.mkdirs();
@@ -757,39 +758,30 @@ public class PubZlAction extends DispatchAction {
 				}
 				msg = "success";
 			}else if(zlType.equals("fmxx")){//发明+新型
-				Integer pubId_1 = pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, "fm", zlUpCl, CurrentTime.getCurrentTime());
-				Integer pubId_2 = pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, "syxx", zlUpCl, CurrentTime.getCurrentTime());
+				String zlUpCl_fm = CommonTools.getFinalStr("fmPath", request);
+				String zlUpCl_xx = CommonTools.getFinalStr("xxPath", request);
+				Integer pubId_1 = pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, "fm", zlUpCl_fm, CurrentTime.getCurrentTime());
+				Integer pubId_2 = pzm.addPubZl(this.getLoginUserId(request), zlTitle, zlContent, "syxx", zlUpCl_xx, CurrentTime.getCurrentTime());
 				if(pubId_1 > 0 && pubId_2 > 0){
 					//如果存在上传的文件，需要移动
-					if(!zlUpCl.equals("")){
-						String[] upFileArr = zlUpCl.split(",");
-						String newPath_1 =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\appUser\\" + this.getLoginUserId(request) + "\\" + pubId_1;
-						String newPath_2 =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\appUser\\" + this.getLoginUserId(request) + "\\" + pubId_2;
+					if(!zlUpCl_fm.equals("")){
+						String[] upFileArr = zlUpCl_fm.split(",");
+						String newPath_1 =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\appUser\\" + currUserId + "\\" + pubId_1;
 						File file_1 = new File(newPath_1);
 						if(!file_1.exists()){
 							file_1.mkdirs();
 			    		}
-						File file_2 = new File(newPath_2);
-						if(!file_2.exists()){
-							file_2.mkdirs();
-			    		}
-						String newPath_db_1 = "",newPath_db_2 = "";
+						String newPath_db_1 = "";
 						String path_1_pre = upFileArr[0].substring(0,upFileArr[0].lastIndexOf("\\")) + "\\" + pubId_1 + "\\";
-						String path_2_pre = upFileArr[0].substring(0,upFileArr[0].lastIndexOf("\\")) + "\\" + pubId_2 + "\\";
 						for(Integer i = 0 ; i < upFileArr.length ; i++){
 							String oldPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" +upFileArr[i];
 							String fileName = upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
 							String newPathFinal_1 = newPath_1 + "\\" + fileName;
-							String newPathFinal_2 = newPath_2 + "\\" + fileName;
 							newPath_db_1 +=  path_1_pre + fileName + ",";
-							newPath_db_2 +=  path_2_pre + fileName + ",";
 							boolean flag = FileOpration.copyFile(oldPath, newPathFinal_1);
 							if(flag){
-								flag = FileOpration.copyFile(oldPath, newPathFinal_2);
-								if(flag){
-									//删除之前文件
-									FileOpration.deleteFile(oldPath);
-								}
+								//删除之前文件
+								FileOpration.deleteFile(oldPath);
 							}
 						}
 						//修改上传附件的真实路径
@@ -797,6 +789,28 @@ public class PubZlAction extends DispatchAction {
 							newPath_db_1 = newPath_db_1.substring(0, newPath_db_1.length() - 1);
 							pzm.updateBasicInfoById(pubId_1, "", "", "", newPath_db_1);
 						}
+					}
+					if(!zlUpCl_xx.equals("")){
+						String[] upFileArr = zlUpCl_xx.split(",");
+						String newPath_2 =  WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\appUser\\" + currUserId + "\\" + pubId_2;
+						File file_2 = new File(newPath_2);
+						if(!file_2.exists()){
+							file_2.mkdirs();
+			    		}
+						String newPath_db_2 = "";
+						String path_2_pre = upFileArr[0].substring(0,upFileArr[0].lastIndexOf("\\")) + "\\" + pubId_2 + "\\";
+						for(Integer i = 0 ; i < upFileArr.length ; i++){
+							String oldPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" +upFileArr[i];
+							String fileName = upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
+							String newPathFinal_2 = newPath_2 + "\\" + fileName;
+							newPath_db_2 +=  path_2_pre + fileName + ",";
+							boolean flag = FileOpration.copyFile(oldPath, newPathFinal_2);
+							if(flag){
+								//删除之前文件
+								FileOpration.deleteFile(oldPath);
+							}
+						}
+						//修改上传附件的真实路径
 						if(!newPath_db_2.equals("")){
 							newPath_db_2 = newPath_db_2.substring(0, newPath_db_2.length() - 1);
 							pzm.updateBasicInfoById(pubId_2, "", "", "", newPath_db_2);
