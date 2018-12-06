@@ -791,6 +791,7 @@ public class ZlMainAction extends DispatchAction {
 		ZlajFeeInfoManager zfm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		PubZlInfoManager pzm = (PubZlInfoManager) AppFactory.instance(null).getApp(Constants.WEB_PUB_ZL_INFO);
 		ZlajLcYjInfoManager lcyjm = (ZlajLcYjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_YJ_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		Integer zlId = CommonTools.getFinalInteger("zlId", request);
 		String opt = CommonTools.getFinalStr("opt", request);//basic(基本信息),lcfz(流程负责人员),lc(流程),tzs(通知书),fj(附件),fy(费用)-后续有的再加
 		String msg = "error";
@@ -979,6 +980,13 @@ public class ZlMainAction extends DispatchAction {
 							map.put("cpyDate", mxList.get(0).getLcCpyDate());
 						}
 						map.put("zlLevel", zl.getZlLevel());
+						//获取该专利的代理费用(id=90是代理费)
+						List<ZlajFeeInfoTb> dlfList = fm.listInfoByOpt(zlId, 90);
+						if(dlfList.size() > 0){
+							map.put("dlFee", dlfList.get(0).getFeePrice());
+						}else{
+							map.put("dlFee", 0);
+						}
 					}else if(opt.equals("lcfz")){//流程负责人信息
 						map = new HashMap<String,Object>();
 						msg = "success";

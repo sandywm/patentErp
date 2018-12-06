@@ -84,6 +84,7 @@
 		<mapping resource="com/patent/xml/PubZlCzRecordTb.hbm.xml" />
 		<mapping resource="com/patent/xml/ZlajFeeSubInfoTb.hbm.xml" />
 		<mapping resource="com/patent/xml/ZlajLcYjInfoTb.hbm.xml" />
+		<mapping resource="com/patent/xml/CpyBonusInfo.hbm.xml" />
 
 
 	</session-factory>
