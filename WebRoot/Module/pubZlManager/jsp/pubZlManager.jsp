@@ -334,6 +334,7 @@
 					globalPubId = $(this).attr('pubId');
 					var zlTitle = $(this).attr('zlTitle'),editZlOpts = $(this).attr('opts'),ajLqStatus = $(this).attr('ajStatus');
 					addEditZlOpts = editZlOpts;
+					addZlFlag = false;
 					if(ajLqStatus == 1){
 						layer.msg('抱歉，此专利任务已被代理机构领取，暂不能编辑', {icon:5,anim:6,time:1000});
 						return;

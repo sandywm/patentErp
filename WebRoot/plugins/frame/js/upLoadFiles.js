@@ -1,12 +1,25 @@
-var errorTypeFlag = false,selFileNum = 0;
-layui.define(['element','jquery','upload'],function(exports){
+var errorTypeFlag = false;//判断当前上传的文件类型是否是正确的
+layui.define(['element','jquery','upload','form'],function(exports){
 	var element = layui.element,
-	upload = layui.upload;
+	upload = layui.upload,form = layui.form;
 	var obj = {
-		uploadFiles : function(url,maxNumber,fileType,isShowDelFlag){
+		switchZlTypeCHN : function(zlTypeEng){
+			var zlTypeCHN = '';
+			if(zlTypeEng == 'fm'){
+				zlTypeCHN = '发明';
+			}else if(zlTypeEng == 'wg'){
+				zlTypeCHN = '外观';
+			}else if(zlTypeEng == 'syxx'){
+				zlTypeCHN = '实用新型';
+			}else if(zlTypeEng == 'fmxx'){
+				zlTypeCHN = '<select class="selZlType" lay-filter="selZlTypeTxt"><option value="">请指派专利类型</option><option value="fm">发明</option> <option value="xx">新型</option></select><input class="zlTypeInpTarg" type="hidden"/>';
+			}
+			return zlTypeCHN;
+		},
+		uploadFiles : function(url,maxNumber,fileType,opts){
 			var imageListView = $('#upLoadFileList')
-			 ,alreadyUploadFiles={}//记录已经上传成功的文件相对路径（后台返回）
-			//,maxNumber=5//这里设置自己允许最大上传数
+			,_this = this
+			 //,alreadyUploadFiles={}//记录已经上传成功的文件相对路径（后台返回）
 			,uploadListIns=upload.render({
 				  elem : '#selFileBtn'
 				  ,url: url//这里设置自己的上传接口
@@ -14,7 +27,6 @@ layui.define(['element','jquery','upload'],function(exports){
 				  ,exts : fileType
 				  ,multiple: true
 				  ,auto: false
-				  //,size:10240
 				  ,number: maxNumber
 				  ,bindAction: '#upListAction' 
 				 	,xhr:xhrOnProgress
@@ -33,11 +45,18 @@ layui.define(['element','jquery','upload'],function(exports){
 					  if((hasUpDoneLen + noUpDoneLen) > maxNumber){
 						  that.errorMsg('最多只能上传'+ maxNumber +'个文件');
 						  return false;
+					  }else{
+						  $('.deleteBtn_sel').hide();
 					  }
 				  }
 				  ,choose: function(obj){
-				  	  var that = this;
+				  	  var that = this,zlTypeTxt='';
 				      //读取本地文件
+				  	  if(opts == 'zlTaskOpts'){
+				  		zlTypeTxt = parent.globalTaskOpts.zlType;
+				  	  }else{
+				  		zlTypeTxt = _this.switchZlTypeCHN($('#zlTypeInp').val());
+				  	  }
 				      obj.preview(function(index, file, result){
 				      	var files = that.files = obj.pushFile(); //将每次选择的文件追加到文件队列
 				      	var fileNames = file.name.split('.')[0]; 
@@ -62,6 +81,7 @@ layui.define(['element','jquery','upload'],function(exports){
 			    		}
 				       var tr = $(['<tr class="hasSelTr noUpDone" id="upload-'+ index +'">',
 						'<td>'+ file.name +'</td>',
+						opts == 'batchImp' ? '' : '<td><div class="zlTypeTxt layui-form">'+ zlTypeTxt +'</div></td>',
 						'<td>'+ (file.size/1014).toFixed(1) +'kb</td>',
 						'<td>等待上传</td>',
 						'<td style="width:120px;">',
@@ -79,13 +99,13 @@ layui.define(['element','jquery','upload'],function(exports){
 						'</tr>'].join(''));
 					    var noUpDoneLen = $('.noUpDone').length;
 					    var hasUpDoneLen = $('.hasUpDone').length;
-				        if(isShowDelFlag){
+				        if(opts == 'batchImp'){
 				        	$('.hasSelWords').html('已选择' + ((noUpDoneLen+1) + hasUpDoneLen) + '个文件,' + (noUpDoneLen+1) + '个未上传，' + hasUpDoneLen + "个已上传");
 				        }
 				     	//删除
 				        tr.find('.deleteBtn_sel').on('click', function(){
 				        	var noUpDoneLen = $('.noUpDone').length,hasUpDoneLen = $('.hasUpDone').length;
-				        	if(isShowDelFlag){
+				        	if(opts == 'batchImp'){
 				        		$('.hasSelWords').html('已选择' + ((noUpDoneLen-1) + hasUpDoneLen) + '个文件,' + (noUpDoneLen-1) + '个未上传，' + hasUpDoneLen + "个已上传");
 					    	    if(noUpDoneLen == 1 && hasUpDoneLen == 0){//一个都未上传
 					    	    	$('.hasSelWords').html('');
@@ -115,7 +135,21 @@ layui.define(['element','jquery','upload'],function(exports){
 				       });
 				       imageListView.append(tr);
 				       $('#upListAction').show();
+				       form.render();
 				  	});
+				     if(opts != 'batchImp' || opts != 'zlTaskOpts'){
+				    	 form.on('select(selZlTypeTxt)', function(data){
+				    		 var value = data.value,parent = $(this).parent().parent().parent(),topParent = $(this).parents('tr');
+				    		 parent.find('.zlTypeInpTarg').val(value);
+				    		 if(value == 'fm'){
+				    			 topParent.find('.uploadInpHid').removeClass('xxPathInp').addClass('fmPathInp');
+				    		 }else if(value == 'xx'){
+				    			 topParent.find('.uploadInpHid').removeClass('fmPathInp').addClass('xxPathInp');
+				    		 }else{
+				    			 topParent.find('.uploadInpHid').removeClass('fmPathInp xxPathInp');
+				    		 }
+				    	 });
+				     } 
 				  }
 				  ,done: function(res, index, upload){
 					  layer.closeAll('loading');
@@ -123,14 +157,17 @@ layui.define(['element','jquery','upload'],function(exports){
 				      var tr = imageListView.find('tr#upload-'+ index)
 				      ,tds = tr.children(),noUpDoneLen = $('.noUpDone').length,hasUpDoneLen = $('.hasUpDone').length;
 				      tr.removeClass('noUpDone').addClass("hasUpDone");
-				      tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
-				      tds.eq(4).find('.uploadInpHid').attr('name','hasUpSuccInp');
-				      tds.eq(4).find('.uploadInpHid').val(res.data[0].src);
 				      //alreadyUploadFiles[index]=res.data && res.data[0];//缓存已上传的文件
 				      $('#upListAction').hide();
-				      if(isShowDelFlag){//批量导入通知书 上传成功后隐藏/移除 删除按钮
-				    	  tr.find('.deleteBtn_sel').hide();
+				      if(opts == 'batchImp'){//批量导入通知书 上传成功后隐藏/移除 删除按钮
+				    	  tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+					      tds.eq(4).find('.uploadInpHid').attr('name','hasUpSuccInp');
+					      tds.eq(4).find('.uploadInpHid').val(res.data[0].src);
 						  $('.hasSelWords').html('已选择' + (noUpDoneLen + hasUpDoneLen) + '个文件, '+ (noUpDoneLen-1) +'个未上传，' + (hasUpDoneLen+1) + "已上传");
+				      }else{
+				    	  tds.eq(3).html('<span style="color: #5FB878;">上传成功</span>');
+					      tds.eq(5).find('.uploadInpHid').attr('name','hasUpSuccInp');
+					      tds.eq(5).find('.uploadInpHid').val(res.data[0].src);
 				      }
 				      return delete this.files[index]; //删除文件队列已经上传成功的文件
 				    }else if(res.msg == 'suffixError'){
@@ -141,10 +178,16 @@ layui.define(['element','jquery','upload'],function(exports){
 				  }
 				  ,error: function(index, upload){
 				    var tr = imageListView.find('tr#upload-'+ index)
-				    ,tds = tr.children();			     	
-				    tds.eq(2).html('<span style="color: #ff5722;">上传失败</span>');
-				    tds.eq(3).find('.layui-progress-bar').css('background-color','#ff5722');
-				    tds.eq(4).find('.reloadBtn_sel').removeClass('layui-hide'); //显示重传
+				    ,tds = tr.children();	
+				    if(opts == 'batchImp'){
+				    	tds.eq(2).html('<span style="color: #ff5722;">上传失败</span>');
+					    tds.eq(3).find('.layui-progress-bar').css('background-color','#ff5722');
+					    tds.eq(4).find('.reloadBtn_sel').removeClass('layui-hide'); //显示重传
+				    }else{
+				    	tds.eq(3).html('<span style="color: #ff5722;">上传失败</span>');
+					    tds.eq(4).find('.layui-progress-bar').css('background-color','#ff5722');
+					    tds.eq(5).find('.reloadBtn_sel').removeClass('layui-hide'); //显示重传
+				    }
 				  }
 			});
 		}

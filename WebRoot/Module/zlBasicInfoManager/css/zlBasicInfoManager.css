@@ -19,7 +19,8 @@ body{
 	margin-top:15px;
 }
 .layui-form-label{
-	width:125px;
+	width:136px;
+	padding:9px 10px;
 }
 .layui-form-label span{
 	color:red;
@@ -40,8 +41,61 @@ body{
 	float:left;
 	position:relative;
 }
+.sepcialLab{
+	text-align:left;
+	width:108px;
+}
 .itemDiv .layui-input-inline{
 	width:70.5%;
+	position:relative;
+}
+.itemDiv .layui-input-inline em.moneyDec{
+	font-style:normal;
+	position:absolute;
+	left:6px;
+	top:0px;
+	font-size:18px;
+	color:#F47837;
+}
+.itemDiv.agentFeeDiv,
+.hasLine{
+	height:39px;
+	line-height:39px;
+}
+.diffDiv.oneWid, 
+.comAgentDiv.oneWid{
+	width:100%;
+}
+.comAgentDiv.twoWid{
+	width:50%;
+}
+.twoAgentDiv,
+.diffDiv.twoWid,
+.moneyDec{
+	display:none;
+}
+.itemDiv.agentFeeDiv .agentTit,
+.diffTit{
+	font-style:normal;
+}
+.itemDiv.agentFeeDiv .agentInp{
+	display:none;
+	padding-left:20px;
+	font-weight:600;
+	color:#666;
+}
+.itemDiv.agentFeeDiv .agentInp::-webkit-input-placeholder {
+	font-weight:normal;
+}
+.comAgentDiv.twoWid .layui-input-inline{
+	width:40%;
+	margin-right:0px;
+}
+.comAgentDiv.twoWid .layui-input-inline.sepcialInline{
+	width:50%;
+}
+.tipsInfo{
+	color:#999;
 }
 .selZlTaskSp{
 	position:absolute;
@@ -721,4 +775,20 @@ body{
 .verifyTxt p span.noPasVerifySpan,
 .noPasCheckStatus{
 	background:#FF5722;
+}
+.selZlType + .layui-form-select{
+	width:146px;
+	margin-right:-40px;
+}
+.layui-rate{
+	padding:6px 5px 0px 0;
+	float:left;
+}
+.layui-form-item .layui-inline{
+	margin:0 0 5px 0;
+}
+.layui-rate + .layui-inline{
+	margin-top:9px;
+	display:block;
+	float:left;
 }

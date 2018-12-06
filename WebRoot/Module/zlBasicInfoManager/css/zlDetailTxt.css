@@ -160,3 +160,16 @@
 .layui-layer-molv .layui-layer-btn .layui-layer-btn1{
 	background:#fff !important;
 }
+.layui-rate{
+	padding:0px 5px 0px 0;
+	float:left;
+	border:none !important;
+}
+.layui-rate .layui-inline{
+	margin:0 0 5px 0;
+	border:none !important;
+	text-indent:0px;
+}
+.layui-rate + .layui-inline{
+	display:none !important;
+}

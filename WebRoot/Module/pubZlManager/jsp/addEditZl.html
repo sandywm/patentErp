@@ -47,6 +47,7 @@
 				<table class="layui-table">
 			      <thead>
 			        <tr><th>附件名</th>
+			        <th>专利类型</th>
 			        <th>大小</th>
 			        <th>状态</th>
 			        <th>进度</th>
@@ -114,15 +115,15 @@
 					var _this = this;
 					$('#saveZlBtn').on('click',function(){
 						var zlTitle = $.trim($('#zlTitleInp').val()),
-							zlTypeInp = $('#zlTypeInp').val(),
+							zlTypeInpVal = $('#zlTypeInp').val(),
 							zlContent = $.trim($('#zlContent').val()),
-							url = '';
+							url = '',fmPathVal = '',xxPathVal = '',tmpPubId = 0,tmpFmPath=[],tmpXxPath=[];
 						if(zlTitle == ''){
 							layer.msg('专利名称不能为空',{icon:5,anim:6,time:1000});
 						}else if(zlContent == ''){
 							layer.msg('专利描述不能为空',{icon:5,anim:6,time:1000});
 						}else{
-							var isHasUpLoadFlag = false;
+							var isHasUpLoadFlag = false,isFmxxFlag=false;
 							if($('.deleteBtn').length > 0){
 								if($('input[name="hasUpSuccInp"]').length == 0){//表示用户选择了文件，但是没有点击上传
 									isHasUpLoadFlag = false;
@@ -136,26 +137,56 @@
 									//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传(格式有部分不正确，用户如果没有点击删除不正确按钮，点击保存直接保存)
 									isHasUpLoadFlag = true;
 								}
-								if(isHasUpLoadFlag){
-									upSuccSrcArray.length = 0;
-									$('input[name="hasUpSuccInp"]').each(function(i){
-										upSuccSrcArray.push($('input[name="hasUpSuccInp"]').eq(i).val());
-									});
-									$('#fujianInp').val(upSuccSrcArray.join(','));
+								if(isHasUpLoadFlag){//发明 外观 实用新型 采用ajUpload
+									if(zlTypeInpVal != 'fmxx'){
+										upSuccSrcArray.length = 0;
+										$('input[name="hasUpSuccInp"]').each(function(i){
+											upSuccSrcArray.push($('input[name="hasUpSuccInp"]').eq(i).val());
+										});
+										$('#fujianInp').val(upSuccSrcArray.join(','));
+									}
 								}else{
 									layer.msg('您有未上传的附件，请先上传附件',{icon:5,anim:6,time:1000});
 									return;
+								}
+								if(zlTypeInpVal == 'fmxx' && $('.zlTypeInpTarg').length > 0){
+									$('.zlTypeInpTarg').each(function(i){
+										if($('.zlTypeInpTarg').eq(i).val() != ''){
+											isFmxxFlag = true;//所有当前专利类型是发明+新型的上传成功的附件都已经指派了类型
+										}else{
+											isFmxxFlag = false;
+										}
+									});
+									if(isFmxxFlag && isHasUpLoadFlag){//所有是发明+新型选择的附件都已经上传成功
+										tmpFmPath.length = 0;
+										tmpXxPath.length = 0;
+										$('.fmPathInp').each(function(i){
+											tmpFmPath.push($('.fmPathInp').eq(i).val());
+										});
+										fmPathVal = tmpFmPath.join(',');
+										$('.xxPathInp').each(function(i){
+											tmpXxPath.push($('.xxPathInp').eq(i).val());
+										});
+										xxPathVal = tmpXxPath.join(',');
+									}else{
+										layer.msg('请给您上传的附件指派一个专利类型',{icon:5,anim:6,time:1500});
+										return;
+									}
 								}
 							}
 							//console.log(zlTitle + "--" + zlContent + "--" + zlTypeInp + "--" + $('#fujianInp').val())
 							if(addEditZlOpts == 'editZlOpts'){//表示编辑
 								url = '/pubZl.do?action=updateSelfPzInfo';
-								var field = {pubId : pubId, zlTitle : escape(zlTitle), zlContent : escape(zlContent), zlType : zlTypeInp, zlUpCl : $('#fujianInp').val()};
+								tmpPubId = pubId;
 							}else{//增加
 								url = '/pubZl.do?action=addPzInfo';
-								var field = { zlTitle : escape(zlTitle), zlContent : escape(zlContent), zlType : zlTypeInp, zlUpCl : $('#fujianInp').val()};
+								tmpPubId = 0;								
 							}
-							
+							if(zlTypeInpVal != 'fmxx'){
+								var field = {pubId : tmpPubId, zlTitle : escape(zlTitle), zlContent : escape(zlContent), zlType : zlTypeInpVal, zlUpCl : $('#fujianInp').val()};
+							}else{
+								var field = {pubId : tmpPubId, zlTitle : escape(zlTitle), zlContent : escape(zlContent), zlType : zlTypeInpVal,fmPath:fmPathVal,xxPath:xxPathVal};	
+							}
 							layer.load('1');
 							$.ajax({
 			   					type:'post',
@@ -214,23 +245,23 @@
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明" checked/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型"/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>';
-						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>';
+						//strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>';
 					}else if(json.zlType == 'syxx'){
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型" checked/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>';
-						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>';
+						//strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>';
 					}else if(json.zlType == 'wg'){
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型"/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观" checked/>';
-						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>';
-					}else if(json.zlType == 'fmxx'){
+						//strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>';
+					}/*else if(json.zlType == 'fmxx'){
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型"/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型" checked/>';
-					}
+					}*/
 					strHtml += '</div></div>';
 					//专利描述
 					strHtml += '<div class="layui-form-item">';
@@ -251,12 +282,14 @@
 					//<input id="fujianInp" name="zlUpCl" value="'+ json.zlUpCl +'" type="hidden"/>
 					strHtml += '<label class="layui-form-label"></label><input id="fujianInp" name="zlUpCl" value="" type="hidden"/>';
 					strHtml += '<div class="layui-input-block">';
-					strHtml += '<table class="layui-table"><thead><tr><th>附件名</th><th>大小</th><th>状态</th><th>进度</th><th>操作</th></tr></thead>';
+					strHtml += '<table class="layui-table"><thead><tr><th>附件名</th><th>专利类型<th>大小</th><th>状态</th><th>进度</th><th>操作</th></tr></thead>';
 					strHtml += '<tbody id="upLoadFileList">';
 					var zlUpClArray = json.zlUpCl;
+					var zlTypeTxt = globalUpload.switchZlTypeCHN(json.zlType);
 					for(var i=0;i<zlUpClArray.length;i++){
 						strHtml += '<tr id="upload-'+ i +'">';
 						strHtml += '<td>'+ zlUpClArray[i].fileName +'</td>';
+						strHtml += '<td><span class="zlTypeTxt">'+ zlTypeTxt +'</span></td>';
 						strHtml += '<td>'+ zlUpClArray[i].fileSize +'</td>';
 						strHtml += '<td><span style="color: #5FB878;">上传成功</span></td>';
 						strHtml += '<td style="width:120px;"><div class="layui-progress layui-progress-big" lay-showpercent="true">';
@@ -288,6 +321,14 @@
 			form.on('radio(zlTypeFilter)', function(data){
 				var value = data.value;
 				$('#zlTypeInp').val(value);
+				$('.uploadInpHid').removeClass('fmPathInp xxPathInp');
+				if($('.zlTypeTxt').length > 0){//先选择了附件上传
+					var zlTypeTxt = globalUpload.switchZlTypeCHN(value);
+					$('.zlTypeTxt').each(function(i){
+						$('.zlTypeTxt').eq(i).html(zlTypeTxt);
+						form.render();
+					});
+				}
 			});
 			function selectFileUpload(){
 				var upLoadFileList = $('#upLoadFileList'),url = '',fileType = 'doc|docx|wps|xls|xlsx|txt|pdf|pptx|ppt|zip|rar|dwg|eml|jpg|png|bmp|gif|jpeg|vsd|vsdx';
@@ -296,7 +337,7 @@
 				}else{//增加专利
 					url = '/upload.do?action=uploadFile&ajId=0';
 				}
-				globalUpload.uploadFiles(url,5,fileType);
+				globalUpload.uploadFiles(url,5,fileType,'');
 				if(addEditZlOpts == 'editZlOpts' && $('.deleteBtn_edit').length > 0){//表示编辑的时候执行附件删除动作
 					$('.deleteBtn_edit').on('click',function(){
 						$(this).parent().parent().remove();
