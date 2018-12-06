@@ -160,8 +160,13 @@
 				globalUpload = layui.upLoadFiles;
 			//tab点击事件的监听
   			element.on('tab(zlDetailFilter)', function(data){
-  				if(data.index == 1){
+  				if(data.index == 0){
+  					if(page.data.isSaveLcFpFlag){
+  						page.rateFun('diffLevelOne',page.data.difflevel,true);
+  					}
+  				}else if(data.index == 1){
   					//查看/编辑流程负责人员
+  					page.data.isSaveLcFpFlag = false;
   					page.commonLoadZlInfo('lcfz','');
   				}else if(data.index == 2){
   					//流程
@@ -216,7 +221,9 @@
 					nowLcStr : '<i class="iconfont layui-extend-jinhangzhong ingTaskIcon"></i><span class="ingTaskSp">任务正在进行中<span class="dotting"></span></span>',
 					otherLcStr : '<i class="iconfont layui-extend-jinhangzhong"></i><span>任务等待中<span class="dotting"></span></span>',
 					hasCompLcStr : '<i class="layui-icon layui-icon-ok statusIcon_com"></i><span class="hasComSp">任务已完成</span>',
-					applyTransStr : '<span class="transTips"><i class="layui-icon layui-icon-tips"></i>任务移交申请等待审核中<span class="dotting"></span></span>'
+					applyTransStr : '<span class="transTips"><i class="layui-icon layui-icon-tips"></i>任务移交申请等待审核中<span class="dotting"></span></span>',
+					difflevel : 0,
+					isSaveLcFpFlag:false
 				},
 				init : function(){
 					this.onLoad();
@@ -466,6 +473,7 @@
 						var sqrName='', ajTitleVal = $.trim($('#ajTitleInp').val()),//案件标题
 							//ajNumInpVal = $('#ajNumInp').val(),//案件编号
 							zlTypeInpVal = $('#zlTypeInp').val(),//专利类型
+							zlAgentFeeInpVal = $('#zlAgentFeeInp').val(),//发明、外观、实用新型对应专利代理费
 							ajFieldIdVal = $('#ajFieldId').val(),//案件技术领域
 							ajSqAddressVal = $('#ajSqAddress').val(),//案件申请地区
 							ajSqrIdVal = $('#ajSqrId').val(),//案件申请人
@@ -553,7 +561,7 @@
 			   				}
 			   				//console.log(ajTitleVal + "--" +zlTypeInpVal + "-" + ajFieldIdVal + "-" + ajSqAddressVal + "--" + ajSqrIdVal + "-" + ajLxrIdVal+"-"+ajFmrIdVal+"-"+yxqDetailInpVal+"-"+ajEwyqIdVal+"-"+ajRemarkVal+"-"+$('#fujianInp').val()+"-"+cpyDateInpVal+"-pubZlId=="+pubZlIdInpVal + "-----sqrNmme----" + sqrName)
 			   				var field = {ajTitle:escape(ajTitleVal),
-												ajType:zlTypeInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+												ajType:zlTypeInpVal,dlFee:zlAgentFeeInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 												ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 												yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 												ajUpload:$('#fujianInp').val(),cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal};
@@ -655,7 +663,9 @@
 						if(zxUserId == undefined || zxUserId==''){
 							zxUserId = 0;
 						}
-						if(checkUserId == undefined || checkUserId == ''){
+						if(_this.data. difflevel == 0){
+							layer.msg('请设置专利难易度！', {icon:5,anim:6,time:1500});
+						}else if(checkUserId == undefined || checkUserId == ''){
 							layer.msg('请选择专利审核人员！', {icon:5,anim:6,time:1500});
 						}else if(cusSuerUserId == undefined || cusSuerUserId==''){
 							layer.msg('请选择客户确认人员！', {icon:5,anim:6,time:1500});
@@ -673,7 +683,7 @@
 							layer.msg('请选择专利驳回人员！', {icon:5,anim:6,time:1500});
 						}else{
 							//alert(zxUserId + "=zxUserId-" + checkUserId + "=checkUserId-" + tjUserId + "=tjUserId-" + tzsUserId + "=tzsUserId-" + feeUserId + "=feeUserId-" + bzUserId + "=bzUserId-" + bzshUserId + "=bzshUserId-" + bhUserId + "=bhUserId" + cusSuerUserId + "==cusSuerUserId")
-							var field={zlId:parent.globalZlId,zxUserId:zxUserId,checkUserId:checkUserId,tjUserId:tjUserId,tzsUserId:tzsUserId,
+							var field={zlId:parent.globalZlId,zlLevel:_this.data.difflevel,zxUserId:zxUserId,checkUserId:checkUserId,tjUserId:tjUserId,tzsUserId:tzsUserId,
 									feeUserId:feeUserId,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:bhUserId,cusCheckUserId:cusSuerUserId};
 							$.ajax({
 		  						type:'post',
@@ -683,8 +693,8 @@
 						        url:'/zlm.do?action=updateOperatorUserInfo',
 						        success:function (json){
 						        	layer.closeAll('loading');
-						        	console.log(json)
 						        	if(json['result'] == 'success'){
+						        		_this.data.isSaveLcFpFlag = true;
 						        		layer.msg('流程人员分配设置成功',{icon:1,time:1000});
 						        	}else if(json['result'] == 'stopInfo'){
 						        		layer.msg('案件终止状态下不能进行修改', {icon:5,anim:6,time:2200});
@@ -731,6 +741,15 @@
 							$('#mxTit').html(lcName + '--明细详情');
 							_this.getMxDetailInfo(lcId,lcNo);
 						}
+					});
+				},
+				agentDlFee_usual : function(){
+					var _this = this;
+					$('#zlAgentFeeInp').on('keyup',function(){
+						common.judgeAgentFee('zlAgentFeeInp');
+					});
+					$('#zlAgentFeeInp').on('blur',function(){
+						common.judgeAgentFee_num('zlAgentFeeInp',true,parent.globalZlId);
 					});
 				},
 				//获取主流程对应的明细详情
@@ -908,7 +927,8 @@
 				},
 				//编辑时渲染结构
 				renderZlBasicInfo : function(json){
-					var strHtml = '';
+					console.log(json)
+					var strHtml = '',isReadFlag = true;
 					if(!this.data.upZlFlag){
 						//表示不具有编辑权限
 						strHtml += '<div class="noUpTipTxt"><i class="layui-icon layui-icon-face-cry"></i>抱歉，您暂无编辑此专利的权限！</div>';
@@ -947,6 +967,15 @@
 						strHtml += '<span class="resetSp" title="重置"><i class="layui-icon layui-icon-delete"></i></span>';
 					}
 					strHtml += '</div></div></div>';
+					//专利难易度 专利代理费用
+					strHtml += '<div class="layui-form-item">';
+					strHtml += '<div class="itemDiv"><div class="diffDiv oneWid fl">';
+					strHtml += '<label class="layui-form-label"><i class="diffTit">专利难易程度</i></label>';
+					strHtml += '<div class="layui-input-inline"><div id="diffLevelOne"></div></div></div></div>';
+					strHtml += '<div class="itemDiv agentFeeDiv"><div class="comAgentDiv oneAgentDiv oneWid fl">';
+					strHtml += '<label class="layui-form-label"><span>*</span><i class="agentTit">专利代理费</i></label>';
+					strHtml += '<div class="layui-input-inline"><em class="moneyDec" style="display:block;">¥</em><input id="zlAgentFeeInp" type="text" value="'+ json.dlFee +'" style="display:block;" placeholder="请输入代理费" autocomplete="off" class="layui-input agentInp"/></div></div></div>';
+					strHtml += '</div>';
 					//案件技术领域
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>案件技术领域</label><div class="layui-input-block fixHeiDiv clearfix">';
 					strHtml += '<div id="fieldBox" class="multiBox fl">';
@@ -1159,12 +1188,14 @@
 						strHtml += '<div class="layui-form-item"><label class="layui-form-label">案件附件</label><input id="fujianInp" name="zlUpCl" type="hidden"/>';
 					}
 					strHtml += '<div class="layui-input-block"><table class="layui-table"><thead>';
-					strHtml += '<tr><th>附件名</th><th>大小</th><th>状态</th><th>进度</th><th>操作</th></tr></thead>';
+					strHtml += '<tr><th>附件名</th><th>专利类型</th><th>大小</th><th>状态</th><th>进度</th><th>操作</th></tr></thead>';
 					strHtml += '<tbody id="upLoadFileList">';
 					var zlUpClArray = json.upFile;
+					var zlTypeTxt = globalUpload.switchZlTypeCHN(json.ajType);
 					for(var i=0;i<zlUpClArray.length;i++){
 						strHtml += '<tr id="upload-'+ i +'">';
 						strHtml += '<td>'+ zlUpClArray[i].fileName +'</td>';
+						strHtml += '<td><span class="zlTypeTxt">'+ zlTypeTxt +'</span></td>';
 						strHtml += '<td>'+ zlUpClArray[i].fileSize +'</td>';
 						strHtml += '<td><span style="color: #5FB878;">上传成功</span></td>';
 						strHtml += '<td style="width:120px;"><div class="layui-progress layui-progress-big" lay-showpercent="true">';
@@ -1214,22 +1245,28 @@
 					if(json.pubZlName != ''){//编辑首次进来页面判断是否存在已添加的专利任务存在激活重置
 						parent.$('#lqZlIdInp').val(json.pubZlId);//将已经存在数据库的pubZlId赋给父级用于弹窗页面的回显
 			  		}
+					this.rateFun('diffLevelOne',json.zlLevel,isReadFlag);
+					this.agentDlFee_usual();
 				},
 				//渲染流程分配人员结构
 				renderLcFpPeo : function(json){
-					//console.log(json)
-					var strHtml = '',applyYjFlag = json.applyYjFlag;
+					var strHtml = '',applyYjFlag = json.applyYjFlag,isReadFlag = false;
 					if(!this.data.fpZlFlag){
 						//表示不具有分配权限
 						strHtml += '<div class="noUpTipTxt"><i class="layui-icon layui-icon-face-cry"></i>抱歉，您暂无对此专利分配人员的权限！</div>';
+						isReadFlag = true;
 					}else{
 						strHtml += '<div class="layui-form-item" style="margin:15px 0 -10px 0;">';
 						strHtml += '<p class="lcfpTipsInfo"><i class="layui-icon layui-icon-speaker hasBlink"></i>注：01. 被分配的流程人员需要具有流程处理权限的才能进行分配！</p>';
 						strHtml += '<p class="lcfpTipsInfo bigIndent">02. 正在进行中任务的人员请谨慎更换，一旦更换人员，那么此人员所处理的任务将被移除！</p>';
 						strHtml += '</div>';
+						isReadFlag = false;
 					}
+					//专利难易程度
+					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span>*</span>专利难易度</label>';
+					strHtml += '<div class="layui-input-block clearfix"><div id="diffLevel"></div></div></div>';
 					//专利撰写人员
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">专利撰写人员</label>';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">专利撰写人员</label>';
 					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="zxPeopleBox" class="multiBox fl">';
 					if(json.zxUserId != 0){
 						strHtml += '<p id="addZxUser_con" userId="'+ json.zxUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.zxUserName +'</p>';
@@ -1342,6 +1379,38 @@
 					$('#addLcFp').html(strHtml);
 					this.judgeLcNo(applyYjFlag);
 					this.bindEvent_lcfp();
+					if(json.zlLevel != 0){
+						this.data.difflevel = json.zlLevel;
+					}
+					this.rateFun('diffLevel',json.zlLevel,isReadFlag);
+				},
+				rateFun : function(elem,value,isReadFlag){
+					var _this = this;
+					rate.render({
+					    elem: '#' + elem
+					    ,value : value
+					    ,length:3
+					    ,readonly:isReadFlag
+					    ,text: true
+					    ,theme: '#FF8000'
+				    	,choose: function(value){
+							if(value == 1){
+								_this.data.difflevel = 1;
+							}else if(value == 2){
+							  	_this.data.difflevel = 2;
+							}else if(value == 3){
+							  	_this.data.difflevel = 3;
+							}
+						}
+					    ,setText: function(value){ //自定义文本的回调
+					      var arrs = {
+					        '1': '简单'
+					        ,'2': '困难'
+					        ,'3': '复杂'
+					      };
+					      this.span.text(arrs[value] || '');
+					    }
+					});
 				},
 				//根据当前LcNo来判定当前任务到哪一步了(任务移交/任务移交审核时流程分配用来显示当前人员，其他不显示编辑和添加)
 				judgeLcNo : function(applyYjFlag){
@@ -1349,7 +1418,6 @@
 					$('.currLcNo').html(this.data.otherLcStr);
 					if(currLcNo >= 3 && currLcNo < 4){ //新申请撰稿  撰稿修改nowLcStatus
 						applyYjFlag ? $('#lcNo3').html(this.data.nowLcStr + this.data.applyTransStr) : $('#lcNo3').html(this.data.nowLcStr);
-						//$('#lcNo3').html(this.data.nowLcStr);
 					}else if(currLcNo >= 4 && currLcNo < 5){//专利审核
 						$('#lcNo3').html(this.data.hasCompLcStr);
 						applyYjFlag ? $('#lcNo4').html(this.data.nowLcStr + this.data.applyTransStr) : $('#lcNo4').html(this.data.nowLcStr);
@@ -1710,17 +1778,21 @@
 					var value = data.value;
 					$('#zlTypeInp').val(value);
 					tmpEwyqIdArray.length = 0;
-					if(value == 'fmxx'){
-						$('.selZlTaskSp').hide();
-					}else{
-						$('.selZlTaskSp').show();
-					}
 					$('#pubZlIdInp').val('');
 					parent.$('#lqZlIdInp').val('');
 					$('#pubZlIdInpTxt').val('');
+					$('#zlAgentFeeInp').val('');//切换专利类型时，清空之前专利代理费的值
 					parent.$('#lqZlIdInpText').val('');
+					//page.agentDlFee_usual();
 					page.getAjNum(value);
 					page.getEwYqList(value);
+					if($('.zlTypeTxt').length > 0){//先选择了附件上传
+						var zlTypeTxt = globalUpload.switchZlTypeCHN(value);
+						$('.zlTypeTxt').each(function(i){
+							$('.zlTypeTxt').eq(i).html(zlTypeTxt);
+							form.render();
+						});
+					}
 				}
 			});
 			//案件申请地区form radio监听
@@ -1750,7 +1822,7 @@
 				}else{//增加专利
 					url = '/upload.do?action=uploadFile&ajId=0&fileType=dg';
 				}
-				globalUpload.uploadFiles(url,5,fileType);
+				globalUpload.uploadFiles(url,5,fileType,'');
 				if(addEditZlOpts == 'editZlOpts' && $('.deleteBtn_edit').length > 0){//表示编辑的时候执行附件删除动作
 					$('.deleteBtn_edit').on('click',function(){
 						$(this).parent().parent().remove();

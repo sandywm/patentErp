@@ -47,6 +47,7 @@
 				<table class="layui-table">
 			      <thead>
 			        <tr><th>附件名</th>
+			        <th>专利类型</th>
 			        <th>大小</th>
 			        <th>状态</th>
 			        <th>进度</th>
@@ -251,12 +252,14 @@
 					//<input id="fujianInp" name="zlUpCl" value="'+ json.zlUpCl +'" type="hidden"/>
 					strHtml += '<label class="layui-form-label"></label><input id="fujianInp" name="zlUpCl" value="" type="hidden"/>';
 					strHtml += '<div class="layui-input-block">';
-					strHtml += '<table class="layui-table"><thead><tr><th>附件名</th><th>大小</th><th>状态</th><th>进度</th><th>操作</th></tr></thead>';
+					strHtml += '<table class="layui-table"><thead><tr><th>附件名</th><th>专利类型<th>大小</th><th>状态</th><th>进度</th><th>操作</th></tr></thead>';
 					strHtml += '<tbody id="upLoadFileList">';
 					var zlUpClArray = json.zlUpCl;
+					var zlTypeTxt = globalUpload.switchZlTypeCHN(json.zlType);
 					for(var i=0;i<zlUpClArray.length;i++){
 						strHtml += '<tr id="upload-'+ i +'">';
 						strHtml += '<td>'+ zlUpClArray[i].fileName +'</td>';
+						strHtml += '<td><span class="zlTypeTxt">'+ zlTypeTxt +'</span></td>';
 						strHtml += '<td>'+ zlUpClArray[i].fileSize +'</td>';
 						strHtml += '<td><span style="color: #5FB878;">上传成功</span></td>';
 						strHtml += '<td style="width:120px;"><div class="layui-progress layui-progress-big" lay-showpercent="true">';
@@ -288,6 +291,14 @@
 			form.on('radio(zlTypeFilter)', function(data){
 				var value = data.value;
 				$('#zlTypeInp').val(value);
+				$('.uploadInpHid').removeClass('fmPathInp xxPathInp');
+				if($('.zlTypeTxt').length > 0){//先选择了附件上传
+					var zlTypeTxt = globalUpload.switchZlTypeCHN(value);
+					$('.zlTypeTxt').each(function(i){
+						$('.zlTypeTxt').eq(i).html(zlTypeTxt);
+						form.render();
+					});
+				}
 			});
 			function selectFileUpload(){
 				var upLoadFileList = $('#upLoadFileList'),url = '',fileType = 'doc|docx|wps|xls|xlsx|txt|pdf|pptx|ppt|zip|rar|dwg|eml|jpg|png|bmp|gif|jpeg|vsd|vsdx';
@@ -296,7 +307,7 @@
 				}else{//增加专利
 					url = '/upload.do?action=uploadFile&ajId=0';
 				}
-				globalUpload.uploadFiles(url,5,fileType);
+				globalUpload.uploadFiles(url,5,fileType,'');
 				if(addEditZlOpts == 'editZlOpts' && $('.deleteBtn_edit').length > 0){//表示编辑的时候执行附件删除动作
 					$('.deleteBtn_edit').on('click',function(){
 						$(this).parent().parent().remove();

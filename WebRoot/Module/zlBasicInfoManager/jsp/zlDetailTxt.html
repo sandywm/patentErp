@@ -13,7 +13,6 @@
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		//alert(parent.taskDetailOpt)
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -53,6 +52,7 @@
   					});
 				},
 				renderZlBasicInfo : function(json){
+					console.log(json)
 					var strHtml = '';
 					strHtml += '<ul>';
 					strHtml += '<li class="oneWidLi hasAlign"><strong>'+ json.ajTitle +'</strong></li>';
@@ -80,7 +80,14 @@
 					strHtml += '<div class="conPart hasLineHei">'+ json.pubZlName +'</div></div></li>';
 					strHtml += '<li class="twoWidLi">';
 					strHtml += '<div class="halfBox hasBorRight">';
-					strHtml += '<p class="titPart hasLineHei">案件技术领域</p>';
+					strHtml += '<p class="titPart hasLineHei">案件难易程度</p>';
+					strHtml += '<div class="conPart hasLineHei">';
+					strHtml += '<div id="diffLevelOne"></div>';
+					strHtml += '</div></div>';
+					strHtml += '<div class="halfBox"><p class="titPart hasLineHei">案件申请地区</p>';
+					strHtml += '<div class="conPart hasLineHei">'+ json.ajAddress +'</div></div></li>';
+					strHtml += '<li class="oneWidLi">';
+					strHtml += '<div class="oneWidBox"><p class="titPart hasLineHei">案件技术领域</p>';
 					strHtml += '<div class="conPart hasLineHei">';
 					if(json.jsFieldInfo.length > 0){
 						var jsFieldInfo = json.jsFieldInfo;
@@ -90,9 +97,7 @@
 							}
 						}
 					}
-					strHtml += '</div></div>';
-					strHtml += '<div class="halfBox"><p class="titPart hasLineHei">案件申请地区</p>';
-					strHtml += '<div class="conPart hasLineHei">'+ json.ajAddress +'</div></div></li>';
+					strHtml += '</div></div></li>';
 					strHtml += '<li class="oneWidLi">';
 					strHtml += '<div class="oneWidBox"><p class="titPart hasLineHei">申请人</p>';
 					strHtml += '<div class="conPart hasLineHei">';
@@ -183,6 +188,7 @@
 						var downFilePath = $(this).attr('downFilePath');
 						common.downFiles(downFilePath);
 					});
+					common.rateFunReadOnly('diffLevelOne',json.zlLevel);
 					this.lqZlTaskFun();
 				},
 				lqZlTaskFun : function(){

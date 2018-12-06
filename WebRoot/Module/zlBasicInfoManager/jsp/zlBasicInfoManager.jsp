@@ -34,7 +34,7 @@
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
     	var loginType=parent.loginType,roleName=parent.roleName;
-		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0,globalLcMxId:0,applyCause:'',applyName:'',yjId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
+		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0,globalLcMxId:0,applyCause:'',applyName:'',yjId:0,zlType:''},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -96,7 +96,7 @@
 				        dataType:"json",
 				        data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',checkStatus:0,lqStatus: 5},
 				       // data:{stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',comStatus:0,lqStatus: 4},
-				        //data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',lqStatus:loginType == 'spUser' ? -1 : 4},
+				        data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',lqStatus:loginType == 'spUser' ? -1 : 4},
 				        //data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',checkStatus:0,lqStatus: 5},
 				        url:'/zlm.do?action=getPageZlData',
 				        success:function (json){
@@ -369,7 +369,7 @@
 							{field : 'sets', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
 								if(taskStaVal == 0){
 									var strHtml = '';
-									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" lcNo="'+ d.lcNo +'" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
+									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" lcNo="'+ d.lcNo +'" zlId="'+ d.zlId +'" zlType="'+ d.zlType +'" ajTitle="'+ d.zlTitle +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
 									if(roleName == '管理员' || this.data.fpZlFlag == true){
 										if(d.applyFlag){
 											strHtml += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="lcfpFun" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'" taskOpts="1" fzUserId="'+ d.fzUserId +'" currLcNo="'+ d.lcNo +'"><i class="iconfont layui-extend-yijiao"></i>任务移交</a>';
@@ -600,6 +600,7 @@
 					var ajTitle = $(this).attr('ajTitle'),currLcNo = $(this).attr('lcNo'),lcTaskName = '';
 					globalZlId = $(this).attr('zlId');
 					globalZlTit = ajTitle;
+					globalTaskOpts.zlType = $(this).attr('zlType');
 					addZlFlag = false;
 					if(currLcNo >= 3 && currLcNo < 4){//新申请撰稿 撰稿修改
 						lcTaskName = 'zx';
@@ -609,17 +610,7 @@
 						lcTaskName = 'cus';
 					}else if(currLcNo >= 6 && currLcNo < 7){//定稿提交
 						lcTaskName = 'dgtj';
-					}/*else if(currLcNo >= 7 && currLcNo < 8){//通知书导入
-						lcTaskName = 'tzs';
-					}else if(currLcNo >= 8 && currLcNo < 9){//费用催缴
-						lcTaskName = 'fycj';
-					}else if(currLcNo >= 9 && currLcNo < 10){//专利补正
-						lcTaskName = 'bz';
-					}else if(currLcNo >= 10 && currLcNo < 11){//补正审核
-						lcTaskName = 'bzsh';
-					}else if(currLcNo >= 11 && currLcNo < 12){//专利驳回
-						lcTaskName = 'bh';
-					}*/
+					}
 					page.data.dealZlFlag = common.getPermission('dealZl',lcTaskName,globalZlId);
 					if(page.data.dealZlFlag){
 						var fullScreenIndex = layer.open({

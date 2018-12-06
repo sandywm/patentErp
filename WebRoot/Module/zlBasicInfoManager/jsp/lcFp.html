@@ -16,14 +16,21 @@
 	<script type="text/javascript">
 		var globalTypeUser = '';
 		var taskOpts = parent.globalTaskOpts.taskOpts,currLcNo = parent.globalTaskOpts.currLcNo,fzUserId = parent.globalTaskOpts.fzUserId,clickOptsFlag=false;
-		layui.use(['layer','form'],function(){
+		layui.config({
+			base: '/plugins/frame/js/'
+		}).extend({ //设定组件别名
+			common: 'common',// 表示模块文件的名字
+		    globalUpload: 'upLoadFiles'// 表示模块文件的名字
+		}).use(['layer','form','rate'],function(){
 			var layer = layui.layer,
-				form = layui.form;
+				form = layui.form,
+				rate = layui.rate;
 			var page = {
 				data : {
 					nowLcStr : '<i class="iconfont layui-extend-jinhangzhong ingTaskIcon"></i><span class="ingTaskSp">任务正在进行中<span class="dotting"></span></span>',
 					otherLcStr : '<i class="iconfont layui-extend-jinhangzhong"></i><span>任务等待中<span class="dotting"></span></span>',
-					hasCompLcStr : '<i class="layui-icon layui-icon-ok statusIcon_com"></i><span class="hasComSp">任务已完成</span>'
+					hasCompLcStr : '<i class="layui-icon layui-icon-ok statusIcon_com"></i><span class="hasComSp">任务已完成</span>',
+					difflevel : 0
 				},
 				init : function(){
 					this.onLoad();
@@ -91,7 +98,9 @@
 						if(zxUserId == undefined || zxUserId==''){
 							zxUserId = 0;
 						}
-						if(checkUserId == undefined || checkUserId == ''){
+						if(_this.data. difflevel == 0){
+							layer.msg('请设置专利难易度！', {icon:5,anim:6,time:1500});
+						}else if(checkUserId == undefined || checkUserId == ''){
 							layer.msg('请选择专利审核人员！', {icon:5,anim:6,time:1500});
 						}else if(cusSuerUserId == undefined || cusSuerUserId==''){
 							layer.msg('请选择客户确认人员！', {icon:5,anim:6,time:1500});
@@ -109,7 +118,7 @@
 							layer.msg('请选择专利驳回人员！', {icon:5,anim:6,time:1500});
 						}else{
 							//alert(zxUserId + "=zxUserId-" + checkUserId + "=checkUserId-" + tjUserId + "=tjUserId-" + tzsUserId + "=tzsUserId-" + feeUserId + "=feeUserId-" + bzUserId + "=bzUserId-" + bzshUserId + "=bzshUserId-" + bhUserId + "=bhUserId")
-							var field={zlId:parent.globalZlId,zxUserId:zxUserId,checkUserId:checkUserId,tjUserId:tjUserId,tzsUserId:tzsUserId,
+							var field={zlId:parent.globalZlId,zlLevel:_this.data.difflevel,zxUserId:zxUserId,checkUserId:checkUserId,tjUserId:tjUserId,tzsUserId:tzsUserId,
 									feeUserId:feeUserId,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:bhUserId,cusCheckUserId:cusSuerUserId};
 							$.ajax({
 		  						type:'post',
@@ -158,13 +167,16 @@
 				},
 				//获取相关的流程人员
 				renderLcFpPeo : function(json){
-					var strHtml = '';
+					console.log(json)
+					var strHtml = '',isReadFlag = false;
 					//专利撰写人员
 					strHtml += '<div class="layui-form-item" style="margin:15px 0 -10px 0;">';
 					strHtml += '<p class="lcfpTipsInfo"><i class="layui-icon layui-icon-speaker hasBlink"></i>注：01. 被分配的流程人员需要具有流程处理权限的才能进行分配！</p>';
 					strHtml += '<p class="lcfpTipsInfo bigIndent">02. 正在进行中任务的人员请谨慎更换，一旦更换人员，那么此人员所处理的任务将被移除！</p>';
 					strHtml += '</div>';
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">专利撰写人员</label>';
+					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span>*</span>专利难易度</label>';
+					strHtml += '<div class="layui-input-block clearfix"><div id="diffLevel"></div></div></div>';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">专利撰写人员</label>';
 					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="zxPeopleBox" class="multiBox fl">';
 					if(json.zxUserId != 0){
 						strHtml += '<p id="addZxUser_con" userId="'+ json.zxUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.zxUserName +'</p>';
@@ -232,7 +244,12 @@
 					$('#addLcFp').html(strHtml);
 					if(currLcNo != 0){
 						this.judgeLcNo();
+						isReadFlag = true;
 					}
+					if(json.zlLevel != 0){
+						this.data.difflevel = json.zlLevel;
+					}
+					this.rateFun(json.zlLevel,isReadFlag);
 				},
 				//根据当前LcNo来判定当前任务到哪一步了(任务移交/任务移交审核时流程分配用来显示当前人员，其他不显示编辑和添加)
 				judgeLcNo : function(){
@@ -313,6 +330,34 @@
 					  	shadeClose :false,
 					  	content: '/Module/zlBasicInfoManager/jsp/selectLcFpStaff.html'
 					});	
+				},
+				rateFun : function(value,isReadFlag){
+					var _this = this;
+					rate.render({
+					    elem: '#diffLevel'
+					    ,value : value
+					    ,length:3
+					    ,readonly:isReadFlag
+					    ,text: true
+					    ,theme: '#FF8000'
+				    	,choose: function(value){
+							if(value == 1){
+								_this.data.difflevel = 1;
+							}else if(value == 2){
+							  	_this.data.difflevel = 2;
+							}else if(value == 3){
+							  	_this.data.difflevel = 3;
+							}
+						}
+					    ,setText: function(value){ //自定义文本的回调
+					      var arrs = {
+					        '1': '简单'
+					        ,'2': '困难'
+					        ,'3': '复杂'
+					      };
+					      this.span.text(arrs[value] || '');
+					    }
+					});
 				}
 			};
 			$(function(){

@@ -309,3 +309,10 @@ body{
 	position:absolute;
 	left:4px;
 }
+.selZlType + .layui-form-select{
+	width:146px;
+	margin-right:-40px;
+}
+.selZlType + .layui-form-select input{
+	width:100%;
+}
