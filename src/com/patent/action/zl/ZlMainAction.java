@@ -578,6 +578,7 @@ public class ZlMainAction extends DispatchAction {
 							zlStatusInfo = "ajStop";//案件已终止
 						}
 						map_d.put("zlStatusInfo", zlStatusInfo);
+						map_d.put("zlLevel", zl.getZlLevel());
 						list_d.add(map_d);
 					}
 					map.put("msg", "success");
@@ -977,6 +978,7 @@ public class ZlMainAction extends DispatchAction {
 						if(mxList.size() > 0){
 							map.put("cpyDate", mxList.get(0).getLcCpyDate());
 						}
+						map.put("zlLevel", zl.getZlLevel());
 					}else if(opt.equals("lcfz")){//流程负责人信息
 						map = new HashMap<String,Object>();
 						msg = "success";
