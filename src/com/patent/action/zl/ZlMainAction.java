@@ -2191,12 +2191,12 @@ public class ZlMainAction extends DispatchAction {
 								Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf, ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, 
 										yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, "2.0", "流程人员分配", pubZlId,0,0,0,0,0,0,0,0,0,cpyId,currLoginUserId,zlLevel);
 								if(zlId > 0){
+									//增加代理费用（id=90）
+									String jfDate = CurrentTime.getFinalDate(sDate, Constants.DL_FEE_DAYS);
+									fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(dlFee), 0.0, jfDate, jfDate, "", 0, 
+											cpyId, 1, "", "", "", 0, "", 0, "", "", "", "", "");
 									if(pubZlId > 0){
 										pzm.updateAjIdById(pubZlId, zlId);
-										//增加代理费用（id=90）
-										String jfDate = CurrentTime.getFinalDate(sDate, Constants.DL_FEE_DAYS);
-										fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(dlFee), 0.0, jfDate, jfDate, "", 0, 
-												cpyId, 1, "", "", "", 0, "", 0, "", "", "", "", "");
 									}
 									//增加流程
 									Integer lcId_1 = lcm.addLcInfo(zlId, "专利案件录入", "专利案件录入", sDate, cpyDate, sDate, "",1.0);
