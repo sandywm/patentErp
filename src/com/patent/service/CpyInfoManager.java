@@ -212,4 +212,5 @@ public interface CpyInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateCpyDlFeeById(Integer id,String dlFeeFm,String dlFeeXx,String dlFeeWg)throws WEBException;
+	
 }

@@ -329,9 +329,15 @@ public class CpyInfoManagerImpl implements CpyInfoManager{
 			tran = sess.beginTransaction();
 			CpyInfoTb cpy = cDao.get(sess, id);
 			if(cpy != null){
-				cpy.setDlFeeFm(dlFeeFm);
-				cpy.setDlFeeXx(dlFeeXx);
-				cpy.setDlFeeWg(dlFeeWg);
+				if(!dlFeeFm.equals("")){
+					cpy.setDlFeeFm(dlFeeFm);
+				}
+				if(!dlFeeXx.equals("")){
+					cpy.setDlFeeXx(dlFeeXx);
+				}
+				if(!dlFeeWg.equals("")){
+					cpy.setDlFeeWg(dlFeeWg);
+				}
 				cDao.update(sess, cpy);
 				tran.commit();
 				return true;

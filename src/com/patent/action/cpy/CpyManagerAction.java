@@ -4,6 +4,7 @@
  */
 package com.patent.action.cpy;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,11 +23,13 @@ import org.apache.struts.actions.DispatchAction;
 import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
+import com.patent.module.CpyBonusInfo;
 import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyJoinInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.page.PageConst;
 import com.patent.service.ApplyInfoManager;
+import com.patent.service.CpyBonusInfoManager;
 import com.patent.service.CpyInfoManager;
 import com.patent.service.CpyJoinInfoManager;
 import com.patent.service.CpyRoleInfoManager;
@@ -91,6 +94,23 @@ public class CpyManagerAction extends DispatchAction {
 	}
 	
 	/**
+	 * 封装json
+	*  @author  Administrator
+	*  @ModifiedBy  
+	*  @date  2018-8-21 下午10:17:05
+	*  @param obj
+	*  @param response
+	*  @throws IOException
+	 */
+	private void getJsonPkg(Object obj,HttpServletResponse response) throws IOException{
+		String json = JSON.toJSONString(obj);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+	}
+	
+	/**
 	 * 导向所有代理机构列表页面
 	 * @description
 	 * @author wm
@@ -138,11 +158,7 @@ public class CpyManagerAction extends DispatchAction {
 		Integer count = cm.getCountByOpt(cpyName, cpyProv, cpyCity, cpyFr, cpyLxr, cpyLevel, yxStatus);
 		Map<String,Integer> map = new HashMap<String,Integer>();
 		map.put("result", count);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -214,11 +230,7 @@ public class CpyManagerAction extends DispatchAction {
 		}else{
 			map.put("msg", "noInfo");
 		}
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -271,67 +283,7 @@ public class CpyManagerAction extends DispatchAction {
 		}
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
-		return null;
-	}
-	
-	/**
-	 * 修改代理机构代理费用
-	 * @description
-	 * @author Administrator
-	 * @date 2018-12-7 上午09:58:05
-	 * @param mapping
-	 * @param form
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	public ActionForward updateCpyDlFee(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// TODO Auto-generated method stub
-		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO);
-		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
-		Map<String,String> map = new HashMap<String,String>();
-		String msg = "error";
-		boolean abilityFlag = false;
-		String dlFee_fm = CommonTools.getFinalStr("dlFeeFm", request);
-		String dlFee_xx = CommonTools.getFinalStr("dlFeeXx", request);
-		String dlFee_wg = CommonTools.getFinalStr("dlFeeWg", request);
-		Integer cpyId = 0;
-		if(this.getLoginType(request).equals("cpyUser")){
-			//判断权限
-			//获取当前用户是否有修改权限
-			if(this.getLoginRoleName(request).equals("管理员")){
-				abilityFlag = true;
-			}else{
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCpy");//只有具有创建专利权限和管理员才有资格修改专利信息
-			}
-			if(abilityFlag){
-				CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
-				if(user != null){
-					cpyId = user.getCpyInfoTb().getId();
-					if(cpyId > 0){
-						cm.updateCpyDlFeeById(cpyId, dlFee_fm, dlFee_xx, dlFee_wg);
-						msg = "success";
-					}
-				}
-			}else{
-				msg = "noAbility";
-			}
-		}else{
-			msg = "noAbility";
-		}
-		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -377,14 +329,197 @@ public class CpyManagerAction extends DispatchAction {
 			}
 		}
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
+	public ActionForward getCpyBonusPageInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		CpyBonusInfoManager cbm = (CpyBonusInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_BONUS_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
+		String msg = "error";
+		CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
+		if(user != null){
+			Integer cpyId = user.getCpyInfoTb().getId();
+			if(cpyId > 0){
+				String zlType = CommonTools.getFinalStr("zlType", request);
+				String workType = CommonTools.getFinalStr("wordPosition", request);//工作种类(zx,sc)
+				Integer zlLevel = CommonTools.getFinalInteger("zlLevel", request);//专利难易度1-3
+				Integer count = cbm.getCountByOpt(workType, zlType, zlLevel, cpyId);
+				List<Object> list_d = new ArrayList<Object>();
+				if(count > 0){
+					msg = "success";
+					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
+					List<CpyBonusInfo>  cbList = cbm.listPageInfoByOpt(workType, zlType, zlLevel, cpyId, pageNo, pageSize);
+					for(Iterator<CpyBonusInfo> it = cbList.iterator() ; it.hasNext() ;){
+						CpyBonusInfo cb = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("cbId", cb.getId());
+						String wordPosition_db = cb.getWorkPosition();
+						String wordPositionChi = "";
+						if(wordPosition_db.equals("zx")){
+							wordPositionChi = "专利撰写";
+						}else if(wordPosition_db.equals("sc")){
+							wordPositionChi = "专利审核";
+						}
+						map_d.put("wordPosition", wordPositionChi);
+						String zlType_db = cb.getZlType();
+						String zlTypeChi = "";
+						if(zlType_db.equals("fm")){
+							zlTypeChi = "发明";
+						}else if(zlType_db.equals("syxx")){
+							zlTypeChi = "实用新型";
+						}else if(zlType_db.equals("wg")){
+							zlTypeChi = "外观";
+						}
+						map_d.put("zlType", zlTypeChi);//专利类型
+						map_d.put("zlLevel", cb.getZlLevel());
+						map_d.put("bonusFee", cb.getBonusFee());
+						list_d.add(map_d);
+					}
+					map.put("data", list_d);
+					map.put("count", count);
+					map.put("code", 0);
+				}else{
+					msg = "noInfo";
+				}
+			}
+		}
+		map.put("msg", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 修改代理机构的初始信息（dlFee,bankInfo,saleBonus,workBonus）--(代理费,银行信息,销售提成,工作奖金)
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-7 上午10:22:33
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward updateCpyInitInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO);
+		CpyBonusInfoManager cbm = (CpyBonusInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_BONUS_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		String msg = "error";
+		boolean abilityFlag = false;
+		if(this.getLoginType(request).equals("cpyUser")){
+			//判断权限
+			//获取当前用户是否有修改权限
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCpy");//只有具有创建专利权限和管理员才有资格修改专利信息
+			}
+			if(abilityFlag){
+				CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
+				if(user != null){
+					Integer cpyId = user.getCpyInfoTb().getId();
+					if(cpyId > 0){
+						String opt = CommonTools.getFinalStr("opt", request);
+						msg = "success";
+						if(opt.equals("bankInfo")){//银行信息
+							String bankAccountName = Transcode.unescape_new("bankAccountName", request);//银行账户名
+							String bankName = Transcode.unescape_new("bankName", request);//银行-开户行建设银行中原支行
+							String bankNo = CommonTools.getFinalStr("bankNo", request);//卡号
+							cm.updateCpyBankInfoById(cpyId, bankAccountName, bankName, bankNo);
+						}else if(opt.equals("saleBonus")){//销售提成
+							String saleBonus = CommonTools.getFinalStr("saleBonus", request);
+							cm.updateCpySaleBonusById(cpyId, saleBonus);
+						}else if(opt.equals("workBonus")){//工作奖金（专利撰写-zx、专利审核-sc）
+							String bonusFee = CommonTools.getFinalStr("bonusFee", request);
+							Integer cbId = CommonTools.getFinalInteger("cbId", request);
+							CpyBonusInfo cb = cbm.getEntityById(cbId, cpyId);
+							if(cb != null){
+								cbm.updateCbInfoById(cbId, bonusFee);
+							}
+						}else if(opt.equals("dlFee")){//代理费
+							String dlFee_fm = CommonTools.getFinalStr("dlFeeFm", request);
+							String dlFee_xx = CommonTools.getFinalStr("dlFeeXx", request);
+							String dlFee_wg = CommonTools.getFinalStr("dlFeeWg", request);
+							cm.updateCpyDlFeeById(cpyId, dlFee_fm, dlFee_xx, dlFee_wg);
+						}
+					}
+				}
+			}else{
+				msg = "noAbility";
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 增加代理机构项目提成
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-7 下午04:32:56
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward addCpyBonus(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		CpyBonusInfoManager cbm = (CpyBonusInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_BONUS_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		String msg = "error";
+		boolean abilityFlag = false;
+		if(this.getLoginType(request).equals("cpyUser")){
+			//判断权限
+			//获取当前用户是否有修改权限
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCpy");//只有具有创建专利权限和管理员才有资格修改专利信息
+			}
+			if(abilityFlag){
+				CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
+				if(user != null){
+					Integer cpyId = user.getCpyInfoTb().getId();
+					if(cpyId > 0){
+						String zlType = CommonTools.getFinalStr("zlType", request);
+						String workType = CommonTools.getFinalStr("wordPosition", request);//工作种类(zx,sc)
+						String bonusFee = CommonTools.getFinalStr("bonusFee", request);
+						Integer zlLevel = CommonTools.getFinalInteger("zlLevel", request);//专利难易度1-3
+						if(cbm.listInfoByOpt(workType, zlType, zlLevel, cpyId).size() == 0){
+							Integer cbId = cbm.addCbInfo(workType, zlType, zlLevel, bonusFee, cpyId);
+							if(cbId > 0){
+								msg = "success";
+							}
+						}else{
+							msg = "exist";
+						}
+					}
+				}
+			}else{
+				msg = "noAbility";
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
 	/**
 	 * 获取代理机构详细信息(超管、申请人/公司用)
 	 * @description
@@ -472,11 +607,7 @@ public class CpyManagerAction extends DispatchAction {
 				map.put("result", "noInfo");
 			}
 		}
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -569,11 +700,7 @@ public class CpyManagerAction extends DispatchAction {
 		}else{
 			map.put("result", "error");
 		}
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -634,11 +761,7 @@ public class CpyManagerAction extends DispatchAction {
 			msg = "noAbility";//没有权限
 		}
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -731,11 +854,7 @@ public class CpyManagerAction extends DispatchAction {
 			list_d.add(map_d);
 		}
 		map.put("cpyInfo", list_d);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -803,11 +922,7 @@ public class CpyManagerAction extends DispatchAction {
 			}
 		}
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -1098,11 +1213,7 @@ public class CpyManagerAction extends DispatchAction {
 			 msg = "noAbility";
 		}
 		map.put("result", msg);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -1178,11 +1289,7 @@ public class CpyManagerAction extends DispatchAction {
 			hyEndFlag = false;
 		}
 		map.put("hyEndFlag", hyEndFlag);
-		String json = JSON.toJSONString(map);
-        PrintWriter pw = response.getWriter();  
-        pw.write(json); 
-        pw.flush();  
-        pw.close();
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
