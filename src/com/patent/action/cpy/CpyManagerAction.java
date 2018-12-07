@@ -280,6 +280,112 @@ public class CpyManagerAction extends DispatchAction {
 	}
 	
 	/**
+	 * 修改代理机构代理费用
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-7 上午09:58:05
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward updateCpyDlFee(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CpyInfoManager cm = (CpyInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		String msg = "error";
+		boolean abilityFlag = false;
+		String dlFee_fm = CommonTools.getFinalStr("dlFeeFm", request);
+		String dlFee_xx = CommonTools.getFinalStr("dlFeeXx", request);
+		String dlFee_wg = CommonTools.getFinalStr("dlFeeWg", request);
+		Integer cpyId = 0;
+		if(this.getLoginType(request).equals("cpyUser")){
+			//判断权限
+			//获取当前用户是否有修改权限
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "upCpy");//只有具有创建专利权限和管理员才有资格修改专利信息
+			}
+			if(abilityFlag){
+				CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
+				if(user != null){
+					cpyId = user.getCpyInfoTb().getId();
+					if(cpyId > 0){
+						cm.updateCpyDlFeeById(cpyId, dlFee_fm, dlFee_xx, dlFee_wg);
+						msg = "success";
+					}
+				}
+			}else{
+				msg = "noAbility";
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
+	 * 根据专利类型获取指定代理机构代理费用
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-7 上午09:58:41
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCpyDlFee(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Map<String,String> map = new HashMap<String,String>();
+		String msg = "error";
+		String ajType = CommonTools.getFinalStr("ajType", request);
+		CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
+		if(user != null){
+			msg = "success";
+			CpyInfoTb cpy = user.getCpyInfoTb();
+			String dlFeeFm = cpy.getDlFeeFm() == null ? "" : cpy.getDlFeeFm();
+			String dlFeeXx = cpy.getDlFeeXx() == null ? "" : cpy.getDlFeeXx();
+			String dlFeeWg = cpy.getDlFeeWg() == null ? "" : cpy.getDlFeeWg();
+			if(ajType.equals("fm")){
+				map.put("dlFee", dlFeeFm);
+			}else if(ajType.equals("syxx")){
+				map.put("dlFee", dlFeeXx);
+			}else if(ajType.equals("wg")){
+				map.put("dlFee", dlFeeWg);
+			}else if(ajType.equals("fmxx")){
+				map.put("dlFeeFm", dlFeeFm);
+				map.put("dlFeeXx", dlFeeXx);
+			}else{
+				map.put("dlFeeFm", dlFeeFm);
+				map.put("dlFeeXx", dlFeeXx);
+				map.put("dlFeeWg", dlFeeWg);
+			}
+		}
+		map.put("result", msg);
+		String json = JSON.toJSONString(map);
+        PrintWriter pw = response.getWriter();  
+        pw.write(json); 
+        pw.flush();  
+        pw.close();
+		return null;
+	}
+	
+	/**
 	 * 获取代理机构详细信息(超管、申请人/公司用)
 	 * @description
 	 * @author wm
