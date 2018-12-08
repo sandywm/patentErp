@@ -4898,6 +4898,27 @@ public class ZlMainAction extends DispatchAction {
 		return null;
 	}
 	
+	
+	/**
+	 * 封装添加单元格数据内容方法
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-28 上午09:40:37
+	 * @param column 列名（,隔开）
+	 * @param num 列数
+	 * @param row
+	 * @param style
+	 */
+	private static void addCellData(Integer num,String column,HSSFRow row,HSSFCellStyle style){
+		HSSFCell cell = row.createCell(0); 
+		String[] columnArr = column.split(",");
+		for(Integer i = 0 ; i < num ; i++){
+			cell = row.createCell(i); 
+	        cell.setCellStyle(style);  
+	        cell.setCellValue(columnArr[i]); 
+		}
+	}
+	
 	/**
 	 * 导出未缴费清单到excel(上交国家局/客户)
 	 * @author  Administrator
@@ -4916,6 +4937,7 @@ public class ZlMainAction extends DispatchAction {
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		String roleName = this.getLoginRoleName(request);
 		Integer currUserId = this.getLoginUserId(request);
+		String msg = "error";
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(this.getLoginType(request).equals("cpyUser")){
 			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
@@ -4936,14 +4958,59 @@ public class ZlMainAction extends DispatchAction {
 				if(feeStatus.equals(0)){//未交费用
 					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, 0, 0);
 					if(zlfList.size() > 0){
+						msg = "success";
+						List<Object> list_d = new ArrayList<Object>();
+						Map<String,Object> map_d1 = new HashMap<String,Object>();
+						Double feePrice_total = 0d;
 						for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
 							ZlajFeeInfoTb zlf = it.next();
-							
+							feePrice_total += zlf.getFeePrice();
 						}
+						// 第一步，创建一个webbook，对应一个Excel文件  
+				        HSSFWorkbook wb = new HSSFWorkbook();  
+				        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
+				        HSSFSheet sheet = wb.createSheet("费用清单");  
+				        //设置横向打印
+				        sheet.getPrintSetup().setLandscape(true);
+				        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
+				        HSSFRow row = sheet.createRow(0);  
+				        // 第四步，创建单元格，并设置值表头 设置表头居中  
+				        HSSFCellStyle style = wb.createCellStyle();  
+				        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+			            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+			            
+			            this.addCellData(6, "序列号,申请号,缴费人姓名,费用名称,金额,备注", row, style);
+			            
+			            
+						map_d1.put("serialNo", 0);//序列号
+						map_d1.put("zlNo", "");//专利号
+						map_d1.put("sqrInfo", "");//缴费人姓名
+						map_d1.put("feeName", "");//费用名称
+						map_d1.put("feePrice", Convert.convertInputNumber_3(feePrice_total));//金额
+						map_d1.put("feeRemark", "");//备注
+						list_d.add(map_d1);
+						Integer i = 1;
+						for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
+							ZlajFeeInfoTb zlf = it.next();
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("serialNo", i++);
+							map_d.put("zlNo", zlf.getZlajMainInfoTb().getAjNoGf());
+							map_d.put("sqrInfo", zlf.getZlajMainInfoTb().getAjSqrName());
+							map_d.put("feeName", zlf.getFeeTypeInfoTb().getFeeName());
+							map_d.put("feePrice", zlf.getFeePrice());
+							map_d.put("feeRemark", "");
+							list_d.add(map_d);
+						}
+					}else{
+						msg = "noInfo";
 					}
 				}
+			}else{
+				msg = "noAbility";
 			}
 		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	

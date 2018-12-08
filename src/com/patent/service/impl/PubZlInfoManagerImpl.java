@@ -218,13 +218,10 @@ public class PubZlInfoManagerImpl implements PubZlInfoManager{
 			tran = sess.beginTransaction();
 			PubZlInfoTb pz = pzDao.get(sess, id);
 			if(pz != null){
-				if(ajId > 0){
-					pz.setAjId(ajId);
-					pzDao.update(sess, pz);
-					tran.commit();
-					return true;
-				}
-				return false;
+				pz.setAjId(ajId);
+				pzDao.update(sess, pz);
+				tran.commit();
+				return true;
 			}
 			return false;
 		} catch (Exception e) {
