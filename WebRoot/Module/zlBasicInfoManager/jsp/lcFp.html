@@ -19,131 +19,21 @@
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
-			common: 'common',// 表示模块文件的名字
-		    globalUpload: 'upLoadFiles'// 表示模块文件的名字
-		}).use(['layer','form','rate'],function(){
+		    lcfpMethod : 'lcfpMethod'
+		}).use(['layer','form','lcfpMethod'],function(){
 			var layer = layui.layer,
 				form = layui.form,
-				rate = layui.rate;
+				lcfpMethod = layui.lcfpMethod;
 			var page = {
 				data : {
 					nowLcStr : '<i class="iconfont layui-extend-jinhangzhong ingTaskIcon"></i><span class="ingTaskSp">任务正在进行中<span class="dotting"></span></span>',
 					otherLcStr : '<i class="iconfont layui-extend-jinhangzhong"></i><span>任务等待中<span class="dotting"></span></span>',
-					hasCompLcStr : '<i class="layui-icon layui-icon-ok statusIcon_com"></i><span class="hasComSp">任务已完成</span>',
-					difflevel : 0
+					hasCompLcStr : '<i class="layui-icon layui-icon-ok statusIcon_com"></i><span class="hasComSp">任务已完成</span>'
 				},
 				init : function(){
 					this.onLoad();
-					this.bindEvent();
-				},
-				bindEvent : function(){
-					var _this = this;
-					//增加专利撰写人员
-					$('#addZxPeople').on('click',function(){
-						globalTypeUser = $(this).attr('opt');
-						_this.commonLayerOpen('增加专利撰写人');
-					});
-					//专利审查人员
-					$('#addZlShPeople').on('click',function(){
-						globalTypeUser = $(this).attr('opt');
-						_this.commonLayerOpen('增加专利审查人员');
-					});
-					//定稿提交人员 
-					$('#addDinggao').on('click',function(){
-						globalTypeUser = $(this).attr('opt');
-						_this.commonLayerOpen('增加定稿提交人员');
-					});
-					//导入通知书人员
-					$('#addTzs').on('click',function(){
-						globalTypeUser = $(this).attr('opt');
-						_this.commonLayerOpen('增加通知书导入人员');
-					});
-					//费用催缴人员
-					$('#addFeiyong').on('click',function(){
-						globalTypeUser = $(this).attr('opt');
-						_this.commonLayerOpen('增加费用催缴人员');
-					});
-					//专利补正人员
-					$('#addBuzheng').on('click',function(){
-						globalTypeUser = $(this).attr('opt');
-						_this.commonLayerOpen('增加专利补正人员');
-					});
-					//补正审核人员
-					$('#addShBz').on('click',function(){
-						globalTypeUser = $(this).attr('opt');
-						_this.commonLayerOpen('增加补正审核人员');
-					});
-					//专利驳回人员
-					$('#addBohui').on('click',function(){
-						globalTypeUser = $(this).attr('opt');
-						_this.commonLayerOpen('增加专利驳回人员');
-					});
-					//客户确认人员 
-					$('#addCusSure').on('click',function(){
-						globalTypeUser = $(this).attr('opt');
-						_this.commonLayerOpen('增加客户确认人员');
-					});
-					//保存
-					$('#saveLcFpBtn').on('click',function(){
-						var zxUserId = $('#addZxUser_con').attr('userId'),
-							checkUserId = $('#addZlShUser_con').attr('userId'),
-							tjUserId = $('#addDingGaoUser_con').attr('userId'),
-							tzsUserId = $('#addTongZhiShuUser_con').attr('userId'),
-							feeUserId = $('#addFeeUser_con').attr('userId'),
-							bzUserId = $('#addBuZhengUser_con').attr('userId'),
-							bzshUserId = $('#addBuzhengShUser_con').attr('userId'),
-							bhUserId = $('#addZlBhUser_con').attr('userId'),
-							cusSuerUserId = $('#addCusSureUser_con').attr('userId');
-						var index= parent.layer.getFrameIndex(window.name);
-						if(zxUserId == undefined || zxUserId==''){
-							zxUserId = 0;
-						}
-						if(_this.data. difflevel == 0){
-							layer.msg('请设置专利难易度！', {icon:5,anim:6,time:1500});
-						}else if(checkUserId == undefined || checkUserId == ''){
-							layer.msg('请选择专利审核人员！', {icon:5,anim:6,time:1500});
-						}else if(cusSuerUserId == undefined || cusSuerUserId==''){
-							layer.msg('请选择客户确认人员！', {icon:5,anim:6,time:1500});
-						}else if(tjUserId == undefined || tjUserId == ''){
-							layer.msg('请选择定稿提交人员！', {icon:5,anim:6,time:1500});
-						}else if(tzsUserId == undefined || tzsUserId ==''){
-							layer.msg('请选择通知书导入人员！', {icon:5,anim:6,time:1500});
-						}else if(feeUserId == undefined || feeUserId==''){
-							layer.msg('请选择费用催缴人员！', {icon:5,anim:6,time:1500});
-						}else if(bzUserId == undefined || bzUserId==''){
-							layer.msg('请选择专利补正人员！', {icon:5,anim:6,time:1500});
-						}else if(bzshUserId == undefined || bzshUserId==''){
-							layer.msg('请选择专利补正审核人员！', {icon:5,anim:6,time:1500});
-						}else if(bhUserId == undefined || bhUserId==''){
-							layer.msg('请选择专利驳回人员！', {icon:5,anim:6,time:1500});
-						}else{
-							//alert(zxUserId + "=zxUserId-" + checkUserId + "=checkUserId-" + tjUserId + "=tjUserId-" + tzsUserId + "=tzsUserId-" + feeUserId + "=feeUserId-" + bzUserId + "=bzUserId-" + bzshUserId + "=bzshUserId-" + bhUserId + "=bhUserId")
-							var field={zlId:parent.globalZlId,zlLevel:_this.data.difflevel,zxUserId:zxUserId,checkUserId:checkUserId,tjUserId:tjUserId,tzsUserId:tzsUserId,
-									feeUserId:feeUserId,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:bhUserId,cusCheckUserId:cusSuerUserId};
-							$.ajax({
-		  						type:'post',
-						        async:false,
-						        dataType:'json',
-						        data : field,
-						        url:'/zlm.do?action=updateOperatorUserInfo',
-						        success:function (json){
-						        	layer.closeAll('loading');
-						        	if(json['result'] == 'success'){
-						        		layer.msg('流程分配设置成功',{icon:1,time:1000},function(){
-						        			parent.addZlFlag = true;
-						        			parent.layer.close(index);
-						        		});
-						        	}else if(json['result'] == 'stopInfo'){
-						        		layer.msg('案件终止状态下不能进行修改', {icon:5,anim:6,time:2200});
-						        	}else if(json['result'] == 'noAbility'){
-						        		layer.msg('抱歉，您暂无权限进行流程分配', {icon:5,anim:6,time:2200});	
-						        	}else if(json['result'] == 'notUpdate'){
-						        		layer.msg('定稿提交以后不能对撰写人、技术审核人员、定稿提交人员进行分配', {icon:5,anim:6,time:2500});
-						        	}
-						        }
-		  					});
-						}
-					});
+					lcfpMethod.bindEvent_fp();
+					lcfpMethod.data.isZlLcFpFlag = false;
 				},
 				onLoad : function(){
 					var _this = this,noData='<div class="noData" style="display:block;"><i class="iconfont layui-extend-noData"></i><p>暂无员工<p></div>';
@@ -167,7 +57,7 @@
 				},
 				//获取相关的流程人员
 				renderLcFpPeo : function(json){
-					console.log(json)
+					//console.log(json)
 					var strHtml = '',isReadFlag = false;
 					//专利撰写人员
 					strHtml += '<div class="layui-form-item" style="margin:15px 0 -10px 0;">';
@@ -247,9 +137,9 @@
 						isReadFlag = true;
 					}
 					if(json.zlLevel != 0){
-						this.data.difflevel = json.zlLevel;
+						lcfpMethod.data.difflevel = json.zlLevel;
 					}
-					this.rateFun(json.zlLevel,isReadFlag);
+					lcfpMethod.rateFun('diffLevel',json.zlLevel,isReadFlag);
 				},
 				//根据当前LcNo来判定当前任务到哪一步了(任务移交/任务移交审核时流程分配用来显示当前人员，其他不显示编辑和添加)
 				judgeLcNo : function(){
@@ -319,45 +209,6 @@
 						$('#lcNo11').html(this.data.nowLcStr);
 						$('#addBohui').show().html('更换人员');
 					}
-				},
-				commonLayerOpen : function(title){
-					layer.open({
-						title:title,
-						type: 2,
-					  	area: ['900px', '510px'],
-					  	fixed: true, //不固定
-					  	maxmin: false,
-					  	shadeClose :false,
-					  	content: '/Module/zlBasicInfoManager/jsp/selectLcFpStaff.html'
-					});	
-				},
-				rateFun : function(value,isReadFlag){
-					var _this = this;
-					rate.render({
-					    elem: '#diffLevel'
-					    ,value : value
-					    ,length:3
-					    ,readonly:isReadFlag
-					    ,text: true
-					    ,theme: '#FF8000'
-				    	,choose: function(value){
-							if(value == 1){
-								_this.data.difflevel = 1;
-							}else if(value == 2){
-							  	_this.data.difflevel = 2;
-							}else if(value == 3){
-							  	_this.data.difflevel = 3;
-							}
-						}
-					    ,setText: function(value){ //自定义文本的回调
-					      var arrs = {
-					        '1': '简单'
-					        ,'2': '困难'
-					        ,'3': '复杂'
-					      };
-					      this.span.text(arrs[value] || '');
-					    }
-					});
 				}
 			};
 			$(function(){

@@ -14,7 +14,7 @@
 		<div class="searchPart layui-form">
 			<div class="innerSearch widSearch1">
 				<input id="zlTypeInp" type="hidden" value=""/>
-				<select id="zlTypeListSel" lay-filter="zlTypeListSel">
+				<select id="zlTypeListSel" name="cpyCitySel" lay-filter="zlTypeListSel">
 				 	<option value="">请选择专利类型</option>
 				 	<option value="fm">发明</option>
 				 	<option value="syxx">实用新型</option>
@@ -99,13 +99,24 @@
 					parent.addEditZlOpts == 'addZlOpts' ? parent.$('#lqZlIdInp').val('') : parent.$('#lqZlIdInp').val();
 					var _this = this,noData='<div class="noData" style="display:block;"><i class="iconfont layui-extend-noData"></i><p>暂无领取专利记录<p></div>';
 					layer.load('1');
+					if(parent.addEditZlOpts == 'editZlOpts'){
+						$('#zlTypeListSel').attr('disabled','disabled');
+						if(zlType == 'fm'){
+							$('#zlTypeListSel').html('<option value="fm">发明</option>');
+						}else if(zlType == 'wg'){
+							$('#zlTypeListSel').html('<option value="wg">外观</option>');
+						}else if(zlType == 'syxx'){
+							$('#zlTypeListSel').html('<option value="syxx">实用新型</option>');
+						}
+						form.render();
+					}
 					if(opts == 'initLoad'){
-						var field = {purpose:'simpleInfo',zlType:zlType,zlTitle:'',pubZlId:parent.$('#lqZlIdInp').val()};
+						var field = {purpose:'simpleInfo',zlType:zlType,zlTitle:'',zlId:parent.globalZlId};
 					}else{
 						//查询
 						var zlTtile = $.trim($('#lqZlTitleInp').val());
 						var zlType_inner = $('#zlTypeInp').val();
-						var field = {purpose:'simpleInfo',zlType:zlType_inner,zlTitle:escape(zlTtile),pubZlId:''};
+						var field = {purpose:'simpleInfo',zlId:parent.globalZlId,zlType:zlType_inner,zlTitle:escape(zlTtile)};
 					}
 					$.ajax({
   						type:'post',
@@ -116,6 +127,7 @@
 				        success:function (json){
 				        	layer.closeAll('loading');
 				        	if(json['result'] == 'success'){
+				        		console.log(json)
 				        		$('.botSaveBox').show();
 				        		var listData = json.data; 
 				        		_this.renderLqZlTaskList(listData);

@@ -245,23 +245,15 @@
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明" checked/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型"/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>';
-						//strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>';
 					}else if(json.zlType == 'syxx'){
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型" checked/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>';
-						//strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>';
 					}else if(json.zlType == 'wg'){
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型"/>';
 						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观" checked/>';
-						//strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>';
-					}/*else if(json.zlType == 'fmxx'){
-						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>';
-						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型"/>';
-						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>';
-						strHtml += '<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型" checked/>';
-					}*/
+					}
 					strHtml += '</div></div>';
 					//专利描述
 					strHtml += '<div class="layui-form-item">';
