@@ -4979,9 +4979,12 @@ public class ZlMainAction extends DispatchAction {
 				        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
 			            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
 			            
-			            this.addCellData(6, "序列号,申请号,缴费人姓名,费用名称,金额,备注", row, style);
+			            ZlMainAction.addCellData(6, "序列号,申请号,缴费人姓名,费用名称,金额,备注", row, style);
 			            
-			            11
+			            row = sheet.createRow(1);//创建行
+			        	// 第四步，创建单元格，并设置值  
+			        	HSSFCell cell_data = row.createCell(0); 
+			        	ZlMainAction.addCellData(6,"1,'','','',Convert.convertInputNumber_3(feePrice_total),''", row, style);
 			            
 						map_d1.put("serialNo", 0);//序列号
 						map_d1.put("zlNo", "");//专利号
