@@ -937,11 +937,10 @@ public class PubZlAction extends DispatchAction {
 							List<PubZlInfoTb> pzList_1 = pzm.listSpecInfoByOpt(zl.getPubZlId(), 0);
 							if(pzList_1.size() > 0){
 								PubZlInfoTb pz = pzList_1.get(0);
-								zlType = pz.getZlType();
 								Map<String,Object> map_d = new HashMap<String,Object>();
 								map_d.put("pzId", pz.getId());
 								map_d.put("pzTitle", pz.getZlTitle());
-								map_d.put("pzType", zlType);
+								map_d.put("pzType", pz.getZlType());
 								map_d.put("pubDate",pz.getZlNewDate());
 								map_d.put("lqDate",pz.getLqDate());
 								map_d.put("checkFlag", true);

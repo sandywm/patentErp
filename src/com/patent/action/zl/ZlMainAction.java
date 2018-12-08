@@ -4911,11 +4911,15 @@ public class ZlMainAction extends DispatchAction {
 	 */
 	private static void addCellData(Integer num,String column,HSSFRow row,HSSFCellStyle style){
 		HSSFCell cell = row.createCell(0); 
-		String[] columnArr = column.split(",");
+		String[] columnArr = column.split(":");
 		for(Integer i = 0 ; i < num ; i++){
 			cell = row.createCell(i); 
 	        cell.setCellStyle(style);  
-	        cell.setCellValue(columnArr[i]); 
+	        if(columnArr[i].equals("noData")){
+	        	cell.setCellValue(""); 
+	        }else{
+	        	cell.setCellValue(columnArr[i]); 
+	        }
 		}
 	}
 	
@@ -4979,32 +4983,77 @@ public class ZlMainAction extends DispatchAction {
 				        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
 			            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
 			            
-			            ZlMainAction.addCellData(6, "序列号,申请号,缴费人姓名,费用名称,金额,备注", row, style);
+			            HSSFFont font_1 = wb.createFont();    
+			            font_1.setFontName("宋体");    
+			            font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
+			            font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
+			            
+			            
+			            HSSFFont font_2 = wb.createFont();    
+			            font_2.setFontName("宋体");    
+			            font_2.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
+			            
+			            style.setFont(font_1);
+			            
+			            ZlMainAction.addCellData(6, "序列号:申请号:缴费人姓名:费用名称:金额:备注", row, style);
 			            
 			            row = sheet.createRow(1);//创建行
 			        	// 第四步，创建单元格，并设置值  
-			        	HSSFCell cell_data = row.createCell(0); 
-			        	ZlMainAction.addCellData(6,"1,'','','',Convert.convertInputNumber_3(feePrice_total),''", row, style);
-			            
-						map_d1.put("serialNo", 0);//序列号
-						map_d1.put("zlNo", "");//专利号
-						map_d1.put("sqrInfo", "");//缴费人姓名
-						map_d1.put("feeName", "");//费用名称
-						map_d1.put("feePrice", Convert.convertInputNumber_3(feePrice_total));//金额
-						map_d1.put("feeRemark", "");//备注
-						list_d.add(map_d1);
-						Integer i = 1;
+			        	ZlMainAction.addCellData(6,"1:noData:noData:noData:"+Convert.convertInputNumber_3(feePrice_total)+":noData", row, style);
+						Integer i = 2;
 						for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
 							ZlajFeeInfoTb zlf = it.next();
-							Map<String,Object> map_d = new HashMap<String,Object>();
-							map_d.put("serialNo", i++);
-							map_d.put("zlNo", zlf.getZlajMainInfoTb().getAjNoGf());
-							map_d.put("sqrInfo", zlf.getZlajMainInfoTb().getAjSqrName());
-							map_d.put("feeName", zlf.getFeeTypeInfoTb().getFeeName());
-							map_d.put("feePrice", zlf.getFeePrice());
-							map_d.put("feeRemark", "");
-							list_d.add(map_d);
+							row = sheet.createRow(i);//创建行
+							ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
+							String feeRemark = zlf.getFeeRemark().equals("") ? "noData" : zlf.getFeeRemark();
+							ZlMainAction.addCellData(6,""+i+":"+zl.getAjNoGf()+":"+zl.getAjSqrName()+":"+zlf.getFeeTypeInfoTb().getFeeName()+":"+Convert.convertInputNumber_3(zlf.getFeePrice())+":"+feeRemark+"", row, style);
+							i++;
 						}
+			        	// 第六步，将文件存到指定位置
+				    	String absoFilePath = "";//绝对地址
+				    	try  {  
+				        	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
+				        	String folder = WebUrl.DATA_URL_PRO + "Module\\excelTemp\\";
+				        	absoFilePath = folder +fileName;
+				        	File file = new File(folder);
+							if(!file.exists()){
+								file.mkdirs();
+							}
+				            FileOutputStream fout = new FileOutputStream(absoFilePath);  
+				            wb.write(fout);  
+				            fout.close();  
+					        //第七步 下载文件到客户端
+					        OutputStream fos = null;
+					        BufferedOutputStream bos = null;
+					        InputStream fis = null;
+					        BufferedInputStream bis = null;
+					        fis = new FileInputStream(new File(absoFilePath));
+							bis = new BufferedInputStream(fis);
+							fos = response.getOutputStream();
+							bos = new BufferedOutputStream(fos);
+							fileName = URLEncoder.encode(fileName,"UTF-8");
+							//这个就就是弹出下载对话框的关键代码
+							response.setHeader("Pragma", "No-cache");
+							response.setHeader("Cache-Control", "No-cache");
+							response.setDateHeader("Expires", 0); 
+					        response.setHeader("Content-disposition","attachment;filename=" +fileName);
+					        response.setContentType("application/x-download");
+					        int bytesRead = 0;
+					        byte[] buffer = new byte[8192];
+					        while ((bytesRead = bis.read(buffer,0,8192)) != -1) {
+					        	fos.write(buffer, 0, bytesRead);
+					        }
+					        fos.flush();
+					        fis.close();
+					        bis.close();
+					        fos.close();
+					        bos.close();
+				        }  
+				        catch (IOException e){  
+				            //e.printStackTrace();  
+				        }
+				      //第七步 删除临时上传的文件
+				      FileOpration.deleteFile(absoFilePath);
 					}else{
 						msg = "noInfo";
 					}
@@ -5014,7 +5063,9 @@ public class ZlMainAction extends DispatchAction {
 			}
 		}
 		map.put("result", msg);
-		this.getJsonPkg(map, response);
+		if(!msg.equals("success")){
+			this.getJsonPkg(map, response);
+		}
 		return null;
 	}
 	
