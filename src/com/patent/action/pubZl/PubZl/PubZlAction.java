@@ -927,12 +927,14 @@ public class PubZlAction extends DispatchAction {
 					//编辑时需要附带上该专利绑定的发布任务，增加时为0
 					//编辑是是专利编号，增加时不用传
 					String zlTitle = Transcode.unescape_new1("zlTitle", request);//专利标题
-					Integer pubZlId = CommonTools.getFinalInteger("pubZlId", request);//已选择的发布专利任务编号
 					String zlType = CommonTools.getFinalStr("zlType", request);
-					if(pubZlId > 0){//选择有专利任务(可能是增加，也可能是编辑)
-						List<PubZlInfoTb> pzList_1 = pzm.listSpecInfoByOpt(pubZlId, 0);
-						if(pzList_1.size() > 0){
+					Integer zlId = CommonTools.getFinalInteger("zlId", request);//专利编号
+					if(zlId > 0){//选择有专利任务(可能是增加，也可能是编辑)
+						List<ZlajMainInfoTb>  zlList = zlm.listSpecInfoById(zlId, cpyId);
+						if(zlList.size() > 0){
 							msg = "success";
+							ZlajMainInfoTb zl = zlList.get(0);
+							List<PubZlInfoTb> pzList_1 = pzm.listSpecInfoByOpt(zl.getPubZlId(), 0);
 							PubZlInfoTb pz = pzList_1.get(0);
 							zlType = pz.getZlType();
 							Map<String,Object> map_d = new HashMap<String,Object>();
@@ -958,9 +960,9 @@ public class PubZlAction extends DispatchAction {
 						msg = "success";
 					}
 					if(msg.equals("success")){
-						Integer count = pzm.getCountByOpt(cpyId, zlType, zlTitle, pubZlId);
+						Integer count = pzm.getCountByOpt(cpyId, zlType, zlTitle, 0);
 						if(count > 0){
-							List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt(cpyId, zlType, zlTitle, pubZlId);
+							List<PubZlInfoTb> pzList = pzm.listSpecInfoByOpt(cpyId, zlType, zlTitle, 0);
 							for(Iterator<PubZlInfoTb> it = pzList.iterator() ; it.hasNext();){
 								PubZlInfoTb pz = it.next();
 								Map<String,Object> map_d = new HashMap<String,Object>();
@@ -989,6 +991,10 @@ public class PubZlAction extends DispatchAction {
 						}else{
 							if(list_d.size() == 0){
 								msg = "noInfo";
+							}else{
+								map.put("data", list_d);
+								map.put("count", 1);
+								map.put("code", 0);
 							}
 						}
 					}

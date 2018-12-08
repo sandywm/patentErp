@@ -4981,6 +4981,7 @@ public class ZlMainAction extends DispatchAction {
 			            
 			            this.addCellData(6, "序列号,申请号,缴费人姓名,费用名称,金额,备注", row, style);
 			            
+			            11
 			            
 						map_d1.put("serialNo", 0);//序列号
 						map_d1.put("zlNo", "");//专利号
