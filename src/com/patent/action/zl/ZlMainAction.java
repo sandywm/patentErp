@@ -4820,7 +4820,6 @@ public class ZlMainAction extends DispatchAction {
 	 */
 	public ActionForward goFeePage(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		
 		return mapping.findForward("feePage");
 	}
