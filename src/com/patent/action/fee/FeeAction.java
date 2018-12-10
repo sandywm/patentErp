@@ -29,10 +29,10 @@ import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.actions.DispatchAction;
 
 import com.alibaba.fastjson.JSON;
 import com.patent.factory.AppFactory;
@@ -44,7 +44,6 @@ import com.patent.service.ZlajFeeInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.Convert;
 import com.patent.tools.CurrentTime;
-import com.patent.tools.FileOpration;
 import com.patent.util.Constants;
 import com.patent.util.WebUrl;
 import com.patent.web.Ability;
@@ -56,7 +55,7 @@ import com.patent.web.Ability;
  * XDoclet definition:
  * @struts.action validate="true"
  */
-public class FeeAction extends Action {
+public class FeeAction extends DispatchAction {
 	
 	/**
 	 * 获取session中的用户ID
@@ -340,13 +339,14 @@ public class FeeAction extends Action {
 				    	String absoFilePath = "";//绝对地址
 				    	try  {  
 				        	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
-				        	String folder = WebUrl.DATA_URL_PRO + "Module\\excelTemp\\";
+				        	String folder = WebUrl.DATA_URL_PRO + "Module\\excelTemp\\"+cpyId+"\\";//通过代理机构把excel分开
 				        	absoFilePath = folder +fileName;
 				        	File file = new File(folder);
 							if(!file.exists()){
 								file.mkdirs();
 							}
-				            FileOutputStream fout = new FileOutputStream(absoFilePath);  
+				            FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器
+				            
 				            wb.write(fout);  
 				            fout.close();  
 					        //第七步 下载文件到客户端
@@ -379,8 +379,6 @@ public class FeeAction extends Action {
 				        catch (IOException e){  
 				            //e.printStackTrace();  
 				        }
-				      //第七步 删除临时上传的文件
-				      FileOpration.deleteFile(absoFilePath);
 					}else{
 						msg = "noInfo";
 					}
