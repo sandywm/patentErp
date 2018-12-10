@@ -67,7 +67,7 @@
       <set-property property="cancellable" value="true" />
     </action>
     <!-- 专利费用 -->
-    <action path="/fee.do" parameter="action" scope="request" type="com.patent.action.fee.FeeAction">
+    <action path="/fee" parameter="action" scope="request" type="com.patent.action.fee.FeeAction">
 		
     </action>
 
