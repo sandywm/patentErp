@@ -4807,6 +4807,25 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
+	 * 导向费用页面
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-10 上午09:05:53
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward goFeePage(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		
+		return mapping.findForward("feePage");
+	}
+	
+	/**
 	 * 获取当前代理机构的费用情况
 	 * @description
 	 * @author Administrator
