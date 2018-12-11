@@ -83,6 +83,13 @@ public class CpyInfoTb implements java.io.Serializable {
 		this.hotStatus = hotStatus;
 		this.cpyLevel = cpyLevel;
 		this.zlNum = zlNum;
+		this.bankAccountName = bankAccountName;
+		this.bankName = bankName;
+		this.bankNo = bankNo;
+		this.saleBonus = saleBonus;
+		this.dlFeeFm = dlFeeFm;
+		this.dlFeeXx = dlFeeXx;
+		this.dlFeeWg = dlFeeWg;
 	}
 
 	/** full constructor */

@@ -419,7 +419,7 @@ public class FeeAction extends DispatchAction {
 	}
 	
 	/**
-	 * 分页获取未交费用清单列表
+	 * 分页获取未交费用清单列表(用户导出的未交费清单)
 	 * @description
 	 * @author Administrator
 	 * @date 2018-12-10 下午04:22:14
@@ -432,11 +432,11 @@ public class FeeAction extends DispatchAction {
 	 */
 	public ActionForward getPageFER(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
 		String roleName = this.getLoginRoleName(request);
 		Integer currUserId = this.getLoginUserId(request);
+		String msg = "error";
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(this.getLoginType(request).equals("cpyUser")){
 			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
@@ -455,19 +455,69 @@ public class FeeAction extends DispatchAction {
 					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
 					List<FeeExportRecordInfo> ferList = ferm.listPageInfoByOpt(addDateS, addDateE, cpyId, pageNo, pageSize);
 					if(ferList.size() > 0){
+						msg = "success";
+						List<Object> list_d = new ArrayList<Object>();
 						for(Iterator<FeeExportRecordInfo> it = ferList.iterator() ; it.hasNext();){
 							FeeExportRecordInfo fer = it.next();
 							Map<String,Object> map_d = new HashMap<String,Object>();
 							map_d.put("ferId", fer.getId());
 							map_d.put("ferName", fer.getExcelName());
 							map_d.put("addTime", fer.getAddTime());
-							map_d.put("", fer);
-							map_d.put("", fer);
+							map_d.put("userName", fer.getUser().getUserName());
+							map_d.put("excelPath", fer.getExcelPath());
+							list_d.add(map_d);
 						}
+						map.put("ferList", list_d);
+					}else{
+						msg = "noInfo";
 					}
 				}
+			}else{
+				msg = "noAbility";
 			}
 		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 导入已缴费清单并进行平账（代理机构平账）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-11 下午03:45:27
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward importYjFeeExcel(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
+		
+		return null;
+	}
+	
+	/**
+	 * 增加客户还款动作
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-11 下午03:48:34
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward addBackFee(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
+		
 		return null;
 	}
 }

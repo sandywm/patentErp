@@ -3987,7 +3987,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 缴纳所有费用(代理机构代缴)
+	 * 缴纳所有费用(代理机构代缴)--暂时不用
 	 * @description
 	 * @author Administrator
 	 * @date 2018-10-11 上午10:07:53
