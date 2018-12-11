@@ -128,7 +128,7 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 
 	@Override
 	public List<ZlajFeeInfoTb> findInfoByOpt(Session sess, Integer cpyId,
-			Integer feeStatus, Integer diffDays,String zlNo,String ajNo,Integer cusId,Integer pageNo, Integer pageSize) {
+			Integer feeStatus, Integer diffDays,String zlNo,String ajNo,Integer cusId,String sDate,String eDate,Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId + " and zlf.feeStatus = "+feeStatus;
 		if(!zlNo.equals("")){
@@ -146,6 +146,9 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 			hql += " and zlf.zlajMainInfoTb.ajStopStatus = 0 order by zlf.feeEndDateJj asc";
 			return sess.createQuery(hql).list();
 		}else{
+			if(!sDate.equals("") && !eDate.equals("")){
+				hql += " and zlf.feeJnDate >= '"+sDate+"' and zlf.feeJnDate <= '"+eDate+"'";
+			}
 			int offset = (pageNo - 1) * pageSize;
 			if (offset < 0) {
 				offset = 0;
@@ -155,7 +158,7 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 	}
 
 	@Override
-	public Integer getCountByOpt(Session sess, Integer cpyId,String zlNo,String ajNo,Integer cusId) {
+	public Integer getCountByOpt(Session sess, Integer cpyId,String zlNo,String ajNo,Integer cusId,String sDate,String eDate) {
 		// TODO Auto-generated method stub
 		String hql ="select count(zlf.id) from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId + " and zlf.feeStatus = 1";
 		if(!zlNo.equals("")){
@@ -166,8 +169,30 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		if(cusId > 0){
 			hql += " and FIND_IN_SET("+cusId+",zlf.zlajMainInfoTb.ajSqrId) > 0";
 		}
+		if(!sDate.equals("") && !eDate.equals("")){
+			hql += " and zlf.feeJnDate >= '"+sDate+"' and zlf.feeJnDate <= '"+eDate+"'";
+		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);
+	}
+
+	@Override
+	public List<Object> getTjFeeInfoByOpt(Session sess, Integer cpyId,
+			String zlNo, String ajNo, Integer cusId, String sDate, String eDate) {
+		// TODO Auto-generated method stub
+		String hql = "select sum(zlf.feePrice),sum(zlf.backFee) from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId + " and zlf.feeStatus = 1";
+		if(!zlNo.equals("")){
+			hql += " and zlf.zlajMainInfoTb.ajNoGf = '"+zlNo+"'";
+		}else if(!ajNo.equals("")){
+			hql += " and zlf.zlajMainInfoTb.ajNo = '"+ajNo+"'";
+		}
+		if(cusId > 0){
+			hql += " and FIND_IN_SET("+cusId+",zlf.zlajMainInfoTb.ajSqrId) > 0";
+		}
+		if(!sDate.equals("") && !eDate.equals("")){
+			hql += " and zlf.feeJnDate >= '"+sDate+"' and zlf.feeJnDate <= '"+eDate+"'";
+		}
+		return sess.createQuery(hql).list();
 	}
 
 }

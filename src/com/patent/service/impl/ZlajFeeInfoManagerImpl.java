@@ -368,13 +368,13 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 	}
 
 	@Override
-	public List<ZlajFeeInfoTb> listInfoByOpt(Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,Integer pageNo,Integer pageSize)
+	public List<ZlajFeeInfoTb> listInfoByOpt(Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,String sDate,String eDate,Integer pageNo,Integer pageSize)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return fDao.findInfoByOpt(sess, cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, pageNo, pageSize);
+			return fDao.findInfoByOpt(sess, cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, sDate, eDate, pageNo, pageSize);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -385,12 +385,12 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 	}
 
 	@Override
-	public Integer getCountByOpt(Integer cpyId,String zlNo,String ajNo,Integer cusId) throws WEBException {
+	public Integer getCountByOpt(Integer cpyId,String zlNo,String ajNo,Integer cusId,String sDate,String eDate) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return fDao.getCountByOpt(sess, cpyId, zlNo, ajNo, cusId);
+			return fDao.getCountByOpt(sess, cpyId, zlNo, ajNo, cusId, sDate, eDate);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -422,6 +422,24 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据主键修改费用金额信息时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<Object> getTjFeeInfoByOpt(Integer cpyId, String zlNo,
+			String ajNo, Integer cusId, String sDate, String eDate)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fDao.getTjFeeInfoByOpt(sess, cpyId, zlNo, ajNo, cusId, sDate, eDate);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定代理机构下已交费用、实收费用、未收费用统计（在已交费用模式下）信息时出现异常");
 		} finally{
 			HibernateUtil.closeSession();
 		}

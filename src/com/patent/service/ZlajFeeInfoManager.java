@@ -2,7 +2,6 @@ package com.patent.service;
 
 import java.util.List;
 
-import org.hibernate.Session;
 
 import com.patent.exception.WEBException;
 import com.patent.module.FeeTypeInfoTb;
@@ -240,12 +239,14 @@ public interface ZlajFeeInfoManager{
 	 * @param zlNo 专利/申请号(""表示全部)
 	 * @param ajNo 案件编号(""表示全部)
 	 * @param cusId 客户/申请人编号(0表示全部)
+	 * @param sDate 开始时间(缴费时间)--feeStatus=1的状态下使用
+	 * @param eDate 结束时间(缴费时间)--feeStatus=1的状态下使用
 	 * @param pageNo 页码
 	 * @param pageSize 每页记录条数
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajFeeInfoTb> listInfoByOpt(Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,Integer pageNo,Integer pageSize)throws WEBException;
+	List<ZlajFeeInfoTb> listInfoByOpt(Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,String sDate,String eDate,Integer pageNo,Integer pageSize)throws WEBException;
 	
 	/**
 	 * 获取指定代理机构下已缴费的费用记录条数（专利正常条件下）
@@ -256,10 +257,12 @@ public interface ZlajFeeInfoManager{
 	 * @param zlNo 专利/申请号(""表示全部)
 	 * @param ajNo 案件编号(""表示全部)
 	 * @param cusId 客户/申请人编号(0表示全部)
+	 * @param sDate 开始时间(缴费时间)--feeStatus=1的状态下使用
+	 * @param eDate 结束时间(缴费时间)--feeStatus=1的状态下使用
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer getCountByOpt(Integer cpyId,String zlNo,String ajNo,Integer cusId)throws WEBException;
+	Integer getCountByOpt(Integer cpyId,String zlNo,String ajNo,Integer cusId,String sDate,String eDate)throws WEBException;
 	
 	/**
 	 * 根据费用编号修改费用金额
@@ -272,5 +275,21 @@ public interface ZlajFeeInfoManager{
 	 * @throws WEBException
 	 */
 	boolean updateFeePriceById(Integer feeId,Double newFeePrice)throws WEBException;
+	
+	/**
+	 * 获取指定代理机构下已交费用、实收费用、未收费用统计（在已交费用模式下）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-11 上午11:05:14
+	 * @param cpyId 代理机构编号
+	 * @param zlNo 专利/申请号(""表示全部)
+	 * @param ajNo 案件编号(""表示全部)
+	 * @param cusId 客户/申请人编号(0表示全部)
+	 * @param sDate 开始时间(缴费时间)
+	 * @param eDate 结束时间(缴费时间)
+	 * @return
+	 * @throws WEBException
+	 */
+	List<Object> getTjFeeInfoByOpt(Integer cpyId,String zlNo, String ajNo, Integer cusId, String sDate, String eDate)throws WEBException;
 	
 }

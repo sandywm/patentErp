@@ -146,11 +146,13 @@ public interface ZlajFeeInfoDao {
 	 * @param zlNo 专利/申请号(""表示全部)
 	 * @param ajNo 案件编号(""表示全部)
 	 * @param cusId 客户/申请人编号(0表示全部)
+	 * @param sDate 开始时间(缴费时间)--feeStatus=1的状态下使用
+	 * @param eDate 结束时间(缴费时间)--feeStatus=1的状态下使用
 	 * @param pageNo 页码
 	 * @param pageSize 每页记录条数
 	 * @return
 	 */
-	List<ZlajFeeInfoTb> findInfoByOpt(Session sess,Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,Integer pageNo,Integer pageSize);
+	List<ZlajFeeInfoTb> findInfoByOpt(Session sess,Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,String sDate,String eDate,Integer pageNo,Integer pageSize);
 	
 	/**
 	 * 获取指定代理机构下已缴费的费用记录条数
@@ -162,7 +164,25 @@ public interface ZlajFeeInfoDao {
 	 * @param zlNo 专利/申请号(""表示全部)
 	 * @param ajNo 案件编号(""表示全部)
 	 * @param cusId 客户/申请人编号(0表示全部)
+	 * @param sDate 开始时间(缴费时间)--feeStatus=1的状态下使用
+	 * @param eDate 结束时间(缴费时间)--feeStatus=1的状态下使用
 	 * @return
 	 */
-	Integer getCountByOpt(Session sess,Integer cpyId,String zlNo,String ajNo,Integer cusId);
+	Integer getCountByOpt(Session sess,Integer cpyId,String zlNo,String ajNo,Integer cusId,String sDate,String eDate);
+	
+	/**
+	 * 获取指定代理机构下已交费用、实收费用、未收费用统计（在已交费用模式下）
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-11 上午10:57:00
+	 * @param sess
+	 * @param cpyId 代理机构编号
+	 * @param zlNo 专利/申请号(""表示全部)
+	 * @param ajNo 案件编号(""表示全部)
+	 * @param cusId 客户/申请人编号(0表示全部)
+	 * @param sDate 开始时间(缴费时间)
+	 * @param eDate 结束时间(缴费时间)
+	 * @return
+	 */
+	List<Object> getTjFeeInfoByOpt(Session sess,Integer cpyId,String zlNo,String ajNo,Integer cusId,String sDate,String eDate);
 }

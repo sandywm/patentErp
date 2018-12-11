@@ -36,10 +36,12 @@ import org.apache.struts.actions.DispatchAction;
 
 import com.alibaba.fastjson.JSON;
 import com.patent.factory.AppFactory;
+import com.patent.module.FeeExportRecordInfo;
 import com.patent.module.ZlajFeeInfoTb;
 import com.patent.module.ZlajMainInfoTb;
 import com.patent.page.PageConst;
 import com.patent.service.CpyUserInfoManager;
+import com.patent.service.FeeExportRecordInfoManager;
 import com.patent.service.ZlajFeeInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.Convert;
@@ -192,17 +194,19 @@ public class FeeAction extends DispatchAction {
 				String zlNo = CommonTools.getFinalStr("zlNo", request);
 				String ajNo = CommonTools.getFinalStr("ajNo", request);
 				Integer cusId = CommonTools.getFinalInteger("cusId", request);
+				String sDate = CommonTools.getFinalStr("sDate", request);//缴费开始时间
+				String eDate = CommonTools.getFinalStr("eDate", request);//缴费结束时间
 				
 				List<ZlajFeeInfoTb> zlfList = new ArrayList<ZlajFeeInfoTb>();
 				Integer count = 0;
 				if(feeStatus.equals(0)){
-					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, 0, 0);
+					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, "", "", 0, 0);
 				}else{
 					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
 					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
-					count = fm.getCountByOpt(cpyId, zlNo, ajNo, cusId);
+					count = fm.getCountByOpt(cpyId, zlNo, ajNo, cusId,sDate,eDate);
 					if(count > 0){
-						zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, pageNo, pageSize);
+						zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId,sDate,eDate, pageNo, pageSize);
 					}
 				}
 				if(zlfList.size() > 0){
@@ -221,23 +225,38 @@ public class FeeAction extends DispatchAction {
 						String feeEndDateJj = zlf.getFeeEndDateJj();
 						String feeEndDateGf = zlf.getFeeEndDateGf();
 						Double feePrice = zlf.getFeePrice();
-						if(feeStatus.equals(0)){
+						map_d.put("feeEndDateJj", feeEndDateJj);
+						map_d.put("feeEndDateGf", feeEndDateGf);
+						map_d.put("feePrice", feePrice);
+						if(feeStatus.equals(0)){//未交费用
 							Integer diffDays_jj = CurrentTime.compareDate(currDate,feeEndDateJj);
 							Integer diffDays_gf = CurrentTime.compareDate(currDate,feeEndDateGf);
 							map_d.put("diffDays_jj", diffDays_jj);
 							map_d.put("diffDays_Gf", diffDays_gf);
+						}else{//已缴费
+							map_d.put("jfDate", zlf.getFeeJnDate());
+							map_d.put("backFee", zlf.getBackFee());//客户退还的费用
+							map_d.put("backDate", zlf.getBackDate());//客户退还时间
+							feeTotal = Convert.convertInputNumber_2(feeTotal + feePrice);
+							map_d.put("feeBatchNo", zlf.getFeeBatchNo());
+							map_d.put("bankSerialNo", zlf.getBankSerialNo());
+							map_d.put("fpDate", zlf.getFpDate());
+							map_d.put("fpNo", zlf.getFpNo());
 						}
-						map_d.put("feeEndDateJj", feeEndDateJj);
-						map_d.put("feeEndDateGf", feeEndDateGf);
-						map_d.put("feePrice", feePrice);
-						feeTotal = Convert.convertInputNumber_2(feeTotal + feePrice);
-						map_d.put("feeBatchNo", zlf.getFeeBatchNo());
-						map_d.put("bankSerialNo", zlf.getBankSerialNo());
-						map_d.put("fpDate", zlf.getFpDate());
-						map_d.put("fpNo", zlf.getFpNo());
 						list_d.add(map_d);
 					}
-					map.put("feeTotal", feeTotal);//应缴费总计
+					if(feeStatus.equals(1)){
+						List<Object> fmObj = fm.getTjFeeInfoByOpt(cpyId, zlNo, ajNo, cusId, sDate, eDate);
+						Object[] obj = (Object[]) fmObj.get(0);
+						Double yjFeeTotal = (Double)obj[0];//已交费用总计
+						Double backFeeTotal = (Double)obj[1];//实收费用总计
+						String noBackFeeTotal = Convert.convertInputNumber_3(yjFeeTotal - backFeeTotal);//未收费用总计
+						map.put("yjFeeTotal", Convert.convertInputNumber_3(yjFeeTotal));
+						map.put("backFeeTotal", Convert.convertInputNumber_3(backFeeTotal));
+						map.put("noBackFeeTotal", noBackFeeTotal);
+					}else{
+						map.put("feeTotal", feeTotal);//应缴费总计--未交费用模式下使用
+					}
 					map.put("msg", "success");
 					map.put("data", list_d);
 					map.put("count", count);
@@ -250,6 +269,7 @@ public class FeeAction extends DispatchAction {
 		this.getJsonPkg(map, response);
 		return null;
 	}
+
 	
 	/**
 	 * 导出未缴费清单到excel(上交国家局/客户)
@@ -267,6 +287,7 @@ public class FeeAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
 		String roleName = this.getLoginRoleName(request);
 		Integer currUserId = this.getLoginUserId(request);
 		String msg = "error";
@@ -288,7 +309,7 @@ public class FeeAction extends DispatchAction {
 				
 				List<ZlajFeeInfoTb> zlfList = new ArrayList<ZlajFeeInfoTb>();
 				if(feeStatus.equals(0)){//未交费用
-					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, 0, 0);
+					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, "", "", 0, 0);
 					if(zlfList.size() > 0){
 						msg = "success";
 						Double feePrice_total = 0d;
@@ -338,17 +359,20 @@ public class FeeAction extends DispatchAction {
 			        	// 第六步，将文件存到指定位置
 				    	String absoFilePath = "";//绝对地址
 				    	try  {  
+				    		String currTime = CurrentTime.getCurrentTime();
 				        	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
-				        	String folder = WebUrl.DATA_URL_PRO + "Module\\excelTemp\\"+cpyId+"\\";//通过代理机构把excel分开
+				        	String filePath_pre = "Module\\excelTemp\\"+cpyId+"\\";
+				        	String folder = WebUrl.DATA_URL_PRO + filePath_pre;//通过代理机构把excel分开
 				        	absoFilePath = folder +fileName;
 				        	File file = new File(folder);
 							if(!file.exists()){
 								file.mkdirs();
 							}
 				            FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器
-				            
 				            wb.write(fout);  
 				            fout.close();  
+				            //生成记录
+				            ferm.addFER(fileName, currTime, currUserId, filePath_pre+fileName, cpyId);
 					        //第七步 下载文件到客户端
 					        OutputStream fos = null;
 					        BufferedOutputStream bos = null;
@@ -390,6 +414,59 @@ public class FeeAction extends DispatchAction {
 		map.put("result", msg);
 		if(!msg.equals("success")){
 			this.getJsonPkg(map, response);
+		}
+		return null;
+	}
+	
+	/**
+	 * 分页获取未交费用清单列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-10 下午04:22:14
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getPageFER(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
+		String roleName = this.getLoginRoleName(request);
+		Integer currUserId = this.getLoginUserId(request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(this.getLoginType(request).equals("cpyUser")){
+			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
+			boolean abilityFlag = false;
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{//只获取自己的任务流程
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listFee");//只有具有浏览权限的人员
+			}
+			if(abilityFlag){
+				String addDateS = CommonTools.getFinalStr("sDate", request);
+				String addDateE = CommonTools.getFinalStr("eDate", request);
+				Integer count = ferm.getCountByOpt(addDateS, addDateE, cpyId);
+				if(count > 0){
+					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
+					List<FeeExportRecordInfo> ferList = ferm.listPageInfoByOpt(addDateS, addDateE, cpyId, pageNo, pageSize);
+					if(ferList.size() > 0){
+						for(Iterator<FeeExportRecordInfo> it = ferList.iterator() ; it.hasNext();){
+							FeeExportRecordInfo fer = it.next();
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("ferId", fer.getId());
+							map_d.put("ferName", fer.getExcelName());
+							map_d.put("addTime", fer.getAddTime());
+							map_d.put("", fer);
+							map_d.put("", fer);
+						}
+					}
+				}
+			}
 		}
 		return null;
 	}
