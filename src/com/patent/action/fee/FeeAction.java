@@ -214,7 +214,7 @@ public class FeeAction extends DispatchAction {
 						zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId,sDate,eDate, pageNo, pageSize);
 					}
 				}
-				if(zlfList.size() > 0){
+				if(zlfList.size() > 0){//
 					List<Object> list_d = new ArrayList<Object>();
 					String currDate = CurrentTime.getStringDate();
 					Double feeTotal = 0d;
