@@ -292,4 +292,16 @@ public interface ZlajFeeInfoManager{
 	 */
 	List<Object> getTjFeeInfoByOpt(Integer cpyId,String zlNo, String ajNo, Integer cusId, String sDate, String eDate)throws WEBException;
 	
+	
+	/**
+	 * 根据拼接的专利费用编号获取指定代理机构下的未交费用信息列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-12 下午04:19:49
+	 * @param cpyId 代理机构编号
+	 * @param idStr 专利费用编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajFeeInfoTb> listUnJfInfoByOpt(Integer cpyId,String idStr)throws WEBException;
 }

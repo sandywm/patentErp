@@ -23,6 +23,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import jxl.Cell;
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -290,8 +295,6 @@ public class FeeAction extends DispatchAction {
 		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
 		String roleName = this.getLoginRoleName(request);
 		Integer currUserId = this.getLoginUserId(request);
-		String msg = "error";
-		Map<String,Object> map = new HashMap<String,Object>();
 		if(this.getLoginType(request).equals("cpyUser")){
 			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
 			boolean abilityFlag = false;
@@ -301,119 +304,111 @@ public class FeeAction extends DispatchAction {
 				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listFee");//只有具有浏览权限的人员
 			}
 			if(abilityFlag){
-				Integer feeStatus = CommonTools.getFinalInteger("feeStatus", request);//费用缴纳状态（0未交，1：已交）
-				Integer diffDays = CommonTools.getFinalInteger("diffDays", request);//代理机构缴费截止日期距当前日期天数小于等于指定的天数
-				String zlNo = CommonTools.getFinalStr("zlNo", request);
-				String ajNo = CommonTools.getFinalStr("ajNo", request);
-				Integer cusId = CommonTools.getFinalInteger("cusId", request);
-				
+				String idStr = CommonTools.getFinalStr("idStr", request);//所有选择的专利编号的拼接
 				List<ZlajFeeInfoTb> zlfList = new ArrayList<ZlajFeeInfoTb>();
-				if(feeStatus.equals(0)){//未交费用
-					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, "", "", 0, 0);
-					if(zlfList.size() > 0){
-						msg = "success";
-						Double feePrice_total = 0d;
-						for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
-							ZlajFeeInfoTb zlf = it.next();
-							feePrice_total += zlf.getFeePrice();
-						}
-						// 第一步，创建一个webbook，对应一个Excel文件  
-				        HSSFWorkbook wb = new HSSFWorkbook();  
-				        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
-				        HSSFSheet sheet = wb.createSheet("费用清单");  
-				        //设置横向打印
-				        sheet.getPrintSetup().setLandscape(true);
-				        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
-				        HSSFRow row = sheet.createRow(0);  
-				        // 第四步，创建单元格，并设置值表头 设置表头居中  
-				        HSSFCellStyle style = wb.createCellStyle();  
-				        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
-			            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-			            
-			            HSSFFont font_1 = wb.createFont();    
-			            font_1.setFontName("宋体");    
-			            font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
-			            font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
-			            
-			            
-			            HSSFFont font_2 = wb.createFont();    
-			            font_2.setFontName("宋体");    
-			            font_2.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
-			            
-			            style.setFont(font_1);
-			            
-			            FeeAction.addCellData(6, "序列号:申请号:缴费人姓名:费用名称:金额:备注", row, style);
-			            
-			            row = sheet.createRow(1);//创建行
-			        	// 第四步，创建单元格，并设置值  
-			            FeeAction.addCellData(6,"1:noData:noData:noData:"+Convert.convertInputNumber_3(feePrice_total)+":noData", row, style);
-						Integer i = 2;
-						for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
-							ZlajFeeInfoTb zlf = it.next();
-							row = sheet.createRow(i);//创建行
-							ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
-							String feeRemark = zlf.getFeeRemark().equals("") ? "noData" : zlf.getFeeRemark();
-							FeeAction.addCellData(6,""+i+":"+zl.getAjNoGf()+":"+zl.getAjSqrName()+":"+zlf.getFeeTypeInfoTb().getFeeName()+":"+Convert.convertInputNumber_3(zlf.getFeePrice())+":"+feeRemark+"", row, style);
-							i++;
-						}
-			        	// 第六步，将文件存到指定位置
-				    	String absoFilePath = "";//绝对地址
-				    	try  {  
-				    		String currTime = CurrentTime.getCurrentTime();
-				        	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
-				        	String filePath_pre = "Module\\excelTemp\\"+cpyId+"\\";
-				        	String folder = WebUrl.DATA_URL_PRO + filePath_pre;//通过代理机构把excel分开
-				        	absoFilePath = folder +fileName;
-				        	File file = new File(folder);
-							if(!file.exists()){
-								file.mkdirs();
-							}
-				            FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器
-				            wb.write(fout);  
-				            fout.close();  
-				            //生成记录
-				            ferm.addFER(fileName, currTime, currUserId, filePath_pre+fileName, cpyId);
-					        //第七步 下载文件到客户端
-					        OutputStream fos = null;
-					        BufferedOutputStream bos = null;
-					        InputStream fis = null;
-					        BufferedInputStream bis = null;
-					        fis = new FileInputStream(new File(absoFilePath));
-							bis = new BufferedInputStream(fis);
-							fos = response.getOutputStream();
-							bos = new BufferedOutputStream(fos);
-							fileName = URLEncoder.encode(fileName,"UTF-8");
-							//这个就就是弹出下载对话框的关键代码
-							response.setHeader("Pragma", "No-cache");
-							response.setHeader("Cache-Control", "No-cache");
-							response.setDateHeader("Expires", 0); 
-					        response.setHeader("Content-disposition","attachment;filename=" +fileName);
-					        response.setContentType("application/x-download");
-					        int bytesRead = 0;
-					        byte[] buffer = new byte[8192];
-					        while ((bytesRead = bis.read(buffer,0,8192)) != -1) {
-					        	fos.write(buffer, 0, bytesRead);
-					        }
-					        fos.flush();
-					        fis.close();
-					        bis.close();
-					        fos.close();
-					        bos.close();
-				        }  
-				        catch (IOException e){  
-				            //e.printStackTrace();  
-				        }
-					}else{
-						msg = "noInfo";
-					}
+				if(!idStr.equals("")){
+					zlfList = fm.listUnJfInfoByOpt(cpyId, idStr);
 				}
-			}else{
-				msg = "noAbility";
+//				Integer feeStatus = CommonTools.getFinalInteger("feeStatus", request);//费用缴纳状态（0未交，1：已交）
+//				Integer diffDays = CommonTools.getFinalInteger("diffDays", request);//代理机构缴费截止日期距当前日期天数小于等于指定的天数
+//				String zlNo = CommonTools.getFinalStr("zlNo", request);
+//				String ajNo = CommonTools.getFinalStr("ajNo", request);
+//				Integer cusId = CommonTools.getFinalInteger("cusId", request);
+//				zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, "", "", 0, 0);
+				if(zlfList.size() > 0){
+					Double feePrice_total = 0d;
+					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
+						ZlajFeeInfoTb zlf = it.next();
+						feePrice_total += zlf.getFeePrice();
+					}
+					// 第一步，创建一个webbook，对应一个Excel文件  
+			        HSSFWorkbook wb = new HSSFWorkbook();  
+			        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
+			        HSSFSheet sheet = wb.createSheet("费用清单");  
+			        //设置横向打印
+			        sheet.getPrintSetup().setLandscape(true);
+			        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
+			        HSSFRow row = sheet.createRow(0);  
+			        // 第四步，创建单元格，并设置值表头 设置表头居中  
+			        HSSFCellStyle style = wb.createCellStyle();  
+			        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+		            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+		            
+		            HSSFFont font_1 = wb.createFont();    
+		            font_1.setFontName("宋体");    
+		            font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
+		            font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
+		            
+		            
+		            HSSFFont font_2 = wb.createFont();    
+		            font_2.setFontName("宋体");    
+		            font_2.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
+		            
+		            style.setFont(font_1);
+		            
+		            FeeAction.addCellData(6, "序列号:申请号:缴费人姓名:费用名称:金额:备注", row, style);
+		            
+		            row = sheet.createRow(1);//创建行
+		        	// 第四步，创建单元格，并设置值  
+		            FeeAction.addCellData(6,"1:noData:noData:noData:"+Convert.convertInputNumber_3(feePrice_total)+":noData", row, style);
+					Integer i = 2;
+					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
+						ZlajFeeInfoTb zlf = it.next();
+						row = sheet.createRow(i);//创建行
+						ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
+						String feeRemark = zlf.getFeeRemark().equals("") ? "noData" : zlf.getFeeRemark();
+						FeeAction.addCellData(6,""+i+":"+zl.getAjNoGf()+":"+zl.getAjSqrName()+":"+zlf.getFeeTypeInfoTb().getFeeName()+":"+Convert.convertInputNumber_3(zlf.getFeePrice())+":"+feeRemark+"", row, style);
+						i++;
+					}
+		        	// 第六步，将文件存到指定位置
+			    	String absoFilePath = "";//绝对地址
+			    	try  {  
+			    		String currTime = CurrentTime.getCurrentTime();
+			        	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
+			        	String filePath_pre = "Module\\excelTemp\\"+cpyId+"\\";
+			        	String folder = WebUrl.DATA_URL_PRO + filePath_pre;//通过代理机构把excel分开
+			        	absoFilePath = folder +fileName;
+			        	File file = new File(folder);
+						if(!file.exists()){
+							file.mkdirs();
+						}
+			            FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器
+			            wb.write(fout);  
+			            fout.close();  
+			            //生成记录
+			            ferm.addFER(fileName, currTime, currUserId, filePath_pre+fileName, cpyId);
+				        //第七步 下载文件到客户端
+				        OutputStream fos = null;
+				        BufferedOutputStream bos = null;
+				        InputStream fis = null;
+				        BufferedInputStream bis = null;
+				        fis = new FileInputStream(new File(absoFilePath));
+						bis = new BufferedInputStream(fis);
+						fos = response.getOutputStream();
+						bos = new BufferedOutputStream(fos);
+						fileName = URLEncoder.encode(fileName,"UTF-8");
+						//这个就就是弹出下载对话框的关键代码
+						response.setHeader("Pragma", "No-cache");
+						response.setHeader("Cache-Control", "No-cache");
+						response.setDateHeader("Expires", 0); 
+				        response.setHeader("Content-disposition","attachment;filename=" +fileName);
+				        response.setContentType("application/x-download");
+				        int bytesRead = 0;
+				        byte[] buffer = new byte[8192];
+				        while ((bytesRead = bis.read(buffer,0,8192)) != -1) {
+				        	fos.write(buffer, 0, bytesRead);
+				        }
+				        fos.flush();
+				        fis.close();
+				        bis.close();
+				        fos.close();
+				        bos.close();
+			        }  
+			        catch (IOException e){  
+			            //e.printStackTrace();  
+			        }
+				}
 			}
-		}
-		map.put("result", msg);
-		if(!msg.equals("success")){
-			this.getJsonPkg(map, response);
 		}
 		return null;
 	}
@@ -493,11 +488,36 @@ public class FeeAction extends DispatchAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public ActionForward importYjFeeExcel(ActionMapping mapping, ActionForm form,
+	public ActionForward dealYjFeeExcel(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
-		
+//		String filePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + CommonTools.getFinalStr("filePath", request);
+		String filePath = CommonTools.getFinalStr("filePath", request);
+		//读取excel内容
+		Sheet sheet;  
+        Workbook book;  
+        Cell cell1;
+        HSSFWorkbook wb;
+        WorkbookSettings wbs = new WorkbookSettings();
+        wbs.setEncoding("GBK"); // 解决中文乱码
+        wbs.setSuppressWarnings(true); 
+        book= Workbook.getWorkbook(new File(filePath),wbs);
+		//获得第一个工作表对象(ecxel中sheet的编号从0开始,0,1,2,3,....)  
+		sheet=book.getSheet(0); 
+		Integer i = 2;
+        Integer maxRow = sheet.getRows();
+        while(i < maxRow){
+        	//获取每一行的单元格   
+            cell1=sheet.getCell(0,i);//（列，行）  
+            if("".equals(cell1.getContents())==true)    //如果读取的数据为空  
+                break;  
+            String zlNo = sheet.getCell(1,i).getContents().replace(" ", "").replace("\t", "");//专利号
+            String feeName = sheet.getCell(3,i).getContents().replace(" ", "").replace("\t", "");//费用名称
+            String feePrice = sheet.getCell(4,i).getContents().replace(" ", "").replace("\t", "");//费用金额
+            System.out.println(zlNo + " " + feeName + " " + feePrice);
+            i++;
+        }
 		return null;
 	}
 	

@@ -127,12 +127,12 @@ public class UploadAction extends DispatchAction {
 		boolean upFlag = false;
 		String fileUrl = "";
 		Integer ajId = CommonTools.getFinalInteger("ajId", request);
-		String fileType = CommonTools.getFinalStr("fileType", request);//tzs(通知书),fj(附件),pj(票据),dg(底稿)
+		String fileType = CommonTools.getFinalStr("fileType", request);//tzs(通知书),fj(附件),pj(票据),dg(底稿),fee(已缴费清单)
 		String loginType = this.getLoginType(request);
 		Integer currLoginUserId = this.getLoginUserId(request);
 		Map<String,Object> map = new HashMap<String,Object>();
-		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
-		ZlajFeeInfoManager fm = (ZlajFeeInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+//		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
+//		ZlajFeeInfoManager fm = (ZlajFeeInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		//通知书、票据、附件需要具有专利流程处理权限的才能上传
 		boolean abilityFlag = false;
 		if(loginType.equals("cpyUser")){
@@ -143,6 +143,8 @@ public class UploadAction extends DispatchAction {
 					boolean abilityFlag_1 = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");//增加专利的能上传
 					boolean abilityFlag_2 = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//修改专利的能上传
 					abilityFlag = abilityFlag_1 || abilityFlag_2;
+				}else if(fileType.equals("pj") || fileType.equals("fee")){//上传发票和已缴费清单
+					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addFee");//增加费用权限
 				}else{
 					//撰稿人员、专利审核人员、客户确认人员、定稿提交、补正提交、补正审核人员上传的都是附件类
 					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理

@@ -195,4 +195,13 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<ZlajFeeInfoTb> findUnJfInfoByOpt(Session sess, Integer cpyId,
+			String idStr) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId + " and zlf.feeStatus = 0";
+		hql += " and zlf.zlajMainInfoTb.ajStopStatus = 0 and zlf.id in("+idStr+") order by zlf.feeEndDateJj asc";
+		return sess.createQuery(hql).list();
+	}
+
 }

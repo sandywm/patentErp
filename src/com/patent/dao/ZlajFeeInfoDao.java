@@ -185,4 +185,16 @@ public interface ZlajFeeInfoDao {
 	 * @return
 	 */
 	List<Object> getTjFeeInfoByOpt(Session sess,Integer cpyId,String zlNo,String ajNo,Integer cusId,String sDate,String eDate);
+	
+	/**
+	 * 根据拼接的专利费用编号获取指定代理机构下的未交费用信息列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-12 下午04:14:53
+	 * @param sess
+	 * @param cpyId 代理机构编号
+	 * @param idStr 拼接的费用编号（###,###）
+	 * @return
+	 */
+	List<ZlajFeeInfoTb> findUnJfInfoByOpt(Session sess,Integer cpyId,String idStr);
 }
