@@ -200,7 +200,16 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 			String idStr) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId + " and zlf.feeStatus = 0";
-		hql += " and zlf.zlajMainInfoTb.ajStopStatus = 0 and zlf.id in("+idStr+") order by zlf.feeEndDateJj asc";
+		hql += " and zlf.zlajMainInfoTb.ajStopStatus = 0 and zlf.id in("+idStr+")";
+		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public List<ZlajFeeInfoTb> findInfoByOpt(Session sess, Integer cpyId,
+			String zlNo, String feeName) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId;
+		hql += " and zlf.feeTypeInfoTb.feeName = '"+feeName+"' and zlf.zlajMainInfoTb.ajNoGf = '"+zlNo+"'";
 		return sess.createQuery(hql).list();
 	}
 

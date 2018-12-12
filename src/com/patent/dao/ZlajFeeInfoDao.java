@@ -197,4 +197,17 @@ public interface ZlajFeeInfoDao {
 	 * @return
 	 */
 	List<ZlajFeeInfoTb> findUnJfInfoByOpt(Session sess,Integer cpyId,String idStr);
+	
+	/**
+	 * 根据专利号、费用名称获取指定代理机构下的费用列表(导入excel缴费清单平账用)
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-12-12 下午09:14:18
+	 * @param sess
+	 * @param cpyId 代理机构编号
+	 * @param feeName 费用名称
+	 * @param zlNo 专利号
+	 * @return
+	 */
+	List<ZlajFeeInfoTb> findInfoByOpt(Session sess,Integer cpyId,String zlNo,String feeName);
 }

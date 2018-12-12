@@ -304,4 +304,29 @@ public interface ZlajFeeInfoManager{
 	 * @throws WEBException
 	 */
 	List<ZlajFeeInfoTb> listUnJfInfoByOpt(Integer cpyId,String idStr)throws WEBException;
+	
+	/**
+	 * 根据专利号、费用名称获取指定代理机构下的费用列表(导入excel缴费清单平账用)
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-12-12 下午09:41:38
+	 * @param cpyId 代理机构编号
+	 * @param feeName 费用名称
+	 * @param zlNo 专利号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajFeeInfoTb> listInfoByOpt(Integer cpyId,String zlNo,String feeName)throws WEBException;
+	
+	/**
+	 * 完成缴费信息（缴费状态修改成1并设置缴费时间）
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-12-12 下午10:01:56
+	 * @param feeId 费用编号
+	 * @param jfDate 缴费时间
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateComJfInfoById(Integer feeId,String jfDate)throws WEBException;
 }

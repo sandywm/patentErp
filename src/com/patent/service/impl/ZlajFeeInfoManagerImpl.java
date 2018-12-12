@@ -462,5 +462,48 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajFeeInfoTb> listInfoByOpt(Integer cpyId, String zlNo,
+			String feeName) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fDao.findInfoByOpt(sess, cpyId, zlNo, feeName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据专利号、费用名称获取指定代理机构下的费用列表(导入excel缴费清单平账用)列表时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateComJfInfoById(Integer feeId, String jfDate)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajFeeInfoTb zlFee = fDao.getFeeEntityById(sess, feeId);
+			if(zlFee != null){
+				zlFee.setFeeStatus(1);
+				zlFee.setFeeJnDate(jfDate);
+				fDao.update(sess, zlFee);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("完成缴费信息（缴费状态修改成1并设置缴费时间）时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 
 }

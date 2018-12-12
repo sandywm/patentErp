@@ -41,6 +41,7 @@ import org.apache.struts.actions.DispatchAction;
 
 import com.alibaba.fastjson.JSON;
 import com.patent.factory.AppFactory;
+import com.patent.module.CpyUserInfo;
 import com.patent.module.FeeExportRecordInfo;
 import com.patent.module.ZlajFeeInfoTb;
 import com.patent.module.ZlajMainInfoTb;
@@ -48,6 +49,7 @@ import com.patent.page.PageConst;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.FeeExportRecordInfoManager;
 import com.patent.service.ZlajFeeInfoManager;
+import com.patent.service.ZlajMainInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.Convert;
 import com.patent.tools.CurrentTime;
@@ -492,33 +494,80 @@ public class FeeAction extends DispatchAction {
 	public ActionForward dealYjFeeExcel(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
-		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 //		String filePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + CommonTools.getFinalStr("filePath", request);
 		String filePath = CommonTools.getFinalStr("filePath", request);
+		String excelOpt = CommonTools.getFinalStr("excelOpt", request);//jf(缴费信息),fp(发票信息)
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<Object> list_d = new ArrayList<Object>();
 		//读取excel内容
 		Sheet sheet;  
         Workbook book;  
         Cell cell1;
-        HSSFWorkbook wb;
         WorkbookSettings wbs = new WorkbookSettings();
         wbs.setEncoding("GBK"); // 解决中文乱码
         wbs.setSuppressWarnings(true); 
+//        book= Workbook.getWorkbook(new File(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + filePath),wbs);
         book= Workbook.getWorkbook(new File(filePath),wbs);
 		//获得第一个工作表对象(ecxel中sheet的编号从0开始,0,1,2,3,....)  
 		sheet=book.getSheet(0); 
 		Integer i = 2;
         Integer maxRow = sheet.getRows();
-        while(i < maxRow){
-        	//获取每一行的单元格   
-            cell1=sheet.getCell(0,i);//（列，行）  
-            if("".equals(cell1.getContents())==true)    //如果读取的数据为空  
-                break;  
-            String zlNo = sheet.getCell(1,i).getContents().replace(" ", "").replace("\t", "");//专利号
-            String feeName = sheet.getCell(3,i).getContents().replace(" ", "").replace("\t", "");//费用名称
-            String feePrice = sheet.getCell(4,i).getContents().replace(" ", "").replace("\t", "");//费用金额
-            System.out.println(zlNo + " " + feeName + " " + feePrice);
-            i++;
-        }
+		CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
+		if(cpyUser != null){
+			Integer cpyId = cpyUser.getCpyInfoTb().getId();
+			while(i < maxRow){
+	        	//获取每一行的单元格   
+	            cell1=sheet.getCell(0,i);//（列，行）  
+	            if("".equals(cell1.getContents())==true)    //如果读取的数据为空  
+	                break;  
+	            String zlNo = sheet.getCell(1,i).getContents().replace(" ", "").replace("\t", "");//专利号
+	            String feeName = sheet.getCell(3,i).getContents().replace(" ", "").replace("\t", "");//费用名称
+	            String jfDate = "";
+	            String bankSerialNo = "";
+	            String feeBatchNo = "";
+	            String fpDate = "";
+	            String fpNo = "";
+	            if(excelOpt.equals("jf")){
+	            	jfDate = sheet.getCell(6,i).getContents().replace(" ", "").replace("\t", "");//缴费时间
+	            	bankSerialNo = sheet.getCell(7,i).getContents().replace(" ", "").replace("\t", "");//银行流水号
+		            feeBatchNo = sheet.getCell(8,i).getContents().replace(" ", "").replace("\t", "");//缴费批次号
+	            }else if(excelOpt.equals("fp")){
+	            	fpDate = sheet.getCell(9,i).getContents().replace(" ", "").replace("\t", "");//开票日期
+		            fpNo = sheet.getCell(10,i).getContents().replace(" ", "").replace("\t", "");//发票编号
+	            }
+	            Map<String,String> map_d = new HashMap<String,String>();
+	            if(!zlNo.equals("")){
+	            	//代理机构缴完费后-补充缴费信息
+	            	List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(cpyId, zlNo, feeName);
+	            	if(feeList.size() > 0){
+	            		ZlajFeeInfoTb fee = feeList.get(0);
+	            		Integer feeId = fee.getId();
+	            		if(excelOpt.equals("jf") && fee.getFeeStatus().equals(0)){//未缴费
+	            			//修改费用状态
+		            		fm.updateComJfInfoById(feeId, jfDate);
+		            		//修改缴费信息
+		            		fm.updateFeeInfoById(feeId, feeBatchNo, bankSerialNo, fpDate, fpNo);
+		            		//修改任务中的缴费提醒
+		            		//修改/增加流程
+		            		map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]缴费成功");
+	            		}else if(excelOpt.equals("fp") && !fee.getFpNo().equals("")){
+	            			//修改发票信息
+		            		fm.updateFeeInfoById(feeId, feeBatchNo, bankSerialNo, fpDate, fpNo);
+		            		map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]设置发票信息成功");
+	            		}
+	            	}else{
+	            		map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]匹配失败");
+	            	}
+	            }else{
+	            	map_d.put("readInfo", "读取专利号错误");
+	            }
+	            list_d.add(map_d);
+	            i++;
+	        }
+		}
+		map.put("result", list_d);
+        this.getJsonPkg(map, response);
 		return null;
 	}
 	
