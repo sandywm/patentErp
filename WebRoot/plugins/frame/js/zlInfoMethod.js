@@ -1,5 +1,5 @@
-layui.define(['laydate','form','common','upLoadFiles'],function(exports){
-	var laydate = layui.laydate,form = layui.form,common = layui.common,globalUpload = layui.upLoadFiles;
+layui.define(['laydate','form','upLoadFiles'],function(exports){
+	var laydate = layui.laydate,form = layui.form,globalUpload = layui.upLoadFiles;
 	var obj = {
 		data : {
 			isXxFeeFlag : false,
@@ -209,7 +209,7 @@ layui.define(['laydate','form','common','upLoadFiles'],function(exports){
 		        			tmpDlFeeNum = dlFeeFm + "-" + dlFeeXx;
 			        	}else{
 			        		if(json.dlFee == ''){
-			        			tmpDlFeeNum = '200';
+			        			tmpDlFeeNum = '';
 			        		}else{
 			        			tmpDlFeeNum = json.dlFee;
 			        		}
@@ -372,21 +372,74 @@ layui.define(['laydate','form','common','upLoadFiles'],function(exports){
 			form.render();
 		},
 		agentDlFee_usual : function(){
+			var _this = this;
 			$('#zlAgentFeeInp').on('keyup',function(){
-				common.judgeAgentFee('zlAgentFeeInp');
+				_this.judgeAgentFee('zlAgentFeeInp');
 			});
 			$('#zlAgentFeeInp').on('blur',function(){
 				var tmpFlag = false;
 				addEditZlOpts == 'editZlOpts' ? tmpFlag = true : tmpFlag = false;
-				common.judgeAgentFee_num('zlAgentFeeInp',tmpFlag,parent.globalZlId);
+				_this.judgeAgentFee_num('zlAgentFeeInp',tmpFlag,parent.globalZlId);
 			});
 		},
 		agentDlFee_special : function(){
+			var _this = this;
 			$('#xxAgentFeeInp').on('keyup',function(){
-				common.judgeAgentFee('xxAgentFeeInp');
+				_this.judgeAgentFee('xxAgentFeeInp');
 			});
 			$('#xxAgentFeeInp').on('blur',function(){
-				common.judgeAgentFee_num('xxAgentFeeInp',false);
+				_this.judgeAgentFee_num('xxAgentFeeInp',false);
+			});
+		},
+		//增加专利时代理费用填写格式
+		judgeAgentFee : function(obj){
+			if($('#'+obj).val().length==1){
+				$('#'+obj).val($('#'+obj).val().replace(/[^1-9]/g,''));
+			}else{
+				$('#'+obj).val($('#'+obj).val().replace(/\D/g,''));
+			}
+		},
+		judgeAgentFee_num : function(obj,isRightFlag,zlId){
+			/*if($('#'+obj).val() == ''){
+				layer.msg('专利代理费用不能为空', {icon:5,anim:6,time:1500});
+				return;
+			}else */if($('#'+obj).val() < 100 && $('#'+obj).val() != ''){
+				layer.msg('专利代理费用最少不能低于100元', {icon:5,anim:6,time:1200});
+				$('#'+obj).val('');
+				return;
+			}else if($('#'+obj).val() > 99999){
+				layer.msg('专利代理费用最高不能超过99999', {icon:5,anim:6,time:1200});
+				$('#'+obj).val('');
+				return;
+			}else{
+				if(isRightFlag && $('#'+obj).val() != ''){//当是编辑的时候需要检测代理费用是否合理
+					this.judgeIsRight_agentFee(zlId,$('#'+obj).val());
+				}
+			}
+		},
+		//检测当前输入代理费是否合理
+		judgeIsRight_agentFee : function(zlId,dlFee){
+			layer.load('1');
+			$.ajax({
+				type:"post",
+		        async:false,
+		        dataType:"json",
+		        data : {zlId :zlId,dlFee:dlFee},
+		        url:"/zlm.do?action=checkInpDlFee",
+		        success:function (json){
+		        	layer.closeAll('loading');
+		        	if(json["result"] == 0){
+		        	}else if(json["result"] == 1){
+		        		layer.msg('客户已交完代理费，不能进行修改', {icon:5,anim:6,time:1200});
+		        		return;
+		        	}else if(json["result"]  == 2){
+		        		layer.msg('代理费不能小于客户已交费用', {icon:5,anim:6,time:1200});
+		        		return;
+		        	}else if(json["result"]  == 3){
+		        		layer.msg('代理费必须是100-100000的正整数', {icon:5,anim:6,time:1200});
+		        		return;
+		        	}
+		        }
 			});
 		},
 		selectFileUpload : function(){

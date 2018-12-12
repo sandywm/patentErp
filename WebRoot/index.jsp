@@ -93,7 +93,8 @@
 	                	<!--  iframe id="mainIframe" src="pubZl.do?action=goPubZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!--  iframe id="mainIframe" src="customer.do?action=goCusPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!-- iframe id="mainIframe" src="zlyq.do?action=goZlyqPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe -->
-	                	<iframe id="mainIframe" src="zlm.do?action=goZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
+	                	<!-- iframe id="mainIframe" src="zlm.do?action=goZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
+	                	<iframe id="mainIframe" src="fee.do?action=goFeePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
 	                </div>
 	            </div>
 	        </div>
@@ -118,15 +119,17 @@
 	        		if(roleName == '管理员'){
 	        			liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="3"><i class="iconfont layui-extend-xiugai"></i><cite>代理机构信息修改</cite></a></li>';
 		        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)"><i class="iconfont layui-extend-guanli"></i>代理机构管理</a>';
-		        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" path="user.do?action=goUserPage" tab-id="4">代理机构员工管理</a></dd>';
+		        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="7">代理机构角色权限管理</a></dd>';
+		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="user.do?action=goUserPage" tab-id="4">代理机构员工管理</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="role.do?action=goRolePage" tab-id="5">代理机构角色管理</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="jfm.do?action=goJfPage" tab-id="6">技术领域管理</a></dd>';
-		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="7">代理机构角色权限管理</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goSubParCpyPage" tab-id="8">代理机构主/子公司</a></dd></dl></li>';
 		        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)"><i class="layui-icon layui-icon-form" style="font-size:16px;margin-right:5px;"></i>专利任务管理</a>';
 		        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" path="pubZl.do?action=goPubZlPage" tab-id="10">专利任务领取</a></dd>';
+		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="zlm.do?action=goZlPage" tab-id="14">专利信息</a></dd>';
 		        		liItem += '</dl></li>';
-		        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="12" path="customer.do?action=goCusPage"><i class="layui-icon layui-icon-user" style="font-size:16px;margin-right:5px;"></i>客户管理</a></li>';
+		        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="13" path="fee.do?action=goFeePage"><i class="iconfont layui-extend-fee" style="margin-right:5px;"></i>费用管理</a></li>';
+		        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="12" path="customer.do?action=goCusPage"><i class="layui-icon layui-icon-user" style="margin-right:5px;"></i>客户管理</a></li>';
 			        	liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="9"><i class="iconfont layui-extend-goumai"></i>会员续费/购买</a></li>';
 	        		}else{
 	        			liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="3"></i><cite>我的代理机构</cite></a></li>';

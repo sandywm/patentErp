@@ -392,9 +392,9 @@
 	    				        	if(json["result"] == "success"){
 	    				        		var strTxt = '';
 	    				        		if(globalOpts == "addBtn"){//表示增加主模块
-	    				        			strTxt = '添加成功1';
+	    				        			strTxt = '添加成功';
 	    				        		}else if(globalOpts == "editBtn"){//表示编辑主模块
-	    				        			strTxt = '编辑成功2';
+	    				        			strTxt = '编辑成功';
 	    				        		}
 	    				        		function callBackSuccess(){
 	    				        			layer.msg(strTxt,{icon:1,time:1000},function(){

@@ -49,57 +49,7 @@ layui.define(['rate'],function(exports){
 		  	form.submit();
 		  	layer.closeAll('loading');
 		},
-		//增加专利时代理费用填写格式
-		judgeAgentFee : function(obj){
-			if($('#'+obj).val().length==1){
-				$('#'+obj).val($('#'+obj).val().replace(/[^1-9]/g,''));
-			}else{
-				$('#'+obj).val($('#'+obj).val().replace(/\D/g,''));
-			}
-		},
-		judgeAgentFee_num : function(obj,isRightFlag,zlId){
-			/*if($('#'+obj).val() == ''){
-				layer.msg('专利代理费用不能为空', {icon:5,anim:6,time:1500});
-				return;
-			}else */if($('#'+obj).val() < 100 && $('#'+obj).val() != ''){
-				layer.msg('专利代理费用最少不能低于100元', {icon:5,anim:6,time:1200});
-				$('#'+obj).val('');
-				return;
-			}else if($('#'+obj).val() > 99999){
-				layer.msg('专利代理费用最高不能超过99999', {icon:5,anim:6,time:1200});
-				$('#'+obj).val('');
-				return;
-			}else{
-				if(isRightFlag && $('#'+obj).val() != ''){//当是编辑的时候需要检测代理费用是否合理
-					this.judgeIsRight_agentFee(zlId,$('#'+obj).val());
-				}
-			}
-		},
-		//检测当前输入代理费是否合理
-		judgeIsRight_agentFee : function(zlId,dlFee){
-			layer.load('1');
-			$.ajax({
-				type:"post",
-		        async:false,
-		        dataType:"json",
-		        data : {zlId :zlId,dlFee:dlFee},
-		        url:"/zlm.do?action=checkInpDlFee",
-		        success:function (json){
-		        	layer.closeAll('loading');
-		        	if(json["result"] == 0){
-		        	}else if(json["result"] == 1){
-		        		layer.msg('客户已交完代理费，不能进行修改', {icon:5,anim:6,time:1200});
-		        		return;
-		        	}else if(json["result"]  == 2){
-		        		layer.msg('代理费不能小于客户已交费用', {icon:5,anim:6,time:1200});
-		        		return;
-		        	}else if(json["result"]  == 3){
-		        		layer.msg('代理费必须是100-100000的正整数', {icon:5,anim:6,time:1200});
-		        		return;
-		        	}
-		        }
-			});
-		},
+		//星星只读
 		rateFunReadOnly : function(elem,value){
 			rate.render({
 			    elem: '#' + elem
@@ -117,6 +67,14 @@ layui.define(['rate'],function(exports){
 			      this.span.text(arrs[value] || '');
 			    }
 			});
+		},
+		//字符串转数组
+		switchToArray : function(tmpArray){
+			var strHtml = '';
+			for(var i=0;i<tmpArray.length;i++){
+				strHtml += '<span class="blockSpan">'+ tmpArray[i] +'</span>';
+			}
+			return strHtml;
 		}
     };
     //输出接口

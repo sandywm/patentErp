@@ -490,7 +490,6 @@
 				        url:'/zlm.do?action=getLcMxDetail',
 				        success:function (json){
 				        	layer.closeAll('loading');
-				        	console.log(json)
 				        	if(json['result'] == 'success'){
 				        		_this.loadLxMxDetail(json,lcNo);
 				        	}else if(json['result'] == 'noInfo'){

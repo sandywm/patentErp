@@ -90,7 +90,7 @@
 					//创建tab
 					this.createTab();
 					this.bindEvent();
-					$.ajax({
+					/*$.ajax({
   						type:"post",
 				        async:false,
 				        dataType:"json",
@@ -102,7 +102,7 @@
 				        success:function (json){
 				        	console.log(json)
 				        }
-  					});
+  					});*/
 				},
 				bindEvent : function(){
 					var _this = this;
@@ -237,13 +237,6 @@
 					strHtmlCon += '</div>';
 					$('#layuiTab').append(strHtmlTit + strHtmlCon);
 					form.render();
-				},
-				switchToArray : function(tmpArray){
-					var strHtml = '';
-					for(var i=0;i<tmpArray.length;i++){
-						strHtml += '<span class="blockSpan">'+ tmpArray[i] +'</span>';
-					}
-					return strHtml;
 				}
 			};
 			function loadZlInfoList(opts){
@@ -279,12 +272,12 @@
 						cols : [[
 							{field : '', title: '序号',type:'numbers', width:60, fixed: 'left' , align:'center'},
 							{field : 'ajTitle', title: '案件标题', width:220, fixed: 'left' , align:'center'},
-							{field : 'ajNo', title: '案件编号', width:150, align:'center'},
+							{field : 'ajNo', title: '案件编号', width:180, align:'center'},
 							{field : 'ajNoGf', title: '案件申请/专利号', width:150, align:'center'},
 							{field : 'ajType', title: '案件类型', width:150, align:'center'},
 							{field : 'ajFieldName', title: '案件涉及领域', width:150, align:'center',templet:function(d){
 								if(d.ajFieldName != ''){
-									return page.switchToArray(d.ajFieldName.split(','));
+									return common.switchToArray(d.ajFieldName.split(','));
 								}else{
 									return '';
 								}
@@ -292,28 +285,28 @@
 							{field : 'ajAddress', title: '案件申请地区', width:140, align:'center'},
 							{field : 'sqrInfo', title: '案件申请人', width:180, align:'center',templet:function(d){
 								if(d.sqrInfo != ''){
-									return page.switchToArray(d.sqrInfo.split(','));
+									return common.switchToArray(d.sqrInfo.split(','));
 								}else{
 									return '';
 								}
 							}},
 							{field : 'fmrInfo', title: '案件发明人', width:160, align:'center',templet:function(d){
 								if(d.fmrInfo != ''){
-									return page.switchToArray(d.fmrInfo.split(','));
+									return common.switchToArray(d.fmrInfo.split(','));
 								}else{
 									return '';
 								}
 							}},
 							{field : 'jsLxrInfo', title: '案件技术联系人', width:160, align:'center',templet:function(d){
 								if(d.jsLxrInfo != ''){
-									return page.switchToArray(d.jsLxrInfo.split(','));
+									return common.switchToArray(d.jsLxrInfo.split(','));
 								}else{
 									return '';
 								}
 							}},
 							{field : 'lxrInfo', title: '案件联系人', width:160, align:'center',templet:function(d){
 								if(d.lxrInfo != ''){
-									return page.switchToArray(d.lxrInfo.split(','));
+									return common.switchToArray(d.lxrInfo.split(','));
 								}else{
 									return '';
 								}
@@ -358,7 +351,7 @@
 						cols:[[
 							{field : '', title: '序号',type:'numbers', width:60, fixed: 'left' , align:'center'},
 							{field : 'zlTitle', title: '案件标题', width:220, fixed: 'left' , align:'center'},
-							{field : 'zlNoQt', title: '专利编号', width:150, align:'center'},
+							{field : 'zlNoQt', title: '专利编号', width:180, align:'center'},
 							{field : 'zlNo', title: '专利/申请号', width:150, align:'center'},
 							{field : 'zlType', title: '专利类型', width:150, align:'center'},
 							{field : 'taskName', title: '任务名称', width:180, align:'center'},
@@ -416,7 +409,7 @@
 								return strHtml + d.zlTitle;
 							}},
 							{field : 'zlNoQt', title: '专利编号', width:150, align:'center'},
-							{field : 'zlNo', title: '专利/申请号', width:150, align:'center'},
+							{field : 'zlNo', title: '专利/申请号', width:180, align:'center'},
 							{field : 'zlType', title: '专利类型', width:150, align:'center'},
 							{field : 'taskName', title: '任务名称', width:180, align:'center'},
 							{field : 'applyUserName', title: '申请人姓名', width:200, align:'center'},

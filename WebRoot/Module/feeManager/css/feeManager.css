@@ -1,0 +1,60 @@
+@import url("../../../css/common.css");
+@import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
+body{
+	background:#f2f2f2;
+	color:#666;
+}
+#exportFeeBtn{
+	height: 40px;
+    line-height: 40px;
+    z-index: 10;
+}
+.noData,
+.sEDateDiv{
+	display:none;
+}
+.layui-table-page>div{
+	text-align:right;
+}
+.itemDiv{
+	margin-right:15px;
+}
+.feeNameSp{
+	color:#01AAED;
+}
+.feeSpan{
+	font-weight:600;
+	color:#FF5722;
+}
+.feeSpNoBold{
+	color:#FF5722;
+}
+.overdueSp{
+	color:#FF5722;
+}
+.blockSpan{
+	display:inline-block;
+	height:22px;
+	line-height:22px;
+	padding:0 5px;
+	background:#14c5b5;
+	color:#fff;
+	margin-right:5px;
+	font-size:12px;
+}
+.hasPadBot{
+	padding-bottom:15px;
+}
+#totalWrap{
+	width:98%;
+	height:40px;
+	line-height:40px;
+	border:1px solid #e6e6e6;
+	margin:-10px auto 0;
+	text-indent:15px;
+	display:none;
+}
+#totalWrap p span{
+	font-weight:600;
+	color:#F47837;
+}
