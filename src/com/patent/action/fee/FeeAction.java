@@ -222,6 +222,7 @@ public class FeeAction extends DispatchAction {
 						ZlajFeeInfoTb zlf = it.next();
 						Map<String,Object> map_d = new HashMap<String,Object>();
 						ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
+						map_d.put("feeId", zlf.getId());
 						map_d.put("zlNo", zl.getAjNoGf());
 						map_d.put("ajNo", zl.getAjNo());
 						map_d.put("zlName", zl.getAjTitle());
