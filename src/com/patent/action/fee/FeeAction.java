@@ -448,13 +448,13 @@ public class FeeAction extends DispatchAction {
 				String addDateS = CommonTools.getFinalStr("sDate", request);
 				String addDateE = CommonTools.getFinalStr("eDate", request);
 				Integer count = ferm.getCountByOpt(addDateS, addDateE, cpyId);
+				List<Object> list_d = new ArrayList<Object>();
 				if(count > 0){
 					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
 					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
 					List<FeeExportRecordInfo> ferList = ferm.listPageInfoByOpt(addDateS, addDateE, cpyId, pageNo, pageSize);
 					if(ferList.size() > 0){
 						msg = "success";
-						List<Object> list_d = new ArrayList<Object>();
 						for(Iterator<FeeExportRecordInfo> it = ferList.iterator() ; it.hasNext();){
 							FeeExportRecordInfo fer = it.next();
 							Map<String,Object> map_d = new HashMap<String,Object>();
@@ -465,16 +465,18 @@ public class FeeAction extends DispatchAction {
 							map_d.put("excelPath", fer.getExcelPath());
 							list_d.add(map_d);
 						}
-						map.put("ferList", list_d);
 					}else{
 						msg = "noInfo";
 					}
 				}
+				map.put("data", list_d);
+				map.put("count", count);
 			}else{
 				msg = "noAbility";
 			}
 		}
-		map.put("result", msg);
+		map.put("msg", msg);
+		map.put("code", 0);
 		this.getJsonPkg(map, response);
 		return null;
 	}
