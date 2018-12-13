@@ -35,7 +35,7 @@ public class FeeExportRecordInfoDaoImpl implements FeeExportRecordInfoDao{
 		// TODO Auto-generated method stub
 		String hql = " from FeeExportRecordInfo as fer where fer.cpyInfoTb.id = "+cpyId;
 		if(!addDateS.equals("") && !addDateE.equals("")){
-			hql += " and substring(fer.addTime,0,10) >= '"+addDateS+"' and substring(fer.addTime,0,10) <= '"+addDateE+"'";
+			hql += " and substring(fer.addTime,1,10) >= '"+addDateS+"' and substring(fer.addTime,1,10) <= '"+addDateE+"'";
 		}
 		hql += " order by fer.id desc";
 		int offset = (pageNo - 1) * pageSize;
@@ -50,7 +50,7 @@ public class FeeExportRecordInfoDaoImpl implements FeeExportRecordInfoDao{
 		// TODO Auto-generated method stub
 		String hql = "select count(fer.id) from FeeExportRecordInfo as fer where fer.cpyInfoTb.id = "+cpyId;
 		if(!addDateS.equals("") && !addDateE.equals("")){
-			hql += " and substring(fer.addTime,0,10) >= '"+addDateS+"' and substring(fer.addTime,0,10) <= '"+addDateE+"'";
+			hql += " and substring(fer.addTime,1,10) >= '"+addDateS+"' and substring(fer.addTime,1,10) <= '"+addDateE+"'";
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);

@@ -4807,7 +4807,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 下载文件
+	 * 下载文件(针对专利流程里面的文件使用)
 	 * @description
 	 * @author wm
 	 * @date 2018-9-3 上午10:05:26
@@ -4831,6 +4831,62 @@ public class ZlMainAction extends DispatchAction {
 		if(!fileUrl.equals("")){
 			fileName = fileUrl.substring(fileUrl.lastIndexOf("\\")+1,fileUrl.length());
 			absoFilePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" +fileUrl;
+			try  {  
+		        //第七步 下载文件到客户端
+		        
+		        fis = new FileInputStream(new File(absoFilePath));
+				bis = new BufferedInputStream(fis);
+				fos = response.getOutputStream();
+				bos = new BufferedOutputStream(fos);
+				fileName = URLEncoder.encode(fileName,"UTF-8");
+				//这个就就是弹出下载对话框的关键代码
+				response.setHeader("Pragma", "No-cache");
+				response.setHeader("Cache-Control", "No-cache");
+				response.setDateHeader("Expires", 0); 
+		        response.setHeader("Content-disposition","attachment;filename=" +fileName);
+		        response.setContentType("application/x-download");
+		        int bytesRead = 0;
+		        byte[] buffer = new byte[8192];
+		        while ((bytesRead = bis.read(buffer,0,8192)) != -1) {
+		        	fos.write(buffer, 0, bytesRead);
+		        } 
+		        fos.flush();
+		        fis.close();
+		        bis.close();
+		        fos.close();
+		        bos.close();
+		    } catch (IOException e){  
+		        e.printStackTrace();  
+		    }
+		}
+		return null;
+	}
+	
+	/**
+	 * 下载文件
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-13 下午04:30:50
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward downFile_1(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		String fileUrl = Transcode.unescape_new1("fileUrl", request);
+		String absoFilePath = "";//绝对地址
+		String fileName = "";
+		OutputStream fos = null;
+        BufferedOutputStream bos = null;
+        InputStream fis = null;
+        BufferedInputStream bis = null;
+		if(!fileUrl.equals("")){
+			fileName = fileUrl.substring(fileUrl.lastIndexOf("\\")+1,fileUrl.length());
+			absoFilePath = WebUrl.DATA_URL_PRO + "\\" +fileUrl;
 			try  {  
 		        //第七步 下载文件到客户端
 		        
