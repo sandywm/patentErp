@@ -34,6 +34,7 @@ import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -415,6 +416,90 @@ public class FeeAction extends DispatchAction {
 		}
 		return null;
 	}
+	
+	
+	public ActionForward exportFeeInfoToExcel_2(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
+		String roleName = this.getLoginRoleName(request);
+		Integer currUserId = this.getLoginUserId(request);
+		if(this.getLoginType(request).equals("cpyUser")){
+			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
+			boolean abilityFlag = false;
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{//只获取自己的任务流程
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listFee");//只有具有浏览权限的人员
+			}
+			if(abilityFlag){
+				String idStr = CommonTools.getFinalStr("idStr", request);//所有选择的专利编号的拼接
+				List<ZlajFeeInfoTb> zlfList = new ArrayList<ZlajFeeInfoTb>();
+				if(!idStr.equals("")){
+					zlfList = fm.listUnJfInfoByOpt(cpyId, idStr);
+				}
+				if(zlfList.size() > 0){
+					
+					String currTime = CurrentTime.getCurrentTime();
+		        	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
+//		        	String filePath_pre = "Module\\excelTemp\\"+cpyId+"\\fee\\";
+//		        	String folder = WebUrl.DATA_URL_PRO + filePath_pre;//通过代理机构把excel分开
+		        	String absoFilePath = "d:\\" +fileName;
+					FileInputStream fs=new FileInputStream(absoFilePath);  //获取d://test.xls  
+					POIFSFileSystem ps=new POIFSFileSystem(fs);  //使用POI提供的方法得到excel的信息  
+			        HSSFWorkbook wb=new HSSFWorkbook(ps);   
+			        HSSFSheet sheet=wb.getSheetAt(0);  //获取到工作表，因为一个excel可能有多个工作表  
+			        HSSFRow row=sheet.getRow(2);//获取第三行 
+			        
+			        FileOutputStream out=new FileOutputStream(absoFilePath);  //向d://test.xls中写数据  
+			        row=sheet.createRow((short)(sheet.getLastRowNum()+1)); //在现有行号后追加数据  
+			        row.createCell(0).setCellValue("leilei"); //设置第一个（从0开始）单元格的数据  
+			        row.createCell(1).setCellValue(24); //设置第二个（从0开始）单元格的数据  
+			 
+			         
+			        out.flush();  
+			        wb.write(out);    
+			        out.close();    
+			        
+			        
+					
+			        // 第四步，创建单元格，并设置值表头 设置表头居中  
+			        HSSFCellStyle style = wb.createCellStyle();  
+			        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+		            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+		            
+		            HSSFFont font_1 = wb.createFont();    
+		            font_1.setFontName("宋体");    
+		            font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
+		            font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
+		            
+		            
+		            HSSFFont font_2 = wb.createFont();    
+		            font_2.setFontName("宋体");    
+		            font_2.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
+		            
+		            style.setFont(font_1);
+		            
+		            FeeAction.addCellData(6, "序列号:申请号:缴费人姓名:费用名称:金额:备注", row, style);
+		            
+		            row = sheet.createRow(1);//创建行
+		        	// 第四步，创建单元格，并设置值  
+					Integer i = 2;
+					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
+						ZlajFeeInfoTb zlf = it.next();
+						row = sheet.createRow(i);//创建行
+						ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
+						String feeRemark = zlf.getFeeRemark().equals("") ? "noData" : zlf.getFeeRemark();
+						FeeAction.addCellData(6,""+i+":"+zl.getAjNoGf()+":"+zl.getAjSqrName()+":"+zlf.getFeeTypeInfoTb().getFeeName()+":"+Convert.convertInputNumber_3(zlf.getFeePrice())+":"+feeRemark+"", row, style);
+						i++;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	
 	/**
 	 * 分页获取未交费用清单列表(用户导出的未交费清单)
