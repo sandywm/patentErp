@@ -190,7 +190,7 @@
 						if($('.downLoadBtn').length > 0){
 							$('.downLoadBtn').on('click',function(){
 								var downFilePath = $(this).attr('downFilePath');
-								common.downFiles(downFilePath);
+								common.downFiles(downFilePath,0);
 							});
 						}
 						this.showHideFun();

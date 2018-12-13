@@ -811,7 +811,7 @@
 						if($('.downloadBtn').length > 0){
 							$('.downloadBtn').on('click',function(){
 								var downFilePath = $(this).attr('downFilePath');
-								common.downFiles(downFilePath);
+								common.downFiles(downFilePath,0);
 							});
 						}
 					}
@@ -1145,7 +1145,7 @@
 						});
 						$('.downLoadBtn').on('click',function(){
 							var downFilePath = $(this).attr('downFilePath');
-							common.downFiles(downFilePath);
+							common.downFiles(downFilePath,0);
 						});
 					}
 					this.addActScrollBar();
@@ -1182,7 +1182,7 @@
 					//下载
 					$('.downLoadBtn').on('click',function(){
 						var downFilePath = $(this).attr('downFilePath');
-						common.downFiles(downFilePath);
+						common.downFiles(downFilePath,0);
 					});
 				},
 				//获取附件详情
@@ -1207,7 +1207,7 @@
 					$('#fjCon li:odd').addClass('oddColor');
 					$('.downloadBtn').on('click',function(){
 						var downFilePath = $(this).attr('downFilePath');
-						common.downFiles(downFilePath);
+						common.downFiles(downFilePath,0);
 					});
 				},
 				//获取费用详情

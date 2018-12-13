@@ -381,7 +381,7 @@
 			table.on('tool(feeInfoListTable)',function(obj){
 				if(obj.event == 'downFileFun'){//下载
 					var downFilePath = $(this).attr('downFilePath');
-					common.downFiles(downFilePath);
+					common.downFiles(downFilePath,1);
 				}
 			});
 			$(function(){

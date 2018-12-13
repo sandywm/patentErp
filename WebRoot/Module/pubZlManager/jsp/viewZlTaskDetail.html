@@ -219,8 +219,7 @@
 					}
 					$('.downloadBtn').on('click',function(){
 						var downFilePath = $(this).attr('downFilePath');
-						alert(downFilePath)
-						common.downFiles(downFilePath);
+						common.downFiles(downFilePath,0);
 					});
 				}
 			};

@@ -743,7 +743,7 @@
 			  		}
 					$('.downloadBtn').on('click',function(){
 						var downFilePath = $(this).attr('downFilePath');
-						common.downFiles(downFilePath);
+						common.downFiles(downFilePath,0);
 					});
 					common.rateFunReadOnly('diffLevelOne',json.zlLevel);
 					zlInfoMethod.agentDlFee_usual();

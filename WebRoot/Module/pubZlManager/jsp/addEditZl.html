@@ -306,7 +306,7 @@
 					selectFileUpload();//编辑时渲染结构完成调用上传方法
 					$('.downloadBtn').on('click',function(){
 						var downFilePath = $(this).attr('downFilePath');
-						common.downFiles(downFilePath);
+						common.downFiles(downFilePath,0);
 					});
 				}
 			};
