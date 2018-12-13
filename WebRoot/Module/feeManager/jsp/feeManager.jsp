@@ -18,24 +18,25 @@
   			<div class="layui-col-md12 layui-col-lg12">
   				<div class="layui-card hasPadBot">
   					<div class="layui-tab layui-tab-brief" lay-filter="feeTabFilter">
-  						<a id="exportFeeBtn" class="posAbs newAddBtn" href="javascript:void(0)"><i class="iconfont layui-extend-daochuexcel"></i>导出费用账单</a>
+  						<a id="exportFeeBtn" class="posAbs newAddBtn" data-type="getCheckData" href="javascript:void(0)"><i class="iconfont layui-extend-daochuexcel"></i>导出费用账单</a>
   						<ul class="layui-tab-title">
   							<li class="layui-this" feeStatus="0">未缴费</li>
   							<li feeStatus="1">已缴费</li>
+  							<li feeStatus="2">费用导出记录</li>
   						</ul>
   						<div class="layui-tab-content">
   							<div class="searchPart layui-form">
-  								<div class="itemDiv fl">
+  								<div class="itemDiv zlNoDiv fl">
 		  							<div class="layui-input-inline">
 		  								<input type="text" id="zlNoInp" placeholder="请输入专利申请/专利号" autocomplete="off" class="layui-input">
 		  							</div>
 		  						</div>
-		  						<div class="itemDiv fl">
+		  						<div class="itemDiv ajNoDiv fl">
 		  							<div class="layui-input-inline">
 		  								<input type="text" id="ajNoInp" placeholder="请输入案件编号" autocomplete="off" class="layui-input">
 		  							</div>
 		  						</div>
-		  						<div class="itemDiv fl">
+		  						<div class="itemDiv cusIdDiv fl">
 		  							<div class="layui-input-inline">
 		  								<input type="text" id="cusIdInp" placeholder="客户/申请人编号" autocomplete="off" class="layui-input">
 		  							</div>
@@ -77,10 +78,14 @@
   							<div class="layui-tab-item">
   								<div id="noData_1" class="noData"></div>
   								<table id="feeListTab_1" class="layui-table" lay-filter="feeInfoListTable"></table>
+  								<div id="totalWrap"></div> 
+  							</div>
+  							<div class="layui-tab-item">
+  								<div id="noData_2" class="noData"></div>
+  								<table id="feeListTab_2" class="layui-table" lay-filter="feeInfoListTable"></table>
   							</div>
   						</div> 
   					</div>
-  					<div id="totalWrap"></div> 
   				</div>
   			</div>
   		</div>
@@ -107,15 +112,14 @@
   				page.data.globalFeeStatus = feeStatus;//切换缴费状态
   				if(feeStatus == '0'){//未缴费 不分页
   					page.data.isHasPageFun = false;
-  					$('#totalWrap').hide();
-  					$('.diffDaysDiv').show();
-  					$('.sEDateDiv').hide();
-  					$('.sEDateDiv').find('input').val('');
+  					page.clickShow('showPart');
   				}else if(feeStatus == '1'){//已缴费 开启分页
   					page.data.isHasPageFun = true;
-  					$('#totalWrap').show();
   					$('.diffDaysDiv').hide();
   					$('.sEDateDiv').show();
+  					$('#exportFeeBtn').hide();
+  				}else if(feeStatus == '2'){
+  					page.clickShow('hidePart');
   				}
   				loadFeeInfoList('initLoad');
  			});
@@ -124,68 +128,111 @@
 				value == '' ? $('#diffDaysSelInp').val(15) : $('#diffDaysSelInp').val(value);
 				loadFeeInfoList('queryLoad');
   			});
+  			//获取导出未缴费记录
+			var active = {
+			    getCheckData: function(){
+			      	var checkStatus = table.checkStatus('feeListTab_0'),data = checkStatus.data;
+			      	page.data.exportFlag = false;
+			      	page.data.globalFeeId.length = 0;
+			    	if(data.length > 0){
+				    	for(var i=0;i<data.length;i++){
+				    		page.data.globalFeeId.push(data[i].feeId);
+				    	}
+				    	page.data.exportFlag = true;
+			    	}else{
+			    		layer.msg('请选择您要导出的费用记录', {icon:5,anim:6,time:1000});
+						return;
+			    	}
+			    	
+			    }
+			};
 			var page = {
 				data : {
 					isHasPageFun : false,//用于检测是否需要分页
 					globalFeeStatus : 0, //缴费状态
-					addFeeFlag : false
+					addFeeFlag : false,
+					globalFeeId : [],
+					exportFlag : false
 				},
 				init : function(){
 					//获取权限
 					this.data.addFeeFlag = common.getPermission('addFee','',0);
+					$('#exportFeeBtn').show();
 					loadFeeInfoList('initLoad');
 					this.bindEvent();
+					$.ajax({
+	   					type:'post',
+	   			        async:false,
+	   			        dataType:'json',
+	   			        data:{sDate:'',eDate:''},
+	   			        url:'/fee.do?action=getPageFER',
+	   			        success:function (json){
+	   			        	layer.closeAll('loading');
+	   			        	console.log(json)
+	   			        }
+					});
+				},
+				//点击不同的标签显示不同的查询条件
+				clickShow : function(opts){
+					if(opts == 'hidePart'){
+						$('.sEDateDiv').show();
+	  					$('#exportFeeBtn').hide();
+	  					$('.zlNoDiv').hide();
+	  					$('.ajNoDiv').hide();
+	  					$('.diffDaysDiv').hide();
+	  					$('.cusIdDiv').hide();
+	  					$('.sEDateDiv').find('input').val('');
+					}else if(opts == 'showPart'){
+						$('.zlNoDiv').show();
+	  					$('.ajNoDiv').show();
+	  					$('.diffDaysDiv').show();
+	  					$('.sEDateDiv').hide();
+	  					$('.sEDateDiv').find('input').val('');
+	  					$('#exportFeeBtn').show();
+	  					$('.cusIdDiv').show();
+					}
 				},
 				bindEvent : function(){
+					var _this = this;
 					//查询
 					$('#queryBtn').on('click',function(){
 						loadFeeInfoList('queryLoad');
 					});
 					//导出费用账单
 					$('#exportFeeBtn').on('click',function(){
-						layer.confirm('确定要导出当前未缴费用账单？',{
-							title:'导出未缴费用账单',
-						  	skin: 'layui-layer-molv',
-						  	btn: ['确定','取消'] //按钮
-						},function(index){
-							layer.load('1');
-							var zlNoInpVal = $.trim($('#zlNoInp').val()),
-								ajNoInpVal = $.trim($('#ajNoInp').val()),
-								cusIdInpVal = $.trim($('#cusIdInp').val()),
-								diffDaysSelInpVal = $('#diffDaysSelInp').val();
-							//console.log(zlNoInpVal + "--" + ajNoInpVal + "-" + cusIdInpVal + "-" + diffDaysSelInpVal);
-							var form = $("<form>");   //定义一个form表单
-							var param = 
-							form.attr('style', 'display:block'); //在form表单中添加查询参数
+						var type = $(this).data('type');
+					    active[type] ? active[type].call(this) : '';
+					    if(_this.data.exportFlag){
+						    var idStr = '';
+						    idStr = page.data.globalFeeId.join(',');
+						    layer.load('1');
+						    var form = $("<form>");   //定义一个form表单
+							form.attr('style', 'display:none;'); //在form表单中添加查询参数
 							form.attr('target', '');
 							form.attr('method', 'post');
 							form.attr('action', "/fee.do?action=exportFeeInfoToExcel_1");
 							var input1 = $('<input>');
-							input1.attr('type', 'text');
-							input1.attr('name', 'fileUrl');
-							input1.attr('value', diffDaysSelInpVal);
-							input1.attr('zlNo', zlNoInpVal);
-							input1.attr('ajNo',ajNoInpVal);
-							input1.attr('cusId',cusIdInpVal);
+							input1.attr('type', 'hidden');
+							input1.attr('name', 'idStr');
+							input1.attr('value', idStr);
 							$('body').append(form);  //将表单放置在web中 
 							form.append(input1);   //将查询参数控件提交到表单上
 						  	form.submit();
-						  	layer.closeAll('loading');
-						  	layer.close(index);
-						});	
+							layer.closeAll('loading');
+					    }
 					});
 				}
 			};
+					  
 			//加载费用列表
 			function loadFeeInfoList(opts){
-				var actHei = '';
 				if(opts == 'initLoad'){
-					if(page.data.globalFeeStatus == '0'){//未缴费
-						actHei = 'full-180';
+					if(page.data.globalFeeStatus == 0){//未缴费
 						var field = {feeStatus:0,diffDays:15,zlNo:'',ajNo:'',cusId:0};	
-					}else if(page.data.globalFeeStatus == '1'){//已缴费
-						actHei = 'full-200';
+					}else if(page.data.globalFeeStatus == 1){//已缴费
 						var field = {feeStatus:1,zlNo:'',ajNo:'',cusId:0,sDate:'',eDate:''};
+					}else if(page.data.globalFeeStatus == 2){//费用导出记录
+						var field = {sDate:'',eDate:''};
 					}
 				}else{//查询
 					var zlNoInpVal = $.trim($('#zlNoInp').val()),
@@ -194,10 +241,12 @@
 						diffDaysSelInpVal = $('#diffDaysSelInp').val(),
 						sDateInpVal = $('#sDateInp').val(),
 						eDateInpVal = $('#eDateInp').val();
-					if(page.data.globalFeeStatus == '0'){//未缴费
+					if(page.data.globalFeeStatus == 0){//未缴费
 						var field = {feeStatus:0,diffDays:diffDaysSelInpVal,zlNo:zlNoInpVal,ajNo:ajNoInpVal,cusId:cusIdInpVal};
-					}else{
+					}else if(page.data.globalFeeStatus == 1){
 						var field = {feeStatus:1,zlNo:zlNoInpVal,ajNo:ajNoInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal};
+					}else if(page.data.globalFeeStatus == 2){//费用导出记录
+						var field = {sDate:sDateInpVal,eDate:eDateInpVal};
 					}
 					if(sDateInpVal != '' && eDateInpVal == ''){
 						layer.msg('请选择缴费结束时间段', {icon:5,anim:6,time:1000});
@@ -211,71 +260,104 @@
 					}
 				}
 				layer.load('1');
-				table.render({
-					elem: '#feeListTab_'+page.data.globalFeeStatus,
-					height: actHei,
-					url : '/fee.do?action=getAllFeeInfo',
-					method : 'post',
-					where:field,
-					page : page.data.isHasPageFun,
-					even : true,
-					limit : 10,
-					limits:[10,20,30,40],
-					cols : [[
-						{type: 'numbers', title: '序号', fixed:'left'},
-						{field : 'zlName', title: '专利名称', width:200,fixed:'left', align:'center'},
-						{field : 'zlNo', title: '专利申请/专利号', width:180, align:'center'},
-						{field : 'ajNo', title: '案件编号', width:170, align:'center'},
-						{field : 'feeName', title: '费用名称', width:160, align:'center',templet : function(d){
-							return '<span class="feeNameSp">'+ d.feeName +'</span>';
-						}},
-						{field : 'feePrice', title: '专利费用', width:150, align:'center',templet : function(d){
-							return '<span class="feeSpan">'+ d.feePrice +'元</span>';
-						}},
-						{field : page.data.globalFeeStatus == 0 ? 'noneSets' : 'backFee', title: '实收费用', width:160, align:'center',templet : function(d){
-							return '<span class="feeSpan">'+ d.backFee +'元</span>';
-						}},
-						{field : 'sqrName', title: '申请人', width:220, align:'center',templet : function(d){
-							if(d.sqrName != ''){
-								return common.switchToArray(d.sqrName.split(','));
-							}else{
-								return '';
+				if(page.data.globalFeeStatus == 0 || page.data.globalFeeStatus == 1){
+					table.render({
+						elem: '#feeListTab_'+page.data.globalFeeStatus,
+						height: 'full-200',
+						url : '/fee.do?action=getAllFeeInfo',
+						method : 'post',
+						where:field,
+						page : page.data.isHasPageFun,
+						even : true,
+						limit : 10,
+						limits:[10,20,30,40],
+						cols : [[
+							{type : page.data.globalFeeStatus == 0 ? 'checkbox' : 'numbers', title: '序号', fixed:'left'},
+							{field : 'zlName', title: '专利名称', width:200,fixed:'left', align:'center'},
+							{field : 'zlNo', title: '专利申请/专利号', width:180, align:'center'},
+							{field : 'ajNo', title: '案件编号', width:170, align:'center'},
+							{field : 'feeName', title: '费用名称', width:160, align:'center',templet : function(d){
+								return '<span class="feeNameSp">'+ d.feeName +'</span>';
+							}},
+							{field : 'feePrice', title: '专利费用', width:150, align:'center',templet : function(d){
+								return '<span class="feeSpan">'+ d.feePrice +'元</span>';
+							}},
+							{field : page.data.globalFeeStatus == 0 ? 'noneSets' : 'backFee', title: '实收费用', width:160, align:'center',templet : function(d){
+								return '<span class="feeSpan">'+ d.backFee +'元</span>';
+							}},
+							{field : 'sqrName', title: '申请人', width:220, align:'center',templet : function(d){
+								if(d.sqrName != ''){
+									return common.switchToArray(d.sqrName.split(','));
+								}else{
+									return '';
+								}
+							}},
+							{field : 'cusId', title: '客户/申请人编号', width:160, align:'center'},
+							{field : page.data.globalFeeStatus == 0 ? 'noneSets' : 'jfDate', title: '缴费日期（代理机构缴费日期）', width:230, align:'center'},
+							{field : page.data.globalFeeStatus == 0 ? 'noneSets' : 'backDate', title: '收款日期', width:160, align:'center'},
+							{field : 'feeEndDateJj', title: '费用截止日期(机构)', width:160, align:'center'},
+							{field : 'feeEndDateGf', title: '费用截止日期(官方)', width:160, align:'center'},
+							{field : 'feeBatchNo', title: '交费单号', width:150, align:'center'},
+							{field : 'bankSerialNo', title: '银行流水号', width:150, align:'center'},
+							{field : 'fpDate', title: '开票日期', width:140, align:'center'},
+							{field : 'fpNo', title: '票号', width:140, align:'center'},
+							{field : page.data.globalFeeStatus == 0 ? 'diffDays_jj' : 'noneSets', title: '机构绝限(天)', width:140, align:'center',templet : function(d){
+								if(d.diffDays_jj != undefined){
+									var strDiffDays_jj = d.diffDays_jj.toString();
+									var newDiffDays_jj = strDiffDays_jj.substring(1,strDiffDays_jj.length);
+									return '<span class="overdueSp">已过期'+ newDiffDays_jj +'天</span>';	
+								}
+							}},
+							{field : page.data.globalFeeStatus == 0 ? 'diffDays_Gf' : 'noneSets', title: '官方绝限(天)', width:140, align:'center',templet : function(d){
+								if(d.diffDays_Gf != undefined){
+									var strDiffDays_Gf = d.diffDays_Gf.toString();
+									var newDiffDays_gf = strDiffDays_Gf.substring(1,strDiffDays_Gf.length);
+									return '<span class="overdueSp">已过期'+ newDiffDays_gf +'天</span>';
+								}
+							}}
+						]],
+						done : function(res, curr, count){
+							layer.closeAll('loading');
+							if(page.data.globalFeeStatus == 0 || page.data.globalFeeStatus == 1){
+								$('.layui-table-box').find('[data-field="noneSets"]').css('display','none');
 							}
-						}},
-						{field : 'cusId', title: '客户/申请人编号', width:160, align:'center'},
-						{field : page.data.globalFeeStatus == 0 ? 'noneSets' : 'jfDate', title: '缴费日期（代理机构缴费日期）', width:230, align:'center'},
-						{field : page.data.globalFeeStatus == 0 ? 'noneSets' : 'backDate', title: '收款日期', width:160, align:'center'},
-						{field : 'feeEndDateJj', title: '费用截止日期(机构)', width:160, align:'center'},
-						{field : 'feeEndDateGf', title: '费用截止日期(官方)', width:160, align:'center'},
-						{field : 'feeBatchNo', title: '交费单号', width:150, align:'center'},
-						{field : 'bankSerialNo', title: '银行流水号', width:150, align:'center'},
-						{field : 'fpDate', title: '开票日期', width:140, align:'center'},
-						{field : 'fpNo', title: '票号', width:140, align:'center'},
-						{field : page.data.globalFeeStatus == 0 ? 'diffDays_jj' : 'noneSets', title: '机构绝限(天)', width:140, align:'center',templet : function(d){
-							if(d.diffDays_jj != undefined){
-								var strDiffDays_jj = d.diffDays_jj.toString();
-								var newDiffDays_jj = strDiffDays_jj.substring(1,strDiffDays_jj.length);
-								return '<span class="overdueSp">已过期'+ newDiffDays_jj +'天</span>';	
-							}
-						}},
-						{field : page.data.globalFeeStatus == 0 ? 'diffDays_Gf' : 'noneSets', title: '官方绝限(天)', width:140, align:'center',templet : function(d){
-							if(d.diffDays_Gf != undefined){
-								var strDiffDays_Gf = d.diffDays_Gf.toString();
-								var newDiffDays_gf = strDiffDays_Gf.substring(1,strDiffDays_Gf.length);
-								return '<span class="overdueSp">已过期'+ newDiffDays_gf +'天</span>';
-							}
-						}}
-					]],
-					done : function(res, curr, count){
-						layer.closeAll('loading');
-						if(page.data.globalFeeStatus == 0 || page.data.globalFeeStatus == 1){
-							$('.layui-table-box').find('[data-field="noneSets"]').css('display','none');
+							callBackDone(res);
 						}
-						callBackDone(res);
-					}
-				});
+					});
+				}else if(page.data.globalFeeStatus == 2){//费用导出记录
+					table.render({
+						elem: '#feeListTab_'+page.data.globalFeeStatus,
+						height: 'full-200',
+						url : '/fee.do?action=getPageFER',
+						method : 'post',
+						where:field,
+						page : true,
+						even : true,
+						limit : 10,
+						limits:[10,20,30,40],
+						cellMinWidth : 120,
+						cols : [[
+							{type : 'numbers', title: '序号'},
+							{field : 'ferName', title: '文件名', align:'center'},
+							{field : 'addTime', title: '导出时间',  align:'center'},
+							{field : 'userName', title: '导出人',align:'center'},
+							{field : '', title: '下载',width:100, align:'center',templet : function(d){
+								return '<a lay-event="downFileFun" downFilePath="'+ d.excelPath +'" class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
+							}},
+						]],
+						done : function(res, curr, count){
+							layer.closeAll('loading');
+							if(page.data.globalFeeStatus == 0 || page.data.globalFeeStatus == 1){
+								$('.layui-table-box').find('[data-field="noneSets"]').css('display','none');
+							}
+							callBackDone(res);
+						}
+					});
+				}
+				
 				function callBackDone(res){
 					layer.closeAll('loading');
+					console.log(res)
 					if(res.msg == 'success'){
 						$('#feeListTab_'+page.data.globalFeeStatus).siblings('.layui-table-view').show();
 						$('#noData_'+page.data.globalFeeStatus).hide().html('');
@@ -296,6 +378,12 @@
 					}
 				}
 			}
+			table.on('tool(feeInfoListTable)',function(obj){
+				if(obj.event == 'downFileFun'){//下载
+					var downFilePath = $(this).attr('downFilePath');
+					common.downFiles(downFilePath);
+				}
+			});
 			$(function(){
 				page.init();
 			});

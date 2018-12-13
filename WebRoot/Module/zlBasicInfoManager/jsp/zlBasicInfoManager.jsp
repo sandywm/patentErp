@@ -55,7 +55,7 @@
   				if(/*globalLqStatus == 0 ||*/ globalLqStatus == 1 || globalLqStatus == 2){
   					globalWid=170;
   				}else if(globalLqStatus == 4){
-  					globalWid=200;
+  					globalWid=60;
   				}else{
   					globalWid = 110;
   				}
