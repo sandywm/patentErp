@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,14 +19,19 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Row;
 
 import com.alibaba.fastjson.JSON;
 import com.patent.tools.CurrentTime;
 import com.patent.tools.FileOpration;
 import com.patent.util.WebUrl;
+import com.sun.xml.internal.ws.org.objectweb.asm.Label;
 
 import jxl.*;
 import jxl.read.biff.BiffException;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 public class ReadExcelFile {
 	
 	public static void readExcel(){
@@ -60,7 +66,7 @@ public class ReadExcelFile {
         
 	}
 	
-	public static void main(String[] args) throws FileNotFoundException{
+	public static void main(String[] args) throws IOException{
 		//ReadExcelFile.readExcel();
 //		String aa = "2017-04-01 00:00:01";
 //		System.out.print(CurrentTime.stringConvertToTimestamp(aa));
@@ -192,10 +198,68 @@ public class ReadExcelFile {
 //				e.printStackTrace();
 //			}  
            
-		String filePath = "D:\\Program Files\\Apache Software Foundation\\Tomcat 7.0\\webapps\\patentErp\\Module\\uploadFile\\cpyUser\\u_1\\实用新型-受理+费用减缓通知书_503313511.zip";
-		String filePath1 = "D:\\Program Files\\Apache Software Foundation\\Tomcat 7.0\\webapps\\patentErp\\Module\\uploadFile\\cpyUser\\u_1\\外观设计-办理登记手续通知书_3926524881.zip";
-//		System.out.println("复制文件："+FileOpration.copyFile(filePath, filePath1));
-		System.out.println("删除文件："+FileOpration.deleteFile(filePath));
+//		String filePath = "D:\\Program Files\\Apache Software Foundation\\Tomcat 7.0\\webapps\\patentErp\\Module\\uploadFile\\cpyUser\\u_1\\实用新型-受理+费用减缓通知书_503313511.zip";
+//		String filePath1 = "D:\\Program Files\\Apache Software Foundation\\Tomcat 7.0\\webapps\\patentErp\\Module\\uploadFile\\cpyUser\\u_1\\外观设计-办理登记手续通知书_3926524881.zip";
+////		System.out.println("复制文件："+FileOpration.copyFile(filePath, filePath1));
+//		System.out.println("删除文件："+FileOpration.deleteFile(filePath));
+		
+		
+		String oldExcel = "d:\\feeInfo.xls";
+    	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
+    	String absoFilePath = "d:\\" +fileName;
+    	FileOpration.copyFile(oldExcel, absoFilePath);
+    	
+    	File f = new File(oldExcel);
+    	InputStream inputStream = new FileInputStream(f);
+    	HSSFWorkbook xssfWorkbook = new HSSFWorkbook(inputStream);
+    	HSSFSheet sheet = xssfWorkbook.getSheetAt(6);
+    	System.out.println(sheet.getLastRowNum());
+    	for (int i = 2; i < 3; i++) {
+    		HSSFRow row = sheet.getRow((short) i);
+    		if (null == row) {
+    			continue;
+			}else{
+				HSSFCell cell = row.getCell(1);//读取第几列
+				if(cell == null){
+					continue;
+				}else{
+					cell.setCellValue("2017301654572");//
+				}
+				
+//				HSSFCell cell3 = row.getCell(3);//读取第几列
+//				if(cell3 == null){
+//					continue;
+//				}else{
+//					cell3.setCellValue("外观设计专利申请费");//
+//				}
+			}
+    	}
+    	FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器
+    	xssfWorkbook.write(fout);  
+        fout.close();  
+    	
+		
+//		String currTime = CurrentTime.getCurrentTime();
+//		String oldExcel = "d:\\feeInfo.xls";
+//    	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
+////    	String filePath_pre = "Module\\excelTemp\\"+cpyId+"\\fee\\";
+////    	String folder = WebUrl.DATA_URL_PRO + filePath_pre;//通过代理机构把excel分开
+//    	String absoFilePath = "d:\\" +fileName;
+//    	FileOpration.copyFile(oldExcel, absoFilePath);
+//		FileInputStream fs=new FileInputStream(absoFilePath);  //获取d://test.xls  
+////		POIFSFileSystem ps=new POIFSFileSystem(fs);  //使用POI提供的方法得到excel的信息  
+//        HSSFWorkbook wb=new HSSFWorkbook(fs);   
+//        HSSFSheet sheet=wb.getSheetAt(0);  //获取到工作表，因为一个excel可能有多个工作表  
+//        HSSFRow row = sheet.getRow(2);//创建行行 
+//        
+//        FileOutputStream out=new FileOutputStream(absoFilePath);  //向d://test.xls中写数据  
+//        row.createCell(0).setCellValue("1"); //设置第一个（从0开始）单元格的数据  
+//        row.createCell(1).setCellValue("2017301654572"); //设置第二个（从0开始）单元格的数据  
+//        row.createCell(3).setCellValue("外观设计专利申请费"); //设置第二个（从0开始）单元格的数据  
+         
+//        out.flush();  
+//        wb.write(out);    
+//        out.close();    
 		
 		 
 	}

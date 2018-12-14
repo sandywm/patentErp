@@ -54,6 +54,7 @@ import com.patent.service.ZlajMainInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.Convert;
 import com.patent.tools.CurrentTime;
+import com.patent.tools.FileOpration;
 import com.patent.util.Constants;
 import com.patent.util.WebUrl;
 import com.patent.web.Ability;
@@ -442,10 +443,12 @@ public class FeeAction extends DispatchAction {
 				if(zlfList.size() > 0){
 					
 					String currTime = CurrentTime.getCurrentTime();
+					String oldExcel = "d:\\feeInfo.xls";
 		        	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
 //		        	String filePath_pre = "Module\\excelTemp\\"+cpyId+"\\fee\\";
 //		        	String folder = WebUrl.DATA_URL_PRO + filePath_pre;//通过代理机构把excel分开
 		        	String absoFilePath = "d:\\" +fileName;
+		        	FileOpration.copyFile(oldExcel, absoFilePath);
 					FileInputStream fs=new FileInputStream(absoFilePath);  //获取d://test.xls  
 					POIFSFileSystem ps=new POIFSFileSystem(fs);  //使用POI提供的方法得到excel的信息  
 			        HSSFWorkbook wb=new HSSFWorkbook(ps);   
@@ -465,35 +468,35 @@ public class FeeAction extends DispatchAction {
 			        
 					
 			        // 第四步，创建单元格，并设置值表头 设置表头居中  
-			        HSSFCellStyle style = wb.createCellStyle();  
-			        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
-		            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-		            
-		            HSSFFont font_1 = wb.createFont();    
-		            font_1.setFontName("宋体");    
-		            font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
-		            font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
-		            
-		            
-		            HSSFFont font_2 = wb.createFont();    
-		            font_2.setFontName("宋体");    
-		            font_2.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
-		            
-		            style.setFont(font_1);
-		            
-		            FeeAction.addCellData(6, "序列号:申请号:缴费人姓名:费用名称:金额:备注", row, style);
-		            
-		            row = sheet.createRow(1);//创建行
-		        	// 第四步，创建单元格，并设置值  
-					Integer i = 2;
-					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
-						ZlajFeeInfoTb zlf = it.next();
-						row = sheet.createRow(i);//创建行
-						ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
-						String feeRemark = zlf.getFeeRemark().equals("") ? "noData" : zlf.getFeeRemark();
-						FeeAction.addCellData(6,""+i+":"+zl.getAjNoGf()+":"+zl.getAjSqrName()+":"+zlf.getFeeTypeInfoTb().getFeeName()+":"+Convert.convertInputNumber_3(zlf.getFeePrice())+":"+feeRemark+"", row, style);
-						i++;
-					}
+//			        HSSFCellStyle style = wb.createCellStyle();  
+//			        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+//		            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+//		            
+//		            HSSFFont font_1 = wb.createFont();    
+//		            font_1.setFontName("宋体");    
+//		            font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
+//		            font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
+//		            
+//		            
+//		            HSSFFont font_2 = wb.createFont();    
+//		            font_2.setFontName("宋体");    
+//		            font_2.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
+//		            
+//		            style.setFont(font_1);
+//		            
+//		            FeeAction.addCellData(6, "序列号:申请号:缴费人姓名:费用名称:金额:备注", row, style);
+//		            
+//		            row = sheet.createRow(1);//创建行
+//		        	// 第四步，创建单元格，并设置值  
+//					Integer i = 2;
+//					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
+//						ZlajFeeInfoTb zlf = it.next();
+//						row = sheet.createRow(i);//创建行
+//						ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
+//						String feeRemark = zlf.getFeeRemark().equals("") ? "noData" : zlf.getFeeRemark();
+//						FeeAction.addCellData(6,""+i+":"+zl.getAjNoGf()+":"+zl.getAjSqrName()+":"+zlf.getFeeTypeInfoTb().getFeeName()+":"+Convert.convertInputNumber_3(zlf.getFeePrice())+":"+feeRemark+"", row, style);
+//						i++;
+//					}
 				}
 			}
 		}

@@ -46,7 +46,7 @@ public class CustomerInfoDaoImpl implements CustomerInfoDao{
 		// TODO Auto-generated method stub
 		String hql = " from CustomerInfoTb as ci where ci.cpyInfoTb.id = "+cpyId;
 		if(!cusName.equals("")){
-			hql += " and ci.cusName like '"+cusName+"'";
+			hql += " and ci.cusName like '%"+cusName+"%'";
 		}
 		int offset = (pageNo - 1) * pageSize;
 		if (offset < 0) {
