@@ -124,12 +124,13 @@
 							addEditZlOpts = addZlOpts;
 							addZlFlag = false;
 							var fullScreenIndex = layer.open({
-								title:'增加新专利',
+								title:'',//增加新专利
 								type: 2,
 							  	area: ['700px', '500px'],
 							  	fixed: true, //不固定
 							  	maxmin: false,
 							  	shadeClose :false,
+							  	closeBtn : 0,
 							  	content: '/Module/zlBasicInfoManager/jsp/addEditZl.html',
 							  	end:function(){
 							  		if(addZlFlag){
@@ -478,12 +479,13 @@
 						globalZlId = $(this).attr('zlId');
 						addZlFlag = false;
 						var fullScreenIndex = layer.open({
-							title:'编辑专利',
+							title:'',//
 							type: 2,
 						  	area: ['700px', '500px'],
 						  	fixed: true, //不固定
 						  	maxmin: false,
 						  	shadeClose :false,
+						  	closeBtn : 0,
 						  	content: '/Module/zlBasicInfoManager/jsp/addEditZl.html',
 						  	end:function(){
 						  		if(addZlFlag){

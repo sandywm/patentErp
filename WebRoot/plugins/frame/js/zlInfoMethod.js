@@ -72,7 +72,7 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 			});
 			//添加申请人
 			$('#addSqrBtn').on('click',function(){
-				layer.open({
+				var fullScreenIndex = layer.open({
 					title:'添加申请人',
 					type: 2,
 				  	area: ['720px', '350px'],
@@ -81,6 +81,7 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 				  	shadeClose :false,
 				  	content: '/Module/zlBasicInfoManager/jsp/addSqr.html'
 				});	
+				layer.full(fullScreenIndex);
 			});
 			//添加联系人
 			$('#addlxrBtn').on('click',function(){

@@ -9,43 +9,66 @@
   	<title>添加申请人</title>
 </head>
 <body style="background:#fff;">
-	<div>
+	<div class="addSqrWrap">
 		<div class="commonListBox clearfix">
-			<div class="sqrListBox fl"></div>
-			<div class="hasSelSqrList fr">
-				<div class="tipInfo">
-					<i class="layui-icon layui-icon-list"></i>
-					<p class="tipInfoSpan">请点击左侧选择申请人(客户)</p>
+			<div class="sqrListBox fl">
+				<div class="fl" style="margin-top:10px;">
+					<button type="button" class="layui-btn layui-btn-normal addCusBtn">增加新申请人/客户</button>
 				</div>
+				<div class="searchSqr fr">
+					<div class="fl">
+						<div class="layui-input-inline" style="width:210px;margin-right:10px;">
+							<input type="text" id="custNameInp" placeholder="请输入客户名称" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="fl">
+  						<div class="layui-input-inline">
+  							<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search
+"></i></button>
+  						</div>
+  					</div>
+				</div>
+				<div class='noData'></div>
+				<table id="sqrListTable" class="layui-table" lay-filter="sqrListTable"></table>
 			</div>
-		</div>
-		<div class="botSaveBox">
-			<button type="button" id="saveZlBtn" class="layui-btn">保存</button>
-			<button type="button" class="layui-btn layui-btn-normal addCusBtn">增加新申请人</button>
+			<div class="hasSelSqrList fr">
+				<div class="tipInfo sqrTipInfo">
+					<i class="layui-icon layui-icon-list"></i>
+					<p class="tipInfoSpan">请点击左侧选择申请人/客户(最多添加5个)</p>
+				</div>
+				<button type="button" id="saveZlBtn" class="layui-btn">保存</button>
+			</div>
 		</div>
 	</div>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		var noDataFlag = false,tmpSqrId=[],tmpSqrTxt=[],addCustFlag=false;
-		layui.use(['layer','form','jquery'],function(){
+		layui.use(['layer','form','table','jquery'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
-				form = layui.form;
+				form = layui.form,
+				table = layui.table;
 			var page = {
 				data : {
 					cancelSelSqrId : [],
-					isClickInpFlag : false //用来检测进来时是否点击了增加申请人然后用来匹配当点击inp但未保存input选中的匹配
+					isClickInpFlag : false, //用来检测进来时是否点击了增加申请人然后用来匹配当点击inp但未保存input选中的匹配
+					isHasAddCurrSqrFlag : false,
+					onceFlag : true
 				},
 				init : function(){
 					this.onLoad();
 					this.bindEvent();
 				},
 				onLoad : function(){
-					this.loadSqrList();
+					this.loadSqrList('initLoad');
+					$('.addSqrWrap').height($(window).height());
+					this.getSqrList();
 				},
 				bindEvent : function(){
 					var _this = this;
-					this.inpChecked();
+					$('#queryBtn').on('click',function(){
+						_this.loadSqrList('queryLoad');
+					});
 					$('.addCusBtn').on('click',function(){
 						parent.addCustFlag = false;
 						parent.layer.open({
@@ -59,22 +82,21 @@
 						  	end:function(){
 						  		if(parent.addCustFlag){
 						  			_this.data.isClickInpFlag = true;
-						  			_this.loadSqrList();
-						  			_this.inpChecked();
+						  			_this.loadSqrList('initLoad');
 						  		}
 						  	}
 						});	
 					});
 					//保存已添加到的新的申请人
 					$('#saveZlBtn').on('click',function(){
-						var hasCheckedLen = $('input[name=sqrInp]:checked').length;
+						var hasSelLen = $('.listP').length;
 						if(noDataFlag){
 							layer.msg('请先添加申请人(客户)', {icon:5,anim:6,time:1000});
 							return;
 						}
-						if(hasCheckedLen == 0){
+						if(hasSelLen == 0){
 							layer.msg('请选择您要添加的申请人(客户)', {icon:5,anim:6,time:2000});
-						}else if(hasCheckedLen > 5){
+						}else if(hasSelLen > 5){
 							layer.msg('抱歉，申请人(客户)最多可以选择5个', {icon:5,anim:6,time:2000});
 						}else{
 							var index= parent.layer.getFrameIndex(window.name);
@@ -107,43 +129,6 @@
 						}
 					});
 				},
-				//input的选中动作
-				inpChecked : function(){
-					var _this = this,tmpSqrIdStr = '';
-					if(noDataFlag == false){//表示存在数据
-						$('input[name=sqrInp]').on('click',function(){
-							var strHtml = '';
-							var checkStatus = this.checked;
-							var hasCheckId = $(this).val(),sqrNames = $(this).attr('sqrNames');
-							if(checkStatus){
-								$('.tipInfo').hide();
-								$(this).prev().addClass('hasActive');
-								strHtml += '<p id="hasSelP_'+ hasCheckId +'" sqrIdNum="'+ hasCheckId +'" class="listP"><strong class="ellip">'+ sqrNames +'</strong>';
-								strHtml += '<a class="moveUpDown fl"></a>';
-								strHtml += '<i id="'+ hasCheckId +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
-								$('.hasSelSqrList').append(strHtml);
-								if(parent.sqrIdArray.length != 0 && _this.data.cancelSelSqrId.length != 0){//第二次进来（点击保存后）
-									for(var i=0;i<_this.data.cancelSelSqrId.length;i++){
-										if(hasCheckId == _this.data.cancelSelSqrId[i]){
-											_this.data.cancelSelSqrId.splice(i,1);
-										}
-									}
-								}
-							}else{
-								$('#hasSelP_'+hasCheckId).remove();
-								if($('.listP').length == 0){
-									$('.tipInfo').show();
-								}
-								$(this).prev().removeClass('hasActive');
-								if(parent.sqrIdArray.length != 0){//第二次进来（点击保存后）
-									_this.data.cancelSelSqrId.push(hasCheckId);
-								}
-							}
-							_this.sqrOrder();
-							_this.delSelSqr();
-						});
-					}
-				},
 				//删除已选择的、
 				delSelSqr : function(){
 					var _this = this;
@@ -152,6 +137,7 @@
 						$('#hasSelP_'+id).remove();
 						$('#sqrId_'+id).attr('checked',false);
 						$('#sqrId_'+id).prev().removeClass('hasActive');
+						_this.data.cancelSelSqrId.push(id);
 						if($('.listP').length == 0){
 							$('.tipInfo').show();
 							return;
@@ -202,77 +188,91 @@
 						_this.sqrOrder();
 					});
 				},
-				loadSqrList : function(){
+				loadSqrList : function(opts){
 					var _this = this;
-					layer.load('1');
-					$.ajax({
-  						type:"post",
-				        async:false,
-				        dataType:"json",
-				        data : {cusName : '',limit:1000},
-				        url:'/customer.do?action=getCusPageInfo',
-				        success:function (json){
-				        	layer.closeAll('loading');	
-				        	if(json["msg"] == "success"){//代表加载数据成功
-				        		noDataFlag = false;
-				        		//console.log(json.data)
-					        	var sqrList = json.data;
-					        	_this.getSqrList(sqrList);
-				        	}else if(json["msg"] == "error"){
-				        		layer.msg("系统错误，请稍后重试", {icon:5,anim:6,time:1000});
-				        	}else if(json["msg"] == "noInfo"){//表示没数据
-				        		noDataFlag = true;
-				        		$(".sqrListBox").html("<div class='noData' style='display:block;'><i class='iconfont layui-extend-noData'></i><p>暂无申请人(客户)信息，<a href='javascript:void(0)' class='addCusBtn'>请添加</a></p></div>");	
-				        	}
-				        }
-  					});
-				},
-				//获取申请人list
-				getSqrList : function(sqrList){
-					var strHtml = '';
-					for(var i=0;i<sqrList.length;i++){
-						strHtml += '<label class="labelMod"><span class="likeCheckSpan"><b class="layui-icon layui-icon-ok"></b></span>';
-						strHtml += '<input type="checkbox" name="sqrInp" id="sqrId_'+ sqrList[i].id +'" sqrNames="'+ sqrList[i].cusName +'" class="inpRadCheck sqrInp" value="'+ sqrList[i].id +'">';
-						strHtml += '<strong>'+ sqrList[i].cusName +'</strong></label>';
+					if(opts == 'initLoad'){
+						var field = {cusName : ''};
+					}else{
+						var custNameInpVal = $.trim($('#custNameInp').val());
+						var field = {cusName : custNameInpVal};
 					}
-					$('.sqrListBox').html(strHtml);
+					layer.load('1');
+					table.render({
+						elem: '#sqrListTable',
+						height: 'full-150',
+						url : '/customer.do?action=getCusPageInfo',
+						method : 'post',
+						where:field,
+						page : true,
+						even : true,
+						limit : 20,
+						limits:[10,20,30,40],
+						cols : [[
+							{field : '', title: '序号',type:'numbers', align:'center'},
+							{field : 'cusName', title: '客户名称', align:'center'},
+							{field : 'cusType', title: '客户类型', align:'center',templet : function(d){
+								if(d.cusType == 'gr'){return '个人';}else{return d.cusType;};
+							}},
+							{field : '', title: '操作', align:'center', fixed: 'right', width:100,templet : function(d){
+								return '<a class="btn layui-btn layui-btn-xs" lay-event="addSqrFun" cusName="'+ d.cusName +'" cusId="'+ d.id +'"><i class="layui-icon layui-icon-add-circle"></i>添加</a>';
+							}}
+						]],
+						done : function(res){
+							layer.closeAll('loading');
+							if(res.msg == 'success'){
+				        		noDataFlag = false;
+							}else if(res.msg == 'noInfo'){
+				        		noDataFlag = true;
+							}else if(res.msg == 'error'){
+								layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
+								noDataFlag = true;
+							}
+						}
+					});
+				},
+				//获取之前已选择的申请人
+				getSqrList : function(){
 					if(parent.sqrArray.length != 0 && this.data.isClickInpFlag == false){//表示之前已经添加了部分申请人
-						//进行匹配
 						$('.tipInfo').hide();
 						var tmpArray = parent.sqrArray,tmpSqrIdArray = parent.sqrIdArray;
 						var strHtml = '';
 						var tmpNum = 0;
 						for(var j=0;j<tmpArray.length;j++){
-							$('.sqrInp').each(function(i){
-								if($('.sqrInp').eq(i).attr('id') == tmpArray[j]){
-									$('.sqrInp').eq(i).attr('checked',true);
-									$('.sqrInp').eq(i).prev().addClass('hasActive');
-									return false;
-								}
-							});
 							strHtml += '<p id="hasSelP_'+ tmpSqrIdArray[j] +'" sqrIdNum="'+ tmpSqrIdArray[j] +'" class="listP"><strong class="ellip">'+ parent.sqrTxtArray[j] +'</strong>';
 							strHtml += '<a class="moveUpDown fl"></a>';
 							strHtml += '<i id="'+ tmpSqrIdArray[j] +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
 						}
-						$('.hasSelSqrList').html(strHtml);
+						$('.hasSelSqrList').append(strHtml);
 						this.sqrOrder();
 						this.delSelSqr();
-					}else{
-						//_this.data.isClickInpFlag
-						if(this.data.isClickInpFlag){
-							$('.listP').each(function(i){
-								$('.sqrInp').each(function(j){
-									if($('.sqrInp').eq(j).val() == $('.listP').eq(i).attr('sqrIdNum')){
-										$('.sqrInp').eq(j).attr('checked',true);
-										$('.sqrInp').eq(j).prev().addClass('hasActive');
-										return false;
-									}
-								});
-							});
-						}
 					}
 				}
 			};
+			table.on('tool(sqrListTable)',function(obj){
+				if(obj.event == 'addSqrFun'){
+					var strHtml = '';
+					var hasCheckId = $(this).attr('cusId'),sqrNames = $(this).attr('cusName');
+					$('.tipInfo').hide();
+					page.data.isHasAddCurrSqrFlag = false;
+					$('.listP').each(function(i){
+						if($('.listP').eq(i).attr('sqrIdNum') == hasCheckId){
+							layer.msg('此申请人/客户已添加，请勿重复添加',{icon:5,anim:6,time:1000});
+							page.data.isHasAddCurrSqrFlag = true;
+							return false;
+						}else{
+							page.data.isHasAddCurrSqrFlag = false;
+						}
+					});
+					if(page.data.isHasAddCurrSqrFlag == false){
+						strHtml += '<p id="hasSelP_'+ hasCheckId +'" sqrIdNum="'+ hasCheckId +'" class="listP"><strong class="ellip">'+ sqrNames +'</strong>';
+						strHtml += '<a class="moveUpDown fl"></a>';
+						strHtml += '<i id="'+ hasCheckId +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
+						$('.hasSelSqrList').append(strHtml);
+					}
+					page.sqrOrder();
+					page.delSelSqr();
+				}
+			});
 			$(function(){
 				page.init();				
 			});

@@ -4,14 +4,14 @@ body{
 	background:#f2f2f2;
 	color:#666;
 }
-#exportFeeBtn{
+#exportFeeBtn_noSub{
 	height: 40px;
     line-height: 40px;
     z-index: 10;
 }
 .noData,
 .sEDateDiv,
-#exportFeeBtn{
+#exportFeeBtn_noSub{
 	display:none;
 }
 .layui-table-page>div{

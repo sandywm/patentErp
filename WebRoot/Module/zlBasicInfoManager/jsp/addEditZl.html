@@ -8,7 +8,11 @@
 	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
   	<title>增加新专利</title>
 </head>
-<body style="background:#fff;">
+<body style="background:#fff;margin-top:50px;">
+	<div class="layui-card-header headerWrap">
+		<span id="titSpan"></span>
+		<a class="closeBtns" href="javascript:void(0)"><i class="layui-icon layui-icon-close"></i></a>
+	</div>
 	<div id="addNewZl" class="layui-form">
 		<div class="layui-form-item">
 			<label class="layui-form-label"><span>*</span>案件标题</label>
@@ -263,8 +267,10 @@
 		   			        success:function (json){
 		   			        	layer.closeAll('loading');
 		   			        	if(json['result'] == 'success'){
+		   			        		console.log(json)
 		   			        		zlId = json.ajId;
 		   			        		_this.renderZlBasicInfo(json);
+		   			        		$('#titSpan').html('编辑专利[<em style="color:#F47837;font-style:normal;">'+ json.ajTitle +'</em>]');
 		   			        	}else if(json['result'] == 'error'){
 		   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
 		   			        	}else if(json['result'] == 'noAbility'){
@@ -275,12 +281,18 @@
 		   			        }
 		   				});
 					}else{//表示增加 onload直接调用上传这个方法
+						$('#titSpan').html('增加新专利');
 						zlInfoMethod.selectFileUpload();
 						zlInfoMethod.getCpyDate();
 					}
 				},
 				bindEvent : function(){
 					var _this = this;
+					//关闭整个弹层
+					$('.closeBtns').on('click',function(){
+						var index= parent.layer.getFrameIndex(window.name);
+        				parent.layer.close(index);
+					});
 					zlInfoMethod.bindEvent_comMet();
 					//保存增加的专利
 					$('#saveZlBtn').on('click',function(){

@@ -5,6 +5,37 @@ body{
 	background:#f2f2f2;
 	color:#666;
 }
+.headerWrap{
+	width:100%;
+	height:40px;
+	line-height:40px;
+	position:fixed;
+	left:0;
+	top:0;
+	z-index:100;
+	padding:0px;
+	background:#fff;
+	box-shadow:0 3px 5px #ebebeb;
+}
+.headerWrap span{
+	margin-left:15px;
+}
+.closeBtns{
+	position:absolute;
+	right:5px;
+	top:8px;
+	width:25px;
+	height:25px;
+	line-height:25px;
+	text-align:center;
+}
+.closeBtns i{
+	font-size:24px;
+	font-weight:600;
+}
+.closeBtns:hover i{
+	color:red;
+}
 #addZlBtn,
 #importBtn{
 	height:40px;
@@ -247,10 +278,15 @@ body{
 	height:100%;
 	position:relative;
 }
-.commonListBox,
+.searchSqr{
+	margin-top:10px;
+}
 .commonListBox_lxFmr,
 .commonListBox_field{
 	padding:10px 10px 0;
+}
+.commonListBox{
+	height:100%;
 }
 .commonListBox_field{
 	height:190px;
@@ -258,22 +294,38 @@ body{
 .commonListBox_lxFmr{
 	height:260px;
 }
-.sqrListBox,
-.hasSelSqrList,
 .lxrListBox,
 .hasSelLxrFmrList{
 	overflow:hidden;
 	overflow-y:auto;
 }
 .sqrListBox{
-	width:419px;
-	height:235px;
-	border-right:1px solid #ccc;
+	width:68%;
+	height:100%;
+	padding:0 10px;
 }
 .hasSelSqrList{
-	width:260px;
-	height:235px;
+	width:26%;
+	height:100%;
 	position:relative;
+	border-left:1px solid #ccc;
+	box-sizing:border-box;
+	position:relative;
+}
+.hasSelSqrList #saveZlBtn{
+	position:absolute;
+	width:120px;
+	bottom:20px;
+	left:50%;
+	margin-left:-60px;
+}
+.hasSelSqrList .sqrTipInfo{
+	top:50%;
+	margin-top:-70px;
+}
+.hasSelSqrList p.listP{
+	width:90%;
+	margin:0 auto;
 }
 .lxrListBox{
 	width:480px;
@@ -361,6 +413,18 @@ body{
 	color:red;
 	cursor:pointer;
 }
+.botSaveBox{
+	margin-top:10px;
+	width:100%;
+	text-align:center;
+	height:38px;
+	line-height:38px;
+}
+.botSaveBox button{
+	width:120px;
+	font-size:14px;
+	padding:0px;
+}
 .labelMod{
 	height:24px;
 	line-height:24px;
@@ -407,18 +471,6 @@ body{
 .labelMod strong{
 	font-weight:normal;
 	float:left;
-}
-.botSaveBox{
-	margin-top:10px;
-	width:100%;
-	text-align:center;
-	height:38px;
-	line-height:38px;
-}
-.botSaveBox button{
-	width:120px;
-	font-size:14px;
-	padding:0px;
 }
 .addFieldBtn_noData:hover{
 	color:#F47837 !important;

@@ -325,8 +325,8 @@
 							this.delSelLxrFmr();
 						}else{
 							//表示此时未点击保存按钮
-							if(this.data.isClickInpFlag){
-								//点击了增加新联系人或申请人下进行一个之前选中为保存的匹配
+							if(this.data.isClickInpFlag && $('.listP').length > 0){
+								//点击了增加新联系人并且当下已选择了若干个联系人的成功后的匹配
 								$('.listP').each(function(i){
 									$('.comCheckInp').each(function(j){
 										if($('.comCheckInp').eq(j).val() == $('.listP').eq(i).attr('lxrFmrId')){
@@ -371,8 +371,8 @@
 							this.delSelLxrFmr();
 						}else{
 							//表示此时未点击保存按钮
-							if(this.data.isClickInpFlag){
-								//点击了增加新联系人或申请人下进行一个之前选中为保存的匹配
+							if(this.data.isClickInpFlag && $('.listP').length > 0){
+								//点击了增加新联系人并且当下已选择了若干个发明人人的成功后的匹配
 								$('.listP').each(function(i){
 									$('.comCheckInp').each(function(j){
 										if($('.comCheckInp').eq(j).val() == $('.listP').eq(i).attr('lxrFmrId')){

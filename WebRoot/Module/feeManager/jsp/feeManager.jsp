@@ -18,7 +18,7 @@
   			<div class="layui-col-md12 layui-col-lg12">
   				<div class="layui-card hasPadBot">
   					<div class="layui-tab layui-tab-brief" lay-filter="feeTabFilter">
-  						<a id="exportFeeBtn" class="posAbs newAddBtn" data-type="getCheckData" href="javascript:void(0)"><i class="iconfont layui-extend-daochuexcel"></i>导出费用账单</a>
+  						<a id="exportFeeBtn_noSub" class="posAbs newAddBtn" data-type="getCheckData" href="javascript:void(0)"><i class="iconfont layui-extend-daochuexcel"></i>导出未缴费用账单</a>
   						<ul class="layui-tab-title">
   							<li class="layui-this" feeStatus="0">未缴费</li>
   							<li feeStatus="1">已缴费</li>
@@ -117,7 +117,7 @@
   					page.data.isHasPageFun = true;
   					$('.diffDaysDiv').hide();
   					$('.sEDateDiv').show();
-  					$('#exportFeeBtn').hide();
+  					$('#exportFeeBtn_noSub').hide();
   				}else if(feeStatus == '2'){
   					page.clickShow('hidePart');
   				}
@@ -157,7 +157,7 @@
 				init : function(){
 					//获取权限
 					this.data.addFeeFlag = common.getPermission('addFee','',0);
-					$('#exportFeeBtn').show();
+					$('#exportFeeBtn_noSub').show();
 					loadFeeInfoList('initLoad');
 					this.bindEvent();
 					$.ajax({
@@ -176,7 +176,7 @@
 				clickShow : function(opts){
 					if(opts == 'hidePart'){
 						$('.sEDateDiv').show();
-	  					$('#exportFeeBtn').hide();
+	  					$('#exportFeeBtn_noSub').hide();
 	  					$('.zlNoDiv').hide();
 	  					$('.ajNoDiv').hide();
 	  					$('.diffDaysDiv').hide();
@@ -188,7 +188,7 @@
 	  					$('.diffDaysDiv').show();
 	  					$('.sEDateDiv').hide();
 	  					$('.sEDateDiv').find('input').val('');
-	  					$('#exportFeeBtn').show();
+	  					$('#exportFeeBtn_noSub').show();
 	  					$('.cusIdDiv').show();
 					}
 				},
@@ -199,7 +199,7 @@
 						loadFeeInfoList('queryLoad');
 					});
 					//导出费用账单
-					$('#exportFeeBtn').on('click',function(){
+					$('#exportFeeBtn_noSub').on('click',function(){
 						var type = $(this).data('type');
 					    active[type] ? active[type].call(this) : '';
 					    if(_this.data.exportFlag){
@@ -354,10 +354,8 @@
 						}
 					});
 				}
-				
 				function callBackDone(res){
 					layer.closeAll('loading');
-					console.log(res)
 					if(res.msg == 'success'){
 						$('#feeListTab_'+page.data.globalFeeStatus).siblings('.layui-table-view').show();
 						$('#noData_'+page.data.globalFeeStatus).hide().html('');
