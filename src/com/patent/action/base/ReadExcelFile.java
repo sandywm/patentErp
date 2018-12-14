@@ -209,16 +209,37 @@ public class ReadExcelFile {
     	String absoFilePath = "d:\\" +fileName;
     	FileOpration.copyFile(oldExcel, absoFilePath);
     	
-    	File f = new File(oldExcel);
+    	File f = new File(absoFilePath);
     	InputStream inputStream = new FileInputStream(f);
     	HSSFWorkbook xssfWorkbook = new HSSFWorkbook(inputStream);
     	HSSFSheet sheet = xssfWorkbook.getSheetAt(6);
     	System.out.println(sheet.getLastRowNum());
+    	HSSFCellStyle style = xssfWorkbook.createCellStyle();  
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+		HSSFFont font_1 = xssfWorkbook.createFont();    
+        font_1.setFontName("宋体");    
+        font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
+        font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
+        style.setFont(font_1);
+    	HSSFRow row0 = sheet.getRow(0);
+    	HSSFCell cell_title = row0.createCell(9);//增加第8列
+    	cell_title.setCellStyle(style);
+    	cell_title.setCellValue("实际费用");//
+		
     	for (int i = 2; i < 3; i++) {
-    		HSSFRow row = sheet.getRow((short) i);
+    		HSSFRow row = sheet.getRow(i);
     		if (null == row) {
     			continue;
 			}else{
+				
+				HSSFCell cell0 = row.getCell(0);//读取第几列
+				if(cell0 == null){
+					continue;
+				}else{
+					cell0.setCellValue(1);//
+				}
+				
 				HSSFCell cell = row.getCell(1);//读取第几列
 				if(cell == null){
 					continue;
@@ -226,41 +247,31 @@ public class ReadExcelFile {
 					cell.setCellValue("2017301654572");//
 				}
 				
-//				HSSFCell cell3 = row.getCell(3);//读取第几列
-//				if(cell3 == null){
-//					continue;
-//				}else{
-//					cell3.setCellValue("外观设计专利申请费");//
-//				}
+				HSSFCell cell2 = row.getCell(2);//读取第几列
+				if(cell2 == null){
+					continue;
+				}else{
+					cell2.setCellValue("濮阳天龙集团");//
+				}
+				
+				HSSFCell cell3 = row.getCell(3);//读取第几列
+				if(cell3 == null){
+					continue;
+				}else{
+					cell3.setCellValue("外观设计专利权评价报告请求费");//
+				}
+				
+				
+				HSSFCell cell8 = row.createCell(9);//增加第8列
+				cell8.setCellStyle(style);
+				cell8.setCellValue("￥2,200.00");//
+				
+				xssfWorkbook.setForceFormulaRecalculation(true);
+				
 			}
     	}
     	FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器
     	xssfWorkbook.write(fout);  
-        fout.close();  
-    	
-		
-//		String currTime = CurrentTime.getCurrentTime();
-//		String oldExcel = "d:\\feeInfo.xls";
-//    	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
-////    	String filePath_pre = "Module\\excelTemp\\"+cpyId+"\\fee\\";
-////    	String folder = WebUrl.DATA_URL_PRO + filePath_pre;//通过代理机构把excel分开
-//    	String absoFilePath = "d:\\" +fileName;
-//    	FileOpration.copyFile(oldExcel, absoFilePath);
-//		FileInputStream fs=new FileInputStream(absoFilePath);  //获取d://test.xls  
-////		POIFSFileSystem ps=new POIFSFileSystem(fs);  //使用POI提供的方法得到excel的信息  
-//        HSSFWorkbook wb=new HSSFWorkbook(fs);   
-//        HSSFSheet sheet=wb.getSheetAt(0);  //获取到工作表，因为一个excel可能有多个工作表  
-//        HSSFRow row = sheet.getRow(2);//创建行行 
-//        
-//        FileOutputStream out=new FileOutputStream(absoFilePath);  //向d://test.xls中写数据  
-//        row.createCell(0).setCellValue("1"); //设置第一个（从0开始）单元格的数据  
-//        row.createCell(1).setCellValue("2017301654572"); //设置第二个（从0开始）单元格的数据  
-//        row.createCell(3).setCellValue("外观设计专利申请费"); //设置第二个（从0开始）单元格的数据  
-         
-//        out.flush();  
-//        wb.write(out);    
-//        out.close();    
-		
-		 
+        fout.close();     
 	}
 }
