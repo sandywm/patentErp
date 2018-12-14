@@ -305,7 +305,7 @@ body{
 	padding:0 10px;
 }
 .hasSelSqrList{
-	width:26%;
+	width:30%;
 	height:100%;
 	position:relative;
 	border-left:1px solid #ccc;
@@ -409,7 +409,7 @@ body{
 	position:absolute;
 	right:0;
 	top:0px;
-	font-size:22px;
+	font-size:23px;
 	color:red;
 	cursor:pointer;
 }
