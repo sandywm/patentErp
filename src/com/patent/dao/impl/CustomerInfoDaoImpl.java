@@ -60,7 +60,7 @@ public class CustomerInfoDaoImpl implements CustomerInfoDao{
 		// TODO Auto-generated method stub
 		String hql = "select count(ci.id) from CustomerInfoTb as ci where ci.cpyInfoTb.id = "+cpyId;
 		if(!cusName.equals("")){
-			hql += " and ci.cusName like '"+cusName+"'";
+			hql += " and ci.cusName like '%"+cusName+"%'";
 		}
 		Object countObj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(countObj);
