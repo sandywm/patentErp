@@ -24,4 +24,5 @@
 	<app id="zlaj_lc_yj_info_Web" class="com.patent.service.impl.ZlajLcYjInfoManagerImpl"/>
 	<app id="cpy_bonus_info_Web" class="com.patent.service.impl.CpyBonusInfoManagerImpl"/>
 	<app id="fee_export_record_info_Web" class="com.patent.service.impl.FeeExportRecordInfoManagerImpl"/>
+	<app id="cus_back_fee_info_Web" class="com.patent.service.impl.CusBackFeeInfoManagerImpl"/>
 </appContext>

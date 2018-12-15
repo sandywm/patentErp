@@ -22,6 +22,7 @@ public class Constants {
 	public static final Integer JF_SC_END_DATE_CPY = 1080;//实质审查费代理机构期限
 	
 	public static final String SYS_CONFIG_WJ = "e:\\sysConfig.json";//系统配置文件存放地
+	public static final String ZL_FEE_DG = "\\Module\\excelTemp\\zlCommFee.xls";//国家局的标准缴费清单底稿
 	public static final Integer TD_RECEIVE_DAYS = 15;//推定收到日
 	
 	public static final Integer DL_FEE_DAYS = 30;//代理费缴纳时间
@@ -85,6 +86,7 @@ public class Constants {
 	public static final String WEB_ZLAJ_LC_YJ_INFO = "zlaj_lc_yj_info_Web";
 	public static final String WEB_CPY_BONUS_INFO = "cpy_bonus_info_Web";
 	public static final String WEB_FEE_EXPORT_RECORD_INFO = "fee_export_record_info_Web";
+	public static final String WEB_CUS_BACK_FEE_INFO = "cus_back_fee_info_Web";
 	
 	//-------------------DAO-------------------------//
 	public static final String DAO_CPY_USER_INFO = "cpy_user_info_Dao";
@@ -116,4 +118,5 @@ public class Constants {
 	public static final String DAO_ZLAJ_LC_YJ_INFO = "zlaj_lc_yj_info_Dao";
 	public static final String DAO_CPY_BONUS_INFO = "cpy_bonus_info_Dao";
 	public static final String DAO_FEE_EXPORT_RECORD_INFO = "fee_export_record_info_Dao";
+	public static final String DAO_CUS_BACK_FEE_INFO = "cus_back_fee_info_Dao";
 }

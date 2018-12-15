@@ -314,80 +314,80 @@ public class FeeAction extends DispatchAction {
 				if(!idStr.equals("")){
 					zlfList = fm.listUnJfInfoByOpt(cpyId, idStr);
 				}
-//				Integer feeStatus = CommonTools.getFinalInteger("feeStatus", request);//费用缴纳状态（0未交，1：已交）
-//				Integer diffDays = CommonTools.getFinalInteger("diffDays", request);//代理机构缴费截止日期距当前日期天数小于等于指定的天数
-//				String zlNo = CommonTools.getFinalStr("zlNo", request);
-//				String ajNo = CommonTools.getFinalStr("ajNo", request);
-//				Integer cusId = CommonTools.getFinalInteger("cusId", request);
-//				zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, "", "", 0, 0);
 				if(zlfList.size() > 0){
 					Double feePrice_total = 0d;
-					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
-						ZlajFeeInfoTb zlf = it.next();
-						feePrice_total += zlf.getFeePrice();
-					}
-					// 第一步，创建一个webbook，对应一个Excel文件  
-			        HSSFWorkbook wb = new HSSFWorkbook();  
-			        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
-			        HSSFSheet sheet = wb.createSheet("费用清单");  
-			        //设置横向打印
-			        sheet.getPrintSetup().setLandscape(true);
-			        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
-			        HSSFRow row = sheet.createRow(0);  
-			        // 第四步，创建单元格，并设置值表头 设置表头居中  
-			        HSSFCellStyle style = wb.createCellStyle();  
-			        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
-		            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-		            
-		            HSSFFont font_1 = wb.createFont();    
-		            font_1.setFontName("宋体");    
-		            font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
-		            font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
-		            
-		            
-		            HSSFFont font_2 = wb.createFont();    
-		            font_2.setFontName("宋体");    
-		            font_2.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
-		            
-		            style.setFont(font_1);
-		            
-		            FeeAction.addCellData(6, "序列号:申请号:缴费人姓名:费用名称:金额:备注", row, style);
-		            
-		            row = sheet.createRow(1);//创建行
-		        	// 第四步，创建单元格，并设置值  
-		            FeeAction.addCellData(6,"1:noData:noData:noData:"+Convert.convertInputNumber_3(feePrice_total)+":noData", row, style);
 					Integer i = 2;
-					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
+					String oldExcel = WebUrl.DATA_URL_PRO + Constants.ZL_FEE_DG;//国家局的标准缴费清单底稿
+			    	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
+			    	String absoFilePath = WebUrl.DATA_URL_PRO + "\\Module\\excelTemp\\" +fileName;
+			    	FileOpration.copyFile(oldExcel, absoFilePath);
+			    	
+			    	File f = new File(absoFilePath);
+			    	InputStream inputStream = new FileInputStream(f);
+			    	HSSFWorkbook wb = new HSSFWorkbook(inputStream);
+			    	HSSFSheet sheet = wb.getSheetAt(6);
+					
+			    	HSSFCellStyle style = wb.createCellStyle();  
+			        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+			        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+			        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+			        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+			        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+			        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+					HSSFFont font_1 = wb.createFont();    
+			        font_1.setFontName("宋体");    
+			        font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
+			        font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
+			        style.setFont(font_1);
+			    	HSSFRow row0 = sheet.getRow(0);
+			    	HSSFCell cell_title = row0.createCell(9);//增加第8列
+			    	cell_title.setCellStyle(style);
+			    	cell_title.setCellValue("实际费用");//
+					
+			    	for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
 						ZlajFeeInfoTb zlf = it.next();
-						row = sheet.createRow(i);//创建行
 						ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
-						String feeRemark = zlf.getFeeRemark().equals("") ? "noData" : zlf.getFeeRemark();
-						FeeAction.addCellData(6,""+i+":"+zl.getAjNoGf()+":"+zl.getAjSqrName()+":"+zlf.getFeeTypeInfoTb().getFeeName()+":"+Convert.convertInputNumber_3(zlf.getFeePrice())+":"+feeRemark+"", row, style);
+						HSSFRow row = sheet.getRow(i);
+						HSSFCell cell = row.getCell(1);//读取第2列--专利号
+						cell.setCellValue(zl.getAjNoGf());//
+						cell = row.getCell(2);//读取第3列--缴费人（客户名称）
+						cell.setCellValue(zl.getAjSqrName());
+						cell = row.getCell(3);//读取第4列--费用名称
+						cell.setCellValue(zlf.getFeeTypeInfoTb().getFeeName());
+						cell = row.getCell(9);//读取第10列--实际费用金额
+						cell.setCellValue(Convert.convertInputNumber_3(zlf.getFeePrice()));
+						feePrice_total += zlf.getFeePrice();
 						i++;
-					}
+			    	}
+			    	
+			    	HSSFRow row1 = sheet.getRow(1);
+			    	HSSFCell cell_fee_tj = row1.getCell(9);//读取第10列
+			    	cell_fee_tj.setCellStyle(style);
+			    	cell_fee_tj.setCellValue(Convert.convertInputNumber_3(feePrice_total));//实际费用统计
+			    	wb.setForceFormulaRecalculation(true);
 		        	// 第六步，将文件存到指定位置
-			    	String absoFilePath = "";//绝对地址
+			    	String absoFilePath_1 = "";//绝对地址
 			    	try  {  
 			    		String currTime = CurrentTime.getCurrentTime();
-			        	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
+			        	String fileName_1 = "费用清单_"+CurrentTime.getStringTime()+".xls";
 			        	String filePath_pre = "Module\\excelTemp\\"+cpyId+"\\fee\\";
 			        	String folder = WebUrl.DATA_URL_PRO + filePath_pre;//通过代理机构把excel分开
-			        	absoFilePath = folder +fileName;
+			        	absoFilePath_1 = folder +fileName_1;
 			        	File file = new File(folder);
 						if(!file.exists()){
 							file.mkdirs();
 						}
-			            FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器
+			            FileOutputStream fout = new FileOutputStream(absoFilePath_1);//存到服务器
 			            wb.write(fout);  
 			            fout.close();  
 			            //生成记录
-			            ferm.addFER(fileName, currTime, currUserId, filePath_pre+fileName, cpyId);
+			            ferm.addFER(fileName_1, currTime, currUserId, filePath_pre+fileName_1, cpyId);
 				        //第七步 下载文件到客户端
 				        OutputStream fos = null;
 				        BufferedOutputStream bos = null;
 				        InputStream fis = null;
 				        BufferedInputStream bis = null;
-				        fis = new FileInputStream(new File(absoFilePath));
+				        fis = new FileInputStream(new File(absoFilePath_1));
 						bis = new BufferedInputStream(fis);
 						fos = response.getOutputStream();
 						bos = new BufferedOutputStream(fos);
@@ -412,97 +412,13 @@ public class FeeAction extends DispatchAction {
 			        catch (IOException e){  
 			            //e.printStackTrace();  
 			        }
+			        //第七步 删除之前复制的文件
+				    FileOpration.deleteFile(absoFilePath);
 				}
 			}
 		}
 		return null;
 	}
-	
-	
-	public ActionForward exportFeeInfoToExcel_2(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
-		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
-		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
-		String roleName = this.getLoginRoleName(request);
-		Integer currUserId = this.getLoginUserId(request);
-		if(this.getLoginType(request).equals("cpyUser")){
-			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
-			boolean abilityFlag = false;
-			if(roleName.equals("管理员")){
-				abilityFlag = true;
-			}else{//只获取自己的任务流程
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listFee");//只有具有浏览权限的人员
-			}
-			if(abilityFlag){
-				String idStr = CommonTools.getFinalStr("idStr", request);//所有选择的专利编号的拼接
-				List<ZlajFeeInfoTb> zlfList = new ArrayList<ZlajFeeInfoTb>();
-				if(!idStr.equals("")){
-					zlfList = fm.listUnJfInfoByOpt(cpyId, idStr);
-				}
-				if(zlfList.size() > 0){
-					
-					String currTime = CurrentTime.getCurrentTime();
-					String oldExcel = "d:\\feeInfo.xls";
-		        	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
-//		        	String filePath_pre = "Module\\excelTemp\\"+cpyId+"\\fee\\";
-//		        	String folder = WebUrl.DATA_URL_PRO + filePath_pre;//通过代理机构把excel分开
-		        	String absoFilePath = "d:\\" +fileName;
-		        	FileOpration.copyFile(oldExcel, absoFilePath);
-					FileInputStream fs=new FileInputStream(absoFilePath);  //获取d://test.xls  
-					POIFSFileSystem ps=new POIFSFileSystem(fs);  //使用POI提供的方法得到excel的信息  
-			        HSSFWorkbook wb=new HSSFWorkbook(ps);   
-			        HSSFSheet sheet=wb.getSheetAt(0);  //获取到工作表，因为一个excel可能有多个工作表  
-			        HSSFRow row=sheet.getRow(2);//获取第三行 
-			        
-			        FileOutputStream out=new FileOutputStream(absoFilePath);  //向d://test.xls中写数据  
-			        row=sheet.createRow((short)(sheet.getLastRowNum()+1)); //在现有行号后追加数据  
-			        row.createCell(0).setCellValue("leilei"); //设置第一个（从0开始）单元格的数据  
-			        row.createCell(1).setCellValue(24); //设置第二个（从0开始）单元格的数据  
-			 
-			         
-			        out.flush();  
-			        wb.write(out);    
-			        out.close();    
-			        
-			        
-					
-			        // 第四步，创建单元格，并设置值表头 设置表头居中  
-//			        HSSFCellStyle style = wb.createCellStyle();  
-//			        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
-//		            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-//		            
-//		            HSSFFont font_1 = wb.createFont();    
-//		            font_1.setFontName("宋体");    
-//		            font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
-//		            font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
-//		            
-//		            
-//		            HSSFFont font_2 = wb.createFont();    
-//		            font_2.setFontName("宋体");    
-//		            font_2.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
-//		            
-//		            style.setFont(font_1);
-//		            
-//		            FeeAction.addCellData(6, "序列号:申请号:缴费人姓名:费用名称:金额:备注", row, style);
-//		            
-//		            row = sheet.createRow(1);//创建行
-//		        	// 第四步，创建单元格，并设置值  
-//					Integer i = 2;
-//					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
-//						ZlajFeeInfoTb zlf = it.next();
-//						row = sheet.createRow(i);//创建行
-//						ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
-//						String feeRemark = zlf.getFeeRemark().equals("") ? "noData" : zlf.getFeeRemark();
-//						FeeAction.addCellData(6,""+i+":"+zl.getAjNoGf()+":"+zl.getAjSqrName()+":"+zlf.getFeeTypeInfoTb().getFeeName()+":"+Convert.convertInputNumber_3(zlf.getFeePrice())+":"+feeRemark+"", row, style);
-//						i++;
-//					}
-				}
-			}
-		}
-		return null;
-	}
-	
 	
 	/**
 	 * 分页获取未交费用清单列表(用户导出的未交费清单)

@@ -29,4 +29,5 @@
 	<dao id="zlaj_lc_yj_info_Dao" class="com.patent.dao.impl.ZlajLcYjInfoDaoImpl"/>
 	<dao id="cpy_bonus_info_Dao" class="com.patent.dao.impl.CpyBonusInfoDaoImpl"/>
 	<dao id="fee_export_record_info_Dao" class="com.patent.dao.impl.FeeExportRecordInfoDaoImpl"/>
+	<dao id="cus_back_fee_info_Dao" class="com.patent.dao.impl.CusBackFeeInfoDaoImpl"/>
 </daoContext>
