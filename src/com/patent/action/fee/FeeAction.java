@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import jxl.WorkbookSettings;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -41,6 +43,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 
 import com.alibaba.fastjson.JSON;
+import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.FeeExportRecordInfo;
@@ -48,6 +51,7 @@ import com.patent.module.ZlajFeeInfoTb;
 import com.patent.module.ZlajMainInfoTb;
 import com.patent.page.PageConst;
 import com.patent.service.CpyUserInfoManager;
+import com.patent.service.CusBackFeeInfoManager;
 import com.patent.service.FeeExportRecordInfoManager;
 import com.patent.service.ZlajFeeInfoManager;
 import com.patent.service.ZlajMainInfoManager;
@@ -315,7 +319,6 @@ public class FeeAction extends DispatchAction {
 					zlfList = fm.listUnJfInfoByOpt(cpyId, idStr);
 				}
 				if(zlfList.size() > 0){
-					Double feePrice_total = 0d;
 					Integer i = 2;
 					String oldExcel = WebUrl.DATA_URL_PRO + Constants.ZL_FEE_DG;//国家局的标准缴费清单底稿
 			    	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
@@ -339,31 +342,28 @@ public class FeeAction extends DispatchAction {
 			        font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
 			        font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
 			        style.setFont(font_1);
-			    	HSSFRow row0 = sheet.getRow(0);
-			    	HSSFCell cell_title = row0.createCell(9);//增加第8列
-			    	cell_title.setCellStyle(style);
-			    	cell_title.setCellValue("实际费用");//
 					
+			        HSSFDataFormat format = wb.createDataFormat();
 			    	for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
 						ZlajFeeInfoTb zlf = it.next();
 						ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
 						HSSFRow row = sheet.getRow(i);
 						HSSFCell cell = row.getCell(1);//读取第2列--专利号
+						style.setFont(font_1);
+						cell.setCellStyle(style);
 						cell.setCellValue(zl.getAjNoGf());//
 						cell = row.getCell(2);//读取第3列--缴费人（客户名称）
+						cell.setCellStyle(style);
 						cell.setCellValue(zl.getAjSqrName());
 						cell = row.getCell(3);//读取第4列--费用名称
+						cell.setCellStyle(style);
 						cell.setCellValue(zlf.getFeeTypeInfoTb().getFeeName());
 						cell = row.getCell(9);//读取第10列--实际费用金额
-						cell.setCellValue(Convert.convertInputNumber_3(zlf.getFeePrice()));
-						feePrice_total += zlf.getFeePrice();
+						style.setDataFormat(format.getFormat("¥,###.00"));
+						cell.setCellStyle(style);
+						cell.setCellValue(zlf.getFeePrice());
 						i++;
 			    	}
-			    	
-			    	HSSFRow row1 = sheet.getRow(1);
-			    	HSSFCell cell_fee_tj = row1.getCell(9);//读取第10列
-			    	cell_fee_tj.setCellStyle(style);
-			    	cell_fee_tj.setCellValue(Convert.convertInputNumber_3(feePrice_total));//实际费用统计
 			    	wb.setForceFormulaRecalculation(true);
 		        	// 第六步，将文件存到指定位置
 			    	String absoFilePath_1 = "";//绝对地址
@@ -581,7 +581,27 @@ public class FeeAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
-		
+		CusBackFeeInfoManager cbfm = (CusBackFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUS_BACK_FEE_INFO);
+		Integer currUserId = this.getLoginUserId(request);
+		if(this.getLoginType(request).equals("cpyUser")){
+			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
+			boolean abilityFlag = false;
+			String roleName = this.getLoginRoleName(request);
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{//只获取自己的任务流程
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addBackFee");//只有具有增加还款动作权限的人员
+			}
+			if(abilityFlag){
+				String backFeePrice = CommonTools.getFinalStr("backFeePrice", request);
+				String backDate = CommonTools.getFinalStr("backDate", request);
+				String backType = CommonTools.getFinalStr("backType", request);
+				Integer cusId = CommonTools.getFinalInteger("cusId", request);
+				String remark = Transcode.unescape_new("remark", request);
+				cbfm.addCBF(backFeePrice, backDate, backType, cusId, cpyId, currUserId, CurrentTime.getCurrentTime(), remark);
+				
+			}
+		}
 		return null;
 	}
 }

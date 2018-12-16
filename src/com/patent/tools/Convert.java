@@ -118,12 +118,12 @@ public class Convert {
 	 * @return
 	 */
 	public static String convertInputNumber_3(double inputD){
-		DecimalFormat    df   = new DecimalFormat("￥,###.00");   
+		DecimalFormat    df   = new DecimalFormat("¥,###.00");   
 		return df.format(inputD);
 	}
 	
 	public static String convertMoney(double inputMoney){
-		DecimalFormat    df   = new DecimalFormat("￥,###.##");
+		DecimalFormat    df   = new DecimalFormat("¥,###.##");
 		return df.format(inputMoney);
 	}
 	

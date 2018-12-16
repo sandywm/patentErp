@@ -204,7 +204,7 @@ public class ReadExcelFile {
 //		System.out.println("删除文件："+FileOpration.deleteFile(filePath));
 		
 		
-		String oldExcel = "d:\\feeInfo.xls";
+		String oldExcel = "d:\\feeOk.xls";
     	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
     	String absoFilePath = "d:\\" +fileName;
     	FileOpration.copyFile(oldExcel, absoFilePath);
@@ -261,6 +261,7 @@ public class ReadExcelFile {
 					cell3.setCellValue("外观设计专利权评价报告请求费");//
 				}
 				
+				System.out.println(row.getCell(5).getCellType());
 				
 				HSSFCell cell8 = row.createCell(9);//增加第8列
 				cell8.setCellStyle(style);
