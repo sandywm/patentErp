@@ -31,6 +31,7 @@ import com.alibaba.fastjson.JSON;
 import com.patent.factory.AppFactory;
 import com.patent.module.ZlajFeeInfoTb;
 import com.patent.module.ZlajFjInfoTb;
+import com.patent.service.CpyUserInfoManager;
 import com.patent.service.ZlajFeeInfoManager;
 import com.patent.service.ZlajFjInfoManager;
 import com.patent.service.ZlajTzsInfoManager;
@@ -131,6 +132,8 @@ public class UploadAction extends DispatchAction {
 		String loginType = this.getLoginType(request);
 		Integer currLoginUserId = this.getLoginUserId(request);
 		Map<String,Object> map = new HashMap<String,Object>();
+		Integer cpyId = 0;
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 //		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
 //		ZlajFeeInfoManager fm = (ZlajFeeInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		//通知书、票据、附件需要具有专利流程处理权限的才能上传
@@ -145,6 +148,7 @@ public class UploadAction extends DispatchAction {
 					abilityFlag = abilityFlag_1 || abilityFlag_2;
 				}else if(fileType.equals("pj") || fileType.equals("fee")){//上传发票和已缴费清单
 					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addFee");//增加费用权限
+					cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
 				}else{
 					//撰稿人员、专利审核人员、客户确认人员、定稿提交、补正提交、补正审核人员上传的都是附件类
 					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理
@@ -183,16 +187,19 @@ public class UploadAction extends DispatchAction {
 							absolutPath +=  "\\" + ajId;
 						}
 					}else if(loginType.equals("cpyUser")){
-						if(ajId > 0){
-							userPath += ajId + "\\" + fileType;
-							absolutPath += ajId + "\\" + fileType;
+						if(fileType.equals("fee")){
+							absolutPath = "Module\\excelTemp\\"+cpyId+"\\feeImport\\";
+							userPath = WebUrl.DATA_URL_PRO + absolutPath;
 						}else{
-							//技术底稿、批量上传的通知书
-							//之前放在外层，等待专利增加后，剪切到ajId下
-//							userPath += "dg";
-//							absolutPath += "dg";
-							userPath += "u_"+currLoginUserId;//怕引起文件名重复，暂时将代理机构下人员上传的文件存在u_id下
-							absolutPath += "u_"+currLoginUserId;
+							if(ajId > 0){
+								userPath += ajId + "\\" + fileType;
+								absolutPath += ajId + "\\" + fileType;
+							}else{
+								//技术底稿、批量上传的通知书
+								//之前放在外层，等待专利增加后，剪切到ajId下
+								userPath += "u_"+currLoginUserId;//怕引起文件名重复，暂时将代理机构下人员上传的文件存在u_id下
+								absolutPath += "u_"+currLoginUserId;
+							}
 						}
 					}
 					while (iterator.hasNext()) {

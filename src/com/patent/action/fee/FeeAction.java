@@ -370,7 +370,7 @@ public class FeeAction extends DispatchAction {
 			    	try  {  
 			    		String currTime = CurrentTime.getCurrentTime();
 			        	String fileName_1 = "费用清单_"+CurrentTime.getStringTime()+".xls";
-			        	String filePath_pre = "Module\\excelTemp\\"+cpyId+"\\fee\\";
+			        	String filePath_pre = "Module\\excelTemp\\"+cpyId+"\\feeExport\\";
 			        	String folder = WebUrl.DATA_URL_PRO + filePath_pre;//通过代理机构把excel分开
 			        	absoFilePath_1 = folder +fileName_1;
 			        	File file = new File(folder);
@@ -502,10 +502,10 @@ public class FeeAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
-//		String filePath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + CommonTools.getFinalStr("filePath", request);
 		String filePath = CommonTools.getFinalStr("filePath", request);
 		Map<String,Object> map = new HashMap<String,Object>();
 		List<Object> list_d = new ArrayList<Object>();
+		String msg = "error";
 		//读取excel内容
 		Sheet sheet;  
         Workbook book;  
@@ -513,54 +513,71 @@ public class FeeAction extends DispatchAction {
         WorkbookSettings wbs = new WorkbookSettings();
         wbs.setEncoding("GBK"); // 解决中文乱码
         wbs.setSuppressWarnings(true); 
-//        book= Workbook.getWorkbook(new File(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + filePath),wbs);
-        book= Workbook.getWorkbook(new File(filePath),wbs);
-		//获得第一个工作表对象(ecxel中sheet的编号从0开始,0,1,2,3,....)  
-		sheet=book.getSheet(0); 
-		Integer i = 2;
-        Integer maxRow = sheet.getRows();
-		CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
-		if(cpyUser != null){
-			Integer cpyId = cpyUser.getCpyInfoTb().getId();
-			while(i < maxRow){
-	        	//获取每一行的单元格   
-	            cell1=sheet.getCell(0,i);//（列，行）  
-	            if("".equals(cell1.getContents())==true)    //如果读取的数据为空  
-	                break;  
-	            String zlNo = sheet.getCell(1,i).getContents().replace(" ", "").replace("\t", "");//专利号
-	            String feeName = sheet.getCell(3,i).getContents().replace(" ", "").replace("\t", "");//费用名称
-	            String jfDate = sheet.getCell(6,i).getContents().replace(" ", "").replace("\t", "");//缴费时间;
-	            String bankSerialNo = sheet.getCell(7,i).getContents().replace(" ", "").replace("\t", "");//银行流水号
-	            String feeBatchNo = sheet.getCell(8,i).getContents().replace(" ", "").replace("\t", "");//缴费批次号
-	            String fpDate = "";
-	            String fpNo = "";
-	            Map<String,String> map_d = new HashMap<String,String>();
-	            if(!zlNo.equals("")){
-	            	//代理机构缴完费后-补充缴费信息
-	            	List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(cpyId, zlNo, feeName);
-	            	if(feeList.size() > 0){
-	            		ZlajFeeInfoTb fee = feeList.get(0);
-	            		Integer feeId = fee.getId();
-	            		if(fee.getFeeStatus().equals(0)){//未缴费
-	            			//修改费用状态
-		            		fm.updateComJfInfoById(feeId, jfDate);
-		            		//修改缴费信息
-		            		fm.updateFeeInfoById(feeId, feeBatchNo, bankSerialNo, fpDate, fpNo);
-		            		//修改任务中的缴费提醒
-		            		//修改/增加流程
-		            		map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]缴费成功");
-	            		}
-	            	}else{
-	            		map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]匹配失败");
-	            	}
-	            }else{
-	            	map_d.put("readInfo", "读取专利号错误");
-	            }
-	            list_d.add(map_d);
-	            i++;
-	        }
-		}
-		map.put("result", list_d);
+        if(!filePath.equals("")){
+        	String[] filePathArr = filePath.split(",");
+            Integer fileLen = filePathArr.length;
+            String fileName = "";
+            msg = "success";
+            for(int j = 0 ; j < fileLen ; j++){
+        		fileName = filePathArr[j].substring(filePathArr[j].lastIndexOf("\\") + 1);
+//        		book= Workbook.getWorkbook(new File(filePathArr[j]),wbs);
+        		book= Workbook.getWorkbook(new File(WebUrl.DATA_URL_PRO + "\\" + filePathArr[j]),wbs);
+        		//获得第一个工作表对象(ecxel中sheet的编号从0开始,0,1,2,3,....)  
+        		sheet=book.getSheet(6); 
+        		Integer i = 2;
+                Integer maxRow = sheet.getRows();
+        		CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
+        		if(cpyUser != null){
+        			Integer cpyId = cpyUser.getCpyInfoTb().getId();
+        			while(i < maxRow){
+        	        	//获取每一行的单元格   
+        	            cell1=sheet.getCell(0,i);//（列，行）  
+        	            if("".equals(cell1.getContents())==true)    //如果读取的数据为空  
+        	                break;  
+        	            String zlNo = sheet.getCell(1,i).getContents().replace(" ", "").replace("\t", "");//专利号
+        	            String feeName = sheet.getCell(3,i).getContents().replace(" ", "").replace("\t", "");//费用名称
+        	            String jfDate = sheet.getCell(10,i).getContents().replace(" ", "").replace("\t", "");//缴费时间;
+        	            String bankSerialNo = sheet.getCell(11,i).getContents().replace(" ", "").replace("\t", "");//银行流水号
+        	            String feeBatchNo = sheet.getCell(12,i).getContents().replace(" ", "").replace("\t", "");//缴费批次号
+        	            String fpDate = "";
+        	            String fpNo = "";
+        	            Map<String,String> map_d = new HashMap<String,String>();
+        	            map_d.put("fileName", fileName);//读取的文件清单
+        	            if(!zlNo.equals("")){
+        	            	//代理机构缴完费后-补充缴费信息
+        	            	List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(cpyId, zlNo, feeName);
+        	            	if(feeList.size() > 0){
+        	            		ZlajFeeInfoTb fee = feeList.get(0);
+        	            		Integer feeId = fee.getId();
+        	            		if(fee.getFeeStatus().equals(0)){//未缴费
+        	            			if(!jfDate.equals("") && !feeBatchNo.equals("") && !bankSerialNo.equals("")){
+        	            				//修改费用状态
+            		            		fm.updateComJfInfoById(feeId, jfDate);
+            		            		//修改缴费信息
+            		            		fm.updateFeeInfoById(feeId, feeBatchNo, bankSerialNo, fpDate, fpNo);
+            		            		//修改任务中的缴费提醒
+            		            		//修改/增加流程
+            		            		map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]缴费成功");
+        	            			}else{
+        	            				map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]中缴费日期、银行流水、缴费批次不能为空");
+        	            			}
+        	            		}else{
+        	            			map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]已缴费，无需再次缴费");
+        	            		}
+        	            	}else{
+        	            		map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]匹配失败");
+        	            	}
+        	            }else{
+        	            	map_d.put("readInfo", "读取专利号错误");
+        	            }
+        	            list_d.add(map_d);
+        	            i++;
+        	        }
+        		}
+        	}
+        }
+		map.put("result", msg);
+		map.put("readList", list_d);
         this.getJsonPkg(map, response);
 		return null;
 	}
