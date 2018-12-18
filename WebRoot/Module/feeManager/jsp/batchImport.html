@@ -9,14 +9,15 @@
 <body style="background:#fff;">
 	<div class="importBtn">
 		<p><i class="iconfont layui-extend-daoru"></i>缴费单据批量导入</p>
-		<button class="layui-btn readTzsBtn" style="position:absolute;right:50px;top:3px;">读取通知书</button>
+		<!--  button class="layui-btn readTzsBtn" style="position:absolute;right:50px;top:3px;">读取通知书</button-->
 		<a class="closeBtns" href="javascript:void(0)"><i class="layui-icon layui-icon-close"></i></a>
 	</div>
 	<div class="importConTit">
 		<button type="button" class="layui-btn layui-btn-normal" id="selFileBtn">选择文件</button> 
-		<span class="noticeSpan">注：缴费单据单个文件大小不能超过10M，一次最多可上传20个缴费单据,单据格式必须是excel表格.xls格式的！ <em class="hasSelWords"></em></span>
-		<button type="button" class="layui-btn" id="upListAction">上传通知书</button>
-		
+		<span class="noticeSpan">注：缴费单据单个文件大小不能超过10M，一次最多可上传20个缴费单据,excel表格须是.xls格式的！ <em class="hasSelWords"></em></span>
+		<button type="button" class="layui-btn" id="upListAction">上传缴费单据</button>
+		<!-- rotateIcon -->
+		<!-- span class="showHideBtn" isOpenFlag="true"><em>展开</em><i class="iconfont layui-extend-more"></i></span -->
 	</div>
 	<div class="importCon">
 		<input id="fujianInp" name="zlUpCl" type="hidden"/>
@@ -31,6 +32,17 @@
 	      <tbody id="upLoadFileList"></tbody>
 	    </table>
 	</div>
+	<!-- 读取结果 -->
+	<div class="readResWrap">
+		<ul class="commonResTit readResTit_fee">
+			<li class="oneWid_fee">文件名</li>
+			<li class="towWid_fee">读取结果</li>
+		</ul>
+		<ul class="commonResCon readResCon_fee"></ul>
+		<!--  div class="goOn">
+			<button class="layui-btn">继续批量导入</button>
+		</div-->
+	</div>
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
@@ -44,7 +56,6 @@
 			var layer = layui.layer,
 				upload = layui.upload,
 				globalUpload = layui.upLoadFiles;
-				
 			var page = {
 				init : function(){
 					this.bindEvent();
@@ -56,6 +67,18 @@
 						var index= parent.layer.getFrameIndex(window.name);
 						parent.layer.close(index);
 					});
+					/*$('.showHideBtn').on('click',function(){
+						if($(this).attr('isOpenFlag') == 'true'){
+							$(this).find('em').html('隐藏');
+							$(this).find('i').addClass('rotateIcon');
+							$(this).attr('isOpenFlag','false');
+						}else{
+							$(this).find('em').html('展开');
+							$(this).find('i').removeClass('rotateIcon');
+							$(this).attr('isOpenFlag','true');
+						}
+						$('.importCon').slideToggle();
+					});*/
 					$('.readTzsBtn').on('click',function(){
 						//var indexLayer = globalUpload.data.indexLayer;
 						//parent.parent.$('body').append(indexLayer);

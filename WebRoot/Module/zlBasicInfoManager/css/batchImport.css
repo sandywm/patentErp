@@ -41,6 +41,8 @@ body{
 }
 .importConTit{
 	width:98%;
+	height:38px;
+	line-height:38px;
 	position:fixed;
 	left:1%;
 	top:41px;
@@ -55,9 +57,7 @@ body{
 	margin:10px 0 0 1%;
 }
 #upListAction{
-	position:absolute;
-	right:0;
-	top:12px;
+	float:right;
 	display:none;
 }
 .noticeSpan{
@@ -65,4 +65,59 @@ body{
 }
 .importCon{
 	margin-top:100px;
+}
+.showHideBtn{
+	float:right;
+	color:#F47837;
+	cursor:pointer;
+	display:none;
+}
+.showHideBtn em{
+	font-style:normal;
+}
+.layui-extend-more{
+	color:#F47837;
+	font-size:14px;
+}
+.layui-extend-more.rotateIcon{
+	display:inline-block;
+    transform: rotate(90deg);
+}
+/* 读取结果 */
+.readResWrap{
+	width:98%;
+	margin:100px auto 0;
+	color:#666;
+	border:1px solid #e6e6e6;
+	display:none;
+}
+.commonResTit{
+	height:40px;
+	line-height:40px;
+	background:#f2f2f2;
+	border-bottom:1px solid #e6e6e6;
+}
+.commonResCon li{
+	border-bottom:1px solid #e6e6e6;
+	height:40px;
+	line-height:40px;
+}
+.commonResCon li:last-child{
+	border-bottom:none;
+}
+.commonResTit li,
+.commonResCon li p{
+	float:left;
+	text-align:center;
+	box-sizing:border-box;
+}
+.oneWid_fee{
+	width:35%;
+	border-right:1px solid #e6e6e6;
+}
+.towWid_fee{
+	width:65%;
+}
+.oddColor{
+	background:#f1f1f1;
 }

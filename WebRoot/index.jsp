@@ -107,6 +107,13 @@
 	        © 2018 版权所有 Copyright@2018 Sandy.wm All Rights Reserved.
 	    </div-->
   	</div>
+  	<!-- div class="indexLayer">
+  		<div class="loadingWrap">
+	  		<div class="spinner"></div>
+	  		<p>正在读取中<span class="dotting"></span></p>
+	  		<p>请勿有其他操作</p>
+  		</div>
+  	</div -->
   	<script src="/plugins/jquery/jquery.min.js"></script>
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">

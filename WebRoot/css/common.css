@@ -68,6 +68,7 @@
 }
 .indexLayer{
 	background:rgba(0,0,0,.7);
+	/*display:none;*/
 }
 .tmpIndexLayer{
 	background:rgba(0,0,0,.01);
@@ -93,6 +94,9 @@
 .loadingWrap i.layui-extend-succ.readSucc{
 	font-size:35px;
 	color:#5FB878;
+}
+.upTipsTxt{
+	line-height:120px;
 }
 @keyframes blink{
   0% {opacity: 1;}

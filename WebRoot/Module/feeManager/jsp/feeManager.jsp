@@ -134,6 +134,9 @@
 	   			        }
 					});
 				},
+				test:function(){
+					alert("hello,haha")
+				},
 				bindEvent : function(){
 					var _this = this;
 					this.queryFun();

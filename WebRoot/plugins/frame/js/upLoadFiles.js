@@ -1,12 +1,19 @@
+/**
+ * @Description: 上传通用
+ * @author: hlf
+ */
 var errorTypeFlag = false;//判断当前上传的文件类型是否是正确的
-layui.define(['element','jquery','upload','form'],function(exports){
+layui.define(['element','jquery','upload','form','readRes'],function(exports){
 	var element = layui.element,
-	upload = layui.upload,form = layui.form;
+	upload = layui.upload,form = layui.form,
+	readRes = layui.readRes;
 	var obj = {
 		data : {
-			tmpIndexLayer : '<div class="tmpIndexLayer"></div>',//用于上传成功倒计时预防用户点击其他误操作
-    		indexLayer : '<div class="indexLayer"><div class="loadingWrap"><div class="spinner"></div><p>正在读取中<span class="dotting"></span></p><p>请勿有其他操作</p></div></div>',
-    		succLayer : '<div class="indexLayer"><div class="loadingWrap"><i class="iconfont layui-extend-succ readSucc layui-anim-scale"></i><p class="succTxt">读取成功</p></div></div>'
+			globalOpts : '',
+    		indexLayer : '<div class="indexLayer"><div class="loadingWrap"></div></div>',
+    		upSuccTips : '<p class="upTipsTxt">上传成功，<span id="countNum_up"></span>秒后开始自动读取</p>',
+    		readingTips : '<div class="spinner"></div><p>正在读取中<span class="dotting"></span></p><p>请勿有其他操作</p>',
+    		readSuccTips : '<i class="iconfont layui-extend-succ readSucc"></i><p class="succTxt">读取成功，<span id="countNum"></span>秒后关闭</p>'
 		},
 		switchZlTypeCHN : function(zlTypeEng){
 			var zlTypeCHN = '';
@@ -22,9 +29,7 @@ layui.define(['element','jquery','upload','form'],function(exports){
 			return zlTypeCHN;
 		},
 		uploadFiles : function(url,maxNumber,fileType,opts){
-			/*setTimeout(function(){
-				parent.parent.$('body').append(obj.data.succLayer);
-			},2000);*/
+			this.data.globalOpts = opts;
 			var imageListView = $('#upLoadFileList')
 			,_this = this
 			 //,alreadyUploadFiles={}//记录已经上传成功的文件相对路径（后台返回）
@@ -60,6 +65,11 @@ layui.define(['element','jquery','upload','form'],function(exports){
 				  ,choose: function(obj){
 				  	  var that = this,zlTypeTxt='';
 				      //读取本地文件
+				  	  if($('.commonResCon li').length > 0){//通知书/缴费单据批量导入第二次
+				  		$('.importCon').show();
+				  		$('.readResWrap').hide();
+				  		$('.commonResCon').html('');
+				  	  }
 				  	  if(opts == 'zlTaskOpts'){
 				  		zlTypeTxt = parent.globalTaskOpts.zlType;
 				  	  }else{
@@ -107,13 +117,13 @@ layui.define(['element','jquery','upload','form'],function(exports){
 						'</tr>'].join(''));
 					    var noUpDoneLen = $('.noUpDone').length;
 					    var hasUpDoneLen = $('.hasUpDone').length;
-				        if(opts == 'batchImp_tzs'){
+				        if(opts == 'batchImp_tzs' || opts == 'batchImp_fee'){
 				        	$('.hasSelWords').html('已选择' + ((noUpDoneLen+1) + hasUpDoneLen) + '个文件,' + (noUpDoneLen+1) + '个未上传，' + hasUpDoneLen + "个已上传");
 				        }
 				     	//删除
 				        tr.find('.deleteBtn_sel').on('click', function(){
 				        	var noUpDoneLen = $('.noUpDone').length,hasUpDoneLen = $('.hasUpDone').length;
-				        	if(opts == 'batchImp_tzs'){
+				        	if(opts == 'batchImp_tzs' || opts == 'batchImp_fee'){
 				        		$('.hasSelWords').html('已选择' + ((noUpDoneLen-1) + hasUpDoneLen) + '个文件,' + (noUpDoneLen-1) + '个未上传，' + hasUpDoneLen + "个已上传");
 					    	    if(noUpDoneLen == 1 && hasUpDoneLen == 0){//一个都未上传
 					    	    	$('.hasSelWords').html('');
@@ -161,7 +171,6 @@ layui.define(['element','jquery','upload','form'],function(exports){
 				  }
 				  ,done: function(res, index, upload){
 					layer.closeAll('loading');
-					var tmpUpSuccPath = [];
 				    if(res.msg == 'success'){ //上传成功
 				      var tr = imageListView.find('tr#upload-'+ index)
 				      ,tds = tr.children(),noUpDoneLen = $('.noUpDone').length,hasUpDoneLen = $('.hasUpDone').length;
@@ -174,24 +183,10 @@ layui.define(['element','jquery','upload','form'],function(exports){
 					      tds.eq(4).find('.uploadInpHid').val(res.data[0].src);
 						  $('.hasSelWords').html('已选择' + (noUpDoneLen + hasUpDoneLen) + '个文件, '+ (noUpDoneLen-1) +'个未上传，' + (hasUpDoneLen+1) + "已上传");
 						  if((noUpDoneLen + hasUpDoneLen) == (hasUpDoneLen+1)){
-							  //执行读取通知书 调出遮罩层
-							  var tmpIndexlayer = _this.data.tmpIndexLayer, indexLayer = _this.data.indexLayer,tmpUrl = '',filePath = '';
-							  //console.log($('body').html())
-							  parent.parent.$('body').append(tmpIndexlayer);
-							  layer.msg('上传成功，3秒后将自动读取',{time:3000},function(){
-								  parent.parent.$('body').find('.tmpIndexLayer').hide();
-								  parent.parent.$('body').append(indexLayer);
-								  $('input[name="hasUpSuccInp"]').each(function(i){
-									  tmpUpSuccPath.push($('input[name="hasUpSuccInp"]').eq(i).val());
-								  });
-								  if(opts == 'batchImp_tzs'){//读取通知书
-									  tmpUrl = '/zlm.do?action=dealTzsDetail';
-								  }else if(opts == 'batchImp_fee'){//读取导入费用单据
-									  tmpUrl = '/fee.do?action=dealYjFeeExcel';
-								  }
-								  filePath = tmpUpSuccPath.join(',');
-								  _this.readImportFile(tmpUrl,filePath);
-							  });
+							  //执行读取通知书 调出遮罩层	
+							  parent.parent.$('body').append(_this.data.indexLayer);
+							  parent.parent.$('body').find('.loadingWrap').html(_this.data.upSuccTips);
+							  _this.showTime(3,parent.parent.$('body').find('#countNum_up'),opts,'',false);
 						  }
 				      }else{
 				    	  tds.eq(3).html('<span style="color: #5FB878;">上传成功</span>');
@@ -220,21 +215,50 @@ layui.define(['element','jquery','upload','form'],function(exports){
 				  }
 			});
 		},
+		//倒计时
+		showTime : function(count,obj,opts,readInfo,isReadSucFlag){
+			var _this = this,tmpUrl = '',filePath = '',tmpUpSuccPath=[];
+			$(obj).html(count);
+			if(count == 0){
+				if(isReadSucFlag){//批量读取成功
+					parent.parent.$('body').find('.indexLayer').remove();
+					readRes.renderReadRes(opts,readInfo);//渲染批量读取结果
+				}else{//上传成功，倒计时开始批量读取
+					parent.parent.$('body').find('.loadingWrap').html(_this.data.readingTips);
+					$('input[name="hasUpSuccInp"]').each(function(i){
+						tmpUpSuccPath.push($('input[name="hasUpSuccInp"]').eq(i).val());
+					});
+					if(opts == 'batchImp_tzs'){//读取通知书
+						tmpUrl = '/zlm.do?action=dealTzsDetail';
+					}else if(opts == 'batchImp_fee'){//读取导入费用单据
+						tmpUrl = '/fee.do?action=dealYjFeeExcel';
+					}
+					filePath = tmpUpSuccPath.join(',');
+					_this.readImportFile(tmpUrl,filePath);
+				}
+			}else{
+				count -= 1;
+				setTimeout(function () {
+					_this.showTime(count,obj,opts,readInfo,isReadSucFlag);
+				}, 1000);
+			}
+		},
 		//批量读取通知书/费用单据
 		readImportFile : function(tmpUrl,filePath){
-			console.log(tmpUrl)
-			console.log(filePath)
+			var _this = this;
 			$.ajax({
 				type:"post",
 				dataType:"json",
-				async:false,
+				async:true,
 				data:{filePath:filePath},
 				url:tmpUrl,
 				success:function(json){
 					if(json['result'] == 'success'){
-						console.log(json)
+						console.log(json.readInfo)
+						parent.parent.$('body').find('.loadingWrap').html(_this.data.readSuccTips);
+						_this.showTime(3,parent.parent.$('body').find('#countNum'),_this.data.globalOpts,json.readInfo,true);
 					}else if(json['result'] == 'error'){
-						
+						layer.msg('批量读取异常，请稍后重试',{icon:5,anim:6,time:1500});
 					}
 				}
 			});
