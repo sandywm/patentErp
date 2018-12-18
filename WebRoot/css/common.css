@@ -86,6 +86,14 @@
 .loadingWrap p{
 	color:#fff;
 }
+.loadingWrap p.succTxt{
+	color:#5FB878;
+	margin-top:5px;
+}
+.loadingWrap i.layui-extend-succ.readSucc{
+	font-size:35px;
+	color:#5FB878;
+}
 @keyframes blink{
   0% {opacity: 1;}
   50%{opacity: 1;}

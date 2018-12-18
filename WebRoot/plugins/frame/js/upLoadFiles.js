@@ -5,8 +5,9 @@ layui.define(['element','jquery','upload','form'],function(exports){
 	var obj = {
 		data : {
 			tmpIndexLayer : '<div class="tmpIndexLayer"></div>',//用于上传成功倒计时预防用户点击其他误操作
-    		indexLayer : '<div class="indexLayer"><div class="loadingWrap"><div class="spinner"></div><p>正在读取中<span class="dotting"></span></p><p>请勿有其他操作</p></div></div>'
-    	},
+    		indexLayer : '<div class="indexLayer"><div class="loadingWrap"><div class="spinner"></div><p>正在读取中<span class="dotting"></span></p><p>请勿有其他操作</p></div></div>',
+    		succLayer : '<div class="indexLayer"><div class="loadingWrap"><i class="iconfont layui-extend-succ readSucc layui-anim-scale"></i><p class="succTxt">读取成功</p></div></div>'
+		},
 		switchZlTypeCHN : function(zlTypeEng){
 			var zlTypeCHN = '';
 			if(zlTypeEng == 'fm'){
@@ -21,6 +22,9 @@ layui.define(['element','jquery','upload','form'],function(exports){
 			return zlTypeCHN;
 		},
 		uploadFiles : function(url,maxNumber,fileType,opts){
+			/*setTimeout(function(){
+				parent.parent.$('body').append(obj.data.succLayer);
+			},2000);*/
 			var imageListView = $('#upLoadFileList')
 			,_this = this
 			 //,alreadyUploadFiles={}//记录已经上传成功的文件相对路径（后台返回）
@@ -175,14 +179,13 @@ layui.define(['element','jquery','upload','form'],function(exports){
 							  //console.log($('body').html())
 							  parent.parent.$('body').append(tmpIndexlayer);
 							  layer.msg('上传成功，3秒后将自动读取',{time:3000},function(){
-								  //console.log($('input[name="hasUpSuccInp"]').length)
 								  parent.parent.$('body').find('.tmpIndexLayer').hide();
 								  parent.parent.$('body').append(indexLayer);
 								  $('input[name="hasUpSuccInp"]').each(function(i){
 									  tmpUpSuccPath.push($('input[name="hasUpSuccInp"]').eq(i).val());
 								  });
-								  if(opts == 'batchImp_tzs'){
-									 // _this.readImportFile(url,filePath);
+								  if(opts == 'batchImp_tzs'){//读取通知书
+									  tmpUrl = '/zlm.do?action=dealTzsDetail';
 								  }else if(opts == 'batchImp_fee'){//读取导入费用单据
 									  tmpUrl = '/fee.do?action=dealYjFeeExcel';
 								  }
