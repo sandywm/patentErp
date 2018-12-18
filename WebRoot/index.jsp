@@ -9,10 +9,13 @@
 	<link href="/css/diyReset.css" rel="stylesheet" type="text/css"/>
 	<link href="/css/common.css" rel="stylesheet" type="text/css"/>
 	<link href="/css/index.css" rel="stylesheet" type="text/css"/>
+	<link href="/css/dottingAnimation.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/layui/css/modules/layui-icon-extend/iconfont.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
 	<script src="/plugins/pace/pace.min.js"></script>
 	<script type="text/javascript">
+		var txt = 'alla的 lla';
+		var testIndex = 0;
 		var roleName = "${sessionScope.login_user_role_name}",
 			loginType = "${sessionScope.login_type}";
 	</script>
@@ -93,8 +96,8 @@
 	                	<!--  iframe id="mainIframe" src="pubZl.do?action=goPubZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!--  iframe id="mainIframe" src="customer.do?action=goCusPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!-- iframe id="mainIframe" src="zlyq.do?action=goZlyqPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe -->
-	                	<iframe id="mainIframe" src="zlm.do?action=goZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
-	                	<!-- iframe id="mainIframe" src="fee.do?action=goFeePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
+	                	<!-- iframe id="mainIframe" src="zlm.do?action=goZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
+	                	<iframe id="mainIframe" src="fee.do?action=goFeePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
 	                </div>
 	            </div>
 	        </div>
@@ -104,6 +107,7 @@
 	        © 2018 版权所有 Copyright@2018 Sandy.wm All Rights Reserved.
 	    </div-->
   	</div>
+  	<script src="/plugins/jquery/jquery.min.js"></script>
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
   		//console.log(roleName + "--roleName" + loginType)

@@ -19,58 +19,15 @@
   				<div class="layui-card hasPadBot">
   					<div class="layui-tab layui-tab-brief" lay-filter="feeTabFilter">
   						<a id="exportFeeBtn_noSub" class="posAbs newAddBtn" data-type="getCheckData" href="javascript:void(0)"><i class="iconfont layui-extend-daochuexcel"></i>导出未缴费用账单</a>
+  						<a id="importFeeBtn" class="posAbs newAddBtn" data-type="getCheckData" href="javascript:void(0)"><i class="iconfont layui-extend-daoru"></i>批量导入缴费单据</a>
   						<ul class="layui-tab-title">
   							<li class="layui-this" feeStatus="0">未缴费</li>
   							<li feeStatus="1">已缴费</li>
   							<li feeStatus="2">费用导出记录</li>
+  							<li feeStatus="3">缴费记录</li>
   						</ul>
   						<div class="layui-tab-content">
-  							<div class="searchPart layui-form">
-  								<div class="itemDiv zlNoDiv fl">
-		  							<div class="layui-input-inline">
-		  								<input type="text" id="zlNoInp" placeholder="请输入专利申请/专利号" autocomplete="off" class="layui-input">
-		  							</div>
-		  						</div>
-		  						<div class="itemDiv ajNoDiv fl">
-		  							<div class="layui-input-inline">
-		  								<input type="text" id="ajNoInp" placeholder="请输入案件编号" autocomplete="off" class="layui-input">
-		  							</div>
-		  						</div>
-		  						<div class="itemDiv cusIdDiv fl">
-		  							<div class="layui-input-inline">
-		  								<input type="text" id="cusIdInp" placeholder="客户/申请人编号" autocomplete="off" class="layui-input">
-		  							</div>
-		  						</div>
-		  						<div class="itemDiv diffDaysDiv fl">
-		  							<div class="layui-input-inline">
-		  								<input id="diffDaysSelInp" type="hidden" value="15"/>
-		  								<select id="diffDaysSel" lay-filter="diffDaysSel">
-									       	<option value="">请选择距代理机构缴费期限(全部)</option>
-									    	<option value="1">1天</option>
-							    			<option value="7">7天</option>
-							    			<option value="15">15天</option>
-							    			<option value="30">30天</option>
-							    			<option value="60">60天</option>
-									    </select>
-		  							</div>
-		  						</div>
-		  						<div class="itemDiv sEDateDiv fl">
-		  							<div class="layui-input-inline">
-		  								<input type="text" id="sDateInp" placeholder="请选择缴费日期(开始)" autocomplete="off" class="layui-input">
-		  							</div>
-		  						</div>
-		  						<div class="itemDiv sEDateDiv fl">
-		  							<div class="layui-input-inline">
-		  								<input type="text" id="eDateInp" placeholder="请选择缴费日期(结束)" autocomplete="off" class="layui-input">
-		  							</div>
-		  						</div>
-		  						<div class="itemDiv fl">
-		  							<div class="layui-input-inline">
-		  								<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search
-	 "></i></button>
-		  							</div>
-		  						</div>
-  							</div>
+  							<div class="searchPart layui-form"></div>
   							<div class="layui-tab-item layui-show">
   								<div id="noData_0" class="noData"></div>
   								<table id="feeListTab_0" class="layui-table" lay-filter="feeInfoListTable"></table>
@@ -83,6 +40,10 @@
   							<div class="layui-tab-item">
   								<div id="noData_2" class="noData"></div>
   								<table id="feeListTab_2" class="layui-table" lay-filter="feeInfoListTable"></table>
+  							</div>
+  							<div class="layui-tab-item">
+  								<div id="noData_3" class="noData"></div>
+  								<table id="feeListTab_3" class="layui-table" lay-filter="feeInfoListTable"></table>
   							</div>
   						</div> 
   					</div>
@@ -104,24 +65,25 @@
 				table = layui.table,
 				form = layui.form,
 				laydate = layui.laydate;
-			laydate.render({elem:'#sDateInp'});
-			laydate.render({elem:'#eDateInp'});
 			//tab点击事件的监听
   			element.on('tab(feeTabFilter)', function(data){
   				var feeStatus = $(this).attr('feeStatus');
   				page.data.globalFeeStatus = feeStatus;//切换缴费状态
+  				$('#exportFeeBtn_noSub').hide();
+  				$('#importFeeBtn').hide();
   				if(feeStatus == '0'){//未缴费 不分页
   					page.data.isHasPageFun = false;
-  					page.clickShow('showPart');
+  					$('#exportFeeBtn_noSub').show();
   				}else if(feeStatus == '1'){//已缴费 开启分页
   					page.data.isHasPageFun = true;
-  					$('.diffDaysDiv').hide();
-  					$('.sEDateDiv').show();
-  					$('#exportFeeBtn_noSub').hide();
   				}else if(feeStatus == '2'){
-  					page.clickShow('hidePart');
+
+  				}else if(feeStatus == '3'){
+  					$('#importFeeBtn').show();
   				}
+  				page.createSearchHt(feeStatus);
   				loadFeeInfoList('initLoad');
+  				page.queryFun();
  			});
   			form.on('select(diffDaysSel)', function(data){
 				var value = data.value;
@@ -143,7 +105,6 @@
 			    		layer.msg('请选择您要导出的费用记录', {icon:5,anim:6,time:1000});
 						return;
 			    	}
-			    	
 			    }
 			};
 			var page = {
@@ -158,6 +119,7 @@
 					//获取权限
 					this.data.addFeeFlag = common.getPermission('addFee','',0);
 					$('#exportFeeBtn_noSub').show();
+					this.createSearchHt(0);
 					loadFeeInfoList('initLoad');
 					this.bindEvent();
 					$.ajax({
@@ -172,31 +134,31 @@
 	   			        }
 					});
 				},
-				//点击不同的标签显示不同的查询条件
-				clickShow : function(opts){
-					if(opts == 'hidePart'){
-						$('.sEDateDiv').show();
-	  					$('#exportFeeBtn_noSub').hide();
-	  					$('.zlNoDiv').hide();
-	  					$('.ajNoDiv').hide();
-	  					$('.diffDaysDiv').hide();
-	  					$('.cusIdDiv').hide();
-	  					$('.sEDateDiv').find('input').val('');
-					}else if(opts == 'showPart'){
-						$('.zlNoDiv').show();
-	  					$('.ajNoDiv').show();
-	  					$('.diffDaysDiv').show();
-	  					$('.sEDateDiv').hide();
-	  					$('.sEDateDiv').find('input').val('');
-	  					$('#exportFeeBtn_noSub').show();
-	  					$('.cusIdDiv').show();
-					}
-				},
 				bindEvent : function(){
 					var _this = this;
-					//查询
-					$('#queryBtn').on('click',function(){
-						loadFeeInfoList('queryLoad');
+					this.queryFun();
+					//缴费单据批量导入
+					$('#importFeeBtn').on('click',function(){
+						if(_this.data.addFeeFlag){
+							var fullScreenIndex = tmpIndex = layer.open({
+								title:'',
+								type: 2,
+							  	area: ['700px', '500px'],
+							  	fixed: true, //不固定
+							  	maxmin: false,
+							  	shadeClose :false,
+							  	closeBtn:0,
+							  	content: '/Module/feeManager/jsp/batchImport.html',
+							  	end:function(){
+							  		/*if(addZlFlag){
+							  			loadZlInfoList('initLoad');
+							  		}*/
+							  	}
+							});	
+							layer.full(fullScreenIndex);
+						}else{
+							layer.msg('抱歉，您暂无批量导入缴费单据的权限', {icon:5,anim:6,time:1200});
+						}
 					});
 					//导出费用账单
 					$('#exportFeeBtn_noSub').on('click',function(){
@@ -221,6 +183,42 @@
 							layer.closeAll('loading');
 					    }
 					});
+				},
+				queryFun : function(){
+					$('#queryBtn').on('click',function(){
+						loadFeeInfoList('queryLoad');
+					});
+				},
+				//创建查询层
+				createSearchHt : function(feeStatus){
+					var strHtml1='',strHtml2='',strHtml3='',strHtml4='';
+					strHtml1 += '<div class="itemDiv zlNoDiv fl"><div class="layui-input-inline">';
+					strHtml1 += '<input type="text" id="zlNoInp" placeholder="请输入专利申请/专利号" autocomplete="off" class="layui-input"></div></div>';
+					strHtml1 += '<div class="itemDiv ajNoDiv fl"><div class="layui-input-inline">';
+					strHtml1 += '<input type="text" id="ajNoInp" placeholder="请输入案件编号" autocomplete="off" class="layui-input"></div></div>';
+					strHtml1 += '<div class="itemDiv cusIdDiv fl"><div class="layui-input-inline">';
+					strHtml1 += '<input type="text" id="cusIdInp" placeholder="客户/申请人编号" autocomplete="off" class="layui-input"></div></div>';
+					strHtml2 += '<div class="itemDiv diffDaysDiv fl"><div class="layui-input-inline"><input id="diffDaysSelInp" type="hidden" value="15"/>';
+					strHtml2 += '<select id="diffDaysSel" lay-filter="diffDaysSel"><option value="">请选择距代理机构缴费期限(全部)</option>';
+					strHtml2 += '<option value="1">1天</option><option value="7">7天</option><option value="15">15天</option><option value="30">30天</option><option value="60">60天</option>';
+					strHtml2 += '</select></div></div>';
+					strHtml3 += '<div class="itemDiv sEDateDiv fl"><div class="layui-input-inline">';
+					strHtml3 += '<input type="text" id="sDateInp" placeholder="请选择缴费日期(开始)" autocomplete="off" class="layui-input"></div></div>';
+					strHtml3 += '<div class="itemDiv sEDateDiv fl"><div class="layui-input-inline">';
+					strHtml3 += '<input type="text" id="eDateInp" placeholder="请选择缴费日期(结束)" autocomplete="off" class="layui-input"></div></div>';
+					strHtml4 += '<div class="itemDiv fl"><div class="layui-input-inline">';
+					strHtml4 += '<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search"></i></button></div></div>';
+					if(feeStatus == 0){
+						$('.searchPart').html(strHtml1 + strHtml2 + strHtml4);
+						form.render();
+					}else if(feeStatus == 1){
+						$('.searchPart').html(strHtml1 + strHtml3 + strHtml4);
+					}else if(feeStatus == 2 || feeStatus == 3){
+						$('.searchPart').html(strHtml3 + strHtml4);
+						form.render();
+					}
+					laydate.render({elem:'#sDateInp'});
+					laydate.render({elem:'#eDateInp'});
 				}
 			};
 					  
@@ -259,7 +257,7 @@
 						return;
 					}
 				}
-				layer.load('1');
+				//layer.load('1');
 				if(page.data.globalFeeStatus == 0 || page.data.globalFeeStatus == 1){
 					table.render({
 						elem: '#feeListTab_'+page.data.globalFeeStatus,
@@ -353,6 +351,8 @@
 							callBackDone(res);
 						}
 					});
+				}else if(page.data.globalFeeStatus == 3){//缴费记录
+					
 				}
 				function callBackDone(res){
 					layer.closeAll('loading');

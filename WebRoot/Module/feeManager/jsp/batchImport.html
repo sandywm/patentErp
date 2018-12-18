@@ -4,17 +4,17 @@
  	<meta charset="utf-8"/>
  	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
  	<link href="/Module/zlBasicInfoManager/css/batchImport.css" rel="stylesheet" type="text/css"/>
-  	<title>通知书批量导入</title>
+  	<title>缴费单据批量导入</title>
 </head>
 <body style="background:#fff;">
 	<div class="importBtn">
-		<p><i class="iconfont layui-extend-daoru"></i>通知书批量导入</p>
+		<p><i class="iconfont layui-extend-daoru"></i>缴费单据批量导入</p>
 		<button class="layui-btn readTzsBtn" style="position:absolute;right:50px;top:3px;">读取通知书</button>
 		<a class="closeBtns" href="javascript:void(0)"><i class="layui-icon layui-icon-close"></i></a>
 	</div>
 	<div class="importConTit">
 		<button type="button" class="layui-btn layui-btn-normal" id="selFileBtn">选择文件</button> 
-		<span class="noticeSpan">注：通知书单个文件大小不能超过10M，一次最多可上传20个通知书文件,文件必须是.zip格式的！ <em class="hasSelWords"></em></span>
+		<span class="noticeSpan">注：缴费单据单个文件大小不能超过10M，一次最多可上传20个缴费单据,单据格式必须是excel表格.xls格式的！ <em class="hasSelWords"></em></span>
 		<button type="button" class="layui-btn" id="upListAction">上传通知书</button>
 		
 	</div>
@@ -30,7 +30,6 @@
 	      </tr></thead>
 	      <tbody id="upLoadFileList"></tbody>
 	    </table>
-	    
 	</div>
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
@@ -110,8 +109,8 @@
 					});
 				},
 				upLoadTzs : function(){
-					var url = '/upload.do?action=uploadFile&ajId=0&fileType=tzs',fileType='zip';
-					globalUpload.uploadFiles(url,20,fileType,'batchImp_tzs');
+					var url = '/upload.do?action=uploadFile&ajId=0&fileType=fee',fileType='xls';
+					globalUpload.uploadFiles(url,20,fileType,'batchImp_fee');
 				}
 			};
 			$(function(){

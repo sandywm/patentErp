@@ -33,7 +33,7 @@
   	<script src="/plugins/jquery/jquery.min.js"></script>
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
-    	var loginType=parent.loginType,roleName=parent.roleName;
+    	var loginType=parent.loginType,roleName=parent.roleName,tmpIndex=0;
 		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0,globalLcMxId:0,applyCause:'',applyName:'',yjId:0,zlType:''},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
 		layui.config({
 			base: '/plugins/frame/js/'
@@ -145,7 +145,7 @@
 					});
 					$('#importBtn').on('click',function(){
 						if(_this.data.dealZlFlag){
-							var fullScreenIndex = layer.open({
+							var fullScreenIndex = tmpIndex = layer.open({
 								title:'',
 								type: 2,
 							  	area: ['700px', '500px'],
@@ -160,6 +160,9 @@
 							  		}*/
 							  	}
 							});	
+							//alert(tmpIndex)
+							parent.testIndex = tmpIndex;
+							//alert(parent.testIndex + "--" + tmpIndex)
 							layer.full(fullScreenIndex);
 						}else{
 							layer.msg('抱歉，您暂无批量导入通知书的权限', {icon:5,anim:6,time:1000});
@@ -364,7 +367,7 @@
 								if(taskStaVal == 0){
 									var strHtml = '';
 									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" lcNo="'+ d.lcNo +'" zlId="'+ d.zlId +'" zlType="'+ d.zlType +'" ajTitle="'+ d.zlTitle +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
-									if(roleName == '管理员' || this.data.fpZlFlag == true){
+									if(roleName == '管理员' || page.data.fpZlFlag == true){
 										if(d.applyFlag){
 											strHtml += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="lcfpFun" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'" taskOpts="1" fzUserId="'+ d.fzUserId +'" currLcNo="'+ d.lcNo +'"><i class="iconfont layui-extend-yijiao"></i>任务移交</a>';
 										}
@@ -419,7 +422,7 @@
 							{field : 'checkUserName', title: '审核人姓名', width:200, align:'center'},
 							{field : 'checkDate', title: '审核时间', width:200, align:'center'},
 							{field : 'set', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
-								if(roleName == '管理员' || this.data.fpZlFlag == true){
+								if(roleName == '管理员' || page.data.fpZlFlag == true){
 									return '<a lay-event="verifyFun" class="layui-btn layui-btn-xs" zlId="'+ d.zlId +'" yjId="'+ d.yjId +'" applyUserName="'+ d.applyUserName +'" applyCause="'+ d.applyCause +'" taskOpts="1" ajTitle="'+ d.zlTitle +'" lcTask="'+ d.taskName +'" fzUserId="'+ d.applyUserId +'"><i class="layui-icon layui-icon-vercode"></i>审核</a>';
 								}
 								//return '<a class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-edit"></i>去完成</a> <a class="layui-btn layui-btn-danger layui-btn-xs"><i style="font-size:20px;" class="iconfont layui-extend-yijiao"></i>移交申请</a>';
@@ -427,7 +430,7 @@
 						]],
 						done : function(res){
 							callBackDone(res);
-							if($('#tranStatusInp').val() == 1 || $('#tranStatusInp').val() == 2 || roleName != '管理员' || page.data.fpZlFlag == true){
+							if($('#tranStatusInp').val() == 1 || $('#tranStatusInp').val() == 2){
 								$('.layui-table-box').find('[data-field="set"]').css('display','none');
 							}
 						}
