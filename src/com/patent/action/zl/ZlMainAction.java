@@ -4229,7 +4229,7 @@ public class ZlMainAction extends DispatchAction {
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		String roleName = this.getLoginRoleName(request);
-		String zipPath = Transcode.unescape_new1("zipPath", request);//上传的通知书路径cpyUser/u_id/###.zip（相对路径）
+		String zipPath = Transcode.unescape_new1("filePath", request);//上传的通知书路径cpyUser/u_id/###.zip（相对路径）
 		String path_pre = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\";
 		double lcNo = 0d;//当前流程号
 		boolean abilityFlag = false;
@@ -4535,6 +4535,9 @@ public class ZlMainAction extends DispatchAction {
 								        				}
 					        						}
 					        					}else{
+					        						if(feeTypeName_final.equals("印花费")){
+					        							feeTypeName_final = "印花税";
+					        						}
 					        						List<FeeTypeInfoTb> ftList = fm.listInfoByName(feeTypeName_final);
 							        				if(ftList.size() > 0){
 						        						feeTypeId = ftList.get(0).getId();

@@ -578,7 +578,7 @@ public class FeeAction extends DispatchAction {
         	}
         }
 		map.put("result", msg);
-		map.put("readList", list_d);
+		map.put("readInfo", list_d);
         this.getJsonPkg(map, response);
 		return null;
 	}
