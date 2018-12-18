@@ -531,10 +531,10 @@ public class FeeAction extends DispatchAction {
         			Integer cpyId = cpyUser.getCpyInfoTb().getId();
         			while(i < maxRow){
         	        	//获取每一行的单元格   
-        	            cell1=sheet.getCell(0,i);//（列，行）  
+        	            cell1=sheet.getCell(1,i);//（列，行）  
         	            if("".equals(cell1.getContents())==true)    //如果读取的数据为空  
         	                break;  
-        	            String zlNo = sheet.getCell(1,i).getContents().replace(" ", "").replace("\t", "");//专利号
+        	            String zlNo = cell1.getContents().replace(" ", "").replace("\t", "");//专利号
         	            String feeName = sheet.getCell(3,i).getContents().replace(" ", "").replace("\t", "");//费用名称
         	            String jfDate = sheet.getCell(10,i).getContents().replace(" ", "").replace("\t", "");//缴费时间;
         	            String bankSerialNo = sheet.getCell(11,i).getContents().replace(" ", "").replace("\t", "");//银行流水号
@@ -552,11 +552,12 @@ public class FeeAction extends DispatchAction {
         	            		if(fee.getFeeStatus().equals(0)){//未缴费
         	            			if(!jfDate.equals("") && !feeBatchNo.equals("") && !bankSerialNo.equals("")){
         	            				//修改费用状态
-            		            		fm.updateComJfInfoById(feeId, jfDate);
-            		            		//修改缴费信息
-            		            		fm.updateFeeInfoById(feeId, feeBatchNo, bankSerialNo, fpDate, fpNo);
+//            		            		fm.updateComJfInfoById(feeId, jfDate);
+//            		            		//修改缴费信息
+//            		            		fm.updateFeeInfoById(feeId, feeBatchNo, bankSerialNo, fpDate, fpNo);
             		            		//修改任务中的缴费提醒
             		            		//修改/增加流程
+            		            		
             		            		map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]缴费成功");
         	            			}else{
         	            				map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]中缴费日期、银行流水、缴费批次不能为空");
