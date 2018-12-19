@@ -87,6 +87,7 @@ public class Constants {
 	public static final String WEB_CPY_BONUS_INFO = "cpy_bonus_info_Web";
 	public static final String WEB_FEE_EXPORT_RECORD_INFO = "fee_export_record_info_Web";
 	public static final String WEB_CUS_BACK_FEE_INFO = "cus_back_fee_info_Web";
+	public static final String WEB_FEE_IMPORT_RECORD_INFO = "fee_import_record_info_Web";
 	
 	//-------------------DAO-------------------------//
 	public static final String DAO_CPY_USER_INFO = "cpy_user_info_Dao";
@@ -119,4 +120,6 @@ public class Constants {
 	public static final String DAO_CPY_BONUS_INFO = "cpy_bonus_info_Dao";
 	public static final String DAO_FEE_EXPORT_RECORD_INFO = "fee_export_record_info_Dao";
 	public static final String DAO_CUS_BACK_FEE_INFO = "cus_back_fee_info_Dao";
+	public static final String DAO_FEE_IMPORT_RECORD_INFO = "fee_import_record_info_Dao";
+	public static final String DAO_FEE_IMPORT_DEAL_RECORD_INFO = "fee_import_deal_record_info_Dao";
 }

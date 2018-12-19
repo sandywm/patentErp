@@ -47,12 +47,15 @@ import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.FeeExportRecordInfo;
+import com.patent.module.FeeImportDealRecordInfo;
+import com.patent.module.FeeImportRecordInfo;
 import com.patent.module.ZlajFeeInfoTb;
 import com.patent.module.ZlajMainInfoTb;
 import com.patent.page.PageConst;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.CusBackFeeInfoManager;
 import com.patent.service.FeeExportRecordInfoManager;
+import com.patent.service.FeeImportRecordInfoManager;
 import com.patent.service.ZlajFeeInfoManager;
 import com.patent.service.ZlajMainInfoManager;
 import com.patent.tools.CommonTools;
@@ -502,17 +505,18 @@ public class FeeAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		FeeImportRecordInfoManager firm = (FeeImportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_IMPORT_RECORD_INFO);
 		String filePath = CommonTools.getFinalStr("filePath", request);
 		Map<String,Object> map = new HashMap<String,Object>();
 		List<Object> list_d = new ArrayList<Object>();
 		String msg = "error";
 		//读取excel内容
-		Sheet sheet;  
-        Workbook book;  
-        Cell cell1;
-        WorkbookSettings wbs = new WorkbookSettings();
-        wbs.setEncoding("GBK"); // 解决中文乱码
-        wbs.setSuppressWarnings(true); 
+//		Sheet sheet;  
+//        Workbook book;  
+//        Cell cell1;
+//        WorkbookSettings wbs = new WorkbookSettings();
+//        wbs.setEncoding("GBK"); // 解决中文乱码
+//        wbs.setSuppressWarnings(true); 
         if(!filePath.equals("")){
         	String[] filePathArr = filePath.split(",");
             Integer fileLen = filePathArr.length;
@@ -520,30 +524,48 @@ public class FeeAction extends DispatchAction {
             msg = "success";
             for(int j = 0 ; j < fileLen ; j++){
         		fileName = filePathArr[j].substring(filePathArr[j].lastIndexOf("\\") + 1);
-//        		book= Workbook.getWorkbook(new File(filePathArr[j]),wbs);
-        		book= Workbook.getWorkbook(new File(WebUrl.DATA_URL_PRO + "\\" + filePathArr[j]),wbs);
-        		//获得第一个工作表对象(ecxel中sheet的编号从0开始,0,1,2,3,....)  
-        		sheet=book.getSheet(6); 
-        		Integer i = 2;
-                Integer maxRow = sheet.getRows();
-        		CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
+        		String absoFilePath = WebUrl.DATA_URL_PRO + "\\" + filePathArr[j];
+        		File f = new File(absoFilePath);
+            	InputStream inputStream = new FileInputStream(f);
+            	HSSFWorkbook xssfWorkbook = new HSSFWorkbook(inputStream);
+            	HSSFSheet sheet = xssfWorkbook.getSheetAt(6);
+            	HSSFCellStyle style = xssfWorkbook.createCellStyle();  
+                style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+                style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+                style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+		        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        		HSSFFont font_1 = xssfWorkbook.createFont();    
+                font_1.setFontName("宋体");    
+                font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
+                font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
+                style.setFont(font_1);
+            	
+                CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
         		if(cpyUser != null){
         			Integer cpyId = cpyUser.getCpyInfoTb().getId();
-        			while(i < maxRow){
-        	        	//获取每一行的单元格   
-        	            cell1=sheet.getCell(1,i);//（列，行）  
-        	            if("".equals(cell1.getContents())==true)    //如果读取的数据为空  
-        	                break;  
-        	            String zlNo = cell1.getContents().replace(" ", "").replace("\t", "");//专利号
-        	            String feeName = sheet.getCell(3,i).getContents().replace(" ", "").replace("\t", "");//费用名称
-        	            String jfDate = sheet.getCell(10,i).getContents().replace(" ", "").replace("\t", "");//缴费时间;
-        	            String bankSerialNo = sheet.getCell(11,i).getContents().replace(" ", "").replace("\t", "");//银行流水号
-        	            String feeBatchNo = sheet.getCell(12,i).getContents().replace(" ", "").replace("\t", "");//缴费批次号
-        	            String fpDate = "";
-        	            String fpNo = "";
-        	            Map<String,String> map_d = new HashMap<String,String>();
-        	            map_d.put("fileName", fileName);//读取的文件清单
-        	            if(!zlNo.equals("")){
+        			String dealTime = CurrentTime.getCurrentTime();
+        			Integer firId = firm.addFIR(this.getLoginUserId(request), cpyId, fileName, dealTime, filePathArr[j]);
+        			if(firId > 0){
+        				for (int i = 2; i < sheet.getLastRowNum(); i++) {
+                    		HSSFRow row1 = sheet.getRow(i);
+                        	
+                        	String zlNo = row1.getCell(1).getStringCellValue().replace(" ", "").replace("\t", "");//专利号
+                        	if(zlNo.equals("")){
+                        		 break; 
+                        	}
+            	            String feeName = row1.getCell(3).getStringCellValue().replace(" ", "").replace("\t", "");//费用名称
+            	            String jfDate = row1.getCell(10).getStringCellValue().replace(" ", "").replace("\t", "");//缴费时间;
+            	            String bankSerialNo = row1.getCell(11).getStringCellValue().replace(" ", "").replace("\t", "");//银行流水号
+            	            String feeBatchNo = row1.getCell(12).getStringCellValue().replace(" ", "").replace("\t", "");//缴费批次号
+                        	
+            	            String fpDate = "";
+            	            String fpNo = "";
+            	            String dealStatus = "";
+            	            String dealResult = "";
+            	            Map<String,String> map_d = new HashMap<String,String>();
+            	            map_d.put("fileName", fileName);//读取的文件清单
         	            	//代理机构缴完费后-补充缴费信息
         	            	List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(cpyId, zlNo, feeName);
         	            	if(feeList.size() > 0){
@@ -552,34 +574,251 @@ public class FeeAction extends DispatchAction {
         	            		if(fee.getFeeStatus().equals(0)){//未缴费
         	            			if(!jfDate.equals("") && !feeBatchNo.equals("") && !bankSerialNo.equals("")){
         	            				//修改费用状态
-//            		            		fm.updateComJfInfoById(feeId, jfDate);
-//            		            		//修改缴费信息
-//            		            		fm.updateFeeInfoById(feeId, feeBatchNo, bankSerialNo, fpDate, fpNo);
+//                		            		fm.updateComJfInfoById(feeId, jfDate);
+//                		            		//修改缴费信息
+//                		            		fm.updateFeeInfoById(feeId, feeBatchNo, bankSerialNo, fpDate, fpNo);
             		            		//修改任务中的缴费提醒
             		            		//修改/增加流程
+        	            				dealStatus = "succ";
+        	            				dealResult = "专利号："+zlNo+"的["+feeName+"]缴费成功";
             		            		
-            		            		map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]缴费成功");
         	            			}else{
-        	            				map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]中缴费日期、银行流水、缴费批次不能为空");
+        	            				dealStatus = "fail";
+        	            				dealResult = "专利号："+zlNo+"的["+feeName+"]中缴费日期、银行流水、缴费批次不能为空";
         	            			}
         	            		}else{
-        	            			map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]已缴费，无需再次缴费");
+        	            			dealStatus = "alarm";
+        	            			dealResult = "专利号："+zlNo+"的["+feeName+"]已缴费，无需再次缴费";
         	            		}
         	            	}else{
-        	            		map_d.put("readInfo", "专利号："+zlNo+"的["+feeName+"]匹配失败");
+        	            		dealStatus = "fail";
+        	            		dealResult = "专利号："+zlNo+"的["+feeName+"]匹配失败";
         	            	}
-        	            }else{
-        	            	map_d.put("readInfo", "读取专利号错误");
-        	            }
-        	            list_d.add(map_d);
-        	            i++;
-        	        }
+        	            	map_d.put("readStatus", dealStatus);
+        	            	map_d.put("readInfo", dealResult);
+        	            	list_d.add(map_d);
+        	            	
+        	            	firm.addFIDR(firId, zlNo, feeName, dealTime, dealStatus, dealResult);
+            	            
+            	            HSSFCell cell = row1.getCell(13);
+        					style.setFont(font_1);
+        					cell.setCellStyle(style);
+        					cell.setCellValue(dealStatus);
+        					
+        					cell = row1.getCell(14);
+        					style.setFont(font_1);
+        					cell.setCellStyle(style);
+        					cell.setCellValue(dealResult);
+                        	
+                    	}
+        			}
         		}
+                
+            	FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器
+            	xssfWorkbook.write(fout);  
+                fout.close(); 
+        		
+//        		book= Workbook.getWorkbook(new File(WebUrl.DATA_URL_PRO + "\\" + filePathArr[j]),wbs);
+//        		//获得第一个工作表对象(ecxel中sheet的编号从0开始,0,1,2,3,....)  
+//        		sheet=book.getSheet(6); 
+//        		Integer i = 2;
+//                Integer maxRow = sheet.getRows();
+//        		CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
+//        		if(cpyUser != null){
+//        			Integer cpyId = cpyUser.getCpyInfoTb().getId();
+//        			String dealTime = CurrentTime.getCurrentTime();
+//        			Integer firId = firm.addFIR(this.getLoginUserId(request), cpyId, fileName, dealTime, filePathArr[j]);
+//        			if(firId > 0){
+//        				while(i < maxRow){
+//            	        	//获取每一行的单元格   
+//            	            cell1=sheet.getCell(1,i);//（列，行）  
+//            	            if("".equals(cell1.getContents())==true)    //如果读取的数据为空  
+//            	                break;  
+//            	            String zlNo = cell1.getContents().replace(" ", "").replace("\t", "");//专利号
+//            	            String feeName = sheet.getCell(3,i).getContents().replace(" ", "").replace("\t", "");//费用名称
+//            	            String jfDate = sheet.getCell(10,i).getContents().replace(" ", "").replace("\t", "");//缴费时间;
+//            	            String bankSerialNo = sheet.getCell(11,i).getContents().replace(" ", "").replace("\t", "");//银行流水号
+//            	            String feeBatchNo = sheet.getCell(12,i).getContents().replace(" ", "").replace("\t", "");//缴费批次号
+//            	            String fpDate = "";
+//            	            String fpNo = "";
+//            	            String dealStatus = "";
+//            	            String dealResult = "";
+//            	            Map<String,String> map_d = new HashMap<String,String>();
+//            	            map_d.put("fileName", fileName);//读取的文件清单
+//        	            	//代理机构缴完费后-补充缴费信息
+//        	            	List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(cpyId, zlNo, feeName);
+//        	            	if(feeList.size() > 0){
+//        	            		ZlajFeeInfoTb fee = feeList.get(0);
+//        	            		Integer feeId = fee.getId();
+//        	            		if(fee.getFeeStatus().equals(0)){//未缴费
+//        	            			if(!jfDate.equals("") && !feeBatchNo.equals("") && !bankSerialNo.equals("")){
+//        	            				//修改费用状态
+////                		            		fm.updateComJfInfoById(feeId, jfDate);
+////                		            		//修改缴费信息
+////                		            		fm.updateFeeInfoById(feeId, feeBatchNo, bankSerialNo, fpDate, fpNo);
+//            		            		//修改任务中的缴费提醒
+//            		            		//修改/增加流程
+//        	            				dealStatus = "succ";
+//        	            				dealResult = "专利号："+zlNo+"的["+feeName+"]缴费成功";
+//            		            		
+//        	            			}else{
+//        	            				dealStatus = "fail";
+//        	            				dealResult = "专利号："+zlNo+"的["+feeName+"]中缴费日期、银行流水、缴费批次不能为空";
+//        	            			}
+//        	            		}else{
+//        	            			dealStatus = "alarm";
+//        	            			dealResult = "专利号："+zlNo+"的["+feeName+"]已缴费，无需再次缴费";
+//        	            		}
+//        	            	}else{
+//        	            		dealStatus = "fail";
+//        	            		dealResult = "专利号："+zlNo+"的["+feeName+"]匹配失败";
+//        	            	}
+//        	            	map_d.put("readStatus", dealStatus);
+//        	            	map_d.put("readInfo", dealResult);
+//        	            	list_d.add(map_d);
+//        	            	i++;
+//        	            	firm.addFIDR(firId, zlNo, feeName, dealTime, dealStatus, dealResult);
+//            	        }
+//        			}
+//        			
+//        		}
         	}
         }
 		map.put("result", msg);
 		map.put("readInfo", list_d);
         this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 分页获取已导入缴费清单处理记录列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-19 下午04:47:03
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getPageFIR(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		FeeImportRecordInfoManager firm = (FeeImportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_IMPORT_RECORD_INFO);
+		String roleName = this.getLoginRoleName(request);
+		Integer currUserId = this.getLoginUserId(request);
+		String msg = "error";
+		Map<String,Object> map = new HashMap<String,Object>();
+		
+		if(this.getLoginType(request).equals("cpyUser")){
+			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
+			boolean abilityFlag = false;
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{//只获取自己的任务流程
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listFee");//只有具有浏览权限的人员
+			}
+			if(abilityFlag){
+				String addDateS = CommonTools.getFinalStr("sDate", request);
+				String addDateE = CommonTools.getFinalStr("eDate", request);
+				Integer count = firm.getCountByOpt(addDateS, addDateE, cpyId);
+				List<Object> list_d = new ArrayList<Object>();
+				if(count > 0){
+					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
+					List<FeeImportRecordInfo> firList = firm.listPageInfoByOpt(addDateS, addDateE, cpyId, pageNo, pageSize);
+					if(firList.size() > 0){
+						msg = "success";
+						for(Iterator<FeeImportRecordInfo> it = firList.iterator() ; it.hasNext();){
+							FeeImportRecordInfo fir = it.next();
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("firId", fir.getId());
+							map_d.put("fieName", fir.getExcelName());
+							map_d.put("addTime", fir.getUploadTime());
+							map_d.put("userName", fir.getCpyUserInfo().getUserName());
+							map_d.put("excelPath", fir.getExcelPath());
+							list_d.add(map_d);
+						}
+					}else{
+						msg = "noInfo";
+					}
+				}
+				map.put("data", list_d);
+				map.put("count", count);
+			}else{
+				msg = "noAbility";
+			}
+		}
+		map.put("msg", msg);
+		map.put("code", 0);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取指定导入已缴费清单的处理详情
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-19 下午04:50:48
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getFidrDetail(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		FeeImportRecordInfoManager firm = (FeeImportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_IMPORT_RECORD_INFO);
+		String roleName = this.getLoginRoleName(request);
+		Integer currUserId = this.getLoginUserId(request);
+		String msg = "error";
+		Map<String,Object> map = new HashMap<String,Object>();
+		
+		if(this.getLoginType(request).equals("cpyUser")){
+			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
+			boolean abilityFlag = false;
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{//只获取自己的任务流程
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listFee");//只有具有浏览权限的人员
+			}
+			if(abilityFlag){
+				Integer firId = CommonTools.getFinalInteger("firId", request);
+				List<FeeImportDealRecordInfo> fidrList = firm.listInfoByFirId(firId);
+				List<Object> list_d = new ArrayList<Object>();
+				if(fidrList.size() > 0){
+					if(fidrList.get(0).getFeeImportRecordInfo().getCpyInfoTb().getId().equals(cpyId)){
+						msg = "success";
+						for(Iterator<FeeImportDealRecordInfo> it = fidrList.iterator() ; it.hasNext();){
+							FeeImportDealRecordInfo fidr = it.next();
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("zlNo", fidr.getZlNo());
+							map_d.put("feeName", fidr.getFeeName());
+							map_d.put("dealTime", fidr.getDealTime());
+							String dealStatus = fidr.getDealStatus();
+							if(dealStatus.equals("succ")){
+								dealStatus = "处理成功";
+							}else{
+								dealStatus = "处理失败";
+							}
+							map_d.put("dealStatus", dealStatus);
+							map_d.put("dealResult", fidr.getDealResult());
+							list_d.add(map_d);
+						}
+						map.put("readInfo", list_d);
+					}
+				}else{
+					msg = "noInfo";
+				}
+			}else{
+				msg = "noAbility";
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	

@@ -30,4 +30,6 @@
 	<dao id="cpy_bonus_info_Dao" class="com.patent.dao.impl.CpyBonusInfoDaoImpl"/>
 	<dao id="fee_export_record_info_Dao" class="com.patent.dao.impl.FeeExportRecordInfoDaoImpl"/>
 	<dao id="cus_back_fee_info_Dao" class="com.patent.dao.impl.CusBackFeeInfoDaoImpl"/>
+	<dao id="fee_import_record_info_Dao" class="com.patent.dao.impl.FeeImportRecordInfoDaoImpl"/>
+	<dao id="fee_import_deal_record_info_Dao" class="com.patent.dao.impl.FeeImportDealRecordInfoDaoImpl"/>
 </daoContext>

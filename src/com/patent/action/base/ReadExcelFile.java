@@ -204,23 +204,23 @@ public class ReadExcelFile {
 //		System.out.println("删除文件："+FileOpration.deleteFile(filePath));
 		
 		
-		String oldExcel = "d:\\feeOk1.xls";
+		String oldExcel = "d:\\feeOk3.xls";
 		
-		Sheet sheet;  
-        Workbook book;  
-        Cell cell1;
-        WorkbookSettings wbs = new WorkbookSettings();
-        wbs.setEncoding("GBK"); // 解决中文乱码
-        wbs.setSuppressWarnings(true); 
-        try {
-			book= Workbook.getWorkbook(new File(oldExcel),wbs);
-			sheet=book.getSheet(6); 
-			cell1 = sheet.getCell(5,2);
-	        System.out.println(cell1.getContents());
-		} catch (BiffException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		Sheet sheet;  
+//        Workbook book;  
+//        Cell cell1;
+//        WorkbookSettings wbs = new WorkbookSettings();
+//        wbs.setEncoding("GBK"); // 解决中文乱码
+//        wbs.setSuppressWarnings(true); 
+//        try {
+//			book= Workbook.getWorkbook(new File(oldExcel),wbs);
+//			sheet=book.getSheet(6); 
+//			cell1 = sheet.getCell(5,2);
+//	        System.out.println(cell1.getContents());
+//		} catch (BiffException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
         
 		
 //    	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
@@ -228,28 +228,28 @@ public class ReadExcelFile {
 //    	FileOpration.copyFile(oldExcel, absoFilePath);
     	
     	File f = new File(oldExcel);
-//    	InputStream inputStream = new FileInputStream(f);
-//    	HSSFWorkbook xssfWorkbook = new HSSFWorkbook(inputStream);
-//    	HSSFSheet sheet = xssfWorkbook.getSheetAt(6);
-//    	System.out.println(sheet.getLastRowNum());
-//    	HSSFCellStyle style = xssfWorkbook.createCellStyle();  
-//        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
-//        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-//		HSSFFont font_1 = xssfWorkbook.createFont();    
-//        font_1.setFontName("宋体");    
-//        font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
-//        font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
-//        style.setFont(font_1);
+    	InputStream inputStream = new FileInputStream(f);
+    	HSSFWorkbook xssfWorkbook = new HSSFWorkbook(inputStream);
+    	HSSFSheet sheet = xssfWorkbook.getSheetAt(6);
+    	System.out.println(sheet.getLastRowNum());
+    	HSSFCellStyle style = xssfWorkbook.createCellStyle();  
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+		HSSFFont font_1 = xssfWorkbook.createFont();    
+        font_1.setFontName("宋体");    
+        font_1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
+        font_1.setFontHeightInPoints((short) 16);//设置字体大小  (备注)
+        style.setFont(font_1);
 //    	HSSFRow row0 = sheet.getRow(0);
 //    	HSSFCell cell_title = row0.createCell(9);//增加第8列
 //    	cell_title.setCellStyle(style);
 //    	cell_title.setCellValue("实际费用");//
 //		
-//    	for (int i = 2; i < sheet.getLastRowNum(); i++) {
-//    		HSSFRow row = sheet.getRow(i);
-//    		if (null == row) {
-//    			continue;
-//			}else{
+    	for (int i = 2; i < sheet.getLastRowNum(); i++) {
+    		HSSFRow row = sheet.getRow(i);
+    		if (null == row) {
+    			continue;
+			}else{
 				
 //				HSSFCell cell0 = row.getCell(0);//读取第几列
 //				if(cell0 == null){
@@ -258,7 +258,7 @@ public class ReadExcelFile {
 ////					cell0.setCellValue(1);//
 //					System.out.println(cell0.getStringCellValue());
 //				}
-				
+//				
 //				HSSFCell cell = row.getCell(5);//读取第几列
 //				if(cell == null){
 //					continue;
@@ -266,31 +266,31 @@ public class ReadExcelFile {
 ////					cell.setCellValue("2017301654572");//
 //					System.out.println(cell);
 //				}
-				
+//				
 //				HSSFCell cell2 = row.getCell(2);//读取第几列
 //				if(cell2 == null){
 //					continue;
 //				}else{
 //					cell2.setCellValue("濮阳天龙集团");//
 //				}
-//				
-//				HSSFCell cell3 = row.getCell(3);//读取第几列
-//				if(cell3 == null){
-//					continue;
-//				}else{
+				
+				HSSFCell cell3 = row.getCell(3);//读取第几列
+				if(cell3 == null){
+					continue;
+				}else{
 //					cell3.setCellValue("外观设计专利权评价报告请求费");//
-//				}
-//				
-//				System.out.println(row.getCell(5).getCellType());
+				}
+				
+				System.out.println(cell3.getStringCellValue());
 				
 //				HSSFCell cell8 = row.createCell(9);//增加第8列
 //				cell8.setCellStyle(style);
 //				cell8.setCellValue("￥2,200.00");//
-//				
+				
 //				xssfWorkbook.setForceFormulaRecalculation(true);
 				
-//			}
-//    	}
+			}
+    	}
 //    	FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器
 //    	xssfWorkbook.write(fout);  
 //        fout.close();     

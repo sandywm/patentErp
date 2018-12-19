@@ -87,7 +87,8 @@
 		<mapping resource="com/patent/xml/CpyBonusInfo.hbm.xml" />
 		<mapping resource="com/patent/xml/FeeExportRecordInfo.hbm.xml" />
 		<mapping resource="com/patent/xml/CusBackFeeInfo.hbm.xml" />
-
+		<mapping resource="com/patent/xml/FeeImportRecordInfo.hbm.xml" />
+		<mapping resource="com/patent/xml/FeeImportDealRecordInfo.hbm.xml" />
 
 	</session-factory>
 
