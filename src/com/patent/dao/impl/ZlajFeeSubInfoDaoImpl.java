@@ -52,4 +52,12 @@ public class ZlajFeeSubInfoDaoImpl implements ZlajFeeSubInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<ZlajFeeSubInfoTb> findInfoByFeeId(Session sess, Integer feeId,
+			String currDate) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajFeeSubInfoTb as fs where fs.zlajFeeInfoTb.id = "+feeId;
+		return sess.createQuery(hql).list();
+	}
+
 }

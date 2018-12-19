@@ -50,6 +50,7 @@ import com.patent.module.FeeExportRecordInfo;
 import com.patent.module.FeeImportDealRecordInfo;
 import com.patent.module.FeeImportRecordInfo;
 import com.patent.module.ZlajFeeInfoTb;
+import com.patent.module.ZlajFeeSubInfoTb;
 import com.patent.module.ZlajMainInfoTb;
 import com.patent.page.PageConst;
 import com.patent.service.CpyUserInfoManager;
@@ -360,12 +361,21 @@ public class FeeAction extends DispatchAction {
 						cell.setCellValue(zl.getAjSqrName());
 						cell = row.getCell(3);//读取第4列--费用名称
 						cell.setCellStyle(style);
-						cell.setCellValue(zlf.getFeeTypeInfoTb().getFeeName());
+						String feeName = zlf.getFeeTypeInfoTb().getFeeName();
+						cell.setCellValue(feeName);
 						cell = row.getCell(9);//读取第10列--实际费用金额
 						style.setDataFormat(format.getFormat("¥,###.00"));
 						cell.setCellStyle(style);
 						cell.setCellValue(zlf.getFeePrice());
 						i++;
+						if(feeName.equals("年费")){
+							//查看是否存在滞纳金
+							List<ZlajFeeSubInfoTb> znjFeeList = fm.listInfoByFeeId(zlf.getId());
+							if(znjFeeList.size() > 0){
+								
+								i++;
+							}
+						}
 			    	}
 			    	wb.setForceFormulaRecalculation(true);
 		        	// 第六步，将文件存到指定位置

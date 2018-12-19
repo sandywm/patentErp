@@ -50,4 +50,16 @@ public interface ZlajFeeSubInfoDao {
 	 * @return
 	 */
 	List<ZlajFeeSubInfoTb> findInfoByFeeId(Session sess,Integer feeId);
+	
+	/**
+	 * 根据专利费用编号、当前时间获取当前时间所对应的滞纳金列表
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2018-12-19 下午10:15:23
+	 * @param sess
+	 * @param feeId 专利费用编号
+	 * @param currDate 当前日期
+	 * @return
+	 */
+	List<ZlajFeeSubInfoTb> findInfoByFeeId(Session sess,Integer feeId,String currDate);
 }
