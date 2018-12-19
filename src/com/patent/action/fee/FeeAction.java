@@ -564,6 +564,7 @@ public class FeeAction extends DispatchAction {
             	            String fpNo = "";
             	            String dealStatus = "";
             	            String dealResult = "";
+            	            String dealResult_1 = "";
             	            Map<String,String> map_d = new HashMap<String,String>();
             	            map_d.put("fileName", fileName);//读取的文件清单
         	            	//代理机构缴完费后-补充缴费信息
@@ -574,31 +575,33 @@ public class FeeAction extends DispatchAction {
         	            		if(fee.getFeeStatus().equals(0)){//未缴费
         	            			if(!jfDate.equals("") && !feeBatchNo.equals("") && !bankSerialNo.equals("")){
         	            				//修改费用状态
-//                		            		fm.updateComJfInfoById(feeId, jfDate);
-//                		            		//修改缴费信息
-//                		            		fm.updateFeeInfoById(feeId, feeBatchNo, bankSerialNo, fpDate, fpNo);
+                		            		fm.updateComJfInfoById(feeId, jfDate);
+                		            		//修改缴费信息
+                		            		fm.updateFeeInfoById(feeId, feeBatchNo, bankSerialNo, fpDate, fpNo);
             		            		//修改任务中的缴费提醒
-            		            		//修改/增加流程
         	            				dealStatus = "succ";
         	            				dealResult = "专利号："+zlNo+"的["+feeName+"]缴费成功";
-            		            		
+        	            				dealResult_1 = "缴费成功";
         	            			}else{
         	            				dealStatus = "fail";
         	            				dealResult = "专利号："+zlNo+"的["+feeName+"]中缴费日期、银行流水、缴费批次不能为空";
+        	            				dealResult_1 = "缴费日期、银行流水、缴费批次不能为空";
         	            			}
         	            		}else{
         	            			dealStatus = "alarm";
         	            			dealResult = "专利号："+zlNo+"的["+feeName+"]已缴费，无需再次缴费";
+        	            			dealResult_1 = "该费用之前已缴，无需再次缴费";
         	            		}
         	            	}else{
         	            		dealStatus = "fail";
         	            		dealResult = "专利号："+zlNo+"的["+feeName+"]匹配失败";
+        	            		dealResult_1 = "费用匹配失败";
         	            	}
         	            	map_d.put("readStatus", dealStatus);
         	            	map_d.put("readInfo", dealResult);
         	            	list_d.add(map_d);
         	            	
-        	            	firm.addFIDR(firId, zlNo, feeName, dealTime, dealStatus, dealResult);
+        	            	firm.addFIDR(firId, zlNo, feeName, dealTime, dealStatus, dealResult_1);
             	            
             	            HSSFCell cell = row1.getCell(13);
         					style.setFont(font_1);
@@ -734,7 +737,7 @@ public class FeeAction extends DispatchAction {
 							FeeImportRecordInfo fir = it.next();
 							Map<String,Object> map_d = new HashMap<String,Object>();
 							map_d.put("firId", fir.getId());
-							map_d.put("fieName", fir.getExcelName());
+							map_d.put("fileName", fir.getExcelName());
 							map_d.put("addTime", fir.getUploadTime());
 							map_d.put("userName", fir.getCpyUserInfo().getUserName());
 							map_d.put("excelPath", fir.getExcelPath());
