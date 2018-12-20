@@ -61,5 +61,5 @@ public interface ZlajFeeSubInfoDao {
 	 * @param currDate 当前日期
 	 * @return
 	 */
-	List<ZlajFeeSubInfoTb> findInfoByFeeId(Session sess,Integer feeId,String currDate);
+	List<ZlajFeeSubInfoTb> findCurrSubFeeInfoByOpt(Session sess,Integer feeId,String currDate);
 }

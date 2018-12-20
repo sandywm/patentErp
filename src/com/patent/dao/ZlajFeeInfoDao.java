@@ -130,9 +130,10 @@ public interface ZlajFeeInfoDao {
 	 * @param sess
 	 * @param zlId 专利编号
 	 * @param yearNo 年度
+	 * @param feeName 费用名称简称(年费，滞纳金)
 	 * @return
 	 */
-	List<ZlajFeeInfoTb> findYearFeeInfoByOpt(Session sess,Integer zlId,Integer yearNo);
+	List<ZlajFeeInfoTb> findYearFeeInfoByOpt(Session sess,Integer zlId,Integer yearNo,String feeName);
 	
 	/**
 	 * 根据条件分页/不分页获取费用列表（获取未缴费的费用列表时专利必须在正常状态下）

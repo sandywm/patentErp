@@ -120,9 +120,9 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 
 	@Override
 	public List<ZlajFeeInfoTb> findYearFeeInfoByOpt(Session sess, Integer zlId,
-			Integer yearNo) {
+			Integer yearNo,String feeName) {
 		// TODO Auto-generated method stub
-		String hql = " from ZlajFeeInfoTb as zlf where zlf.zlajMainInfoTb.id = "+zlId + " and zlf.yearFeeNo = "+yearNo;
+		String hql = " from ZlajFeeInfoTb as zlf where zlf.zlajMainInfoTb.id = "+zlId + " and zlf.yearFeeNo = "+yearNo +" and zlf.feeTypeInfoTb.feeName like '%"+feeName+"%'";
 		return sess.createQuery(hql).list();
 	}
 

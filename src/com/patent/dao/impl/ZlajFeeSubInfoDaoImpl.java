@@ -53,10 +53,10 @@ public class ZlajFeeSubInfoDaoImpl implements ZlajFeeSubInfoDao{
 	}
 
 	@Override
-	public List<ZlajFeeSubInfoTb> findInfoByFeeId(Session sess, Integer feeId,
-			String currDate) {
+	public List<ZlajFeeSubInfoTb> findCurrSubFeeInfoByOpt(Session sess, Integer feeId,String currDate) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajFeeSubInfoTb as fs where fs.zlajFeeInfoTb.id = "+feeId;
+		hql += " and '" + currDate +"' >= substring(fs.feeRange,1,10) and '" + currDate +"' <= substring(fs.feeRange,12)";
 		return sess.createQuery(hql).list();
 	}
 

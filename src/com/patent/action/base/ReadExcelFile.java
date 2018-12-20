@@ -14,13 +14,18 @@ import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
+import org.apache.poi.hssf.usermodel.HSSFComment;
 import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFPatriarch;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFDrawing;
 
 import com.alibaba.fastjson.JSON;
 import com.patent.tools.CurrentTime;
@@ -223,8 +228,8 @@ public class ReadExcelFile {
 //		}
         
 		
-//    	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
-//    	String absoFilePath = "d:\\" +fileName;
+    	String fileName = "费用清单_"+CurrentTime.getStringTime()+".xls";
+    	String absoFilePath = "d:\\" +fileName;
 //    	FileOpration.copyFile(oldExcel, absoFilePath);
     	
     	File f = new File(oldExcel);
@@ -245,7 +250,8 @@ public class ReadExcelFile {
 //    	cell_title.setCellStyle(style);
 //    	cell_title.setCellValue("实际费用");//
 //		
-    	for (int i = 2; i < sheet.getLastRowNum(); i++) {
+        
+    	for (int i = 2; i < 4; i++) {
     		HSSFRow row = sheet.getRow(i);
     		if (null == row) {
     			continue;
@@ -281,14 +287,27 @@ public class ReadExcelFile {
 //					cell3.setCellValue("外观设计专利权评价报告请求费");//
 				}
 				
-				System.out.println(cell3.getStringCellValue());
+				HSSFCell cell5 = row.getCell(5);//读取第几列
 				
-//				HSSFCell cell8 = row.createCell(9);//增加第8列
-//				cell8.setCellStyle(style);
-//				cell8.setCellValue("￥2,200.00");//
+				System.out.println(cell5.getNumericCellValue());
+				
+				HSSFCell cell8 = row.createCell(9);//增加第8列
+				cell8.setCellStyle(style);
+				cell8.setCellValue("￥2,200.00");//
+				HSSFPatriarch draw = sheet.createDrawingPatriarch();
+		        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0,(short) 3, 3, (short) 5, 6);
+		        HSSFComment comment = draw.createCellComment(anchor);
+				// 设置注释内容
+				comment.setString(new HSSFRichTextString(" 第2年度  缴费时间：2018-06-12:2018-07-09 滞纳金：30\r\n 第2年度  缴费时间：2018-06-12:2018-07-09 滞纳金：30"));
+				comment.setAuthor("system");//添加作者
+				cell8.setCellComment(comment);
 				
 //				xssfWorkbook.setForceFormulaRecalculation(true);
-				
+				sheet.autoSizeColumn(1);
+				sheet.autoSizeColumn(2);
+				sheet.autoSizeColumn(3);
+				sheet.autoSizeColumn(5);
+				sheet.autoSizeColumn(9);
 			}
     	}
 //    	FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器

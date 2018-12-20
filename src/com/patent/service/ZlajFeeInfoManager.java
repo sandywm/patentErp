@@ -2,6 +2,8 @@ package com.patent.service;
 
 import java.util.List;
 
+import org.hibernate.Session;
+
 
 import com.patent.exception.WEBException;
 import com.patent.module.FeeTypeInfoTb;
@@ -329,4 +331,15 @@ public interface ZlajFeeInfoManager{
 	 * @throws WEBException
 	 */
 	boolean updateComJfInfoById(Integer feeId,String jfDate)throws WEBException;
+	
+	/**
+	 * 根据专利费用编号、当前时间获取当前时间所对应的滞纳金列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-20 上午10:38:31
+	 * @param feeId 专利费用编号
+	 * @param currDate 当前日期
+	 * @return
+	 */
+	List<ZlajFeeSubInfoTb> listCurrSubFeeInfoByOpt(Integer feeId,String currDate)throws WEBException ;
 }

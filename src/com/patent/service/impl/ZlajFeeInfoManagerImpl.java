@@ -505,5 +505,21 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajFeeSubInfoTb> listCurrSubFeeInfoByOpt(Integer feeId,String currDate) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fsDao = (ZlajFeeSubInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_SUB_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fsDao.findCurrSubFeeInfoByOpt(sess, feeId, currDate);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据专利费用编号、当前时间获取当前时间所对应的滞纳金列表时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 
 }
