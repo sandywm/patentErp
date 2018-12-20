@@ -24,10 +24,10 @@
   							<li class="layui-this" feeStatus="0">未缴费</li>
   							<li feeStatus="1">已缴费</li>
   							<li feeStatus="2">费用导出记录</li>
-  							<li feeStatus="3">缴费记录</li>
+  							<li feeStatus="3">费用导入记录</li>
   						</ul>
   						<div class="layui-tab-content">
-  							<div class="searchPart layui-form"></div>
+  							<div class="searchPart layui-form clearfix"></div>
   							<div class="layui-tab-item layui-show">
   								<div id="noData_0" class="noData"></div>
   								<table id="feeListTab_0" class="layui-table" lay-filter="feeInfoListTable"></table>
@@ -54,6 +54,7 @@
   	<script src="/plugins/jquery/jquery.min.js"></script>
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
+    	var globalFirId = 0,globalFileName = '',hasReadFlag = false;//是否执行了批量导入并且成功读取结果;
 	    layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -127,15 +128,13 @@
 	   			        async:false,
 	   			        dataType:'json',
 	   			        data:{sDate:'',eDate:''},
-	   			        url:'/fee.do?action=getPageFER',
+	   			        //url:'/fee.do?action=getPageFER',
+	   			        url : '/fee.do?action=getPageFIR',
 	   			        success:function (json){
 	   			        	layer.closeAll('loading');
 	   			        	console.log(json)
 	   			        }
 					});
-				},
-				test:function(){
-					alert("hello,haha")
 				},
 				bindEvent : function(){
 					var _this = this;
@@ -143,7 +142,8 @@
 					//缴费单据批量导入
 					$('#importFeeBtn').on('click',function(){
 						if(_this.data.addFeeFlag){
-							var fullScreenIndex = tmpIndex = layer.open({
+							hasReadFlag = false;
+							var fullScreenIndex = layer.open({
 								title:'',
 								type: 2,
 							  	area: ['700px', '500px'],
@@ -153,9 +153,9 @@
 							  	closeBtn:0,
 							  	content: '/Module/feeManager/jsp/batchImport.html',
 							  	end:function(){
-							  		/*if(addZlFlag){
-							  			loadZlInfoList('initLoad');
-							  		}*/
+							  		if(hasReadFlag){
+							  			loadFeeInfoList('initLoad');
+							  		}
 							  	}
 							});	
 							layer.full(fullScreenIndex);
@@ -191,10 +191,16 @@
 					$('#queryBtn').on('click',function(){
 						loadFeeInfoList('queryLoad');
 					});
+					$('.resetTime').on('click',function(){
+						$('#sDateInp').val('');
+						$('#eDateInp').val('');
+						loadFeeInfoList('queryLoad');
+						
+					});
 				},
 				//创建查询层
 				createSearchHt : function(feeStatus){
-					var strHtml1='',strHtml2='',strHtml3='',strHtml4='';
+					var strHtml1='',strHtml2='',strHtml3='',strHtml4='' ,strHtml5='';
 					strHtml1 += '<div class="itemDiv zlNoDiv fl"><div class="layui-input-inline">';
 					strHtml1 += '<input type="text" id="zlNoInp" placeholder="请输入专利申请/专利号" autocomplete="off" class="layui-input"></div></div>';
 					strHtml1 += '<div class="itemDiv ajNoDiv fl"><div class="layui-input-inline">';
@@ -209,6 +215,7 @@
 					strHtml3 += '<input type="text" id="sDateInp" placeholder="请选择缴费日期(开始)" autocomplete="off" class="layui-input"></div></div>';
 					strHtml3 += '<div class="itemDiv sEDateDiv fl"><div class="layui-input-inline">';
 					strHtml3 += '<input type="text" id="eDateInp" placeholder="请选择缴费日期(结束)" autocomplete="off" class="layui-input"></div></div>';
+					strHtml5 += '<a class="resetTime" href="javascript:void(0)"><i class="layui-icon layui-icon-refresh"></i>重置</a>';
 					strHtml4 += '<div class="itemDiv fl"><div class="layui-input-inline">';
 					strHtml4 += '<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search"></i></button></div></div>';
 					if(feeStatus == 0){
@@ -217,7 +224,7 @@
 					}else if(feeStatus == 1){
 						$('.searchPart').html(strHtml1 + strHtml3 + strHtml4);
 					}else if(feeStatus == 2 || feeStatus == 3){
-						$('.searchPart').html(strHtml3 + strHtml4);
+						$('.searchPart').html(strHtml3 + strHtml4 + strHtml5);
 						form.render();
 					}
 					laydate.render({elem:'#sDateInp'});
@@ -232,7 +239,7 @@
 						var field = {feeStatus:0,diffDays:15,zlNo:'',ajNo:'',cusId:0};	
 					}else if(page.data.globalFeeStatus == 1){//已缴费
 						var field = {feeStatus:1,zlNo:'',ajNo:'',cusId:0,sDate:'',eDate:''};
-					}else if(page.data.globalFeeStatus == 2){//费用导出记录
+					}else if(page.data.globalFeeStatus == 2 || page.data.globalFeeStatus == 3){//费用导出记录 / 费用导入记录
 						var field = {sDate:'',eDate:''};
 					}
 				}else{//查询
@@ -246,7 +253,7 @@
 						var field = {feeStatus:0,diffDays:diffDaysSelInpVal,zlNo:zlNoInpVal,ajNo:ajNoInpVal,cusId:cusIdInpVal};
 					}else if(page.data.globalFeeStatus == 1){
 						var field = {feeStatus:1,zlNo:zlNoInpVal,ajNo:ajNoInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal};
-					}else if(page.data.globalFeeStatus == 2){//费用导出记录
+					}else if(page.data.globalFeeStatus == 2 || page.data.globalFeeStatus == 3){//费用导出记录 / 费用导入记录
 						var field = {sDate:sDateInpVal,eDate:eDateInpVal};
 					}
 					if(sDateInpVal != '' && eDateInpVal == ''){
@@ -341,7 +348,7 @@
 							{type : 'numbers', title: '序号'},
 							{field : 'ferName', title: '文件名', align:'center'},
 							{field : 'addTime', title: '导出时间',  align:'center'},
-							{field : 'userName', title: '导出人',align:'center'},
+							{field : 'userName', title: '导出者',align:'center'},
 							{field : '', title: '下载',width:100, align:'center',templet : function(d){
 								return '<a lay-event="downFileFun" downFilePath="'+ d.excelPath +'" class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
 							}},
@@ -354,8 +361,35 @@
 							callBackDone(res);
 						}
 					});
-				}else if(page.data.globalFeeStatus == 3){//缴费记录
-					
+				}else if(page.data.globalFeeStatus == 3){//费用导入记录
+					table.render({
+						elem: '#feeListTab_'+page.data.globalFeeStatus,
+						height: 'full-200',
+						url : '/fee.do?action=getPageFIR',
+						method : 'post',
+						where:field,
+						page : true,
+						even : true,
+						limit : 10,
+						limits:[10,20,30,40],
+						cellMinWidth : 160,
+						cols : [[
+							{type : 'numbers', title: '序号'},
+							{field : 'fileName', title: '文件名',width:380, align:'center'},
+							{field : 'addTime', title: '导入时间',  align:'center'},
+							{field : 'userName', title: '导入者',align:'center'},
+							{field : '', title: '操作',width:180, align:'center',templet : function(d){
+								return '<a lay-event="viewImpRes" fileName="'+ d.fileName +'" firId="'+ d.firId +'" class="layui-btn layui-btn-primary layui-btn-xs"><i class="layui-icon layui-icon-search"></i>查看结果</a> <a lay-event="downFileFun" downFilePath="'+ d.excelPath +'" class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
+							}},
+						]],
+						done : function(res, curr, count){
+							layer.closeAll('loading');
+							if(page.data.globalFeeStatus == 0 || page.data.globalFeeStatus == 1){
+								$('.layui-table-box').find('[data-field="noneSets"]').css('display','none');
+							}
+							callBackDone(res);
+						}
+					});
 				}
 				function callBackDone(res){
 					layer.closeAll('loading');
@@ -383,6 +417,20 @@
 				if(obj.event == 'downFileFun'){//下载
 					var downFilePath = $(this).attr('downFilePath');
 					common.downFiles(downFilePath,1);
+				}else if(obj.event == 'viewImpRes'){//查看导入结果
+					globalFirId = $(this).attr('firId');
+					globalFileName = $(this).attr('fileName');
+					var fullScreenIndex = layer.open({
+						title:'',
+						type: 2,
+					  	area: ['700px', '500px'],
+					  	fixed: true, //不固定
+					  	maxmin: false,
+					  	shadeClose :false,
+					  	closeBtn : 0,
+					  	content: '/Module/feeManager/jsp/viewReadRes.html'
+					});	
+					layer.full(fullScreenIndex);
 				}
 			});
 			$(function(){

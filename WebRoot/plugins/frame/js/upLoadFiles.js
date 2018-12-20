@@ -12,7 +12,7 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 			globalOpts : '',
     		indexLayer : '<div class="indexLayer"><div class="loadingWrap"></div></div>',
     		upSuccTips : '<p class="upTipsTxt">上传成功，<span id="countNum_up"></span>秒后开始自动读取</p>',
-    		readingTips : '<div class="spinner"></div><p>正在读取中<span class="dotting"></span></p><p>请勿有其他操作</p>',
+    		readingTips : '<div class="spinner"></div><p>正在读取中<span class="dotting"></span></p><p>请勿刷新页面</p>',
     		readSuccTips : '<i class="iconfont layui-extend-succ readSucc"></i><p class="succTxt">读取成功，<span id="countNum"></span>秒后关闭</p>'
 		},
 		switchZlTypeCHN : function(zlTypeEng){
@@ -254,7 +254,7 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 				url:tmpUrl,
 				success:function(json){
 					if(json['result'] == 'success'){
-						console.log(json.readInfo)
+						//console.log(json.readInfo)
 						parent.parent.$('body').find('.loadingWrap').html(_this.data.readSuccTips);
 						_this.showTime(3,parent.parent.$('body').find('#countNum'),_this.data.globalOpts,json.readInfo,true);
 					}else if(json['result'] == 'error'){

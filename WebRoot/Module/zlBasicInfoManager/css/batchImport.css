@@ -121,3 +121,12 @@ body{
 .oddColor{
 	background:#f1f1f1;
 }
+.readStaSuc{
+	color:#009688;
+}
+.readStaFail{
+	color:#FF5722;
+}
+.readStaAlarm{
+	color:#f00;
+}

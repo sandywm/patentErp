@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/feeManager/css/viewReadRes.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+  	<title>查看读取结果</title>
+</head>
+<body style="background:#fff;">
+	<div class="readTopTit">
+		<p id="fileNameP"></p>
+		<a class="closeBtns" href="javascript:void(0)"><i class="layui-icon layui-icon-close"></i></a>
+	</div>
+	<div class="readResTit">
+		<ul>
+			<li class="oneResWid">专利号</li>
+			<li class="twoResWid">费用名称</li>
+			<li class="threeResWid">处理时间</li>
+			<li class="fourResWid">处理状态</li>
+			<li class="fiveResWid">处理结果</li>
+		</ul>
+	</div>
+	<ul class="readResCon"></ul>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var firId = parent.globalFirId;
+		layui.use(['table','layer'],function(){
+			var $ = layui.jquery,
+				table = layui.table,
+				layer = layui.layer;
+			var page = {
+				init : function(){
+					this.onLoad();
+					this.bindEvent();
+				},
+				onLoad : function(){
+					var _this = this;
+					$('#fileNameP').html('[<span class="fileNameSp">' + parent.globalFileName + '</span>]的读取结果');
+					$.ajax({
+	   					type:'post',
+	   			        async:false,
+	   			        dataType:'json',
+	   			        data:{firId:firId},
+	   			        url : '/fee.do?action=getFidrDetail',
+	   			        success:function (json){
+	   			        	layer.closeAll('loading');
+	   			        	var readInfo = json.readInfo;
+	   			        	_this.renderReadInfo(readInfo);
+	   			        }
+					});
+				},
+				bindEvent : function(){
+					//关闭当前弹窗
+					$('.closeBtns').on('click',function(){
+						var index= parent.layer.getFrameIndex(window.name);
+						parent.layer.close(index);
+					});
+				},
+				renderReadInfo : function(readInfo){
+					var strHtml = '',readStColor = '';
+					if(readInfo != undefined){
+						for(var i=0;i<readInfo.length;i++){
+							if(readInfo[i].dealStatus == '处理失败'){
+								readStColor = 'readStFail';
+							}else if(readInfo[i].dealStatus == '处理成功'){
+								readStColor = 'readStSucc';
+							}
+							strHtml += '<li>';
+							strHtml += '<p class="oneResWid">'+ readInfo[i].zlNo +'</p>';
+							strHtml += '<p class="twoResWid">'+ readInfo[i].feeName +'</p>';
+							strHtml += '<p class="threeResWid">'+ readInfo[i].dealTime +'</p>';
+							strHtml += '<p class="fourResWid"><span class='+ readStColor +'>'+ readInfo[i].dealStatus +'</span></p>';
+							strHtml += '<p class="fiveResWid ellip">'+ readInfo[i].dealResult +'</p>';
+							strHtml += '</li>';
+						}
+						$('.readResCon').html(strHtml);
+						$('.readResCon li:odd').addClass('oddColor');
+					}else{
+						
+					}
+				}
+			};
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>

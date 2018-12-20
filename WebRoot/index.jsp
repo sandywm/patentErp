@@ -107,13 +107,6 @@
 	        © 2018 版权所有 Copyright@2018 Sandy.wm All Rights Reserved.
 	    </div-->
   	</div>
-  	<!-- div class="indexLayer">
-  		<div class="loadingWrap">
-	  		<div class="spinner"></div>
-	  		<p>正在读取中<span class="dotting"></span></p>
-	  		<p>请勿有其他操作</p>
-  		</div>
-  	</div -->
   	<script src="/plugins/jquery/jquery.min.js"></script>
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
@@ -137,8 +130,8 @@
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goSubParCpyPage" tab-id="8">代理机构主/子公司</a></dd></dl></li>';
 		        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)"><i class="layui-icon layui-icon-form" style="font-size:16px;margin-right:5px;"></i>专利任务管理</a>';
 		        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" path="pubZl.do?action=goPubZlPage" tab-id="10">专利任务领取</a></dd>';
-		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="zlm.do?action=goZlPage" tab-id="14">专利信息</a></dd>';
 		        		liItem += '</dl></li>';
+		        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="14" path="zlm.do?action=goZlPage"><i class="layui-icon layui-icon-form" style="font-size:16px;margin-right:5px;"></i>专利管理</a></li>';
 		        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="13" path="fee.do?action=goFeePage"><i class="iconfont layui-extend-fee" style="margin-right:5px;"></i>费用管理</a></li>';
 		        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="12" path="customer.do?action=goCusPage"><i class="layui-icon layui-icon-user" style="margin-right:5px;"></i>客户管理</a></li>';
 			        	liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="9"><i class="iconfont layui-extend-goumai"></i>会员续费/购买</a></li>';

@@ -9,7 +9,6 @@
 <body style="background:#fff;">
 	<div class="importBtn">
 		<p><i class="iconfont layui-extend-daoru"></i>缴费单据批量导入</p>
-		<!--  button class="layui-btn readTzsBtn" style="position:absolute;right:50px;top:3px;">读取通知书</button-->
 		<a class="closeBtns" href="javascript:void(0)"><i class="layui-icon layui-icon-close"></i></a>
 	</div>
 	<div class="importConTit">
@@ -46,7 +45,6 @@
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var testOpt = "批量导入通知书";
 		var upSuccSrcArray = [];
 		layui.config({
 			base: '/plugins/frame/js/'
@@ -139,6 +137,34 @@
 			$(function(){
 				page.init();
 			});
+			/*document.onkeydown = function(e) {
+		        e = window.event || e;
+		        var k = e.keyCode;
+		        //屏蔽ctrl+R，F5键，ctrl+F5键  F3键！验证
+		        if ((e.ctrlKey == true && k == 82) || (k == 116)
+		                || (e.ctrlKey == true && k == 116)||k==114) {
+		            e.keyCode = 0;
+		            alert("当前页面不能刷新！");
+		            e.returnValue = false;
+		            e.cancelBubble = true;
+		            return false;
+		 
+		        }
+		        if (k == 8) {
+		            alert("不能返回或后退！");
+		            e.keyCode = 0;
+		            e.returnValue = false;
+		            return false;
+		        }
+		        //屏蔽F11   验证可以实现效果
+		        if (k == 122) {
+		            e.keyCode = 0;
+		            e.returnValue = false;
+		            e.cancelBubble = true;
+		            return false;
+		        }
+		 
+		    };*/
 		});
 	</script>
 </body> 
