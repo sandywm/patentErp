@@ -4493,8 +4493,8 @@ public class ZlMainAction extends DispatchAction {
 					        						Integer yearNo_tzs = Integer.parseInt(yearNo);
 					        						for(Integer m = yearNo_tzs ; m <= yearNum ; m++){
 					        							feeTypeName_final = feeTypePre + "第" + m + "年" + feeTypeName;
-					        							String yearFee_sDate = CurrentTime.getFinalDate_2(applyDate_db, m);//第一次年费开始日期（可能不是第一年度）
-														String yearFee_eDate = CurrentTime.getFinalDate(CurrentTime.getFinalDate_2(applyDate_db, m+1), -1);//第一次交年费结束日期（可能不是第一年度）
+					        							String yearFee_sDate = CurrentTime.getFinalDate_2(applyDate_db, m-1);//第一次年费开始日期（可能不是第一年度）
+														String yearFee_eDate = CurrentTime.getFinalDate(CurrentTime.getFinalDate_2(applyDate_db, m), -1);//第一次交年费结束日期（可能不是第一年度）
 														String feeRange = yearFee_sDate+":"+yearFee_eDate;
 														Double yearFee = 0d;
 														List<FeeTypeInfoTb> ftList = fm.listInfoByName(feeTypeName_final);
@@ -4570,7 +4570,7 @@ public class ZlMainAction extends DispatchAction {
 					    		        		List<FeeTypeInfoTb> ftList = fm.listInfoByName(feeTypeName + "年费滞纳金");
 					    		        		if(ftList.size() > 0){
 					        						feeTypeId = ftList.get(0).getId();
-					        						List<ZlajFeeInfoTb> feeList = fm.listYearFeeByOpt(zlId, Integer.parseInt(yearNo));
+					        						List<ZlajFeeInfoTb> feeList = fm.listYearFeeByOpt(zlId, Integer.parseInt(yearNo),"");
 					        						if(feeList.size() > 0){
 					        							Integer feeId = feeList.get(0).getId();
 					        							for(Integer k = 0 ; k < lfList.size() ; k++){

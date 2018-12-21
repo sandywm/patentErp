@@ -314,17 +314,17 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 	}
 
 	@Override
-	public List<ZlajFeeInfoTb> listYearFeeByOpt(Integer zlId, Integer yearNo)
+	public List<ZlajFeeInfoTb> listYearFeeByOpt(Integer zlId, Integer yearNo,String feeName)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return fDao.findYearFeeInfoByOpt(sess, zlId, yearNo);
+			return fDao.findYearFeeInfoByOpt(sess, zlId, yearNo,feeName);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new WEBException("获取指定专利指定年度的费用信息时出现异常");
+			throw new WEBException("获取指定专利指定年度的费用/滞纳金信息时出现异常");
 		} finally{
 			HibernateUtil.closeSession();
 		}

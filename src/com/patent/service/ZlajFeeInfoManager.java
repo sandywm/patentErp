@@ -204,16 +204,17 @@ public interface ZlajFeeInfoManager{
 	List<ZlajFeeInfoTb> listAllFeeByOpt(Integer zlId,String feeTypeStatus,Integer djStatus,Integer feeStatus,Integer backStatus,Integer cpyId)throws WEBException;
 	
 	/**
-	 * 获取指定专利指定年度的费用信息
+	 * 获取指定专利指定年度的费用/滞纳金信息
 	 * @description
 	 * @author Administrator
 	 * @date 2018-11-19 下午04:08:49
 	 * @param zlId 专利编号
 	 * @param yearNo 年度
+	 * @param feeName 费用名称简称(如果是znjFee时，获取的是滞纳金，否则就是年费)
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajFeeInfoTb> listYearFeeByOpt(Integer zlId,Integer yearNo)throws WEBException;
+	List<ZlajFeeInfoTb> listYearFeeByOpt(Integer zlId,Integer yearNo,String feeName)throws WEBException;
 	
 	/**
 	 * 根据主键修改费用的缴费批次号、银行缴费流水号、开票时间、票号
