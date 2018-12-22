@@ -7,15 +7,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFComment;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFPatriarch;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
@@ -287,9 +291,9 @@ public class ReadExcelFile {
 //					cell3.setCellValue("外观设计专利权评价报告请求费");//
 				}
 				
-				HSSFCell cell5 = row.getCell(5);//读取第几列
+//				HSSFCell cell5 = row.getCell(5);//读取第几列
 				
-				System.out.println(cell5.getNumericCellValue());
+//				System.out.println(cell5.getNumericCellValue());
 				
 				HSSFCell cell8 = row.createCell(9);//增加第8列
 				cell8.setCellStyle(style);
@@ -302,6 +306,25 @@ public class ReadExcelFile {
 				comment.setAuthor("system");//添加作者
 				cell8.setCellComment(comment);
 				
+				HSSFCell cell10 = row.getCell(10);//读取第几列
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+                Date date = HSSFDateUtil.getJavaDate(cell10.getNumericCellValue());
+
+//				System.out.println(sdf.format(date));
+				
+                cell10 = row.getCell(11);//读取第几列
+                cell10.setCellType(HSSFCell.CELL_TYPE_STRING);
+				System.out.println(cell10.toString());
+				
+				cell10 = row.getCell(12);//读取第几列
+                cell10.setCellType(HSSFCell.CELL_TYPE_STRING);
+				System.out.println(cell10.toString());
+				
+				cell10 = row.getCell(13);//读取第几列
+				cell10.setCellType(HSSFCell.CELL_TYPE_STRING);
+				System.out.println(cell10.toString());
+				
 //				xssfWorkbook.setForceFormulaRecalculation(true);
 				sheet.autoSizeColumn(1);
 				sheet.autoSizeColumn(2);
@@ -310,6 +333,8 @@ public class ReadExcelFile {
 				sheet.autoSizeColumn(9);
 			}
     	}
+    	Pattern pattern = Pattern.compile("^[+]?[\\*[1-9]]*$"); 
+    	System.out.println(pattern.matcher("0").matches());
 //    	FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器
 //    	xssfWorkbook.write(fout);  
 //        fout.close();     

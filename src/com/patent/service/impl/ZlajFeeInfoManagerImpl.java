@@ -521,5 +521,22 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajFeeInfoTb> listUnBackInfoByOpt(Integer cpyId,
+			String feeType) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fDao.findUnBackInfoByOpt(sess, cpyId, feeType);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定代理机构下所有未平账已缴费的费用记录列表时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 
 }

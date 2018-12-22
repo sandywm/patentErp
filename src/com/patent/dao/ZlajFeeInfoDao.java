@@ -211,4 +211,16 @@ public interface ZlajFeeInfoDao {
 	 * @return
 	 */
 	List<ZlajFeeInfoTb> findInfoByOpt(Session sess,Integer cpyId,String zlNo,String feeName);
+	
+	/**
+	 * 获取指定代理机构下所有未平账已缴费的费用记录
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-22 下午03:52:22
+	 * @param sess
+	 * @param cpyId 代理费编号
+	 * @param feeType 费用类型标记(gf:官费，dlf:代理费)
+	 * @return
+	 */
+	List<ZlajFeeInfoTb> findUnBackInfoByOpt(Session sess,Integer cpyId,String feeType);
 }

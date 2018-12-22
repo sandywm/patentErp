@@ -2193,7 +2193,7 @@ public class ZlMainAction extends DispatchAction {
 								if(zlId > 0){
 									//增加代理费用（id=90）
 									String jfDate = CurrentTime.getFinalDate(sDate, Constants.DL_FEE_DAYS);
-									fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(dlFee), 0.0, jfDate, jfDate, "", 0, 
+									fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(dlFee), 0.0, jfDate, jfDate, "", 1, 
 											cpyId, 1, "", "", "", 0, "", 0, "", "", "", "", "");
 									if(pubZlId > 0){
 										pzm.updateAjIdById(pubZlId, zlId);
@@ -4384,7 +4384,7 @@ public class ZlMainAction extends DispatchAction {
 								        				if(ftList.size() > 0){
 								        					feeTypeId = ftList.get(0).getId();
 								        					fm.addZLFee(zlId, currUserId, feeTypeId, fdJson.getFeeAmount(), Double.parseDouble(fjRate), feeEndDateCpy, 
-										        					feeEndDateGf, "", 0, cpyId, 0, "","", tzsName, 0, "", 0, "", "", "","","");
+										        					feeEndDateGf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
 										        			//增加缴费任务------------------------
 								        				}else{
 								        					readResult = "noFeeType";//无此类型费用
@@ -4399,7 +4399,7 @@ public class ZlMainAction extends DispatchAction {
 														String feeEndDate_gf = CurrentTime.getFinalDate(finalDate, -1);
 														String feeEndDate_cpy = CurrentTime.getFinalDate(feeEndDate_gf, Constants.JF_SL_END_DATE_CPY);//代理机构比官方绝限提前天数
 														double scFee_final  = Double.parseDouble(fjRate) * Constants.SC_FEE;
-														fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 0, "","", tzsName, 0, "", 0, "", "", "","","");
+														fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
 														//增加缴费任务------------------------
 													}
 												}
@@ -4528,7 +4528,7 @@ public class ZlMainAction extends DispatchAction {
 																}
 															}
 															fm.addZLFee(zlId, currUserId, feeTypeId, Convert.convertInputNumber_2(yearFee), fjRate_real,feeCpyDate, 
-																	feeGfDate, "", 0, cpyId, 0, "", "",tzsName,m,feeRange,0,"","","","","");
+																	feeGfDate, "", 0, cpyId, 1, "", "",tzsName,m,feeRange,0,"","","","","");
 								        					//增加缴费任务------------------------
 								        				}else{
 								        					readResult = "noFeeType";//无此类型费用
@@ -4542,7 +4542,7 @@ public class ZlMainAction extends DispatchAction {
 							        				if(ftList.size() > 0){
 						        						feeTypeId = ftList.get(0).getId();
 							        					fm.addZLFee(zlId, currUserId, feeTypeId, fdJson.getFeeAmount(), Double.parseDouble(fjRate), feeEndDateCpy, 
-									        					feeEndDateGf, "", 0, cpyId, 0, "","", tzsName, 0, "", 0, "", "", "","","");
+									        					feeEndDateGf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
 							        					//增加缴费任务------------------------
 							        				}else{
 							        					readResult = "noFeeType";//无此类型费用

@@ -15,11 +15,14 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +37,7 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFComment;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFPatriarch;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
@@ -422,8 +426,6 @@ public class FeeAction extends DispatchAction {
 						sheet.autoSizeColumn(1);
 						sheet.autoSizeColumn(2);
 						sheet.autoSizeColumn(3);
-						sheet.autoSizeColumn(5);
-						sheet.autoSizeColumn(9);
 			    	}
 			    	wb.setForceFormulaRecalculation(true);
 		        	// 第六步，将文件存到指定位置
@@ -569,13 +571,6 @@ public class FeeAction extends DispatchAction {
 		Map<String,Object> map = new HashMap<String,Object>();
 		List<Object> list_d = new ArrayList<Object>();
 		String msg = "error";
-		//读取excel内容
-//		Sheet sheet;  
-//        Workbook book;  
-//        Cell cell1;
-//        WorkbookSettings wbs = new WorkbookSettings();
-//        wbs.setEncoding("GBK"); // 解决中文乱码
-//        wbs.setSuppressWarnings(true); 
         if(!filePath.equals("")){
         	String[] filePathArr = filePath.split(",");
             Integer fileLen = filePathArr.length;
@@ -615,9 +610,15 @@ public class FeeAction extends DispatchAction {
                         		 break; 
                         	}
             	            String feeName = row1.getCell(3).getStringCellValue().replace(" ", "").replace("\t", "");//费用名称
-            	            String jfDate = row1.getCell(10).getStringCellValue().replace(" ", "").replace("\t", "");//缴费时间;
-            	            String bankSerialNo = row1.getCell(11).getStringCellValue().replace(" ", "").replace("\t", "");//银行流水号
-            	            String feeBatchNo = row1.getCell(12).getStringCellValue().replace(" ", "").replace("\t", "");//缴费批次号
+            	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            	            Date date = HSSFDateUtil.getJavaDate(row1.getCell(10).getNumericCellValue());
+            	            String jfDate = sdf.format(date);//缴费时间;
+            	            HSSFCell cell11 = row1.getCell(11);//读取第几列
+            	            cell11.setCellType(HSSFCell.CELL_TYPE_STRING);
+            	            String bankSerialNo = cell11.toString().replace(" ", "").replace("\t", "");//银行流水号
+            	            HSSFCell cell12 = row1.getCell(12);//读取第几列
+            	            cell12.setCellType(HSSFCell.CELL_TYPE_STRING);
+            	            String feeBatchNo = cell12.toString().replace(" ", "").replace("\t", "");//缴费批次号
             	            
             	            String fpDate = "";
             	            String fpNo = "";
@@ -632,8 +633,10 @@ public class FeeAction extends DispatchAction {
             	            	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(zlNo);
             	            	if(zlList.size() > 0){
             	            		Integer zlId = zlList.get(0).getId();
+            	            		HSSFCell cell13 = row1.getCell(13);//读取第几列
+                    	            cell13.setCellType(HSSFCell.CELL_TYPE_STRING);
                 	            	Double feePrice = row1.getCell(5).getNumericCellValue();//费用金额（滞纳金的时候用）
-                	            	Integer yearNo = Integer.parseInt(row1.getCell(13).getStringCellValue());//滞纳金时的年度
+                	            	Integer yearNo = Integer.parseInt(cell13.toString());//滞纳金时的年度
         	            			Integer feeTypeId = fm.listInfoByName(feeName).get(0).getId();
         	            			List<ZlajFeeInfoTb> znjList = fm.listYearFeeByOpt(zlId, yearNo, "znjFee");
         	            			if(znjList.size() > 0){
@@ -727,7 +730,7 @@ public class FeeAction extends DispatchAction {
         					HSSFCell cell = row1.getCell(14);
         					style.setFont(font_1);
         					cell.setCellStyle(style);
-        					cell.setCellValue(dealResult);
+        					cell.setCellValue(dealResult_1);
                         	
                     	}
         			}
@@ -736,71 +739,6 @@ public class FeeAction extends DispatchAction {
             	FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器
             	xssfWorkbook.write(fout);  
                 fout.close(); 
-        		
-//        		book= Workbook.getWorkbook(new File(WebUrl.DATA_URL_PRO + "\\" + filePathArr[j]),wbs);
-//        		//获得第一个工作表对象(ecxel中sheet的编号从0开始,0,1,2,3,....)  
-//        		sheet=book.getSheet(6); 
-//        		Integer i = 2;
-//                Integer maxRow = sheet.getRows();
-//        		CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
-//        		if(cpyUser != null){
-//        			Integer cpyId = cpyUser.getCpyInfoTb().getId();
-//        			String dealTime = CurrentTime.getCurrentTime();
-//        			Integer firId = firm.addFIR(this.getLoginUserId(request), cpyId, fileName, dealTime, filePathArr[j]);
-//        			if(firId > 0){
-//        				while(i < maxRow){
-//            	        	//获取每一行的单元格   
-//            	            cell1=sheet.getCell(1,i);//（列，行）  
-//            	            if("".equals(cell1.getContents())==true)    //如果读取的数据为空  
-//            	                break;  
-//            	            String zlNo = cell1.getContents().replace(" ", "").replace("\t", "");//专利号
-//            	            String feeName = sheet.getCell(3,i).getContents().replace(" ", "").replace("\t", "");//费用名称
-//            	            String jfDate = sheet.getCell(10,i).getContents().replace(" ", "").replace("\t", "");//缴费时间;
-//            	            String bankSerialNo = sheet.getCell(11,i).getContents().replace(" ", "").replace("\t", "");//银行流水号
-//            	            String feeBatchNo = sheet.getCell(12,i).getContents().replace(" ", "").replace("\t", "");//缴费批次号
-//            	            String fpDate = "";
-//            	            String fpNo = "";
-//            	            String dealStatus = "";
-//            	            String dealResult = "";
-//            	            Map<String,String> map_d = new HashMap<String,String>();
-//            	            map_d.put("fileName", fileName);//读取的文件清单
-//        	            	//代理机构缴完费后-补充缴费信息
-//        	            	List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(cpyId, zlNo, feeName);
-//        	            	if(feeList.size() > 0){
-//        	            		ZlajFeeInfoTb fee = feeList.get(0);
-//        	            		Integer feeId = fee.getId();
-//        	            		if(fee.getFeeStatus().equals(0)){//未缴费
-//        	            			if(!jfDate.equals("") && !feeBatchNo.equals("") && !bankSerialNo.equals("")){
-//        	            				//修改费用状态
-////                		            		fm.updateComJfInfoById(feeId, jfDate);
-////                		            		//修改缴费信息
-////                		            		fm.updateFeeInfoById(feeId, feeBatchNo, bankSerialNo, fpDate, fpNo);
-//            		            		//修改任务中的缴费提醒
-//            		            		//修改/增加流程
-//        	            				dealStatus = "succ";
-//        	            				dealResult = "专利号："+zlNo+"的["+feeName+"]缴费成功";
-//            		            		
-//        	            			}else{
-//        	            				dealStatus = "fail";
-//        	            				dealResult = "专利号："+zlNo+"的["+feeName+"]中缴费日期、银行流水、缴费批次不能为空";
-//        	            			}
-//        	            		}else{
-//        	            			dealStatus = "alarm";
-//        	            			dealResult = "专利号："+zlNo+"的["+feeName+"]已缴费，无需再次缴费";
-//        	            		}
-//        	            	}else{
-//        	            		dealStatus = "fail";
-//        	            		dealResult = "专利号："+zlNo+"的["+feeName+"]匹配失败";
-//        	            	}
-//        	            	map_d.put("readStatus", dealStatus);
-//        	            	map_d.put("readInfo", dealResult);
-//        	            	list_d.add(map_d);
-//        	            	i++;
-//        	            	firm.addFIDR(firId, zlNo, feeName, dealTime, dealStatus, dealResult);
-//            	        }
-//        			}
-//        			
-//        		}
         	}
         }
 		map.put("result", msg);
@@ -956,8 +894,10 @@ public class FeeAction extends DispatchAction {
 	public ActionForward addBackFee(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
-		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		CusBackFeeInfoManager cbfm = (CusBackFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUS_BACK_FEE_INFO);
+		String msg = "";
+		Map<String,String> map = new HashMap<String,String>();
 		Integer currUserId = this.getLoginUserId(request);
 		if(this.getLoginType(request).equals("cpyUser")){
 			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
@@ -974,8 +914,41 @@ public class FeeAction extends DispatchAction {
 				String backType = CommonTools.getFinalStr("backType", request);
 				Integer cusId = CommonTools.getFinalInteger("cusId", request);
 				String remark = Transcode.unescape_new("remark", request);
-				cbfm.addCBF(backFeePrice, backDate, backType, cusId, cpyId, currUserId, CurrentTime.getCurrentTime(), remark);
-				
+				Integer dlfStatus = CommonTools.getFinalInteger("dlfStatus",request);//是否包含冲抵代理费(0:不包含，1：包含)
+				if(backFeePrice.equals("")){
+					Pattern pattern = Pattern.compile("^[+]?[\\d]*$");  
+					if(pattern.matcher(backFeePrice).matches()){//判断输入的汇款费用必须为大于0的整数
+						Double backFeePrice_temp = Double.parseDouble(backFeePrice);
+						Integer cbfId = cbfm.addCBF(backFeePrice, backDate, backType, cusId, cpyId, currUserId, CurrentTime.getCurrentTime(), remark);
+						if(cbfId > 0){
+							//优先冲抵官费，然后再冲抵代理费
+							//获取所有代缴-已交未平的费用
+							List<ZlajFeeInfoTb> feeList = fm.listUnBackInfoByOpt(cpyId, "gf");//优先平官费
+							if(dlfStatus.equals(0)){//冲抵官费
+								if(feeList.size() > 0){
+									for(Iterator<ZlajFeeInfoTb> it = feeList.iterator() ; it.hasNext();){
+										ZlajFeeInfoTb fee = it.next();
+										Double currBackFee = Convert.convertInputNumber_2(fee.getFeePrice() - fee.getBackFee() - fee.getDiscountsFee());
+										if(backFeePrice_temp >= currBackFee){//够冲抵
+											fm.updateBackFeeInfoById(fee.getId(), backDate, fee.getFeePrice() , 1, 0.0);
+											backFeePrice_temp = Convert.convertInputNumber_2(backFeePrice_temp - currBackFee);
+											//增加冲抵记录
+										}else{//钱不够冲抵
+											if(backFeePrice_temp > 0){//但还有余钱
+												fm.updateBackFeeInfoById(fee.getId(), backDate, Convert.convertInputNumber_2(fee.getFeePrice() + backFeePrice_temp) , 0, 0.0);
+												//增加冲抵记录
+											}
+										}
+										
+									}
+								}
+							}else{//冲抵所有费用
+								
+							}
+						}
+					}
+					
+				}
 			}
 		}
 		return null;

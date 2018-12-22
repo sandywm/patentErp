@@ -343,4 +343,16 @@ public interface ZlajFeeInfoManager{
 	 * @return
 	 */
 	List<ZlajFeeSubInfoTb> listCurrSubFeeInfoByOpt(Integer feeId,String currDate)throws WEBException ;
+	
+	/**
+	 * 获取指定代理机构下所有未平账已缴费的费用记录
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-22 下午04:08:44
+	 * @param cpyId 代理费编号
+	 * @param @param feeType 费用类型标记(gf:官费，dlf:代理费)
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajFeeInfoTb> listUnBackInfoByOpt(Integer cpyId,String feeType)throws WEBException ;
 }
