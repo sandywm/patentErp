@@ -522,13 +522,13 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 	}
 
 	@Override
-	public List<ZlajFeeInfoTb> listUnBackInfoByOpt(Integer cpyId,
+	public List<ZlajFeeInfoTb> listUnBackInfoByOpt(Integer cpyId,Integer cusId,
 			String feeType) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return fDao.findUnBackInfoByOpt(sess, cpyId, feeType);
+			return fDao.findUnBackInfoByOpt(sess, cpyId, cusId, feeType);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

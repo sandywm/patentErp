@@ -12,10 +12,13 @@ import com.patent.dao.CpyInfoDao;
 import com.patent.dao.CpyUserInfoDao;
 import com.patent.dao.CusBackFeeInfoDao;
 import com.patent.dao.CustomerInfoDao;
+import com.patent.dao.ZlajFeeInfoDao;
 import com.patent.exception.WEBException;
 import com.patent.factory.DaoFactory;
 import com.patent.module.CusBackFeeInfo;
+import com.patent.module.CusPzInfo;
 import com.patent.service.CusBackFeeInfoManager;
+import com.patent.tools.CurrentTime;
 import com.patent.tools.HibernateUtil;
 import com.patent.util.Constants;
 
@@ -25,6 +28,7 @@ public class CusBackFeeInfoManagerImpl implements CusBackFeeInfoManager{
 	CpyInfoDao cpyDao = null;
 	CustomerInfoDao cusDao = null;
 	CusBackFeeInfoDao cbfDao = null;
+	ZlajFeeInfoDao feeDao = null;
 	Transaction tran = null;
 	@Override
 	public Integer addCBF(String backFeePrice, String backDate,
@@ -84,6 +88,45 @@ public class CusBackFeeInfoManagerImpl implements CusBackFeeInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据条件获取客户汇款信息记录条数信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<CusPzInfo> listInfoByOpt(Integer backFeeId, Integer cusId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cbfDao = (CusBackFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUS_BACK_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cbfDao.findInfoByOpt(sess, backFeeId, cusId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据条件获取客户汇款平账记录信息列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public Integer addCusPz(Integer backFeeId, Integer feeId, Double pzPrice,
+			Double remainPrice) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			feeDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			cbfDao = (CusBackFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUS_BACK_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CusPzInfo pz = new CusPzInfo(cbfDao.get(sess, backFeeId),feeDao.get(sess, feeId), pzPrice, remainPrice,CurrentTime.getCurrentTime());
+			cbfDao.savePz(sess, pz);
+			tran.commit();
+			return pz.getId();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("增加客户汇款平账信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

@@ -350,9 +350,10 @@ public interface ZlajFeeInfoManager{
 	 * @author Administrator
 	 * @date 2018-12-22 下午04:08:44
 	 * @param cpyId 代理费编号
+	 * @param cusId 客户编号
 	 * @param @param feeType 费用类型标记(gf:官费，dlf:代理费)
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajFeeInfoTb> listUnBackInfoByOpt(Integer cpyId,String feeType)throws WEBException ;
+	List<ZlajFeeInfoTb> listUnBackInfoByOpt(Integer cpyId,Integer cusId,String feeType)throws WEBException ;
 }

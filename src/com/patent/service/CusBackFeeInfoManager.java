@@ -5,8 +5,11 @@ package com.patent.service;
 
 import java.util.List;
 
+import org.hibernate.Session;
+
 import com.patent.exception.WEBException;
 import com.patent.module.CusBackFeeInfo;
+import com.patent.module.CusPzInfo;
 
 public interface CusBackFeeInfoManager {
 
@@ -59,4 +62,30 @@ public interface CusBackFeeInfoManager {
 	 * @throws WEBException
 	 */
 	Integer getCountByOpt(Integer cpyId,Integer cusId,String sDate,String eDate) throws WEBException;
+	
+	/**
+	 * 根据条件获取客户汇款平账记录信息列表
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-24 上午10:17:12
+	 * @param backFeeId 汇款记录编号(0表示全部)
+	 * @param cusId 客户编号(0表示全部)
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CusPzInfo> listInfoByOpt(Integer backFeeId,Integer cusId) throws WEBException;
+	
+	/**
+	 * 增加客户汇款平账记录
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-24 上午10:19:58
+	 * @param backFeeId 客户汇款编号
+	 * @param feeId 费用编号
+	 * @param pzPrice 平账费用
+	 * @param remainPrice 剩余未平费用
+	 * @return
+	 * @throws WEBException
+	 */
+	Integer addCusPz(Integer backFeeId,Integer feeId,Double pzPrice,Double remainPrice) throws WEBException;
 }

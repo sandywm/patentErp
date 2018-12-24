@@ -69,6 +69,7 @@
     <!-- 专利费用 -->
     <action path="/fee" parameter="action" scope="request" type="com.patent.action.fee.FeeAction">
     	<forward name="feePage" path="/Module/feeManager/jsp/feeManager.jsp"></forward>
+    	<forward name="bfPage" path="/Module/feeManager/jsp/feeManager.jsp"></forward>
     </action>
 
   </action-mappings>

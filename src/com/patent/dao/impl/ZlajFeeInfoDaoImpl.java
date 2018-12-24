@@ -217,9 +217,10 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 	}
 
 	@Override
-	public List<ZlajFeeInfoTb> findUnBackInfoByOpt(Session sess, Integer cpyId,String feeType) {
+	public List<ZlajFeeInfoTb> findUnBackInfoByOpt(Session sess, Integer cpyId,Integer cusId,String feeType) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId + " and zlf.djStatus = 1 and zlf.feeStatus = 1 and zlf.backStatus = 0";
+		hql += " and FIND_IN_SET("+cusId+",zlf.zlajMainInfoTb.ajSqrId) > 0";
 		if(feeType.equals("gf")){//官费
 			hql += " and zlf.feeTypeInfoTb.feeName != '代理费'";
 		}else{//只有代理费

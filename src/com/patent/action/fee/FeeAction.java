@@ -54,6 +54,8 @@ import com.alibaba.fastjson.JSON;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.CpyUserInfo;
+import com.patent.module.CusBackFeeInfo;
+import com.patent.module.CusPzInfo;
 import com.patent.module.FeeExportRecordInfo;
 import com.patent.module.FeeImportDealRecordInfo;
 import com.patent.module.FeeImportRecordInfo;
@@ -880,6 +882,23 @@ public class FeeAction extends DispatchAction {
 	}
 	
 	/**
+	 * 导向客户汇款页面
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-24 上午11:20:51
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward goBackFeePage(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return mapping.findForward("bfPage");
+	}
+	
+	/**
 	 * 增加客户还款动作(输入)--
 	 * @description
 	 * @author Administrator
@@ -896,7 +915,7 @@ public class FeeAction extends DispatchAction {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		CusBackFeeInfoManager cbfm = (CusBackFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUS_BACK_FEE_INFO);
-		String msg = "";
+		String msg = "error";
 		Map<String,String> map = new HashMap<String,String>();
 		Integer currUserId = this.getLoginUserId(request);
 		if(this.getLoginType(request).equals("cpyUser")){
@@ -918,39 +937,207 @@ public class FeeAction extends DispatchAction {
 				if(backFeePrice.equals("")){
 					Pattern pattern = Pattern.compile("^[+]?[\\d]*$");  
 					if(pattern.matcher(backFeePrice).matches()){//判断输入的汇款费用必须为大于0的整数
-						Double backFeePrice_temp = Double.parseDouble(backFeePrice);
+						Double backFeePrice_temp = Double.parseDouble(backFeePrice);//当前汇款剩余费用
 						Integer cbfId = cbfm.addCBF(backFeePrice, backDate, backType, cusId, cpyId, currUserId, CurrentTime.getCurrentTime(), remark);
 						if(cbfId > 0){
+							msg = "success";
 							//优先冲抵官费，然后再冲抵代理费
 							//获取所有代缴-已交未平的费用
-							List<ZlajFeeInfoTb> feeList = fm.listUnBackInfoByOpt(cpyId, "gf");//优先平官费
-							if(dlfStatus.equals(0)){//冲抵官费
-								if(feeList.size() > 0){
-									for(Iterator<ZlajFeeInfoTb> it = feeList.iterator() ; it.hasNext();){
-										ZlajFeeInfoTb fee = it.next();
-										Double currBackFee = Convert.convertInputNumber_2(fee.getFeePrice() - fee.getBackFee() - fee.getDiscountsFee());
-										if(backFeePrice_temp >= currBackFee){//够冲抵
-											fm.updateBackFeeInfoById(fee.getId(), backDate, fee.getFeePrice() , 1, 0.0);
-											backFeePrice_temp = Convert.convertInputNumber_2(backFeePrice_temp - currBackFee);
+							List<ZlajFeeInfoTb> feeList = fm.listUnBackInfoByOpt(cpyId, cusId, "gf");//优先平官费
+							if(feeList.size() > 0){
+								for(Iterator<ZlajFeeInfoTb> it = feeList.iterator() ; it.hasNext();){
+									ZlajFeeInfoTb fee = it.next();
+									Double feePrice = fee.getFeePrice();
+									Double currBackFee = Convert.convertInputNumber_2(feePrice - fee.getBackFee() - fee.getDiscountsFee());//当前应还费用
+									if(backFeePrice_temp >= currBackFee){//够冲抵
+										fm.updateBackFeeInfoById(fee.getId(), backDate, feePrice , 1, 0.0);
+										backFeePrice_temp = Convert.convertInputNumber_2(backFeePrice_temp - currBackFee);
+										//增加冲抵记录
+										cbfm.addCusPz(cbfId, fee.getId(), feePrice, 0.0);
+									}else{//钱不够冲抵
+										if(backFeePrice_temp > 0){//但还有余钱
+											fm.updateBackFeeInfoById(fee.getId(), backDate, backFeePrice_temp , 0, 0.0);
 											//增加冲抵记录
-										}else{//钱不够冲抵
-											if(backFeePrice_temp > 0){//但还有余钱
-												fm.updateBackFeeInfoById(fee.getId(), backDate, Convert.convertInputNumber_2(fee.getFeePrice() + backFeePrice_temp) , 0, 0.0);
+											cbfm.addCusPz(cbfId, fee.getId(), backFeePrice_temp, Convert.convertInputNumber_2(currBackFee - backFeePrice_temp));
+										}
+									}
+									
+								}
+							}
+							if(dlfStatus.equals(1)){//还要冲抵代理费
+								if(backFeePrice_temp > 0){
+									List<ZlajFeeInfoTb> dlfList = fm.listUnBackInfoByOpt(cpyId, cusId, "dlf");//未平的代理费
+									if(dlfList.size() > 0){
+										for(Iterator<ZlajFeeInfoTb> it_dlf = dlfList.iterator() ; it_dlf.hasNext();){
+											ZlajFeeInfoTb fee = it_dlf.next();
+											Double feePrice = fee.getFeePrice();
+											Double currBackFee = Convert.convertInputNumber_2(feePrice - fee.getBackFee() - fee.getDiscountsFee());//当前应还费用
+											if(backFeePrice_temp >= currBackFee){//够冲抵
+												fm.updateBackFeeInfoById(fee.getId(), backDate, feePrice , 1, 0.0);
+												backFeePrice_temp = Convert.convertInputNumber_2(backFeePrice_temp - currBackFee);
 												//增加冲抵记录
+												cbfm.addCusPz(cbfId, fee.getId(), feePrice, 0.0);
+											}else{//钱不够冲抵
+												if(backFeePrice_temp > 0){//但还有余钱
+													fm.updateBackFeeInfoById(fee.getId(), backDate, backFeePrice_temp , 0, 0.0);
+													//增加冲抵记录
+													cbfm.addCusPz(cbfId, fee.getId(), backFeePrice_temp, Convert.convertInputNumber_2(currBackFee - backFeePrice_temp));
+												}
 											}
 										}
-										
 									}
 								}
-							}else{//冲抵所有费用
-								
 							}
 						}
+					}else{
+						msg = "inpError";
 					}
-					
+				}else{
+					msg = "inpError";
 				}
+			}else{
+				msg = "noAbility";
 			}
 		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 根据条件分页获取客户汇款记录
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-24 上午10:52:46
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCusBackFeePageData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CusBackFeeInfoManager cbfm = (CusBackFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUS_BACK_FEE_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
+		Integer currUserId = this.getLoginUserId(request);
+		if(this.getLoginType(request).equals("cpyUser")){
+			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
+			boolean abilityFlag = false;
+			String roleName = this.getLoginRoleName(request);
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{//只获取自己的任务流程
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listBackFee");//只有具有浏览还款动作权限的人员
+			}
+			if(abilityFlag){
+				Integer cusId = CommonTools.getFinalInteger("cusId", request);
+				String sDate = CommonTools.getFinalStr("sDate", request);
+				String eDate = CommonTools.getFinalStr("eDate", request);
+				Integer count = cbfm.getCountByOpt(cpyId, cusId, sDate, eDate);
+				if(count > 0){
+					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
+					List<CusBackFeeInfo> feeList =  cbfm.listPageInfoByOpt(cpyId, cusId, sDate, eDate, pageNo, pageSize);
+					List<Object> list_d = new ArrayList<Object>();
+					for(Iterator<CusBackFeeInfo> it = feeList.iterator() ; it.hasNext();){
+						CusBackFeeInfo bf = it.next();
+						Map<String,Object> map_d = new HashMap<String,Object>();
+						map_d.put("id", bf.getId());
+						map_d.put("backFee", bf.getBackFeePrice());
+						map_d.put("bakcDate", bf.getBackDate());
+						String backType = bf.getBackType();
+						if(backType.equals("wx")){
+							backType = "微信";
+						}else if(backType.equals("zfb")){
+							backType = "支付宝";
+						}else if(backType.equals("bank")){
+							backType = "银行转账";
+						}
+						map_d.put("backType", backType);
+						map_d.put("cusInfo", bf.getCus().getCusName());
+						map_d.put("operateUserInfo", bf.getUser().getUserName());
+						map_d.put("operateDate", bf.getOperateTime());
+						map_d.put("remark", bf.getRemark());
+						list_d.add(map_d);
+					}
+					map.put("msg", "success");
+					map.put("data", list_d);
+					map.put("count", count);
+					map.put("code", 0);
+				}else{
+					map.put("msg", "noInfo");
+				}
+			}else{
+				map.put("msg", "noAbility");
+			}
+		}
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取客户汇款平账明细
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-24 上午11:04:58
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCusPzDetail(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CusBackFeeInfoManager cbfm = (CusBackFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUS_BACK_FEE_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		Map<String,Object> map = new HashMap<String,Object>();
+		String msg = "error";
+		Integer currUserId = this.getLoginUserId(request);
+		if(this.getLoginType(request).equals("cpyUser")){
+			boolean abilityFlag = false;
+			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
+			String roleName = this.getLoginRoleName(request);
+			if(roleName.equals("管理员")){
+				abilityFlag = true;
+			}else{//只获取自己的任务流程
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listBackFee");//只有具有浏览还款动作权限的人员
+			}
+			if(abilityFlag){
+				Integer backFeeId = CommonTools.getFinalInteger("backFeeId", request);
+				if(backFeeId > 0){
+					List<CusPzInfo>  pzList = cbfm.listInfoByOpt(backFeeId, 0);
+					if(pzList.size() > 0){
+						if(pzList.get(0).getCusBackFeeInfo().getCpy().getId().equals(cpyId)){
+							msg = "success";
+							List<Object> list_d = new ArrayList<Object>();
+							for(Iterator<CusPzInfo> it = pzList.iterator() ; it.hasNext();){
+								CusPzInfo pz = it.next();
+								Map<String,Object> map_d = new HashMap<String,Object>();
+								ZlajFeeInfoTb fee = pz.getZlajFeeInfoTb();
+								map_d.put("feeName", fee.getFeeTypeInfoTb().getFeeName());//费用名称
+								Double feePrice = fee.getFeePrice();
+								map_d.put("feePrice", feePrice);//费用金额
+								map_d.put("pzPrice", pz.getPzPrice());//平账费用
+								map_d.put("remainFee", pz.getRemainPrice());//未平账费用
+								map_d.put("dealTime", pz.getDealTime());
+								map_d.put("dealUserInfo", pz.getCusBackFeeInfo().getUser().getUserName());
+								list_d.add(map_d);
+							}
+							map.put("dealInfo", list_d);
+						}
+					}else{
+						msg = "noInfo";
+					}
+				}
+			}else{
+				msg = "noAbility";
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 }

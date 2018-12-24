@@ -9,6 +9,7 @@ import org.hibernate.Session;
 
 import com.patent.dao.CusBackFeeInfoDao;
 import com.patent.module.CusBackFeeInfo;
+import com.patent.module.CusPzInfo;
 import com.patent.tools.CommonTools;
 
 @SuppressWarnings("unchecked")
@@ -82,6 +83,26 @@ public class CusBackFeeInfoDaoImpl implements CusBackFeeInfoDao{
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);
+	}
+
+	@Override
+	public List<CusPzInfo> findInfoByOpt(Session sess, Integer backFeeId,
+			Integer cusId) {
+		// TODO Auto-generated method stub
+		String hql = " from CusPzInfo as cp where 1 = 1";
+		if(backFeeId > 0){
+			hql += " and cp.cusBackFeeInfo.id = "+backFeeId;
+		}
+		if(cusId > 0){
+			hql += " and cp.cusBackFeeInfo.cus.id = "+cusId;
+		}
+		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public void savePz(Session sess, CusPzInfo pzInfo) {
+		// TODO Auto-generated method stub
+		sess.save(pzInfo);
 	}
 
 }
