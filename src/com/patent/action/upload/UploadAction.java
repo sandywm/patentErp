@@ -140,6 +140,7 @@ public class UploadAction extends DispatchAction {
 		boolean abilityFlag = false;
 		if(loginType.equals("cpyUser")){
 			if(this.getLoginRoleName(request).equals("管理员")){
+				cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
 				abilityFlag = true;
 			}else{
 				if(fileType.equals("dg")){

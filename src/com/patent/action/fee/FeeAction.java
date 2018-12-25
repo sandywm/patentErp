@@ -962,7 +962,6 @@ public class FeeAction extends DispatchAction {
 											cbfm.addCusPz(cbfId, fee.getId(), backFeePrice_temp, Convert.convertInputNumber_2(currBackFee - backFeePrice_temp));
 										}
 									}
-									
 								}
 							}
 							if(dlfStatus.equals(1)){//还要冲抵代理费

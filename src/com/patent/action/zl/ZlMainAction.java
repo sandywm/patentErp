@@ -4266,6 +4266,7 @@ public class ZlMainAction extends DispatchAction {
 					//然后进行数据库操作
 					for(int j = 0; j < tjList.size(); j++){
 						String readResult = "";
+						String readResultChi = "";
 						Map<String,Object> map_d = new HashMap<String,Object>();
 			        	TzsJson tJson = tjList.get(j);
 			        	String fwSerial = tJson.getFwSerial();//发文序号
@@ -4326,6 +4327,7 @@ public class ZlMainAction extends DispatchAction {
 									//无需再增加
 			        				readResult = "uploadExist";//之前已读取过该通知书，无需再次上传
 			        				tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, tzsList.get(0).getTzsPath(),currUserId,0,"之前已读取过该通知书，无需再次读取",cpyId);
+			        				readResultChi = "之前已读取过该通知书，无需再次读取";
 //			        				看以后需要删除不？
 //									if(readFlag){
 //										//删除临时上传位置
@@ -4350,6 +4352,7 @@ public class ZlMainAction extends DispatchAction {
 											zlm.updateZlApplyDate(zlId, applyDate);//修改专利申请日
 											zlm.updateAjNoGfById(zlId, ajNoGf);
 											readResult = "success";
+											readResultChi = "读取成功";
 										}
 				        			}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
 				        				if(!applyDate_db.equals("")){
@@ -4404,23 +4407,28 @@ public class ZlMainAction extends DispatchAction {
 													}
 												}
 												readResult = "success";
+												readResultChi = "读取成功";
+												//读取成功的通知书都在最后统一增加读取通知书记录
 											}
 				        				}else{//不存在申请日不能导入后续的通知书
 				        					readResult = "dateError";
+				        					readResultChi = "不存在申请日不能导入后续的通知书";
+				        					tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "指定专利无申请日，无法进行读取", cpyId);
 				        				}
 				        			}else if(tzsName.contains("补正通知书") || tzsName.contains("审查意见通知书") || tzsName.contains("初步审查合格通知书")){
 				        				readResult = "success";
+				        				readResultChi = "读取成功";
 				        				if(tzsName.contains("初步审查合格通知书")){//初审合格
 				        					Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入初步审查合格通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",9.1);//导入通知书期限1个月
 											if(currLcId > 0){
 												mxm.addLcMx(currLcId, currUserId, "导入初步审查合格通知书", 9.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
-												if(zlType.equals("fm")){
-													if(lcNo < 13){//实审之前导入初步审查合格通知书
-														zlm.updateZlStatusById(zlId, "13.0", "实审中/等待缴纳实审费");
-													}
-												}else{//其他类型专利没有实审
-													zlm.updateZlStatusById(zlId, "14.0", "等待导入授权、办理登记手续通知书");
-												}
+//												if(zlType.equals("fm")){
+//													if(lcNo < 13){//实审之前导入初步审查合格通知书
+//														zlm.updateZlStatusById(zlId, "13.0", "实审中/等待缴纳实审费");
+//													}
+//												}else{//其他类型专利没有实审
+//													zlm.updateZlStatusById(zlId, "14.0", "等待导入授权、办理登记手续通知书");
+//												}
 											}
 				        				}else{//说明需要进行补正或者审查答复（可能是初审的补正/审查答复，也可能是实审的补正/审查答复）
 				        					Integer addMonthes = 2;//补正通知书都是2个月+15天
@@ -4444,6 +4452,7 @@ public class ZlMainAction extends DispatchAction {
 												mxm.addLcMx(currLcId, currUserId, "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
 											}
 											//增加案件补正/案件审查答复任务------------------------
+											
 				        				}
 				        			}else if(tzsName.equals("驳回决定")){//专利被驳回，需要在收到该通知书后3个月内向专利复审委员会请求复审
 				        				readResult = "success";
