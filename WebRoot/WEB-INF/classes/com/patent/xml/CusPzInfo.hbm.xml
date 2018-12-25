@@ -21,12 +21,12 @@
             </column>
         </many-to-one>
         <property name="pzPrice" type="java.lang.Double">
-            <column name="pz_price" precision="10" not-null="true">
+            <column name="pz_price" precision="22" scale="0" not-null="true">
                 <comment>平账费用</comment>
             </column>
         </property>
         <property name="remainPrice" type="java.lang.Double">
-            <column name="remain_price" precision="10" not-null="true">
+            <column name="remain_price" precision="22" scale="0" not-null="true">
                 <comment>剩余费用(剩余未平费用)</comment>
             </column>
         </property>

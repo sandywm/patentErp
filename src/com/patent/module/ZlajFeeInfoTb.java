@@ -42,6 +42,7 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	private String fpDate;
 	private String fpNo;
 	private Set<ZlajFeeSubInfoTb> zlajFeeSubInfoTbs = new HashSet<ZlajFeeSubInfoTb>();
+	private Set<CusPzInfo> cpyPzInfos = new HashSet<CusPzInfo>();
 
 	// Constructors
 
@@ -331,6 +332,14 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	public void setFpNo(String fpNo) {
 		this.fpNo = fpNo;
+	}
+
+	public Set<CusPzInfo> getCpyPzInfos() {
+		return cpyPzInfos;
+	}
+
+	public void setCpyPzInfos(Set<CusPzInfo> cpyPzInfos) {
+		this.cpyPzInfos = cpyPzInfos;
 	}
 
 }

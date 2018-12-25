@@ -10,19 +10,19 @@
             <column name="id" />
             <generator class="native" />
         </id>
-        <many-to-one name="cpy" class="com.patent.module.CpyInfoTb" lazy="false">
-            <column name="cpy_id" not-null="true">
-            	<comment>公司编号</comment>
-            </column>
-        </many-to-one>
-        <many-to-one name="cus" class="com.patent.module.CustomerInfoTb" lazy="false">
+        <many-to-one name="customerInfoTb" class="com.patent.module.CustomerInfoTb" lazy="false">
             <column name="cus_id" not-null="true">
-            	<comment>客户编号</comment>
+                <comment>客户编号</comment>
             </column>
         </many-to-one>
-        <many-to-one name="user" class="com.patent.module.CpyUserInfo" lazy="false">
+        <many-to-one name="cpyUserInfo" class="com.patent.module.CpyUserInfo" lazy="false">
             <column name="operate_user_id" not-null="true">
-            	<comment>操作人</comment>
+                <comment>操作人</comment>
+            </column>
+        </many-to-one>
+        <many-to-one name="cpyInfoTb" class="com.patent.module.CpyInfoTb" lazy="false">
+            <column name="cpy_id" not-null="true">
+                <comment>公司编号</comment>
             </column>
         </many-to-one>
         <property name="backFeePrice" type="java.lang.String">
@@ -50,5 +50,13 @@
                 <comment>备注</comment>
             </column>
         </property>
+        <set name="cusPzInfos" inverse="true">
+            <key>
+                <column name="back_fee_id" not-null="true">
+                    <comment>汇款记录编号</comment>
+                </column>
+            </key>
+            <one-to-many class="com.patent.module.CusPzInfo" />
+        </set>
     </class>
 </hibernate-mapping>

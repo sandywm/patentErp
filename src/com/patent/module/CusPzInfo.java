@@ -27,7 +27,8 @@ public class CusPzInfo implements java.io.Serializable {
 
 	/** full constructor */
 	public CusPzInfo(CusBackFeeInfo cusBackFeeInfo,
-			ZlajFeeInfoTb zlajFeeInfoTb, Double pzPrice, Double remainPrice,String dealTime) {
+			ZlajFeeInfoTb zlajFeeInfoTb, Double pzPrice, Double remainPrice,
+			String dealTime) {
 		this.cusBackFeeInfo = cusBackFeeInfo;
 		this.zlajFeeInfoTb = zlajFeeInfoTb;
 		this.pzPrice = pzPrice;
@@ -69,20 +70,20 @@ public class CusPzInfo implements java.io.Serializable {
 		this.pzPrice = pzPrice;
 	}
 
+	public Double getRemainPrice() {
+		return this.remainPrice;
+	}
+
+	public void setRemainPrice(Double remainPrice) {
+		this.remainPrice = remainPrice;
+	}
+
 	public String getDealTime() {
 		return this.dealTime;
 	}
 
 	public void setDealTime(String dealTime) {
 		this.dealTime = dealTime;
-	}
-
-	public Double getRemainPrice() {
-		return remainPrice;
-	}
-
-	public void setRemainPrice(Double remainPrice) {
-		this.remainPrice = remainPrice;
 	}
 
 }

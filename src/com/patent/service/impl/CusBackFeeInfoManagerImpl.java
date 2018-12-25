@@ -11,12 +11,16 @@ import org.hibernate.Transaction;
 import com.patent.dao.CpyInfoDao;
 import com.patent.dao.CpyUserInfoDao;
 import com.patent.dao.CusBackFeeInfoDao;
+import com.patent.dao.CusPzInfoDao;
 import com.patent.dao.CustomerInfoDao;
 import com.patent.dao.ZlajFeeInfoDao;
 import com.patent.exception.WEBException;
 import com.patent.factory.DaoFactory;
+import com.patent.module.CpyInfoTb;
+import com.patent.module.CpyUserInfo;
 import com.patent.module.CusBackFeeInfo;
 import com.patent.module.CusPzInfo;
+import com.patent.module.CustomerInfoTb;
 import com.patent.service.CusBackFeeInfoManager;
 import com.patent.tools.CurrentTime;
 import com.patent.tools.HibernateUtil;
@@ -29,6 +33,7 @@ public class CusBackFeeInfoManagerImpl implements CusBackFeeInfoManager{
 	CustomerInfoDao cusDao = null;
 	CusBackFeeInfoDao cbfDao = null;
 	ZlajFeeInfoDao feeDao = null;
+	CusPzInfoDao pzDao = null;
 	Transaction tran = null;
 	@Override
 	public Integer addCBF(String backFeePrice, String backDate,
@@ -43,9 +48,8 @@ public class CusBackFeeInfoManagerImpl implements CusBackFeeInfoManager{
 			cbfDao = (CusBackFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUS_BACK_FEE_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			CusBackFeeInfo cbf = new CusBackFeeInfo(backFeePrice, backDate,backType, 
-					cusDao.get(sess, cusId), cpyDao.get(sess, cpyId),
-					uDao.get(sess, operateUserId), operateTime, remark);
+			CusBackFeeInfo cbf = new CusBackFeeInfo(cusDao.get(sess, cusId), uDao.get(sess, operateUserId), cpyDao.get(sess, cpyId),backFeePrice, backDate,backType, 
+					operateTime, remark);
 			cbfDao.save(sess, cbf);
 			tran.commit();
 			return cbf.getId();
@@ -98,9 +102,9 @@ public class CusBackFeeInfoManagerImpl implements CusBackFeeInfoManager{
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
-			cbfDao = (CusBackFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUS_BACK_FEE_INFO);
+			pzDao = (CusPzInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUS_PZ_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return cbfDao.findInfoByOpt(sess, backFeeId, cusId);
+			return pzDao.findInfoByOpt(sess, backFeeId, cusId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -116,11 +120,12 @@ public class CusBackFeeInfoManagerImpl implements CusBackFeeInfoManager{
 		// TODO Auto-generated method stub
 		try {
 			feeDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			pzDao = (CusPzInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUS_PZ_INFO);
 			cbfDao = (CusBackFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUS_BACK_FEE_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
 			CusPzInfo pz = new CusPzInfo(cbfDao.get(sess, backFeeId),feeDao.get(sess, feeId), pzPrice, remainPrice,CurrentTime.getCurrentTime());
-			cbfDao.savePz(sess, pz);
+			pzDao.save(sess, pz);
 			tran.commit();
 			return pz.getId();
 		} catch (Exception e) {

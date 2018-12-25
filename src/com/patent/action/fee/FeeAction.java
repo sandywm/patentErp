@@ -855,6 +855,7 @@ public class FeeAction extends DispatchAction {
 							FeeImportDealRecordInfo fidr = it.next();
 							Map<String,Object> map_d = new HashMap<String,Object>();
 							map_d.put("zlNo", fidr.getZlNo());
+							
 							map_d.put("feeName", fidr.getFeeName());
 							map_d.put("dealTime", fidr.getDealTime());
 							String dealStatus = fidr.getDealStatus();
@@ -934,7 +935,7 @@ public class FeeAction extends DispatchAction {
 				Integer cusId = CommonTools.getFinalInteger("cusId", request);
 				String remark = Transcode.unescape_new("remark", request);
 				Integer dlfStatus = CommonTools.getFinalInteger("dlfStatus",request);//是否包含冲抵代理费(0:不包含，1：包含)
-				if(backFeePrice.equals("")){
+				if(!backFeePrice.equals("")){
 					Pattern pattern = Pattern.compile("^[+]?[\\d]*$");  
 					if(pattern.matcher(backFeePrice).matches()){//判断输入的汇款费用必须为大于0的整数
 						Double backFeePrice_temp = Double.parseDouble(backFeePrice);//当前汇款剩余费用
@@ -1056,8 +1057,8 @@ public class FeeAction extends DispatchAction {
 							backType = "银行转账";
 						}
 						map_d.put("backType", backType);
-						map_d.put("cusInfo", bf.getCus().getCusName());
-						map_d.put("operateUserInfo", bf.getUser().getUserName());
+						map_d.put("cusInfo", bf.getCustomerInfoTb().getCusName());
+						map_d.put("operateUserInfo", bf.getCpyUserInfo().getUserName());
 						map_d.put("operateDate", bf.getOperateTime());
 						map_d.put("remark", bf.getRemark());
 						list_d.add(map_d);
@@ -1110,7 +1111,7 @@ public class FeeAction extends DispatchAction {
 				if(backFeeId > 0){
 					List<CusPzInfo>  pzList = cbfm.listInfoByOpt(backFeeId, 0);
 					if(pzList.size() > 0){
-						if(pzList.get(0).getCusBackFeeInfo().getCpy().getId().equals(cpyId)){
+						if(pzList.get(0).getCusBackFeeInfo().getCpyInfoTb().getId().equals(cpyId)){
 							msg = "success";
 							List<Object> list_d = new ArrayList<Object>();
 							for(Iterator<CusPzInfo> it = pzList.iterator() ; it.hasNext();){
@@ -1123,7 +1124,7 @@ public class FeeAction extends DispatchAction {
 								map_d.put("pzPrice", pz.getPzPrice());//平账费用
 								map_d.put("remainFee", pz.getRemainPrice());//未平账费用
 								map_d.put("dealTime", pz.getDealTime());
-								map_d.put("dealUserInfo", pz.getCusBackFeeInfo().getUser().getUserName());
+								map_d.put("dealUserInfo", pz.getCusBackFeeInfo().getCpyUserInfo().getUserName());
 								list_d.add(map_d);
 							}
 							map.put("dealInfo", list_d);

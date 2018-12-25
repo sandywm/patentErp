@@ -143,5 +143,13 @@
             </key>
             <one-to-many class="com.patent.module.ZlajFeeSubInfoTb" />
         </set>
+        <set name="cpyPzInfos" inverse="true">
+            <key>
+                <column name="fee_id" not-null="true">
+                    <comment>费用编号</comment>
+                </column>
+            </key>
+            <one-to-many class="com.patent.module.CusPzInfo" />
+        </set>
     </class>
 </hibernate-mapping>

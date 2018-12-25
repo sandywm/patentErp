@@ -122,4 +122,5 @@ public class Constants {
 	public static final String DAO_CUS_BACK_FEE_INFO = "cus_back_fee_info_Dao";
 	public static final String DAO_FEE_IMPORT_RECORD_INFO = "fee_import_record_info_Dao";
 	public static final String DAO_FEE_IMPORT_DEAL_RECORD_INFO = "fee_import_deal_record_info_Dao";
+	public static final String DAO_CUS_PZ_INFO = "cus_pz_info_Dao";
 }
