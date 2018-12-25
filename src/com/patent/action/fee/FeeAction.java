@@ -1046,7 +1046,7 @@ public class FeeAction extends DispatchAction {
 						Map<String,Object> map_d = new HashMap<String,Object>();
 						map_d.put("id", bf.getId());
 						map_d.put("backFee", bf.getBackFeePrice());
-						map_d.put("bakcDate", bf.getBackDate());
+						map_d.put("backDate", bf.getBackDate());
 						String backType = bf.getBackType();
 						if(backType.equals("wx")){
 							backType = "微信";

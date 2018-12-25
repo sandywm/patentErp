@@ -4457,10 +4457,10 @@ public class ZlMainAction extends DispatchAction {
 												}
 											}
 											//增加案件补正/案件审查答复任务------------------------
-											
 				        				}
 				        			}else if(tzsName.equals("驳回决定")){//专利被驳回，需要在收到该通知书后3个月内向专利复审委员会请求复审
 				        				readResult = "success";
+				        				readResultChi = "读取成功";
 										String finalDate = CurrentTime.getFinalDate(fwDate, Constants.TD_RECEIVE_DAYS);//推定收到日
 										finalDate = CurrentTime.getFinalDate_1(finalDate, 3);//3个月内进行请求复审
 										if(lcNo < 9.9){
@@ -4477,6 +4477,7 @@ public class ZlMainAction extends DispatchAction {
 				        			}else if(tzsName.equals("办理登记手续通知书")){//授权和办理登记手续通知书
 				        				if(!applyDate_db.equals("")){
 				        					readResult = "success";
+				        					readResultChi = "读取成功";
 											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",14.0);//导入通知书期限1个月
 											if(currLcId > 0){
 												mxm.addLcMx(currLcId,currUserId, "导入"+tzsName, 14.0, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
@@ -4565,10 +4566,12 @@ public class ZlMainAction extends DispatchAction {
 							        		}
 				        				}else{//不存在申请日不能导入后续的通知书
 				        					readResult = "dateError";
+				        					readResultChi = "指定专利无申请日，无法进行读取";
 				        					tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "指定专利无申请日，无法进行读取", cpyId);
 				        				}
 				        			}else if(tzsName.equals("缴费通知书")){//缴费通知书
 				        				readResult = "success";
+				        				readResultChi = "读取成功";
 				        				String feeTypeName = "";
 				        				if(!yearNo.equals("")){//年费滞纳金
 				        					if(zlType.equals("fm")){
@@ -4594,14 +4597,14 @@ public class ZlMainAction extends DispatchAction {
 					        							//修改费用任务中的备注，提示有滞纳金
 					        						}else{
 					        							readResult = "noYearFee";//还没导入年费，无法导入滞纳金
+					        							readResultChi = "还没导入年费，无法导入滞纳金";
 					        						}
-					    		        		}else{
-					    		        			readResult = "noFeeType";//无此类型费用
-						        				}
+					    		        		}
 					    		        	}
 				        				}
 				        			}else{//未收录该通知书的读取方法
 				        				readResult = "noReadTzs";//系统还未学习该通知书的读取方法
+				        				readResultChi = "系统还未学习该通知书的读取方法";
 				        				tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "系统还未学习该通知书的读取方法", cpyId);
 				        			}
 									if(readResult.equals("success")){
