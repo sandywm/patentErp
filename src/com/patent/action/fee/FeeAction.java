@@ -1028,7 +1028,7 @@ public class FeeAction extends DispatchAction {
 			String roleName = this.getLoginRoleName(request);
 			if(roleName.equals("管理员")){
 				abilityFlag = true;
-			}else{//只获取自己的任务流程
+			}else{//只获取自己的任务流程。
 				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listBackFee");//只有具有浏览还款动作权限的人员
 			}
 			if(abilityFlag){
