@@ -49,9 +49,9 @@ public class CusBackFeeInfoDaoImpl implements CusBackFeeInfoDao{
 			Integer cusId, String sDate, String eDate, Integer pageNo,
 			Integer pageSize) {
 		// TODO Auto-generated method stub
-		String  hql = " from CusBackFeeInfo as cbf where cbf.cpy.id = "+cpyId;
+		String  hql = " from CusBackFeeInfo as cbf where cbf.cpyInfoTb.id = "+cpyId;
 		if(cusId > 0){
-			hql += " and cbf.cus.id = "+cusId;
+			hql += " and cbf.customerInfoTb.id = "+cusId;
 		}
 		if(!sDate.equals("") && !eDate.equals("")){
 			hql += " and cbf.backDate >= '"+sDate+"' and cbf.backDate <= '"+eDate+"'";
@@ -68,9 +68,9 @@ public class CusBackFeeInfoDaoImpl implements CusBackFeeInfoDao{
 	public Integer getCountByOpt(Session sess, Integer cpyId, Integer cusId,
 			String sDate, String eDate) {
 		// TODO Auto-generated method stub
-		String  hql = "select count(cbf.id) from CusBackFeeInfo as cbf where cbf.cpy.id = "+cpyId;
+		String  hql = "select count(cbf.id) from CusBackFeeInfo as cbf where cbf.cpyInfoTb.id = "+cpyId;
 		if(cusId > 0){
-			hql += " and cbf.cus.id = "+cusId;
+			hql += " and cbf.customerInfoTb.id = "+cusId;
 		}
 		if(!sDate.equals("") && !eDate.equals("")){
 			hql += " and cbf.backDate >= '"+sDate+"' and cbf.backDate <= '"+eDate+"'";
