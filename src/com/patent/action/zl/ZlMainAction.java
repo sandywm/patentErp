@@ -4389,8 +4389,6 @@ public class ZlMainAction extends DispatchAction {
 								        					fm.addZLFee(zlId, currUserId, feeTypeId, fdJson.getFeeAmount(), Double.parseDouble(fjRate), feeEndDateCpy, 
 										        					feeEndDateGf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
 										        			//增加缴费任务------------------------
-								        				}else{
-								        					readResult = "noFeeType";//无此类型费用
 								        				}
 									        		}
 									        	}
@@ -4545,8 +4543,6 @@ public class ZlMainAction extends DispatchAction {
 															fm.addZLFee(zlId, currUserId, feeTypeId, Convert.convertInputNumber_2(yearFee), fjRate_real,feeCpyDate, 
 																	feeGfDate, "", 0, cpyId, 1, "", "",tzsName,m,feeRange,0,"","","","","");
 								        					//增加缴费任务------------------------
-								        				}else{
-								        					readResult = "noFeeType";//无此类型费用
 								        				}
 					        						}
 					        					}else{
@@ -4559,8 +4555,6 @@ public class ZlMainAction extends DispatchAction {
 							        					fm.addZLFee(zlId, currUserId, feeTypeId, fdJson.getFeeAmount(), Double.parseDouble(fjRate), feeEndDateCpy, 
 									        					feeEndDateGf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
 							        					//增加缴费任务------------------------
-							        				}else{
-							        					readResult = "noFeeType";//无此类型费用
 							        				}
 					        					}
 							        		}
@@ -4622,9 +4616,11 @@ public class ZlMainAction extends DispatchAction {
 								}
 			        		}else{//案件被终止无法再识别通知书
 			        			readResult =  "ajStop";
+			        			readResultChi = "案件被终止无法再识别通知书";
 			        			tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "案件被终止无法再识别通知书", cpyId);
 							}
 							map_d.put("result", readResult);
+							map_d.put("readResultChi", readResultChi);
 							map_d.put("tzsName", tzsName);
 							map_d.put("zlId", zlId);
 							map_d.put("ajNoGf", ajNoGf);
@@ -4632,7 +4628,9 @@ public class ZlMainAction extends DispatchAction {
 							list_d.add(map_d);
 			        	}else{//不存在
 			        		readResult = "noInfo";//该通知书没有匹配到专利
+			        		readResultChi = "该通知书没有匹配到专利";
 		    				map_d.put("result", readResult);
+		    				map_d.put("readResultChi", readResultChi);
 		    				map_d.put("tzsName", tzsName);
 		    				map_d.put("ajNoGf", ajNoGf);
 		    				map_d.put("ajTitle", zlName);
