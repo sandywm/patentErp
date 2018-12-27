@@ -546,7 +546,7 @@ public class FeeAction extends DispatchAction {
 			            Integer currRow = 5;
 			            Integer currNo = 1;
 			            Double totalPrice_gf = 0d;//官费
-			            Double totalPrice_ser = 0d;//服务代理费
+			            Double totalPrice_ser = 0d;//服务费
 			            for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
 							ZlajFeeInfoTb zlf = it.next();
 							ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
