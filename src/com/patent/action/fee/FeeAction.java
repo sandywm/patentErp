@@ -53,6 +53,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 
 import com.alibaba.fastjson.JSON;
+import com.patent.action.base.ReadExcelFile;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.module.CpyUserInfo;
@@ -149,30 +150,6 @@ public class FeeAction extends DispatchAction {
 	}
 	
 	/**
-	 * 封装添加单元格数据内容方法
-	 * @description
-	 * @author Administrator
-	 * @date 2018-11-28 上午09:40:37
-	 * @param column 列名（,隔开）
-	 * @param num 列数
-	 * @param row
-	 * @param style
-	 */
-	private static void addCellData(Integer num,String column,HSSFRow row,HSSFCellStyle style){
-		HSSFCell cell = row.createCell(0); 
-		String[] columnArr = column.split(":");
-		for(Integer i = 0 ; i < num ; i++){
-			cell = row.createCell(i); 
-	        cell.setCellStyle(style);  
-	        if(columnArr[i].equals("noData")){
-	        	cell.setCellValue(""); 
-	        }else{
-	        	cell.setCellValue(columnArr[i]); 
-	        }
-		}
-	}
-	
-	/**
 	 * 设置合并单元格后的边框
 	 * @description
 	 * @author Administrator
@@ -209,26 +186,15 @@ public class FeeAction extends DispatchAction {
 	 * @param row
 	 * @param style
 	 */
-	private static void addCellData(String column0,String column1,String column2,String column3,String column4,String column5,HSSFRow row,HSSFCellStyle style){
-		HSSFCell cell = row.createCell(0); 
-		cell = row.createCell(0); 
-        cell.setCellStyle(style);  
-        cell.setCellValue(column0); 
-        cell = row.createCell(1);  
-        cell.setCellStyle(style);  
-        cell.setCellValue(column1);  
-        cell = row.createCell(2);  
-        cell.setCellStyle(style);  
-        cell.setCellValue(column2);  
-        cell = row.createCell(3);  
-        cell.setCellStyle(style);  
-        cell.setCellValue(column3);  
-        cell = row.createCell(4);  
-        cell.setCellStyle(style);  
-        cell.setCellValue(column4);  
-        cell = row.createCell(5);  
-        cell.setCellStyle(style);  
-        cell.setCellValue(column5);  
+	public void addCellData(List<String> columnList,HSSFRow row,HSSFCellStyle style){
+		Integer colLen = columnList.size();
+		if(colLen > 0){
+			for(Integer i = 0 ; i < colLen ; i++){
+				HSSFCell cell = row.createCell(i); 
+		        cell.setCellStyle(style);  
+		        cell.setCellValue(columnList.get(i)); 
+			}
+		}
 	}
 	
 	/**
@@ -497,7 +463,7 @@ public class FeeAction extends DispatchAction {
 							sheet.autoSizeColumn(3);
 				    	}
 				    	wb.setForceFormulaRecalculation(true);
-					}else if(qdStatus.equals(1)){
+					}else if(qdStatus.equals(1)){//客户清单
 				    	wb = new HSSFWorkbook();  
 				        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
 				        HSSFSheet sheet = wb.createSheet("费用清单");  
@@ -516,13 +482,58 @@ public class FeeAction extends DispatchAction {
 			            
 			            row = sheet.createRow(0);
 			            HSSFCell cell = row.createCell(0); 
-				        cell = row.createCell(0); 
-				        cell.setCellStyle(style_bank);  
-				        cell.setCellValue("用户名"); 
+			            cell.setCellStyle(style);  
+			            cell.setCellValue("账户名"); 
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 0, 0, 0, 1, sheet, wb);
+			            
+			            cell = row.createCell(2); 
+			            cell.setCellStyle(style);  
+			            cell.setCellValue("王传明"); 
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 0, 0, 2, 7, sheet, wb);
+			           
+			            
+			            row = sheet.createRow(1);
+			            cell = row.createCell(0); 
+			            cell.setCellStyle(style);  
+			            cell.setCellValue("开户行"); 
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 1, 1, 0, 1, sheet, wb);
+			            
+			            cell = row.createCell(2); 
+			            cell.setCellStyle(style);  
+			            cell.setCellValue("濮阳市工商银行"); 
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 1, 1, 2, 7, sheet, wb);
+			            
+			            row = sheet.createRow(2);
+			            cell = row.createCell(0); 
+			            cell.setCellStyle(style);  
+			            cell.setCellValue("账号"); 
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 2, 2, 0, 1, sheet, wb);
+			            
+			            cell = row.createCell(2); 
+			            cell.setCellStyle(style);  
+			            cell.setCellValue("2321321321321321321"); 
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 2, 2, 2, 7, sheet, wb);
 				        
-				        cell = row.createCell(1); 
-				        cell.setCellStyle(style_bank);  
-//				        cell.setCellValue("用户名"); 11
+			            row = sheet.createRow(3);
+			            List<String> list_head = new ArrayList<String>();
+			            list_head.add("序号");
+			            list_head.add("申请号");
+			            list_head.add("专利名称");
+			            list_head.add("申请日");
+			            list_head.add("申请人");
+			            list_head.add("官方费用");
+			            list_head.add("缴费截止日");
+			            list_head.add("服务费");
+			            FeeAction fa = new FeeAction();
+			            fa.addCellData(list_head, row, style_bank);
+			            
+				       
+			            
+			            for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
+							ZlajFeeInfoTb zlf = it.next();
+							ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
+							
+			            }
 					}
 					
 					
