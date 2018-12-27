@@ -345,6 +345,7 @@ public class FeeAction extends DispatchAction {
 		FeeExportRecordInfoManager ferm = (FeeExportRecordInfoManager) AppFactory.instance(null).getApp(Constants.WEB_FEE_EXPORT_RECORD_INFO);
 		String roleName = this.getLoginRoleName(request);
 		Integer currUserId = this.getLoginUserId(request);
+		String currentTime = CurrentTime.getCurrentTime();
 		if(this.getLoginType(request).equals("cpyUser")){
 			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
 			boolean abilityFlag = false;
@@ -475,6 +476,10 @@ public class FeeAction extends DispatchAction {
 				        HSSFCellStyle style = wb.createCellStyle();  
 				        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
 			            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+			            style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+				        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+				        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+				        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
 			            
 			            HSSFCellStyle style_bank = wb.createCellStyle();  
 			            style_bank.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 创建一个居左格式  
@@ -489,7 +494,7 @@ public class FeeAction extends DispatchAction {
 			            cell = row.createCell(2); 
 			            cell.setCellStyle(style);  
 			            cell.setCellValue("王传明"); 
-			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 0, 0, 2, 7, sheet, wb);
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 0, 0, 2, 8, sheet, wb);
 			           
 			            
 			            row = sheet.createRow(1);
@@ -501,7 +506,7 @@ public class FeeAction extends DispatchAction {
 			            cell = row.createCell(2); 
 			            cell.setCellStyle(style);  
 			            cell.setCellValue("濮阳市工商银行"); 
-			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 1, 1, 2, 7, sheet, wb);
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 1, 1, 2, 8, sheet, wb);
 			            
 			            row = sheet.createRow(2);
 			            cell = row.createCell(0); 
@@ -512,35 +517,81 @@ public class FeeAction extends DispatchAction {
 			            cell = row.createCell(2); 
 			            cell.setCellStyle(style);  
 			            cell.setCellValue("2321321321321321321"); 
-			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 2, 2, 2, 7, sheet, wb);
-				        
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 2, 2, 2, 8, sheet, wb);
+			            
 			            row = sheet.createRow(3);
+			            cell = row.createCell(0); 
+			            cell.setCellStyle(style);  
+			            cell.setCellValue("制表日期"); 
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 3, 3, 0, 1, sheet, wb);
+			            
+			            cell = row.createCell(2); 
+			            cell.setCellStyle(style);  
+			            cell.setCellValue(currentTime); 
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 3, 3, 2, 8, sheet, wb);
+				        
+			            row = sheet.createRow(4);
 			            List<String> list_head = new ArrayList<String>();
 			            list_head.add("序号");
 			            list_head.add("申请号");
 			            list_head.add("专利名称");
 			            list_head.add("申请日");
 			            list_head.add("申请人");
+			            list_head.add("费用名称");
 			            list_head.add("官方费用");
 			            list_head.add("缴费截止日");
 			            list_head.add("服务费");
 			            FeeAction fa = new FeeAction();
-			            fa.addCellData(list_head, row, style_bank);
-			            
-				       
-			            
+			            fa.addCellData(list_head, row, style);
+			            Integer currRow = 5;
+			            Integer currNo = 1;
+			            Double totalPrice_gf = 0d;//官费
+			            Double totalPrice_ser = 0d;//服务费
 			            for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
 							ZlajFeeInfoTb zlf = it.next();
 							ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
-							
+							row = sheet.createRow(currRow++);
+							List<String> list_con = new ArrayList<String>();
+							list_con.add(String.valueOf(currNo++));
+							list_con.add(zl.getAjNoGf());
+							list_con.add(zl.getAjTitle());
+							list_con.add(zl.getAjApplyDate());
+							list_con.add(zl.getAjSqrName());
+							list_con.add(zlf.getFeeTypeInfoTb().getFeeName());
+							Double feePrice = zlf.getFeePrice();
+							list_con.add(String.valueOf(feePrice));
+							list_con.add(zlf.getFeeEndDateGf());
+							Double serFeePrice = 0d;//服务费
+							list_con.add(String.valueOf(serFeePrice));
+							totalPrice_gf = Convert.convertInputNumber_2(totalPrice_gf + feePrice);
+							totalPrice_ser = Convert.convertInputNumber_2(totalPrice_ser + serFeePrice);
+				            fa.addCellData(list_con, row, style);
 			            }
+			            row = sheet.createRow(currRow++);
+			            cell = row.createCell(6); 
+			            cell.setCellStyle(style);  
+			            cell.setCellValue(totalPrice_gf); 
+			            
+			            cell = row.createCell(8); 
+			            cell.setCellStyle(style);  
+			            cell.setCellValue(totalPrice_ser); 
+			            
+			            row = sheet.createRow(currRow);
+			            cell = row.createCell(0); 
+			            cell.setCellStyle(style);  
+			            cell.setCellValue("合计"); 
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, currRow, currRow, 0, 1, sheet, wb);
+			            
+			            cell = row.createCell(2); 
+			            cell.setCellStyle(style);  
+			            Double totalPrice = Convert.convertInputNumber_2(totalPrice_gf + totalPrice_ser);
+			            cell.setCellValue(totalPrice_gf + " + " + totalPrice_ser + " = " + totalPrice); 
+			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, currRow, currRow, 2, 8, sheet, wb);
+			            
 					}
-					
-					
 		        	// 第六步，将文件存到指定位置
 			    	String absoFilePath_1 = "";//绝对地址
 			    	try  {  
-			    		String currTime = CurrentTime.getCurrentTime();
 			        	String fileName_1 = "费用清单_"+CurrentTime.getStringTime()+".xls";
 			        	String filePath_pre = "Module\\excelTemp\\"+cpyId+"\\feeExport\\";
 			        	String folder = WebUrl.DATA_URL_PRO + filePath_pre;//通过代理机构把excel分开
@@ -553,7 +604,7 @@ public class FeeAction extends DispatchAction {
 			            wb.write(fout);  
 			            fout.close();  
 			            //生成记录
-			            ferm.addFER(fileName_1, currTime, currUserId, filePath_pre+fileName_1, cpyId);
+			            ferm.addFER(fileName_1, currentTime, currUserId, filePath_pre+fileName_1, cpyId);
 				        //第七步 下载文件到客户端
 				        OutputStream fos = null;
 				        BufferedOutputStream bos = null;
