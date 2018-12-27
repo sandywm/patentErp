@@ -338,5 +338,17 @@ public class ReadExcelFile {
 //    	FileOutputStream fout = new FileOutputStream(absoFilePath);//存到服务器
 //    	xssfWorkbook.write(fout);  
 //        fout.close();     
+    	String aa = "2016-12-01 08:58:11";
+    	System.out.println(aa.substring(0, 10));
+    	
+    	List<String> list = new ArrayList<String>();
+    	list.add("asdfdsf");
+    	list.add("23423");
+    	list.add("12321");
+    	list.add("dsfsf131");
+    	for(int i = 0 ; i < list.size() ; i++){
+//    		System.out.println(b);
+    	}
+    	
 	}
 }

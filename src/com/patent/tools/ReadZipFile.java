@@ -29,6 +29,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.patent.action.base.IgnoreDTDEntityResolver;
 import com.patent.factory.AppFactory;
 import com.patent.json.FeeDetailJson;
+import com.patent.json.FileListJson;
 import com.patent.json.LateFeeJson;
 import com.patent.json.TzsJson;
 import com.patent.module.FeeTypeInfoTb;
@@ -103,6 +104,7 @@ public class ReadZipFile {
 //	    		Double jfTotal = 0.0;//缴费总计
 	    		List<LateFeeJson> list_lf = new ArrayList<LateFeeJson>();//年费滞纳金
 	    		List<FeeDetailJson> list_fd = new ArrayList<FeeDetailJson>();//费用详情
+	    		List<FileListJson> list_fl = new ArrayList<FileListJson>();//电子申请回执清单
 	    		String yearNo = "";//年度数字
 	    		//---------------年费滞纳金-----------------//
 	    		String yearFeeRange = "";//年费缴纳时间段
@@ -110,17 +112,7 @@ public class ReadZipFile {
 	            if(ze.isDirectory()){
 	                //为空的文件夹什么都不做
 	            }else{
-//	            	Map<String,Object> map_d = new HashMap<String,Object>();
 	            	String fileName = ze.getName();
-//	            	System.out.println(fileName);
-//	            	String fileName_start = fileName.substring(0,fileName.indexOf("\\"));
-//	            	String fileName_end = fileName.substring(fileName.lastIndexOf("\\") + 1);
-//	            	System.out.println(fileName_end);
-//	            	System.out.println(fileName_start+"\\"+fileName_start+"\\"+fileName_start+"\\");
-//	            	if(fileName.endsWith(".tif")){
-//	            		System.out.println("复制");
-//	            		FileOpration.copyFile(fileName, "e:\\abc\\"+fileName_end);
-//	            	}
 	            	if(fileName.endsWith("XML") || fileName.endsWith("xml")){
 	                    ZipEntry zip = zf.getEntry(ze.getName());
 	                    InputStream inputstream = null;
@@ -129,7 +121,8 @@ public class ReadZipFile {
 	            		reader.setEntityResolver(new IgnoreDTDEntityResolver());//忽略dtd验证
 	                    Document doc = reader.read(inputstream);
 	        			Element root = doc.getRootElement();  
-	        			Element l1 = root.element("notice_name");
+	        			Element l1 = root.element("notice_name");//通知书存在的内容
+	        			Element l11 = root.element("ANJIANBH");//电子回单存在的内容
 	        			if(l1 != null){//读取到数据文件（不判断直接存）
 	        				tzsName = l1.getTextTrim();//通知书名称
 	        				ajNoGf = root.element("application_number").getTextTrim();//申请号或专利号
@@ -168,14 +161,6 @@ public class ReadZipFile {
 							if(l6 != null){
 								zlName = l6.getTextTrim();
 							}
-							//公用参数
-//							map_d.put("zlName", zlName);
-//							map_d.put("tzsName", tzsName);
-//			            	map_d.put("ajNoGf", ajNoGf);
-//			            	map_d.put("fwSerial", fwSerial);
-//			            	map_d.put("fwDate", fwDate);
-//			            	map_d.put("applyDate", applyDate);
-//			            	map_d.put("sqrName", sqrName);
 			            	if(tzsName.equals("专利申请受理通知书")){
 			            		
 			            	}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
@@ -189,8 +174,6 @@ public class ReadZipFile {
 			            		Element fee = root.element("fee_info_all");
 			            		Element feeDetail = null;
 			            		if(fee != null){
-//			            			String feeTotalTxt = fee.element("fee_total").getTextTrim();
-//			            			map_d.put("feeTotal", feeTotalTxt);
 			            			fee = fee.element("fee_info");
 			            			for(@SuppressWarnings("unchecked")
 		    							Iterator<Element> it = fee.elementIterator("fee") ; it.hasNext();){
@@ -204,12 +187,7 @@ public class ReadZipFile {
 			            					list_fd.add(new FeeDetailJson(feeName,Double.parseDouble(feeAmount)));
 			            				}
 			            			}
-//			            			map_d.put("feeDetail", list_f);
 			            		}
-//			            		map_d.put("fjApplyDate", fjApplyDate);
-//			            		map_d.put("fjRecord", fjRecord);
-//			            		map_d.put("feeEdate", feeEdate);
-//			            		map_d.put("fjRate", fjRate);
 			            	}else if(tzsName.equals("办理登记手续通知书")){
 			            		feeEdate = CurrentTime.convertFormatDate(root.element("pay_deadline_date").getTextTrim());//缴费截止日期-通知书
 			            		Element fee = root.element("fee_info_all");
@@ -226,10 +204,6 @@ public class ReadZipFile {
 			            					
 			            				}else{
 			            					list_fd.add(new FeeDetailJson(feeName,Double.parseDouble(feeAmount)));
-//			            					map_f.put("feeName", feeName);
-//				            				map_f.put("feeAmount", feeAmount);
-//				            				list_f.add(map_f);
-//				            				jfDetail += feeName + "," + feeAmount + ":";
 			            				}
 			            			}
 			            			yearNo = fee.element("annual_year").getTextTrim();//年度数字
@@ -237,10 +211,6 @@ public class ReadZipFile {
 			            			if(!feeRateSign.contains("无费减")){
 			            				fjRate = "0."+feeRateSign.substring(0, feeRateSign.length() - 1);
 			            			}
-//			            			map_d.put("feeDetail", list_f);
-//			            			map_d.put("feeEdate", feeEdate);
-//			            			map_d.put("fjRate", fjRate);
-//			            			map_d.put("yearNo", yearNo);
 			            		}
 			            	}else if(tzsName.equals("发明专利申请公布及进入实质审查通知书")){
 			            		//获取公用的就可以了
@@ -253,24 +223,34 @@ public class ReadZipFile {
 			            			for(@SuppressWarnings("unchecked")
 		    							Iterator<Element> it = fee_info.elementIterator("fee") ; it.hasNext();){
 			            				feeDetail = it.next();
-			            				Map<String,String> map_f = new HashMap<String,String>();
 			            				//缴费开始日期：缴费结束日期
 			            				String feeRange_s = CurrentTime.convertFormatDate(feeDetail.elementTextTrim("pay_start_time"));
 			            				String feeRange_e = CurrentTime.convertFormatDate(feeDetail.elementTextTrim("pay_end_time"));
 			            				String lateFee_temp = feeDetail.elementTextTrim("late_fee");//滞纳金
-//			            				map_f.put("feeRange", feeRange_s+":"+feeRange_e);
-//			            				map_f.put("lateFee", lateFee_temp);
 			            				list_lf.add(new LateFeeJson(Double.parseDouble(lateFee_temp),feeRange_s,feeRange_e));
 			            			}
 			            		}
-//			            		map_d.put("feeDetail", list_f);
-//		            			map_d.put("feeEdate", feeEdate);
-//		            			map_d.put("yearNo", yearNo);
 			            	}
-//			            	list_d.add(map_d);
 			            	list_sub_d.add(new TzsJson(fwSerial,ajNoGf));//存在数据文件，无需判断
 			            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, sqrName, applyDate,
-			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,upZipPath));
+			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath));
+	        			}else if(l11 != null){//电子回单
+	        				tzsName = "电子申请回执";
+	        				zlName = root.element("FAMINGCZMC").getTextTrim();
+	        				fwSerial = root.element("ANJIANBH").getTextTrim();//电子回单的回执编号-唯一的（类似于通知书的发文序号）
+	        				Element l_sqh = root.element("SHENQINGH");
+	        				if(l_sqh != null){//存在申请号
+	        					ajNoGf = l_sqh.getTextTrim().replace("申请号：", "");
+	        					fwDate = root.element("QIANMINGSJC").getTextTrim().substring(0, 10);
+	        					for(@SuppressWarnings("unchecked")
+	        						Iterator<Element> it = root.elementIterator("SHOUDAOWJ") ; it.hasNext();){
+	        						Element l = it.next().element("WENJIANLB");
+	        						list_fl.add(new FileListJson(l.elementText("WENJIANMC"),l.elementText("WENJIANGS"),l.elementText("WENJIANDX")));
+	        					}
+				            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, "", "",
+				            			"", "", "","", fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath));
+	        				}
+	        				//不存在申请号的不读取
 	        			}else{//里面不存在数据文件，需要从list.xml中获取(比如补正通知书)
 	        				l1 = root.element("TONGZHISXJ");
 	        				if(l1 != null){
@@ -279,40 +259,36 @@ public class ReadZipFile {
 	        						tzsName = l2.elementText("TONGZHISMC");
 	        						zlName = l2.elementText("FAMINGMC");
 	        						ajNoGf = l2.elementText("SHENQINGH");
-	        						fwSerial = root.element("FAWENXLH").getTextTrim();
-	        						boolean readFlag = false;
-	        						//需要判断之前的list_sub_d中是否已经读取过
-	        						for(int j = 0; j < list_sub_d.size(); j++){
-	        							TzsJson tJson = list_sub_d.get(j);
-        					        	if(tJson.getAjNoGf().equals(ajNoGf) && tJson.getFwSerial().equals(fwSerial)){
-        					        		readFlag = true;
-        					        		break;
-        					        	}
-        					        }
-	        						if(!readFlag){//没读取过
-	        							if(ajNoGf.length() == 13){
-	                    					String zlTypeNo = ajNoGf.substring(4, 5);
-	                    					if(zlTypeNo.equals("1")){
-	                    						zlType = "fm";
-	                    					}else if(zlTypeNo.equals("2") || zlTypeNo.equals("8")){
-	                    						zlType = "syxx";
-	                    					}else if(zlTypeNo.equals("3") || zlTypeNo.equals("9")){
-	                    						zlType = "wg";
-	                    					}
-	                    				}else if(ajNoGf.length() == 14){
-	                    					zlType = "wg";
-	                    				}
-	        							fwDate = CurrentTime.convertFormatDate(l2.elementText("FAWENR"));
-		        						feeEdate = CurrentTime.getFinalDate(fwDate, (60+Constants.TD_RECEIVE_DAYS));
-//		        						map_d.put("zlName", zlName);
-//		    							map_d.put("tzsName", tzsName);
-//		    			            	map_d.put("ajNoGf", ajNoGf);
-//		    			            	map_d.put("feeEdate", feeEdate);
-//		    			            	map_d.put("fwSerial", fwSerial);
-//		    			            	map_d.put("fwDate", fwDate);
-//		    			            	list_d.add(map_d);
-		    			            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, sqrName, applyDate,
-		    			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,upZipPath));
+	        						Element l3 = root.element("FAWENXLH");
+	        						if(l3 != null){
+	        							fwSerial = l3.getTextTrim();
+	        							boolean readFlag = false;
+		        						//需要判断之前的list_sub_d中是否已经读取过
+		        						for(int j = 0; j < list_sub_d.size(); j++){
+		        							TzsJson tJson = list_sub_d.get(j);
+	        					        	if(tJson.getAjNoGf().equals(ajNoGf) && tJson.getFwSerial().equals(fwSerial)){
+	        					        		readFlag = true;
+	        					        		break;
+	        					        	}
+	        					        }
+		        						if(!readFlag){//没读取过
+		        							if(ajNoGf.length() == 13){
+		                    					String zlTypeNo = ajNoGf.substring(4, 5);
+		                    					if(zlTypeNo.equals("1")){
+		                    						zlType = "fm";
+		                    					}else if(zlTypeNo.equals("2") || zlTypeNo.equals("8")){
+		                    						zlType = "syxx";
+		                    					}else if(zlTypeNo.equals("3") || zlTypeNo.equals("9")){
+		                    						zlType = "wg";
+		                    					}
+		                    				}else if(ajNoGf.length() == 14){
+		                    					zlType = "wg";
+		                    				}
+		        							fwDate = CurrentTime.convertFormatDate(l2.elementText("FAWENR"));
+			        						feeEdate = CurrentTime.getFinalDate(fwDate, (60+Constants.TD_RECEIVE_DAYS));
+			    			            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, sqrName, applyDate,
+			    			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath));
+		        						}
 	        						}
 	        					}
 	        				}
@@ -882,10 +858,13 @@ public class ReadZipFile {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		List<TzsJson> tjList = new ArrayList<TzsJson>();
-		for(int i = 222 ; i <= 223; i++){
-			List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\"+i+".zip",0,0,0);
-			tjList.addAll(tj);
-		}
+//		for(int i = 222 ; i <= 223; i++){
+//			List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\"+i+".zip",0,0,0);
+//			tjList.addAll(tj);
+//		}
+		List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\tzs_411050434.zip",0,0,0);
+		tjList.addAll(tj);
+		System.out.println(tj.size());
 //		Collections.sort(tjList);
 		for(int j = 0; j < tjList.size(); j++){
         	TzsJson tJson = tjList.get(j);
@@ -915,6 +894,13 @@ public class ReadZipFile {
         		for(Integer k = 0 ; k < lfList.size() ; k++){
         			LateFeeJson lfJson = lfList.get(k);
         			System.out.println("缴费时间段："+lfJson.getFeeSDate()+"至"+lfJson.getFeeEDate() + " 滞纳金 " + lfJson.getLateFee());
+        		}
+        	}
+        	List<FileListJson> flList = tJson.getFlList();
+        	if(flList.size() > 0){
+        		for(Integer k = 0 ; k < flList.size() ; k++){
+        			FileListJson lfJson = flList.get(k);
+        			System.out.println("文件名："+lfJson.getFileName() + "   ,文件格式:" + lfJson.getFileType() + "   ,文件大小 :"+lfJson.getFileSize());
         		}
         	}
         	System.out.println("通知书路径 : "+tJson.getZipPath());
