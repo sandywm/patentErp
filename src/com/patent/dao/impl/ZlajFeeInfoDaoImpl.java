@@ -133,7 +133,7 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 	public List<ZlajFeeInfoTb> findInfoByOpt(Session sess, Integer cpyId,
 			Integer feeStatus, Integer diffDays,String zlNo,String ajNo,Integer cusId,String sDate,String eDate,Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
-		String hql = " from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId + " and zlf.feeStatus = "+feeStatus;
+		String hql = " from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId;
 		if(!zlNo.equals("")){
 			hql += " and zlf.zlajMainInfoTb.ajNoGf = '"+zlNo+"'";
 		}else if(!ajNo.equals("")){
@@ -143,12 +143,16 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 			hql += " and FIND_IN_SET("+cusId+",zlf.zlajMainInfoTb.ajSqrId) > 0";
 		}
 		if(feeStatus.equals(0)){//未缴费的费用列表时专利必须在正常状态下
+			hql += " and zlf.feeStatus = "+feeStatus;
 			if(diffDays >= 0){
 				hql += " and TO_DAYS(zlf.feeEndDateJj) - TO_DAYS('"+CurrentTime.getStringDate()+"') <= "+diffDays;
 			}
 			hql += " and zlf.zlajMainInfoTb.ajStopStatus = 0 order by zlf.feeEndDateJj asc";
 			return sess.createQuery(hql).list();
 		}else{
+			if(feeStatus.equals(1)){
+				hql += " and zlf.feeStatus = "+feeStatus;
+			}//全部就不判断费用状态
 			if(!sDate.equals("") && !eDate.equals("")){
 				hql += " and zlf.feeJnDate >= '"+sDate+"' and zlf.feeJnDate <= '"+eDate+"'";
 			}
@@ -163,7 +167,7 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 	@Override
 	public Integer getCountByOpt(Session sess, Integer cpyId,String zlNo,String ajNo,Integer cusId,String sDate,String eDate) {
 		// TODO Auto-generated method stub
-		String hql ="select count(zlf.id) from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId + " and zlf.feeStatus = 1";
+		String hql ="select count(zlf.id) from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId;
 		if(!zlNo.equals("")){
 			hql += " and zlf.zlajMainInfoTb.ajNoGf = '"+zlNo+"'";
 		}else if(!ajNo.equals("")){

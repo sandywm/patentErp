@@ -243,7 +243,7 @@ public class FeeAction extends DispatchAction {
 				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listFee");//只有具有浏览权限的人员
 			}
 			if(abilityFlag){
-				Integer feeStatus = CommonTools.getFinalInteger("feeStatus", request);//费用缴纳状态（0未交，1：已交）
+				Integer feeStatus = CommonTools.getFinalInteger("feeStatus", request);//费用缴纳状态（0未交,1：已交,2:全部）
 				Integer diffDays = CommonTools.getFinalInteger("diffDays", request);//代理机构缴费截止日期距当前日期天数小于等于指定的天数
 				String zlNo = CommonTools.getFinalStr("zlNo", request);
 				String ajNo = CommonTools.getFinalStr("ajNo", request);
