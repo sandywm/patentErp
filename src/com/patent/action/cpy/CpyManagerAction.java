@@ -370,7 +370,7 @@ public class CpyManagerAction extends DispatchAction {
 				map.put("dlFeeWg", cpy.getDlFeeWg());
 			}else if(opt.equals("workBonus")){//工作奖金（专利撰写-zx、专利审核-sc）
 				String zlType = CommonTools.getFinalStr("zlType", request);
-				String workType = CommonTools.getFinalStr("wordPosition", request);//工作种类(zx,sc)
+				String workType = CommonTools.getFinalStr("workPosition", request);//工作种类(zx,sc)
 				Integer zlLevel = CommonTools.getFinalInteger("zlLevel", request);//专利难易度1-3
 				Integer count = cbm.getCountByOpt(workType, zlType, zlLevel, cpyId);
 				List<Object> list_d = new ArrayList<Object>();
@@ -389,7 +389,7 @@ public class CpyManagerAction extends DispatchAction {
 						}else if(wordPosition_db.equals("sc")){
 							wordPositionChi = "专利审核";
 						}
-						map_d.put("wordPosition", wordPositionChi);
+						map_d.put("workPosition", wordPositionChi);
 						String zlType_db = cb.getZlType();
 						String zlTypeChi = "";
 						if(zlType_db.equals("fm")){
