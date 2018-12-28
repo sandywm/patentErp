@@ -288,7 +288,7 @@ public class CpyManagerAction extends DispatchAction {
 	}
 	
 	/**
-	 * 根据专利类型获取指定代理机构代理费用
+	 * 根据专利类型获取指定代理机构代理费用(增加、修改专利时使用)
 	 * @description
 	 * @author Administrator
 	 * @date 2018-12-7 上午09:58:41
@@ -333,24 +333,48 @@ public class CpyManagerAction extends DispatchAction {
 		return null;
 	}
 	
-	public ActionForward getCpyBonusPageInfo(ActionMapping mapping, ActionForm form,
+	/**
+	 * 获取代理机构初始信息（dlFee,bankInfo,saleBonus,workBonus）--(代理费,银行信息,销售提成,工作奖金)
+	 * @description
+	 * @author Administrator
+	 * @date 2018-12-28 下午03:47:46
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getCpyInitInfo(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
-		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer userId = this.getLoginUserId(request);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		CpyBonusInfoManager cbm = (CpyBonusInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_BONUS_INFO);
+		CpyUserInfo cpyUser = cum.getEntityById(userId);
+		String opt = CommonTools.getFinalStr("opt", request);
 		Map<String,Object> map = new HashMap<String,Object>();
-		String msg = "error";
-		CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
-		if(user != null){
-			Integer cpyId = user.getCpyInfoTb().getId();
-			if(cpyId > 0){
+		if(cpyUser != null){
+			CpyInfoTb cpy = cpyUser.getCpyInfoTb();
+			Integer cpyId = cpy.getId();
+			map.put("cpyId", cpyId);
+			if(opt.equals("bankInfo")){//银行信息
+				map.put("bankAccountName", cpy.getBankAccountName());
+				map.put("bankName", cpy.getBankName());
+				map.put("bankNo", cpy.getBankNo());
+			}else if(opt.equals("saleBonus")){//销售提成
+				map.put("saleBonus", cpy.getSaleBonus());
+			}else if(opt.equals("dlFee")){//代理费
+				map.put("dlFeeFm", cpy.getDlFeeFm());
+				map.put("dlFeeXx", cpy.getDlFeeXx());
+				map.put("dlFeeWg", cpy.getDlFeeWg());
+			}else if(opt.equals("workBonus")){//工作奖金（专利撰写-zx、专利审核-sc）
 				String zlType = CommonTools.getFinalStr("zlType", request);
 				String workType = CommonTools.getFinalStr("wordPosition", request);//工作种类(zx,sc)
 				Integer zlLevel = CommonTools.getFinalInteger("zlLevel", request);//专利难易度1-3
 				Integer count = cbm.getCountByOpt(workType, zlType, zlLevel, cpyId);
 				List<Object> list_d = new ArrayList<Object>();
 				if(count > 0){
-					msg = "success";
 					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
 					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
 					List<CpyBonusInfo>  cbList = cbm.listPageInfoByOpt(workType, zlType, zlLevel, cpyId, pageNo, pageSize);
@@ -381,14 +405,11 @@ public class CpyManagerAction extends DispatchAction {
 						list_d.add(map_d);
 					}
 					map.put("data", list_d);
-					map.put("count", count);
 					map.put("code", 0);
-				}else{
-					msg = "noInfo";
 				}
+				map.put("count", count);
 			}
 		}
-		map.put("msg", msg);
 		this.getJsonPkg(map, response);
 		return null;
 	}

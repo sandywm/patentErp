@@ -585,7 +585,7 @@ public class FeeAction extends DispatchAction {
 			            cell = row.createCell(2); 
 			            cell.setCellStyle(style);  
 			            Double totalPrice = Convert.convertInputNumber_2(totalPrice_gf + totalPrice_ser);
-			            cell.setCellValue(totalPrice_gf + " + " + totalPrice_ser + " = " + totalPrice); 
+			            cell.setCellValue(totalPrice_gf + " + " + totalPrice_ser + " = " + totalPrice + "("+ Convert.MoneyToCNFormat(totalPrice) +")"); 
 			            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, currRow, currRow, 2, 8, sheet, wb);
 			            
 					}

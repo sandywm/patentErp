@@ -4874,14 +4874,16 @@ public class ZlMainAction extends DispatchAction {
 			        	String yearNo = tJson.getYearNo();//年度数字
 			        	String tzsPath = tJson.getZipPath();//上传的压缩包位置(绝对路径)
 			        	boolean readFlag = false;
-			        	if((j+1) < tjList.size()){//不是最后一个
-							if(!tzsPath.equals(tjList.get(j+1).getZipPath())){//当前内容的通知书和下一个通知书附件不相同（说明不是一个压缩包）
-								//说明当前压缩包内的通知书内容读取完成
+			        	if(!tzsName.equals("电子申请回执")){//电子申请回执的时候不做删除
+			        		if((j+1) < tjList.size()){//不是最后一个
+								if(!tzsPath.equals(tjList.get(j+1).getZipPath())){//当前内容的通知书和下一个通知书附件不相同（说明不是一个压缩包）
+									//说明当前压缩包内的通知书内容读取完成
+									readFlag = true;
+								}
+							}else{//最后一个通知书
 								readFlag = true;
 							}
-						}else{//最后一个通知书
-							readFlag = true;
-						}
+			        	}
 			        	//执行动作
 			        	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(ajNoGf);
 			        	if(zlList.size() == 0){//说明系统中还没有该专利号的专利/也可能是之前没导入过通知书
