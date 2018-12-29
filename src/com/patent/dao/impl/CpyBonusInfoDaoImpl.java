@@ -41,7 +41,7 @@ public class CpyBonusInfoDaoImpl implements CpyBonusInfoDao{
 		// TODO Auto-generated method stub
 		String hql =" from CpyBonusInfo as cb where cb.cpyInfoTb.id = "+cpyId;
 		if(!workType.equals("")){
-			hql += " and cb.workType = '"+workType+"'";
+			hql += " and cb.workPosition = '"+workType+"'";
 		}
 		if(!zlType.equals("")){
 			hql += " and cb.zlType = '"+zlType+"'";
@@ -62,7 +62,7 @@ public class CpyBonusInfoDaoImpl implements CpyBonusInfoDao{
 		// TODO Auto-generated method stub
 		String hql = "select count(cb.id) from CpyBonusInfo as cb where cb.cpyInfoTb.id = "+cpyId;
 		if(!workType.equals("")){
-			hql += " and cb.workType = '"+workType+"'";
+			hql += " and cb.workPosition = '"+workType+"'";
 		}
 		if(!zlType.equals("")){
 			hql += " and cb.zlType = '"+zlType+"'";
@@ -78,7 +78,7 @@ public class CpyBonusInfoDaoImpl implements CpyBonusInfoDao{
 	public List<CpyBonusInfo> findInfoByOpt(Session sess, String workType,
 			String zlType, Integer zlLevel, Integer cpyId) {
 		// TODO Auto-generated method stub
-		String hql =" from CpyBonusInfo as cb where cb.cpyInfoTb.id = "+cpyId + " and cb.workType = '"+workType+"'";
+		String hql =" from CpyBonusInfo as cb where cb.cpyInfoTb.id = "+cpyId + " and cb.workPosition = '"+workType+"'";
 		hql += " and cb.zlType = '"+zlType+"' and cb.zlLevel = "+zlLevel;
 		return sess.createQuery(hql).list();
 	}
