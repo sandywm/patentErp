@@ -518,7 +518,7 @@ public class CpyManagerAction extends DispatchAction {
 					Integer cpyId = user.getCpyInfoTb().getId();
 					if(cpyId > 0){
 						String zlType = CommonTools.getFinalStr("zlType", request);
-						String workType = CommonTools.getFinalStr("wordPosition", request);//工作种类(zx,sc)
+						String workType = CommonTools.getFinalStr("workPosition", request);//工作种类(zx,sc)
 						String bonusFee = CommonTools.getFinalStr("bonusFee", request);
 						Integer zlLevel = CommonTools.getFinalInteger("zlLevel", request);//专利难易度1-3
 						if(cbm.listInfoByOpt(workType, zlType, zlLevel, cpyId).size() == 0){

@@ -253,9 +253,9 @@ public class FeeAction extends DispatchAction {
 				
 				List<ZlajFeeInfoTb> zlfList = new ArrayList<ZlajFeeInfoTb>();
 				Integer count = 0;
-				if(feeStatus.equals(0)){
+				if(feeStatus.equals(0)){//未交费
 					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, "", "", 0, 0);
-				}else{
+				}else{//已缴费或者全部
 					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
 					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
 					count = fm.getCountByOpt(cpyId, zlNo, ajNo, cusId,sDate,eDate);
@@ -266,12 +266,17 @@ public class FeeAction extends DispatchAction {
 				if(zlfList.size() > 0){//
 					List<Object> list_d = new ArrayList<Object>();
 					String currDate = CurrentTime.getStringDate();
-					Double feeTotal = 0d;
+					Double feeTotal = 0d;//全部费用总计
+					Double feeTotal_wj = 0d;//未交费用统计
+					Double feeTotal_yj = 0d;//已交费用统计
+					Double feeTotal_back = 0d;//实收费用总计
 					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
 						ZlajFeeInfoTb zlf = it.next();
 						Map<String,Object> map_d = new HashMap<String,Object>();
 						ZlajMainInfoTb zl = zlf.getZlajMainInfoTb();
+						Integer feeStatus_db = zlf.getFeeStatus();
 						map_d.put("feeId", zlf.getId());
+						map_d.put("feeStatus", feeStatus_db);
 						map_d.put("zlNo", zl.getAjNoGf());
 						map_d.put("ajNo", zl.getAjNo());
 						map_d.put("zlName", zl.getAjTitle());
@@ -283,34 +288,42 @@ public class FeeAction extends DispatchAction {
 						map_d.put("feeEndDateJj", feeEndDateJj);
 						map_d.put("feeEndDateGf", feeEndDateGf);
 						map_d.put("feePrice", feePrice);
-						if(feeStatus.equals(0)){//未交费用
-							Integer diffDays_jj = CurrentTime.compareDate(currDate,feeEndDateJj);
-							Integer diffDays_gf = CurrentTime.compareDate(currDate,feeEndDateGf);
-							map_d.put("diffDays_jj", diffDays_jj);
-							map_d.put("diffDays_Gf", diffDays_gf);
-						}else{//已缴费
-							map_d.put("jfDate", zlf.getFeeJnDate());
-							map_d.put("backFee", zlf.getBackFee());//客户退还的费用
-							map_d.put("backDate", zlf.getBackDate());//客户退还时间
-							feeTotal = Convert.convertInputNumber_2(feeTotal + feePrice);
-							map_d.put("feeBatchNo", zlf.getFeeBatchNo());
-							map_d.put("bankSerialNo", zlf.getBankSerialNo());
-							map_d.put("fpDate", zlf.getFpDate());
-							map_d.put("fpNo", zlf.getFpNo());
+						Integer diffDays_jj = 0;
+						Integer diffDays_gf = 0;
+						if(feeStatus_db.equals(0)){//未交费用
+							diffDays_jj = CurrentTime.compareDate(currDate,feeEndDateJj);
+							diffDays_gf = CurrentTime.compareDate(currDate,feeEndDateGf);
+							feeTotal_wj = Convert.convertInputNumber_2(feeTotal_wj + feePrice);
+						}else{//已交费用
+							feeTotal_yj = Convert.convertInputNumber_2(feeTotal_yj + feePrice);
 						}
+						feeTotal_back = Convert.convertInputNumber_2(feeTotal_back + zlf.getBackFee());
+						map_d.put("diffDays_jj", diffDays_jj);
+						map_d.put("diffDays_Gf", diffDays_gf);
+						
+						map_d.put("jfDate", zlf.getFeeJnDate());
+						map_d.put("backFee", zlf.getBackFee());//客户退还的费用
+						map_d.put("backDate", zlf.getBackDate());//客户退还时间
+						feeTotal = Convert.convertInputNumber_2(feeTotal + feePrice);
+						map_d.put("feeBatchNo", zlf.getFeeBatchNo());
+						map_d.put("bankSerialNo", zlf.getBankSerialNo());
+						map_d.put("fpDate", zlf.getFpDate());
+						map_d.put("fpNo", zlf.getFpNo());
+						
 						list_d.add(map_d);
 					}
-					if(feeStatus.equals(1)){
-						List<Object> fmObj = fm.getTjFeeInfoByOpt(cpyId, zlNo, ajNo, cusId, sDate, eDate);
-						Object[] obj = (Object[]) fmObj.get(0);
-						Double yjFeeTotal = (Double)obj[0];//已交费用总计
-						Double backFeeTotal = (Double)obj[1];//实收费用总计
-						String noBackFeeTotal = Convert.convertInputNumber_3(yjFeeTotal - backFeeTotal);//未收费用总计
-						map.put("yjFeeTotal", Convert.convertInputNumber_3(yjFeeTotal));
-						map.put("backFeeTotal", Convert.convertInputNumber_3(backFeeTotal));
-						map.put("noBackFeeTotal", noBackFeeTotal);
-					}else{
-						map.put("feeTotal", feeTotal);//应缴费总计--未交费用模式下使用
+					if(feeStatus.equals(1)){//已交
+//						List<Object> fmObj = fm.getTjFeeInfoByOpt(cpyId, zlNo, ajNo, cusId, sDate, eDate);
+//						Object[] obj = (Object[]) fmObj.get(0);
+//						Double yjFeeTotal = (Double)obj[0];//已交费用总计
+//						Double backFeeTotal = (Double)obj[1];//实收费用总计
+						map.put("feeTotal", feeTotal);//全部费用总计
+						String noBackFeeTotal = Convert.convertInputNumber_3(feeTotal_yj - feeTotal_back);//未收费用总计
+						map.put("yjFeeTotal", Convert.convertInputNumber_3(feeTotal_yj));//已交费用总计
+						map.put("backFeeTotal", Convert.convertInputNumber_3(feeTotal_back));//实收费用总计
+						map.put("noBackFeeTotal", noBackFeeTotal);//未收费用总计
+					}else if(feeStatus.equals(0)){//未交
+						map.put("feePriceTotal", Convert.convertInputNumber_3(feeTotal_wj));//应缴费总计--未交费用模式下使用
 					}
 					map.put("msg", "success");
 					map.put("data", list_d);
