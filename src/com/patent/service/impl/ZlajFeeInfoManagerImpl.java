@@ -385,12 +385,12 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 	}
 
 	@Override
-	public Integer getCountByOpt(Integer cpyId,String zlNo,String ajNo,Integer cusId,String sDate,String eDate) throws WEBException {
+	public Integer getCountByOpt(Integer cpyId,Integer feeStatus,String zlNo,String ajNo,Integer cusId,String sDate,String eDate) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return fDao.getCountByOpt(sess, cpyId, zlNo, ajNo, cusId, sDate, eDate);
+			return fDao.getCountByOpt(sess, cpyId, feeStatus, zlNo, ajNo, cusId, sDate, eDate);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

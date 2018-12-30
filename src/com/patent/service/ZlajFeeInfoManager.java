@@ -257,6 +257,7 @@ public interface ZlajFeeInfoManager{
 	 * @author Administrator
 	 * @date 2018-12-5 上午10:46:42
 	 * @param cpyId 代理机构编号
+	 * @param feeStatus 费用缴纳状态--1:已缴费,2：全部
 	 * @param zlNo 专利/申请号(""表示全部)
 	 * @param ajNo 案件编号(""表示全部)
 	 * @param cusId 客户/申请人编号(0表示全部)
@@ -265,7 +266,7 @@ public interface ZlajFeeInfoManager{
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer getCountByOpt(Integer cpyId,String zlNo,String ajNo,Integer cusId,String sDate,String eDate)throws WEBException;
+	Integer getCountByOpt(Integer cpyId,Integer feeStatus,String zlNo,String ajNo,Integer cusId,String sDate,String eDate)throws WEBException;
 	
 	/**
 	 * 根据费用编号修改费用金额

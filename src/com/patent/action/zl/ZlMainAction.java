@@ -2194,7 +2194,7 @@ public class ZlMainAction extends DispatchAction {
 									//增加代理费用（id=90）
 									String jfDate = CurrentTime.getFinalDate(sDate, Constants.DL_FEE_DAYS);
 									fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(dlFee), 0.0, jfDate, jfDate, "", 1, 
-											cpyId, 1, "", "", "", 0, "", 0, "", "", "", "", "");
+											cpyId, 1, sDate, "", "", 0, "", 0, "", "", "", "", "");
 									if(pubZlId > 0){
 										pzm.updateAjIdById(pubZlId, zlId);
 									}

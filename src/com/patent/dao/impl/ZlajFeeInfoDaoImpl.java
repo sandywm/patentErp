@@ -165,7 +165,7 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 	}
 
 	@Override
-	public Integer getCountByOpt(Session sess, Integer cpyId,String zlNo,String ajNo,Integer cusId,String sDate,String eDate) {
+	public Integer getCountByOpt(Session sess, Integer cpyId,Integer feeStatus,String zlNo,String ajNo,Integer cusId,String sDate,String eDate) {
 		// TODO Auto-generated method stub
 		String hql ="select count(zlf.id) from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId;
 		if(!zlNo.equals("")){
@@ -176,8 +176,11 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		if(cusId > 0){
 			hql += " and FIND_IN_SET("+cusId+",zlf.zlajMainInfoTb.ajSqrId) > 0";
 		}
-		if(!sDate.equals("") && !eDate.equals("")){
-			hql += " and zlf.feeJnDate >= '"+sDate+"' and zlf.feeJnDate <= '"+eDate+"'";
+		if(feeStatus.equals(1)){
+			hql += " and zlf.feeStatus = "+feeStatus;
+			if(!sDate.equals("") && !eDate.equals("")){
+				hql += " and zlf.feeJnDate >= '"+sDate+"' and zlf.feeJnDate <= '"+eDate+"'";
+			}
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);

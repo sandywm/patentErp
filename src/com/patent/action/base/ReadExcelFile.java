@@ -78,6 +78,19 @@ public class ReadExcelFile {
         
 	}
 	
+	/**
+	 * 设置单个单元格的边框
+	 * @description
+	 * @author Administrator
+	 * @date 2018-11-21 上午09:49:59
+	 * @param style
+	 */
+	public static void setBorderStyle(HSSFCellStyle style){
+		style.setBorderBottom(HSSFCellStyle.BORDER_THIN); //下边框    
+        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);//左边框    
+        style.setBorderTop(HSSFCellStyle.BORDER_THIN);//上边框    
+        style.setBorderRight(HSSFCellStyle.BORDER_THIN);//右边框 
+	}
 	
 	public static void setJoinBorderStyle(int border, Integer rowIndex, Integer lastRow, Integer firstColumn, Integer lastColumn, HSSFSheet sheet, HSSFWorkbook wb){
 		CellRangeAddress region = new CellRangeAddress(rowIndex,lastRow,firstColumn,lastColumn);//first row (0-based)  from 行

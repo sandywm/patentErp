@@ -156,12 +156,13 @@ public interface ZlajFeeInfoDao {
 	List<ZlajFeeInfoTb> findInfoByOpt(Session sess,Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,String sDate,String eDate,Integer pageNo,Integer pageSize);
 	
 	/**
-	 * 获取指定代理机构下已缴费的费用记录条数
+	 * 获取指定代理机构下已缴费/全部的费用记录条数
 	 * @description
 	 * @author Administrator
 	 * @date 2018-12-5 上午10:50:06
 	 * @param sess
 	 * @param cpyId 代理机构编号
+	 * @param feeStatus 费用缴纳状态--1:已缴费,2：全部
 	 * @param zlNo 专利/申请号(""表示全部)
 	 * @param ajNo 案件编号(""表示全部)
 	 * @param cusId 客户/申请人编号(0表示全部)
@@ -169,7 +170,7 @@ public interface ZlajFeeInfoDao {
 	 * @param eDate 结束时间(缴费时间)--feeStatus=1的状态下使用
 	 * @return
 	 */
-	Integer getCountByOpt(Session sess,Integer cpyId,String zlNo,String ajNo,Integer cusId,String sDate,String eDate);
+	Integer getCountByOpt(Session sess,Integer cpyId,Integer feeStatus,String zlNo,String ajNo,Integer cusId,String sDate,String eDate);
 	
 	/**
 	 * 获取指定代理机构下已交费用、实收费用、未收费用统计（在已交费用模式下）
