@@ -92,17 +92,19 @@
 	<script src="/Module/zlBasicInfoManager/js/delMethod.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var globalZlId = parent.globalZlId,zlTit = parent.globalZlTit,taskDetailOpt='',upSuccSrcArray = [],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
+		var globalZlId = parent.globalZlId,globalMxId = parent.globalTaskOpts.globalMxId,zlTit = parent.globalZlTit,taskDetailOpt='',upSuccSrcArray = [],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
 			common : 'common',
-			globalUpload: 'upLoadFiles'
-		}).use(['layer','rate','form','common','upLoadFiles'],function(){
+			globalUpload: 'upLoadFiles',
+			zlInfoMethod : 'zlInfoMethod'
+		}).use(['layer','rate','form','common','zlInfoMethod','upLoadFiles'],function(){
 			var layer = layui.layer,
 				rate = layui.rate,
 				form = layui.form,
 				common = layui.common,
+				zlInfoMethod = layui.zlInfoMethod,
 				globalUpload = layui.upLoadFiles;
 			var page = {
 				data : {
@@ -125,11 +127,10 @@
   						type:'post',
 				        async:false,
 				        dataType:'json',
-				        data : {zlId : globalZlId},
+				        data : {lcmxId : globalMxId},
 				        url:'/zlm.do?action=getLcTaskDetail',
 				        success:function (json){
 				        	layer.closeAll('loading');
-				        	console.log(json)
 				        	$('#zlTitSp').html('专利 ['+ zlTit +'] 任务详情');
 				        	if(json['result'] == 'success'){
 				        		$('.taskStep').show();
@@ -405,52 +406,7 @@
 						var index= parent.layer.getFrameIndex(window.name);
         				parent.layer.close(index);
 					});
-					//添加申请人
-					$('#addSqrBtn').on('click',function(){
-						layer.open({
-							title:'添加申请人',
-							type: 2,
-						  	area: ['720px', '350px'],
-						  	fixed: true, //不固定
-						  	maxmin: false,
-						  	shadeClose :false,
-						  	content: '/Module/zlBasicInfoManager/jsp/addSqr.html'
-						});	
-					});
-					//添加联系人
-					$('#addlxrBtn').on('click',function(){
-						_this.commonLayerLxrFmr('添加联系人');
-						addEditLxrOpts = tmpLxrFmrOpts = $(this).attr('opts');
-						if($('#lxrBox p').length > 0 /*&& isHasLxrFlag*/){
-							//表示已经创建了联系人，假如删除了某个申请人，此时应该从新匹配lxrIdArray lxrIdNum
-							lxrIdArray.length = 0;
-							lxrIdNum.length = 0;
-							$('#lxrBox p').each(function(i){
-								lxrIdArray.push($('#lxrBox p').eq(i).attr('id'));
-								lxrIdNum.push($('#lxrBox p').eq(i).attr('id').split('_')[1]);
-							});
-						}else{
-							lxrIdArray.length = 0;
-							lxrIdNum.length = 0;
-						}
-					});
-					//添加发明人
-					$('#addFmrBtn').on('click',function(){
-						_this.commonLayerLxrFmr('添加发明人');
-						addEditFmrOpts = tmpLxrFmrOpts = $(this).attr('opts');
-						if($('#fmrBox p').length > 0 /*&& isHasFmrFlag*/){
-							//表示已经创建了发明人，假如删除了某个申请人，此时应该从新匹配fmrIdArray fmrIdNum
-							fmrIdArray.length = 0;
-							fmrIdNum.length = 0;
-							$('#fmrBox p').each(function(i){
-								fmrIdArray.push($('#fmrBox p').eq(i).attr('id'));
-								fmrIdNum.push($('#fmrBox p').eq(i).attr('id').split('_')[1]);
-							});
-						}else{
-							fmrIdArray.length = 0;
-							fmrIdNum.length = 0;
-						}
-					});
+					zlInfoMethod.bindEvent_comMet();
 					//保存任务
 					$('#saveTaskBtn').on('click',function(){
 						var isHasUpLoadFlag = false;
@@ -470,7 +426,6 @@
 									upSuccSrcArray.push($('input[name="hasUpSuccInp"]').eq(i).val());
 								});
 								$('#fujianInp').val(upSuccSrcArray.join(','));
-								console.log($('#fujianInp').val())
 							}else{
 								layer.msg('您有未上传的附件，请先上传附件',{icon:5,anim:6,time:1000});
 								return;
@@ -483,7 +438,7 @@
 								layer.msg('请上传撰稿文件',{icon:5,anim:6,time:1500});
 								return;
 							}
-							var field = {zlId : globalZlId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val()};
+							var field = {/*zlId : globalZlId*/lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val()};
 						}else if(lcNo >=4 && lcNo < 5){
 							//专利审核(附件选填 备注必填)
 							var adviceInpVal = $('#adviceInp').val(),remarkVal = $.trim($('.remarkArea').val());
@@ -499,7 +454,7 @@
 								layer.msg('请填写备注',{icon:5,anim:6,time:1500});
 								return;
 							}
-							var field = {zlId : globalZlId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),zxScore:adviceInpVal};
+							var field = {/*zlId : globalZlId*/lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),zxScore:adviceInpVal};
 						}else if(lcNo >= 5 && lcNo < 6){
 							//客户确认
 							//通过时 附件 备注 ->选填  不通过 附件可选 备注 必填
@@ -515,7 +470,7 @@
 									}
 								}
 							}
-							var field = {zlId : globalZlId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),cusCheckStatus:adviceInpVal};
+							var field = {/*zlId : globalZlId*/lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),cusCheckStatus:adviceInpVal};
 						}else if(lcNo == 6){
 							//定稿提交
 							var sqrName='',ajTitleVal = $.trim($('#ajTitleInp').val()),
@@ -544,7 +499,7 @@
 								return;
 							}
 							//alert(globalZlId + "--" + ajTitleVal + "--" + ajSqrIdVal + "--" + sqrName + "--" + ajLxrIdVal + "=----" + ajFmrIdVal + "--" + rateInpVal + "--" + $('#fujianInp').val())
-							var field = {zlId : globalZlId,zlTitle:ajTitleVal,sqrId:ajSqrIdVal,sqrName:sqrName,lxrId:ajLxrIdVal,fmrId:ajFmrIdVal,ajFjInfo:rateInpVal,taskRemark:'',upZxFile:$('#fujianInp').val()};
+							var field = {/*zlId : globalZlId*/lcmxId:globalMxId,zlTitle:ajTitleVal,sqrId:ajSqrIdVal,sqrName:sqrName,lxrId:ajLxrIdVal,fmrId:ajFmrIdVal,ajFjInfo:rateInpVal,taskRemark:'',upZxFile:$('#fujianInp').val()};
 						}
 						$.ajax({
 	  						type:'post',

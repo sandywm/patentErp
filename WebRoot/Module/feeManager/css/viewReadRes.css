@@ -92,3 +92,19 @@
 	white-space:nowrap;
 	text-overflow: ellipsis;
 }
+.downBox{
+	text-align:center;
+	margin-top:10px;
+}
+.downBox a{
+	width:120px;
+	display:inline-block;
+	position:relative;
+	text-indent:20px;
+}
+.downBox a i{
+	font-size:25px !important;
+	position:absolute;
+	left:50%;
+	margin-left:-50px;
+}

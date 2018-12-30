@@ -23,13 +23,21 @@
 		</ul>
 	</div>
 	<ul class="readResCon"></ul>
+	<div class="downBox">
+		<a href="javascript:void(0)" class="layui-btn downLoadBtn"><i class="layui-icon layui-icon-download-circle"></i>下载</a>
+	</div>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var firId = parent.globalFirId;
-		layui.use(['table','layer'],function(){
+		var firId = parent.globalFirId,fileUrl = parent.globalFileUrl;
+		layui.config({
+			base: '/plugins/frame/js/'
+		}).extend({ //设定组件别名
+		    common: 'common'// 表示模块文件的名字
+		}).use(['table','layer','common'],function(){
 			var $ = layui.jquery,
 				table = layui.table,
-				layer = layui.layer;
+				layer = layui.layer,
+				common = layui.common;
 			var page = {
 				init : function(){
 					this.onLoad();
@@ -56,6 +64,9 @@
 					$('.closeBtns').on('click',function(){
 						var index= parent.layer.getFrameIndex(window.name);
 						parent.layer.close(index);
+					});
+					$('.downLoadBtn').on('click',function(){
+						common.downFiles(fileUrl,1);
 					});
 				},
 				renderReadInfo : function(readInfo){

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+	<link href="/Module/backFeeManager/css/backFeeManager.css" rel="stylesheet" type="text/css"/>
+  	<title>增加客户汇款记录</title>
+</head>
+<body style="background:#fff;">
+  	<div class="layui-form">
+  		<div class="layui-form-item addBackFee">
+			<label class="layui-form-label">选择客户：</label>
+		    <div class="layui-input-block">
+		    	<input id="cusIdInp" type="hidden"/>
+		    	<div class="layui-input selCusP" style="width:95%;">
+		    		<p id="cusName" class="cusName">请选择客户</p><i class="layui-edge"></i>
+		    	</div>
+		    </div>
+		</div>
+		<div class="layui-form-item">
+		    <label class="layui-form-label">汇款金额：</label>
+		    <div class="layui-input-block" style="width:80.1%;">
+		        <input type="text" id="backFeePriceInp" placeholder="请输入汇款金额(大于0的正整数)" autocomplete="off" class="layui-input dlFeeInp">
+		    	<input type="hidden" id="dlfStatusInp" value="0"/>
+		    	<input type="checkbox" lay-filter="isHasAgentFee" title="是否包含冲抵代理费" lay-skin="primary" style="float:left;margin-left:10px;"/>
+		    </div>
+		</div>
+		<div class="layui-form-item">
+		    <label class="layui-form-label">汇款日期：</label>
+		    <div class="layui-input-block" style="width:80.1%;">
+		    	<input type="text" id="backDateInp" placeholder="请选择汇款日期" autocomplete="off" class="layui-input">
+		    </div>
+		</div>
+		<div class="layui-form-item">
+		    <label class="layui-form-label">汇款类型：</label>
+		    <input type="hidden" id="backTypeInp"/>
+		    <div class="layui-input-block" style="width:80.1%;">
+		        <input type="radio" lay-filter="backTypeFilter" name="backFeeType" value="wx" title="微信转账"/>
+      			<input type="radio" lay-filter="backTypeFilter" name="backFeeType" value="zfb" title="支付宝转账"/>
+      			<input type="radio" lay-filter="backTypeFilter" name="backFeeType" value="bank" title="银行转账"/>
+		    </div>
+		</div>
+		<div class="layui-form-item">
+		    <label class="layui-form-label">备注：</label>
+		    <div class="layui-input-block" style="width:80.1%;">
+		    	<textarea id="remark" placeholder="请输入备注(80字内)" maxlength="80" class="layui-textarea"></textarea>
+		    </div>
+		</div>
+		<div class="layui-form-item">
+		    <label class="layui-form-label"></label>
+		    <div class="layui-input-block" style="width:80.1%;text-align:center;margin-left:7%;">
+		    	<button class="layui-btn saveAddFeeBtn">保存</button>
+		    </div>
+		</div>
+  	</div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','form','laydate'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				laydate = layui.laydate,
+				form = layui.form;
+			laydate.render({elem:'#backDateInp',position:'fixed'});
+			var page = {
+				init : function(){
+					this.bindEvent();
+				},
+				bindEvent : function(){
+					var _this = this;
+					//选择客户
+					$('.selCusP').on('click',function(){
+						parent.layer.open({
+							title:'选择客户',
+							type: 2,
+						  	area: ['800px', '500px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	content: '/Module/feeManager/jsp/addSqr.html'
+						});	
+					});
+					$('#backFeePriceInp').on('keyup',function(){
+						_this.judgeBackFee('backFeePriceInp');
+					});
+					//保存汇款记录
+					$('.saveAddFeeBtn').on('click',function(){
+						var cusIdInpVal = $.trim($('#cusIdInp').val()),
+							backFeePriceInpVal = $.trim($('#backFeePriceInp').val()),
+							backDateInpVal = $('#backDateInp').val(),
+							backTypeInpVal = $('#backTypeInp').val(),
+							remarkVal = $.trim($('#remark').val()),
+							dlfStatusVal = $('#dlfStatusInp').val();
+						if(cusIdInpVal == ''){
+							layer.msg('请选择客户', {icon:5,anim:6,time:1000});
+						}else if(backFeePriceInpVal == '' || backFeePriceInpVal == 0){
+							layer.msg('汇款金额不能为空', {icon:5,anim:6,time:1000});
+						}else if(backDateInpVal == ''){
+							layer.msg('汇款日期不能为空', {icon:5,anim:6,time:1000});
+						}else if(backTypeInpVal == ''){
+							layer.msg('请选择汇款类型', {icon:5,anim:6,time:1000});
+						}else{
+							//var feeReg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
+							layer.load('1');
+							$.ajax({
+		  						type:'post',
+						        async:false,
+						        dataType:'json',
+						        data : {cusId:cusIdInpVal,backFeePrice:backFeePriceInpVal,backDate:backDateInpVal,backType:backTypeInpVal,remark:remarkVal,dlfStatus:dlfStatusVal},
+						        url:'/fee.do?action=addBackFee',
+						        success:function (json){
+						        	layer.closeAll('loading');
+						        	if(json['result'] == 'success'){
+						        		layer.msg('添加成功', {icon:1,time:1000},function(){
+						        			var index= parent.layer.getFrameIndex(window.name);
+					        				parent.addFeeFlag = true;
+					        				parent.layer.close(index);
+						        		});
+						        	}else if(json['result'] == 'inpError'){
+						        		layer.msg('汇款金额只能是大于0的正整数', {icon:5,anim:6,time:1200});
+						        	}else if(json['result'] == 'noAbility'){
+						        		layer.msg('抱歉，您暂无权限添加汇款记录', {icon:5,anim:6,time:1200});
+						        	}
+						        }
+		  					});
+						}
+					});
+				},
+				judgeBackFee : function(obj){
+					if($('#'+obj).val().length==1){
+						$('#'+obj).val($('#'+obj).val().replace(/[^1-9]/g,''));
+					}else{
+						$('#'+obj).val($('#'+obj).val().replace(/\D/g,''));
+					}
+				}
+			};
+			//是否包含代理费
+			form.on('checkbox(isHasAgentFee)', function(data){
+				if(data.elem.checked){
+					$('#dlfStatusInp').val(1);
+				}else{
+					$('#dlfStatusInp').val(0);
+				}
+			}); 
+			//汇款类型选择
+			form.on('radio(backTypeFilter)', function(data){
+			  $('#backTypeInp').val(data.value);
+			});
+			$(function(){
+				page.init();				
+			});
+		});
+	</script>
+</body> 
+</html>

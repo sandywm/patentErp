@@ -808,12 +808,12 @@
 							delHasAddMethod('delFmrBtn','delFmrOpt');
 						}
 						delHasAddMethod('delJsLxrBtn','delJsLxrOpt');
-						if($('.downloadBtn').length > 0){
-							$('.downloadBtn').on('click',function(){
-								var downFilePath = $(this).attr('downFilePath');
-								common.downFiles(downFilePath,0);
-							});
-						}
+					}
+					if($('.downloadBtn').length > 0){
+						$('.downloadBtn').on('click',function(){
+							var downFilePath = $(this).attr('downFilePath');
+							common.downFiles(downFilePath,0);
+						});
 					}
 					if(json.pubZlName != ''){//编辑首次进来页面判断是否存在已添加的专利任务存在激活重置
 						parent.$('#lqZlIdInp').val(json.pubZlId);//将已经存在数据库的pubZlId赋给父级用于弹窗页面的回显

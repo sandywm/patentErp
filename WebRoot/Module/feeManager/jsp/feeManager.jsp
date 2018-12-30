@@ -54,7 +54,7 @@
   	<script src="/plugins/jquery/jquery.min.js"></script>
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
-    	var globalFirId = 0,globalFileName = '',hasReadFlag = false;//是否执行了批量导入并且成功读取结果;
+    	var globalFirId = 0,globalFileName = '',globalFileUrl='',hasReadFlag = false;//是否执行了批量导入并且成功读取结果;
 	    layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -123,18 +123,6 @@
 					this.createSearchHt(0);
 					loadFeeInfoList('initLoad');
 					this.bindEvent();
-					$.ajax({
-	   					type:'post',
-	   			        async:false,
-	   			        dataType:'json',
-	   			        data:{sDate:'',eDate:''},
-	   			        //url:'/fee.do?action=getPageFER',
-	   			        url : '/fee.do?action=getPageFIR',
-	   			        success:function (json){
-	   			        	layer.closeAll('loading');
-	   			        	console.log(json)
-	   			        }
-					});
 				},
 				bindEvent : function(){
 					var _this = this;
@@ -191,11 +179,28 @@
 					$('#queryBtn').on('click',function(){
 						loadFeeInfoList('queryLoad');
 					});
+					//选择客户
+					$('.selCusP').on('click',function(){
+						layer.open({
+							title:'选择客户',
+							type: 2,
+						  	area: ['800px', '500px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	content: '/Module/feeManager/jsp/addSqr.html'
+						});	
+					});
 					$('.resetTime').on('click',function(){
+						$('#zlNoInp').val('');
+						$('#ajNoInp').val('');
+						$('#cusIdInp').val('');
+						$('.cusName').html('请选择客户').attr('title','');
+						$('.layui-select-title').find('input').val('请选择距代理机构缴费期限(全部)').css('color','#666');
+						$('#diffDaysSelInp').val(15);
 						$('#sDateInp').val('');
 						$('#eDateInp').val('');
-						loadFeeInfoList('queryLoad');
-						
+						loadFeeInfoList('initLoad');
 					});
 				},
 				//创建查询层
@@ -206,11 +211,11 @@
 					strHtml1 += '<div class="itemDiv ajNoDiv fl"><div class="layui-input-inline">';
 					strHtml1 += '<input type="text" id="ajNoInp" placeholder="请输入案件编号" autocomplete="off" class="layui-input"></div></div>';
 					strHtml1 += '<div class="itemDiv cusIdDiv fl"><div class="layui-input-inline">';
-					strHtml1 += '<input type="text" id="cusIdInp" placeholder="客户/申请人编号" autocomplete="off" class="layui-input"></div></div>';
+					strHtml1 += '<input type="hidden" id="cusIdInp"/><div class="layui-input selCusP"><p class="cusName ellip">请选择客户</p><i class="layui-edge"></i></div></div></div>';
 					strHtml2 += '<div class="itemDiv diffDaysDiv fl"><div class="layui-input-inline"><input id="diffDaysSelInp" type="hidden" value="15"/>';
 					strHtml2 += '<select id="diffDaysSel" lay-filter="diffDaysSel"><option value="">请选择距代理机构缴费期限(全部)</option>';
 					strHtml2 += '<option value="1">1天</option><option value="7">7天</option><option value="15">15天</option><option value="30">30天</option><option value="60">60天</option>';
-					strHtml2 += '</select></div></div>';
+					strHtml2 += '</select></div><input type="checkbox" name="" title="是否包含代理费" lay-skin="primary"></div>';
 					strHtml3 += '<div class="itemDiv sEDateDiv fl"><div class="layui-input-inline">';
 					strHtml3 += '<input type="text" id="sDateInp" placeholder="请选择缴费日期(开始)" autocomplete="off" class="layui-input"></div></div>';
 					strHtml3 += '<div class="itemDiv sEDateDiv fl"><div class="layui-input-inline">';
@@ -219,10 +224,10 @@
 					strHtml4 += '<div class="itemDiv fl"><div class="layui-input-inline">';
 					strHtml4 += '<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search"></i></button></div></div>';
 					if(feeStatus == 0){
-						$('.searchPart').html(strHtml1 + strHtml2 + strHtml4);
+						$('.searchPart').html(strHtml1 + strHtml2 + strHtml4 + strHtml5);
 						form.render();
 					}else if(feeStatus == 1){
-						$('.searchPart').html(strHtml1 + strHtml3 + strHtml4);
+						$('.searchPart').html(strHtml1 + strHtml3 + strHtml4 + strHtml5);
 					}else if(feeStatus == 2 || feeStatus == 3){
 						$('.searchPart').html(strHtml3 + strHtml4 + strHtml5);
 						form.render();
@@ -257,10 +262,10 @@
 						var field = {sDate:sDateInpVal,eDate:eDateInpVal};
 					}
 					if(sDateInpVal != '' && eDateInpVal == ''){
-						layer.msg('请选择缴费结束时间段', {icon:5,anim:6,time:1000});
+						layer.msg('请选择缴费结束时间段', {icon:5,anim:6,time:1200});
 						return;
 					}else if(sDateInpVal == '' && eDateInpVal != ''){
-						layer.msg('请选择缴费开始时间段', {icon:5,anim:6,time:1000});
+						layer.msg('请选择缴费开始时间段', {icon:5,anim:6,time:1200});
 						return;
 					}else if(eDateInpVal < sDateInpVal){
 						layer.msg('缴费开始时间不能大于缴费结束时间', {icon:5,anim:6,time:1200});
@@ -269,6 +274,7 @@
 				}
 				//layer.load('1');
 				if(page.data.globalFeeStatus == 0 || page.data.globalFeeStatus == 1){
+					var overdueSp = '';
 					table.render({
 						elem: '#feeListTab_'+page.data.globalFeeStatus,
 						height: 'full-200',
@@ -284,14 +290,62 @@
 							{field : 'zlName', title: '专利名称', width:200,fixed:'left', align:'center'},
 							{field : 'zlNo', title: '专利申请/专利号', width:180, align:'center'},
 							{field : 'ajNo', title: '案件编号', width:170, align:'center'},
+							{field : page.data.globalFeeStatus == 0 ? 'diffDays_jj' : 'noneSets', title: '机构绝限(天)', width:140, align:'center',templet : function(d){
+								if(d.diffDays_jj != undefined){
+									var strDiffDays_jj = d.diffDays_jj.toString();
+									if(strDiffDays_jj >= 20){
+										overdueSp = 'greenColor';
+									}else if(strDiffDays_jj >= 10 && strDiffDays_jj < 20){
+										overdueSp = 'blueColor';
+									}else if(strDiffDays_jj < 10 && strDiffDays_jj > 0){
+										overdueSp = 'yellowColor';
+									}else if(strDiffDays_jj < 0){
+										overdueSp = 'redColor';
+									}
+									if(strDiffDays_jj > 0){
+										return '<span class="'+ overdueSp +'">'+ strDiffDays_jj +'天后到期</span>';
+									}else{
+										if(strDiffDays_jj == 0){
+											return '<span class="'+ overdueSp +'">明天到期</span>';
+										}else{
+											var newDiffDays_jj = strDiffDays_jj == 0 ? 0 : strDiffDays_jj.substring(1,strDiffDays_jj.length);
+											return '<span class="'+ overdueSp +'">已过期'+ newDiffDays_jj +'天</span>';	
+										}
+									}
+								}
+							}},
+							{field : page.data.globalFeeStatus == 0 ? 'diffDays_Gf' : 'noneSets', title: '官方绝限(天)', width:140, align:'center',templet : function(d){
+								if(d.diffDays_Gf != undefined){
+									var strDiffDays_Gf = d.diffDays_Gf.toString();
+									if(strDiffDays_Gf >= 20){
+										overdueSp = 'greenColor';
+									}else if(strDiffDays_Gf >= 10 && strDiffDays_Gf < 20){
+										overdueSp = 'blueColor';
+									}else if(strDiffDays_Gf < 10  && strDiffDays_Gf > 0){
+										overdueSp = 'yellowColor';
+									}else if(strDiffDays_Gf < 0){
+										overdueSp = 'redColor';
+									}
+									if(strDiffDays_Gf > 0){
+										return '<span class="'+ overdueSp +'">'+ strDiffDays_Gf +'天后到期</span>';
+									}else{
+										if(strDiffDays_Gf == 0){
+											return '<span class="'+ overdueSp +'">明天到期</span>';
+										}else{
+											var newDiffDays_gf = strDiffDays_Gf.substring(1,strDiffDays_Gf.length);
+											return '<span class="'+ overdueSp +'">已过期'+ newDiffDays_gf +'天</span>';
+										}
+									}
+								}
+							}},
 							{field : 'feeName', title: '费用名称', width:160, align:'center',templet : function(d){
 								return '<span class="feeNameSp">'+ d.feeName +'</span>';
 							}},
 							{field : 'feePrice', title: '专利费用', width:150, align:'center',templet : function(d){
-								return '<span class="feeSpan">'+ d.feePrice +'元</span>';
+								return '<span class="feeSpan">¥'+ d.feePrice +'元</span>';
 							}},
 							{field : page.data.globalFeeStatus == 0 ? 'noneSets' : 'backFee', title: '实收费用', width:160, align:'center',templet : function(d){
-								return '<span class="feeSpan">'+ d.backFee +'元</span>';
+								return '<span class="feeSpan">¥'+ d.backFee +'元</span>';
 							}},
 							{field : 'sqrName', title: '申请人', width:220, align:'center',templet : function(d){
 								if(d.sqrName != ''){
@@ -308,21 +362,7 @@
 							{field : 'feeBatchNo', title: '交费单号', width:150, align:'center'},
 							{field : 'bankSerialNo', title: '银行流水号', width:150, align:'center'},
 							{field : 'fpDate', title: '开票日期', width:140, align:'center'},
-							{field : 'fpNo', title: '票号', width:140, align:'center'},
-							{field : page.data.globalFeeStatus == 0 ? 'diffDays_jj' : 'noneSets', title: '机构绝限(天)', width:140, align:'center',templet : function(d){
-								if(d.diffDays_jj != undefined){
-									var strDiffDays_jj = d.diffDays_jj.toString();
-									var newDiffDays_jj = strDiffDays_jj.substring(1,strDiffDays_jj.length);
-									return '<span class="overdueSp">已过期'+ newDiffDays_jj +'天</span>';	
-								}
-							}},
-							{field : page.data.globalFeeStatus == 0 ? 'diffDays_Gf' : 'noneSets', title: '官方绝限(天)', width:140, align:'center',templet : function(d){
-								if(d.diffDays_Gf != undefined){
-									var strDiffDays_Gf = d.diffDays_Gf.toString();
-									var newDiffDays_gf = strDiffDays_Gf.substring(1,strDiffDays_Gf.length);
-									return '<span class="overdueSp">已过期'+ newDiffDays_gf +'天</span>';
-								}
-							}}
+							{field : 'fpNo', title: '票号', width:140, align:'center'}
 						]],
 						done : function(res, curr, count){
 							layer.closeAll('loading');
@@ -379,7 +419,7 @@
 							{field : 'addTime', title: '导入时间',  align:'center'},
 							{field : 'userName', title: '导入者',align:'center'},
 							{field : '', title: '操作',width:180, align:'center',templet : function(d){
-								return '<a lay-event="viewImpRes" fileName="'+ d.fileName +'" firId="'+ d.firId +'" class="layui-btn layui-btn-primary layui-btn-xs"><i class="layui-icon layui-icon-search"></i>查看结果</a> <a lay-event="downFileFun" downFilePath="'+ d.excelPath +'" class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
+								return '<a lay-event="viewImpRes" fileName="'+ d.fileName +'" fileUrl="'+ d.excelPath +'" firId="'+ d.firId +'" class="layui-btn layui-btn-primary layui-btn-xs"><i class="layui-icon layui-icon-search"></i>查看结果</a> <a lay-event="downFileFun" downFilePath="'+ d.excelPath +'" class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
 							}},
 						]],
 						done : function(res, curr, count){
@@ -409,7 +449,7 @@
 		        			$('#noData_'+page.data.globalFeeStatus).html("<i class='iconfont layui-extend-noData'></i><p>暂无查询记录</p>");
 		        		}
 					}else if(res.msg == 'noAbility'){
-						
+						layer.msg('抱歉，您暂无权限', {icon:5,anim:6,time:1000});
 					}
 				}
 			}
@@ -420,6 +460,7 @@
 				}else if(obj.event == 'viewImpRes'){//查看导入结果
 					globalFirId = $(this).attr('firId');
 					globalFileName = $(this).attr('fileName');
+					globalFileUrl = $(this).attr('fileUrl');
 					var fullScreenIndex = layer.open({
 						title:'',
 						type: 2,

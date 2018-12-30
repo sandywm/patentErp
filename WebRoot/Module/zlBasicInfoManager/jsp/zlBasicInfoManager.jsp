@@ -34,7 +34,7 @@
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
     	var loginType=parent.loginType,roleName=parent.roleName,tmpIndex=0;
-		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0,globalLcMxId:0,applyCause:'',applyName:'',yjId:0,zlType:''},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
+		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,applyCause:'',applyName:'',yjId:0,zlType:''},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -366,7 +366,7 @@
 							{field : 'sets', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
 								if(taskStaVal == 0){
 									var strHtml = '';
-									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" lcNo="'+ d.lcNo +'" zlId="'+ d.zlId +'" zlType="'+ d.zlType +'" ajTitle="'+ d.zlTitle +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
+									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" lcNo="'+ d.lcNo +'" zlId="'+ d.zlId +'" mxId = "'+ d.mxId +'" zlType="'+ d.zlType +'" ajTitle="'+ d.zlTitle +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
 									if(roleName == '管理员' || page.data.fpZlFlag == true){
 										if(d.applyFlag){
 											strHtml += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="lcfpFun" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'" taskOpts="1" fzUserId="'+ d.fzUserId +'" currLcNo="'+ d.lcNo +'"><i class="iconfont layui-extend-yijiao"></i>任务移交</a>';
@@ -597,6 +597,7 @@
 				}else if(obj.event == 'goCompleteTask'){//做任务
 					var ajTitle = $(this).attr('ajTitle'),currLcNo = $(this).attr('lcNo'),lcTaskName = '';
 					globalZlId = $(this).attr('zlId');
+					globalTaskOpts.globalMxId = $(this).attr('mxId');
 					globalZlTit = ajTitle;
 					globalTaskOpts.zlType = $(this).attr('zlType');
 					addZlFlag = false;

@@ -15,8 +15,6 @@
 		<button type="button" class="layui-btn layui-btn-normal" id="selFileBtn">选择文件</button> 
 		<span class="noticeSpan">注：缴费单据单个文件大小不能超过10M，一次最多可上传20个缴费单据,excel表格须是.xls格式的！ <em class="hasSelWords"></em></span>
 		<button type="button" class="layui-btn" id="upListAction">上传缴费单据</button>
-		<!-- rotateIcon -->
-		<!-- span class="showHideBtn" isOpenFlag="true"><em>展开</em><i class="iconfont layui-extend-more"></i></span -->
 	</div>
 	<div class="importCon">
 		<input id="fujianInp" name="zlUpCl" type="hidden"/>
@@ -38,9 +36,6 @@
 			<li class="towWid_fee">读取结果</li>
 		</ul>
 		<ul class="commonResCon readResCon_fee"></ul>
-		<!--  div class="goOn">
-			<button class="layui-btn">继续批量导入</button>
-		</div-->
 	</div>
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
@@ -65,69 +60,6 @@
 						var index= parent.layer.getFrameIndex(window.name);
 						parent.layer.close(index);
 					});
-					/*$('.showHideBtn').on('click',function(){
-						if($(this).attr('isOpenFlag') == 'true'){
-							$(this).find('em').html('隐藏');
-							$(this).find('i').addClass('rotateIcon');
-							$(this).attr('isOpenFlag','false');
-						}else{
-							$(this).find('em').html('展开');
-							$(this).find('i').removeClass('rotateIcon');
-							$(this).attr('isOpenFlag','true');
-						}
-						$('.importCon').slideToggle();
-					});*/
-					$('.readTzsBtn').on('click',function(){
-						//var indexLayer = globalUpload.data.indexLayer;
-						//parent.parent.$('body').append(indexLayer);
-						//parent.parent.layer.load();
-						//parent.parent.$('.layui-layer-shade').css({'opacity':.5,'background':'#f1f1f1'})
-						/*setTimeout(function(){
-							//parent.parent.layer.closeAll('loading');
-						},5000);*/
-						//读取通知书动作
-						if($('#fujianInp').val() == '' && $('.deleteBtn').length == 0){
-							layer.msg('请添加附件',{icon:5,anim:6,time:1000});
-						}else{
-							var isHasUpLoadFlag = false;
-							if($('.deleteBtn').length > 0){
-								if($('input[name="hasUpSuccInp"]').length == 0){//表示用户选择了文件，但是没有点击上传
-									isHasUpLoadFlag = false;
-								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length == 0){
-									//表示用户选择了文件并且全部上传了
-									isHasUpLoadFlag = true;
-								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0 && errorTypeFlag == false){
-									//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传(格式都是正确的时候)
-									isHasUpLoadFlag = false;
-								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0 && errorTypeFlag == true){
-									//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传(格式有部分不正确，用户如果没有点击删除不正确按钮，点击保存直接保存)
-									isHasUpLoadFlag = true;
-								}
-								if(isHasUpLoadFlag){
-									upSuccSrcArray.length = 0;
-									$('input[name="hasUpSuccInp"]').each(function(i){
-										upSuccSrcArray.push($('input[name="hasUpSuccInp"]').eq(i).val());
-									});
-									$('#fujianInp').val(upSuccSrcArray.join(','));
-								}else{
-									layer.msg('您有未上传的附件，请先上传附件',{icon:5,anim:6,time:1000});
-									return;
-								}
-							}
-							//执行ajax
-							var upFilePath = $('#fujianInp').val();
-							$.ajax({
-								type:"post",
-								dataType:"json",
-								async:false,
-								data:{zipPath:upFilePath},
-								url:"/zlm.do?action=dealTzsDetail",
-								success:function(json){
-									console.log(json);
-								}
-							});
-						}
-					});
 				},
 				upLoadTzs : function(){
 					var url = '/upload.do?action=uploadFile&ajId=0&fileType=fee',fileType='xls';
@@ -137,34 +69,6 @@
 			$(function(){
 				page.init();
 			});
-			/*document.onkeydown = function(e) {
-		        e = window.event || e;
-		        var k = e.keyCode;
-		        //屏蔽ctrl+R，F5键，ctrl+F5键  F3键！验证
-		        if ((e.ctrlKey == true && k == 82) || (k == 116)
-		                || (e.ctrlKey == true && k == 116)||k==114) {
-		            e.keyCode = 0;
-		            alert("当前页面不能刷新！");
-		            e.returnValue = false;
-		            e.cancelBubble = true;
-		            return false;
-		 
-		        }
-		        if (k == 8) {
-		            alert("不能返回或后退！");
-		            e.keyCode = 0;
-		            e.returnValue = false;
-		            return false;
-		        }
-		        //屏蔽F11   验证可以实现效果
-		        if (k == 122) {
-		            e.keyCode = 0;
-		            e.returnValue = false;
-		            e.cancelBubble = true;
-		            return false;
-		        }
-		 
-		    };*/
 		});
 	</script>
 </body> 

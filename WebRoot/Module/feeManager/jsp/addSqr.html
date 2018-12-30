@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+  	<title>选择申请人(客户)</title>
+  	<style>
+  		.searchSqr{float:right;margin-top:8px;margin-right:10px;}.innerSear{float:left;}
+  		.sqrTab{padding:0 10px;}
+  		.layui-table-page>div{text-align:right;}
+  	</style>
+</head>
+<body style="background:#fff;">
+  	<div class="searchSqr">
+		<div class="innerSear">
+			<div class="layui-input-inline" style="width:210px;margin-right:10px;">
+				<input type="text" id="custNameInp" placeholder="请输入客户名称" autocomplete="off" class="layui-input">
+			</div>
+		</div>
+		<div class="innerSear">
+			<div class="layui-input-inline">
+				<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search"></i></button>
+			</div>
+		</div>
+	</div>
+  	<div class="sqrTab">
+		<table id="sqrListTable" class="layui-table" lay-filter="sqrListTable"></table>
+	</div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','form','table'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				table = layui.table;
+			var page = {
+				init : function(){
+					this.onLoad();
+				},
+				onLoad : function(){
+					this.loadSqrList('initLoad');
+					this.bindEvent();
+				},
+				bindEvent : function(){
+					var _this = this;
+					$('#queryBtn').on('click',function(){
+						_this.loadSqrList('queryLoad');
+					});
+				},
+				loadSqrList : function(opts){
+					var _this = this;
+					if(opts == 'initLoad'){
+						var field = {cusName : ''};
+					}else{
+						var custNameInpVal = $.trim($('#custNameInp').val());
+						var field = {cusName : custNameInpVal};
+					}
+					layer.load('1');
+					table.render({
+						elem: '#sqrListTable',
+						height: 'full-100',
+						url : '/customer.do?action=getCusPageInfo',
+						method : 'post',
+						where:field,
+						page : true,
+						even : true,
+						limit : 20,
+						limits:[10,20,30,40],
+						cols : [[
+							{field : '', title: '序号',type:'numbers', align:'center'},
+							{field : 'cusName', title: '客户名称', align:'center'},
+							{field : 'cusType', title: '客户类型', align:'center',templet : function(d){
+								if(d.cusType == 'gr'){return '个人';}else{return d.cusType;};
+							}},
+							{field : '', title: '操作', align:'center', fixed: 'right', width:100,templet : function(d){
+								return '<a class="btn layui-btn layui-btn-xs" lay-event="addSqrFun" cusName="'+ d.cusName +'" cusId="'+ d.id +'"><i class="layui-icon layui-icon-add-circle"></i>添加</a>';
+							}}
+						]],
+						done : function(res){
+							layer.closeAll('loading');
+							if(res.msg == 'success'){
+				        		noDataFlag = false;
+							}else if(res.msg == 'noInfo'){
+				        		noDataFlag = true;
+							}else if(res.msg == 'error'){
+								layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
+								noDataFlag = true;
+							}
+						}
+					});
+				}
+			};
+			table.on('tool(sqrListTable)',function(obj){
+				if(obj.event == 'addSqrFun'){
+					var index= parent.layer.getFrameIndex(window.name);
+					if(parent.tmpAddBackFee == 'addBackFeeStr'){//从添加客户汇款记录进来
+						var sibingsIframe = parent.window.frames['layui-layer-iframe' + parent.globalIndex];
+						sibingsIframe.document.getElementById('cusName').innerHTML = $(this).attr('cusName');
+						sibingsIframe.document.getElementById('cusName').style.color = '#666';
+						sibingsIframe.document.getElementById('cusIdInp').value = $(this).attr('cusId');
+						parent.layer.close(index);
+					}else{
+						parent.$('.cusName').html($(this).attr('cusName')).css({'color':'#666'});
+						parent.$('.cusName').attr('title',$(this).attr('cusName'));
+						parent.$('#cusIdInp').val($(this).attr('cusId'));
+						parent.layer.close(index);
+					}
+				}
+			});
+			$(function(){
+				page.init();				
+			});
+		});
+	</script>
+</body> 
+</html>

@@ -63,4 +63,225 @@
 	font-weight:600;
 	cursor:pointer;
 }
-.endDateColor{color:#f00;}
+.endDateColor{
+	color:#f00;
+}
+.layui-tab-brief{
+	width:97.4%;
+	position:fixed;
+	background:#fff;
+	z-index:100;
+	box-shadow:0 2px 2px #ebebeb;
+}
+.layui-elem-quote{
+	padding:9px;
+	border-left:4px solid #F47837;
+	border-radius:0px;
+	margin-bottom:15px;
+	color:#F47837;
+}
+#pattbBankNum{
+	width:268px;
+	height:38px;
+	line-height:38px;
+	background:#F47837;
+	border:none;
+	position:absolute;
+	left:-30px;
+	top:-32px;
+	font-size:18px;
+	font-family:verdana;
+	color:#fff;
+	font-weight:bold;
+	padding:0 5px;
+	outline:none;
+	box-shadow:2px 2px 5px #999;
+	display:none;
+}
+.posRe{
+	position:relative;
+}
+.moneyDec,
+.percentDec{
+	font-style: normal;
+    position: absolute;
+    top: 8px;
+    font-size: 18px;
+    color: #F47837;
+}
+.moneyDec{
+	left: 6px;	
+}
+.percentDec{
+	right:6px;
+}
+.moneyDec + input::-webkit-input-placeholder,
+#saleBonusInp::-webkit-input-placeholder{
+	font-weight:normal;
+}
+.moneyDec + input,
+#saleBonusInp{
+	font-weight:600;
+	color:#666;
+}
+.moneyDec + input{
+	padding-left:20px;
+}
+.noWorkBonusRec{
+	width:200px;
+	margin:15px auto 0;
+	text-align:center;
+	color:#ccc;
+	display:none;
+}
+.noWorkBonusRec p{
+	margin-top:5px;
+}
+.noWorkBonusRec i{
+	font-size:40px;
+}
+.workBonusQute a{
+	position:absolute;
+	right: 0;
+    top: 0;
+    height: 100%;
+    display: block;
+    background: #F47837;
+    text-align: center;
+    padding: 0 20px;
+    text-indent: 18px;
+    color: #fff;
+    line-height:40px;
+}
+.workBonusQute a:hover{
+	opacity:.8;
+}
+.workBonusQute a i{
+	font-size: 25px;
+    position: absolute;
+    left: -8px;
+    top: 0px;
+}
+/* 添加工作奖金 */
+.layui-form-label.specWidLabel{
+	width:90px;
+}
+.hasMargT{
+	margin-top:15px;
+}
+.selWorkPos{
+	line-height:38px;
+	cursor:pointer;
+	position:relative;
+}
+.selWorkPos p{
+	max-width:90%;
+	color:#888;
+}
+.selWorkPos i{
+	position: absolute;
+    right: 10px;
+    top: 50%;
+    margin-top: -3px;
+    cursor: pointer;
+    border-width: 6px;
+    border-top-color: #c2c2c2;
+    border-top-style: solid;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+}
+.saveBonusBtn,
+.updateBonusFeeBtn{
+	width:120px;
+	margin-left:120px;
+}
+#diffLevel{
+	margin-bottom:0px;
+}
+.layui-rate{
+	padding:8px 0px 0px 0;
+	float:left;
+}
+.layui-rate .layui-inline{
+	margin-right:5px;
+	margin-bottom:0px;
+}
+.layui-rate + .layui-inline{
+	float:left;
+	margin-top:10px;
+}
+.diffLevelOne{
+	margin:0px !important;
+}
+.diffLevelOne .layui-rate{
+	padding:0px;
+	float:none;
+}
+/* 工种选择 */
+#workPositionBox{
+	width:100%;
+	height:100%;
+	position:absolute;
+	left:0;
+	top:-100%;
+	background:rgba(255,255,255,.9);
+	display:none;
+}
+#workPositionBox li{
+	width:160px;
+	height:35px;
+	line-height:35px;
+	float:left;
+	border:1px solid #ccc;
+	border-radius:2px;
+	text-align:center;
+	margin-top:35px;
+	position:relative;
+}
+#workPositionBox li.workPosLi{
+	cursor:pointer;
+}
+#workPositionBox li.workPosLi.active,
+#workPositionBox li.workPosLi:hover{
+	color:#f44f4c;
+	border:1px solid #f44f4c;
+}
+#workPositionBox li.workPosLi.active{
+	font-weight:600;
+}
+#workPositionBox li:nth-of-type(3n){
+	float:right;
+	margin-right:20px;
+}
+#workPositionBox li:nth-of-type(3n-1){
+	margin-left:38px;
+}
+#workPositionBox li:nth-of-type(3n-2){
+	margin-left:20px;
+}
+.posIcon{
+	width: 1.5em;
+    height: 1.5em;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    overflow: hidden;
+    font-size: 21px;
+	position:absolute;
+	left:18px;
+	top:2px;
+}
+.bonusTxt{
+	font-weight: 600;
+    color: #FF5722;
+}
+.searchPart{
+	width:100%;
+	line-height:38px;
+}
+.itemDiv{
+	float:left;
+	margin-right:15px;
+}
+.layui-table-page>div{
+	text-align:right;
+}

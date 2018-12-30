@@ -7,6 +7,27 @@ body{
 .searchPart{
 	line-height:38px;
 }
+.selCusP{
+	width:200px;
+	line-height:38px;
+	cursor:pointer;
+}
+.selCusP p{
+	max-width:90%;
+	color:#888;
+}
+.selCusP i{
+	position: absolute;
+    right: 10px;
+    top: 50%;
+    margin-top: -3px;
+    cursor: pointer;
+    border-width: 6px;
+    border-top-color: #c2c2c2;
+    border-top-style: solid;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+}
 .resetTime{
 	color:#666;
 }
@@ -43,6 +64,18 @@ body{
 }
 .overdueSp{
 	color:#FF5722;
+}
+.greenColor{
+	color:#5FB878;
+}
+.blueColor{
+	color:#009688;
+}
+.yellowColor{
+	color:#a38434;
+}
+.redColor{
+	color:#F00;
 }
 .blockSpan{
 	display:inline-block;

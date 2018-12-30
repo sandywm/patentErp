@@ -12,7 +12,6 @@ layui.define(["layer","form","jquery"],function(exports){
             }
             //初始化省数据
             $("select[name=cpyProvSel]").append(proHtml);
-            
             form.render();
             form.on('select(province)', function (proData) {
             	$("#provVal").val("");
@@ -28,6 +27,7 @@ layui.define(["layer","form","jquery"],function(exports){
             });
             if($("#provInp").val() != ""){ //表示已经保存了省、市到数据库
             	//根据当前的省的值拿取其对应市区的值
+            	$("select[name=cpyProvSel] option:first").html('请选择省');
             	var hasDataCityHtml = '<option value="">请选择市</option>';
             	for (var i = 0; i < data.length; i++) {
             		if($("#provInp").val() == data[i].name){
