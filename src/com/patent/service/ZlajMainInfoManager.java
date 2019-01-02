@@ -323,4 +323,17 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateZlLevelById(Integer zlId,Integer zlLevel) throws WEBException;
+	
+	/**
+	 * 通过专利号、客户编号获取专利列表
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-2 下午03:43:29
+	 * @param zlNo 专利号（""时为全部）
+	 * @param cusId 客户编号（0时表示全部）
+	 * @param cpyId 代理机构编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajMainInfoTb> listInfoByOpt_1(String zlNo,Integer cusId,Integer cpyId) throws WEBException;
 }

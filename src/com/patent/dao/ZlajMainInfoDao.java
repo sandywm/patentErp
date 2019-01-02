@@ -142,4 +142,17 @@ public interface ZlajMainInfoDao {
 	 * @return
 	 */
 	List<ZlajMainInfoTb> findInfoByOpt(Session sess,String lcNameEng,Integer userId,Integer cpyId);
+	
+	/**
+	 * 通过专利号、客户编号获取专利列表
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-2 上午11:49:25
+	 * @param sess
+	 * @param zlNo 专利号（""时为全部）
+	 * @param cusId 客户编号（0时表示全部）
+	 * @param cpyId 代理机构编号
+	 * @return
+	 */
+	List<ZlajMainInfoTb> findInfoByOpt_1(Session sess,String zlNo,Integer cusId,Integer cpyId);
 }

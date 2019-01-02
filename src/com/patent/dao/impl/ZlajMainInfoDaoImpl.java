@@ -168,4 +168,18 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<ZlajMainInfoTb> findInfoByOpt_1(Session sess, String zlNo,
+			Integer cusId, Integer cpyId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajMainInfoTb as zl where zl.cpyInfoTb.id = "+cpyId;
+		if(!zlNo.equals("")){
+			hql += " and zl.ajNoGf like '"+zlNo+"'";
+		}
+		if(cusId > 0){
+			hql += " and FIND_IN_SET("+cusId+",zl.ajSqrId) > 0";
+		}
+		return sess.createQuery(hql).list();
+	}
+
 }

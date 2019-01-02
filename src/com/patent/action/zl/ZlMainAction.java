@@ -4828,6 +4828,10 @@ public class ZlMainAction extends DispatchAction {
 		if(this.getLoginType(request).equals("cpyUser")){
 			//判断权限
 			//获取当前用户是否有修改权限
+			CpyUserInfo user = cum.getEntityById(currUserId);
+			if(user != null){
+				cpyId = user.getCpyInfoTb().getId();
+			}
 			if(roleName.equals("管理员")){
 				abilityFlag = true;
 			}else{
@@ -4839,395 +4843,392 @@ public class ZlMainAction extends DispatchAction {
 				}
 			}
 			if(abilityFlag){
-				CpyUserInfo user = cum.getEntityById(currUserId);
-				if(user != null){
-					cpyId = user.getCpyInfoTb().getId();
-					List<TzsJson> tjList = new ArrayList<TzsJson>();
-					//读取通知书
-					for(Integer i = 0 ; i < zipPath.split(",").length ; i++){
-						tjList.addAll(ReadZipFile.readZipFile_new(zipPath.split(",")[i],1,1,0));
-					}
-					//按照发文日进行排序
-					Collections.sort(tjList);
-					//然后进行数据库操作
-					for(int j = 0; j < tjList.size(); j++){
-						String readResult = "";
-						String readResultChi = "";
-						Map<String,Object> map_d = new HashMap<String,Object>();
-			        	TzsJson tJson = tjList.get(j);
-			        	String fwSerial = tJson.getFwSerial();//发文序号
-			        	String ajNoGf = tJson.getAjNoGf();//专利/申请号
-			        	String tzsName = tJson.getTzsName();//通知书
-			        	String zlName = tJson.getZlName();//专利名称
-			        	String fwDate = tJson.getFwDate();//发文日期
-			        	String sqrName = tJson.getSqrName();//申请人
-			        	String applyDate = tJson.getApplyDate();//申请日期
-			        	String zlType = tJson.getZlType();//专利类型
-//			        	String fjApplyDate = tJson.getFjApplyDate();//费减请求日期
-//			        	String fjRecord = tJson.getFjRecord();//费减记录
-			        	String feeEndDateGf = tJson.getFeeEdate();//缴费截止日期/补正截止日期 (官方)
-			        	String feeEndDateCpy = "";
-			        	if(!feeEndDateGf.equals("")){
-			        		feeEndDateCpy = CurrentTime.getFinalDate(feeEndDateGf, Constants.JF_SL_END_DATE_CPY);//缴费截止日期/补正截止日期 (机构)
-			        	}
-			        	String fjRate = tJson.getFjRate();//费减比率 
-			        	String yearNo = tJson.getYearNo();//年度数字
-			        	String tzsPath = tJson.getZipPath();//上传的压缩包位置(绝对路径)
-			        	boolean readFlag = false;
-			        	if(!tzsName.equals("电子申请回执")){//电子申请回执的时候不做删除
-			        		if((j+1) < tjList.size()){//不是最后一个
-								if(!tzsPath.equals(tjList.get(j+1).getZipPath())){//当前内容的通知书和下一个通知书附件不相同（说明不是一个压缩包）
-									//说明当前压缩包内的通知书内容读取完成
-									readFlag = true;
-								}
-							}else{//最后一个通知书
+				cpyId = user.getCpyInfoTb().getId();
+				List<TzsJson> tjList = new ArrayList<TzsJson>();
+				//读取通知书
+				for(Integer i = 0 ; i < zipPath.split(",").length ; i++){
+					tjList.addAll(ReadZipFile.readZipFile_new(zipPath.split(",")[i],1,1,0));
+				}
+				//按照发文日进行排序
+				Collections.sort(tjList);
+				//然后进行数据库操作
+				for(int j = 0; j < tjList.size(); j++){
+					String readResult = "";
+					String readResultChi = "";
+					Map<String,Object> map_d = new HashMap<String,Object>();
+		        	TzsJson tJson = tjList.get(j);
+		        	String fwSerial = tJson.getFwSerial();//发文序号
+		        	String ajNoGf = tJson.getAjNoGf();//专利/申请号
+		        	String tzsName = tJson.getTzsName();//通知书
+		        	String zlName = tJson.getZlName();//专利名称
+		        	String fwDate = tJson.getFwDate();//发文日期
+		        	String sqrName = tJson.getSqrName();//申请人
+		        	String applyDate = tJson.getApplyDate();//申请日期
+		        	String zlType = tJson.getZlType();//专利类型
+//		        	String fjApplyDate = tJson.getFjApplyDate();//费减请求日期
+//		        	String fjRecord = tJson.getFjRecord();//费减记录
+		        	String feeEndDateGf = tJson.getFeeEdate();//缴费截止日期/补正截止日期 (官方)
+		        	String feeEndDateCpy = "";
+		        	if(!feeEndDateGf.equals("")){
+		        		feeEndDateCpy = CurrentTime.getFinalDate(feeEndDateGf, Constants.JF_SL_END_DATE_CPY);//缴费截止日期/补正截止日期 (机构)
+		        	}
+		        	String fjRate = tJson.getFjRate();//费减比率 
+		        	String yearNo = tJson.getYearNo();//年度数字
+		        	String tzsPath = tJson.getZipPath();//上传的压缩包位置(绝对路径)
+		        	boolean readFlag = false;
+		        	if(!tzsName.equals("电子申请回执")){//电子申请回执的时候不做删除
+		        		if((j+1) < tjList.size()){//不是最后一个
+							if(!tzsPath.equals(tjList.get(j+1).getZipPath())){//当前内容的通知书和下一个通知书附件不相同（说明不是一个压缩包）
+								//说明当前压缩包内的通知书内容读取完成
 								readFlag = true;
 							}
-			        	}
-			        	//执行动作
-			        	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(ajNoGf);
-			        	if(zlList.size() == 0){//说明系统中还没有该专利号的专利/也可能是之前没导入过通知书
-			        		zlList = zlm.listSpecInfoByOpt(zlName, sqrName, zlType,cpyId);
-			        	}
-			        	Integer zlNum = zlList.size();
-			        	String tzsPath_tmp = tzsPath.replace(path_pre, "");
-			        	if(zlNum > 0){
-			        		ZlajMainInfoTb zl = null;
-			        		if(zlNum.equals(1)){
-			        			ZlajMainInfoTb zl_t = zlList.get(0);
-			        			if(zl_t.getAjStopStatus().equals(0)){
-			        				zl = zl_t;
-			        			}
-			        		}else{
-			        			for(Iterator<ZlajMainInfoTb> it = zlList.iterator() ; it.hasNext();){
-			        				ZlajMainInfoTb zl_t = it.next();
-			        				if(zl_t.getAjStopStatus().equals(0)){//只获取第一个没被终止的专利
-			        					zl = zl_t;
-			        					break;
-			        				}
-				        		}
+						}else{//最后一个通知书
+							readFlag = true;
+						}
+		        	}
+		        	//执行动作
+		        	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(ajNoGf);
+		        	if(zlList.size() == 0){//说明系统中还没有该专利号的专利/也可能是之前没导入过通知书
+		        		zlList = zlm.listSpecInfoByOpt(zlName, sqrName, zlType,cpyId);
+		        	}
+		        	Integer zlNum = zlList.size();
+		        	String tzsPath_tmp = tzsPath.replace(path_pre, "");
+		        	if(zlNum > 0){
+		        		ZlajMainInfoTb zl = null;
+		        		if(zlNum.equals(1)){
+		        			ZlajMainInfoTb zl_t = zlList.get(0);
+		        			if(zl_t.getAjStopStatus().equals(0)){
+		        				zl = zl_t;
+		        			}
+		        		}else{
+		        			for(Iterator<ZlajMainInfoTb> it = zlList.iterator() ; it.hasNext();){
+		        				ZlajMainInfoTb zl_t = it.next();
+		        				if(zl_t.getAjStopStatus().equals(0)){//只获取第一个没被终止的专利
+		        					zl = zl_t;
+		        					break;
+		        				}
 			        		}
-			        		Integer zlId = 0;
-			        		if(zl != null){
-			        			zlId = zl.getId();
-			        			List<ZlajTzsInfoTb> tzsList = tzsm.listInfoByOpt(zlId, fwSerial);
-			        			if(tzsList.size() > 0){//有此通知书
-									//无需再增加
-			        				readResult = "uploadExist";//之前已读取过该通知书，无需再次上传
-			        				tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, tzsList.get(0).getTzsPath(),currUserId,0,"之前已读取过该通知书，无需再次读取",cpyId);
-			        				readResultChi = "之前已读取过该通知书，无需再次读取";
-//			        				看以后需要删除不？
-//									if(readFlag){
-//										//删除临时上传位置
-//										FileOpration.deleteFile(tzsPath);
-//									}
-								}else{
-									lcNo = Double.parseDouble(zl.getAjStatus());//当前专利流程号
-									tzsPath_tmp = tzsPath_tmp.substring(tzsPath_tmp.lastIndexOf("\\") + 1);
-									String path_pre_1 = "cpyUser\\"+zlId+"\\tzs\\";
-									File file = new File(path_pre + path_pre_1);
-									if(!file.exists()){
-						    			file.mkdirs();
-						    		}
-									String upZipPath_final = path_pre_1+tzsPath_tmp; 
-									String applyDate_db = zl.getAjApplyDate();//获取数据库中专利的申请日
-									if(tzsName.equals("专利申请受理通知书")){
-										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.1);//导入通知书期限1个月
+		        		}
+		        		Integer zlId = 0;
+		        		if(zl != null){
+		        			zlId = zl.getId();
+		        			List<ZlajTzsInfoTb> tzsList = tzsm.listInfoByOpt(zlId, fwSerial);
+		        			if(tzsList.size() > 0){//有此通知书
+								//无需再增加
+		        				readResult = "uploadExist";//之前已读取过该通知书，无需再次上传
+		        				tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, tzsList.get(0).getTzsPath(),currUserId,0,"之前已读取过该通知书，无需再次读取",cpyId);
+		        				readResultChi = "之前已读取过该通知书，无需再次读取";
+//		        				看以后需要删除不？
+//								if(readFlag){
+//									//删除临时上传位置
+//									FileOpration.deleteFile(tzsPath);
+//								}
+							}else{
+								lcNo = Double.parseDouble(zl.getAjStatus());//当前专利流程号
+								tzsPath_tmp = tzsPath_tmp.substring(tzsPath_tmp.lastIndexOf("\\") + 1);
+								String path_pre_1 = "cpyUser\\"+zlId+"\\tzs\\";
+								File file = new File(path_pre + path_pre_1);
+								if(!file.exists()){
+					    			file.mkdirs();
+					    		}
+								String upZipPath_final = path_pre_1+tzsPath_tmp; 
+								String applyDate_db = zl.getAjApplyDate();//获取数据库中专利的申请日
+								if(tzsName.equals("专利申请受理通知书")){
+									Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.1);//导入通知书期限1个月
+									if(currLcId > 0){
+										mxm.addLcMx(currLcId, currUserId, "导入受理通知书", 7.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
+										//发送邮件
+										mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", "新任务通知：导入费用减缓审批/缴纳申请费通知书", "专利["+zl.getAjTitle()+"]已完成受理通知书导入，请及时完成导入费用减缓审批/缴纳申请费通知书工作");
+										zlm.updateZlApplyDate(zlId, applyDate);//修改专利申请日
+										zlm.updateAjNoGfById(zlId, ajNoGf);
+										readResult = "success";
+										readResultChi = "读取成功";
+									}
+			        			}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
+			        				if(!applyDate_db.equals("")){
+			        					Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入费用减缓审批/缴纳申请费通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.2);//导入通知书期限1个月
 										if(currLcId > 0){
-											mxm.addLcMx(currLcId, currUserId, "导入受理通知书", 7.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
+											mxm.addLcMx(currLcId, currUserId, "导入费用减缓审批/缴纳申请费通知书", 7.2, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
 											//发送邮件
-											mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", "新任务通知：导入费用减缓审批/缴纳申请费通知书", "专利["+zl.getAjTitle()+"]已完成受理通知书导入，请及时完成导入费用减缓审批/缴纳申请费通知书工作");
-											zlm.updateZlApplyDate(zlId, applyDate);//修改专利申请日
-											zlm.updateAjNoGfById(zlId, ajNoGf);
+											mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getFeeUserId(), "cpyUser", "新任务通知：费用催缴", "专利["+zl.getAjTitle()+"]已完成费用减缓审批/缴纳申请费通知书导入，请及时完成费用催缴工作");
+											//如果是发明专利，需要增加实质审查费
+											if(!fjRate.equals("0.0")){//通知书存在费减并且系统中不存在费减
+//													//存在费减，修改
+												zlm.updateZlFjInfo(zlId, Double.parseDouble(fjRate));
+											}
+											//增加缴纳受理费的任务
+											List<FeeDetailJson> fdList = tJson.getFdList();//费用明细
+								        	if(fdList.size() > 0){
+								        		for(Integer k = 0 ; k < fdList.size() ; k++){
+								        			FeeDetailJson fdJson = fdList.get(k);
+								        			String feeTypeName = fdJson.getFeeName();
+								        			String feeTypeName_final = feeTypeName;
+								        			Integer feeTypeId = 0;
+								        			if(feeTypeName.equals("申请费")){
+								        				if(zlType.equals("fm")){
+								        					feeTypeName_final = "发明专利" + feeTypeName;//对应的是发明专利申请费
+														}else if(zlType.equals("syxx")){
+															feeTypeName_final = "实用新型专利" + feeTypeName;//对应的是实用新型专利申请费
+														}else if(zlType.equals("wg")){
+															feeTypeName_final = "外观设计专利" + feeTypeName;//对应的是外观设计专利申请费
+														}
+								        			}
+								        			List<FeeTypeInfoTb> ftList = fm.listInfoByName(feeTypeName_final);
+							        				if(ftList.size() > 0){
+							        					feeTypeId = ftList.get(0).getId();
+							        					fm.addZLFee(zlId, currUserId, feeTypeId, fdJson.getFeeAmount(), Double.parseDouble(fjRate), feeEndDateCpy, 
+									        					feeEndDateGf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
+									        			//增加缴费任务------------------------
+							        				}
+								        		}
+								        	}
+											//如果是发明专利，还需要增加缴纳实质审查费的任务
+											if(zlType.equals("fm")){
+												//增加未缴纳实质审查费的清单3--发明专利申请实质审查费（实质审查费在申请日三年之内缴纳）
+												if(fm.listInfoByOpt(zlId, 3).size() == 0){//不存在该费用才增加
+													String finalDate = CurrentTime.getFinalDate_2(applyDate_db, 3);//申请人3年后的时间
+													String feeEndDate_gf = CurrentTime.getFinalDate(finalDate, -1);
+													String feeEndDate_cpy = CurrentTime.getFinalDate(feeEndDate_gf, Constants.JF_SL_END_DATE_CPY);//代理机构比官方绝限提前天数
+													double scFee_final  = Double.parseDouble(fjRate) * Constants.SC_FEE;
+													fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
+													//增加缴费任务------------------------
+												}
+											}
 											readResult = "success";
 											readResultChi = "读取成功";
+											//读取成功的通知书都在最后统一增加读取通知书记录
 										}
-				        			}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
-				        				if(!applyDate_db.equals("")){
-				        					Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入费用减缓审批/缴纳申请费通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.2);//导入通知书期限1个月
-											if(currLcId > 0){
-												mxm.addLcMx(currLcId, currUserId, "导入费用减缓审批/缴纳申请费通知书", 7.2, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
-												//发送邮件
-												mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getFeeUserId(), "cpyUser", "新任务通知：费用催缴", "专利["+zl.getAjTitle()+"]已完成费用减缓审批/缴纳申请费通知书导入，请及时完成费用催缴工作");
-												//如果是发明专利，需要增加实质审查费
-												if(!fjRate.equals("0.0")){//通知书存在费减并且系统中不存在费减
-//														//存在费减，修改
-													zlm.updateZlFjInfo(zlId, Double.parseDouble(fjRate));
-												}
-												//增加缴纳受理费的任务
-												List<FeeDetailJson> fdList = tJson.getFdList();//费用明细
-									        	if(fdList.size() > 0){
-									        		for(Integer k = 0 ; k < fdList.size() ; k++){
-									        			FeeDetailJson fdJson = fdList.get(k);
-									        			String feeTypeName = fdJson.getFeeName();
-									        			String feeTypeName_final = feeTypeName;
-									        			Integer feeTypeId = 0;
-									        			if(feeTypeName.equals("申请费")){
-									        				if(zlType.equals("fm")){
-									        					feeTypeName_final = "发明专利" + feeTypeName;//对应的是发明专利申请费
-															}else if(zlType.equals("syxx")){
-																feeTypeName_final = "实用新型专利" + feeTypeName;//对应的是实用新型专利申请费
-															}else if(zlType.equals("wg")){
-																feeTypeName_final = "外观设计专利" + feeTypeName;//对应的是外观设计专利申请费
-															}
-									        			}
-									        			List<FeeTypeInfoTb> ftList = fm.listInfoByName(feeTypeName_final);
-								        				if(ftList.size() > 0){
-								        					feeTypeId = ftList.get(0).getId();
-								        					fm.addZLFee(zlId, currUserId, feeTypeId, fdJson.getFeeAmount(), Double.parseDouble(fjRate), feeEndDateCpy, 
-										        					feeEndDateGf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
-										        			//增加缴费任务------------------------
-								        				}
-									        		}
-									        	}
-												//如果是发明专利，还需要增加缴纳实质审查费的任务
-												if(zlType.equals("fm")){
-													//增加未缴纳实质审查费的清单3--发明专利申请实质审查费（实质审查费在申请日三年之内缴纳）
-													if(fm.listInfoByOpt(zlId, 3).size() == 0){//不存在该费用才增加
-														String finalDate = CurrentTime.getFinalDate_2(applyDate_db, 3);//申请人3年后的时间
-														String feeEndDate_gf = CurrentTime.getFinalDate(finalDate, -1);
-														String feeEndDate_cpy = CurrentTime.getFinalDate(feeEndDate_gf, Constants.JF_SL_END_DATE_CPY);//代理机构比官方绝限提前天数
-														double scFee_final  = Double.parseDouble(fjRate) * Constants.SC_FEE;
-														fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
-														//增加缴费任务------------------------
-													}
-												}
-												readResult = "success";
-												readResultChi = "读取成功";
-												//读取成功的通知书都在最后统一增加读取通知书记录
-											}
-				        				}else{//不存在申请日不能导入后续的通知书
-				        					readResult = "dateError";
-				        					readResultChi = "不存在申请日不能导入后续的通知书";
-				        					tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "指定专利无申请日，无法进行读取", cpyId);
-				        				}
-				        			}else if(tzsName.contains("补正通知书") || tzsName.contains("审查意见通知书") || tzsName.contains("初步审查合格通知书")){
-				        				readResult = "success";
-				        				readResultChi = "读取成功";
-				        				if(tzsName.contains("初步审查合格通知书")){//初审合格
-				        					Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入初步审查合格通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",9.1);//导入通知书期限1个月
-											if(currLcId > 0){
-												mxm.addLcMx(currLcId, currUserId, "导入初步审查合格通知书", 9.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
-//												if(zlType.equals("fm")){
-//													if(lcNo < 13){//实审之前导入初步审查合格通知书
-//														zlm.updateZlStatusById(zlId, "13.0", "实审中/等待缴纳实审费");
-//													}
-//												}else{//其他类型专利没有实审
-//													zlm.updateZlStatusById(zlId, "14.0", "等待导入授权、办理登记手续通知书");
+			        				}else{//不存在申请日不能导入后续的通知书
+			        					readResult = "dateError";
+			        					readResultChi = "不存在申请日不能导入后续的通知书";
+			        					tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "指定专利无申请日，无法进行读取", cpyId);
+			        				}
+			        			}else if(tzsName.contains("补正通知书") || tzsName.contains("审查意见通知书") || tzsName.contains("初步审查合格通知书")){
+			        				readResult = "success";
+			        				readResultChi = "读取成功";
+			        				if(tzsName.contains("初步审查合格通知书")){//初审合格
+			        					Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入初步审查合格通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",9.1);//导入通知书期限1个月
+										if(currLcId > 0){
+											mxm.addLcMx(currLcId, currUserId, "导入初步审查合格通知书", 9.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
+//											if(zlType.equals("fm")){
+//												if(lcNo < 13){//实审之前导入初步审查合格通知书
+//													zlm.updateZlStatusById(zlId, "13.0", "实审中/等待缴纳实审费");
 //												}
+//											}else{//其他类型专利没有实审
+//												zlm.updateZlStatusById(zlId, "14.0", "等待导入授权、办理登记手续通知书");
+//											}
+										}
+			        				}else{//说明需要进行补正或者审查答复（可能是初审的补正/审查答复，也可能是实审的补正/审查答复）
+			        					Integer addMonthes = 2;//补正通知书都是2个月+15天
+			        					String finalDate = CurrentTime.getFinalDate(fwDate, Constants.TD_RECEIVE_DAYS);//推定收到日
+										String finalDate_cpy = "";//官方绝限提前15天
+										if(tzsName.equals("第一次审查意见通知书")){
+											//发明专利的第一次审查意见通知书的答复期限是下发日+15天+4个月，其余都是2个月
+											if(zlType.equals("fm")){
+												addMonthes = 4;
 											}
-				        				}else{//说明需要进行补正或者审查答复（可能是初审的补正/审查答复，也可能是实审的补正/审查答复）
-				        					Integer addMonthes = 2;//补正通知书都是2个月+15天
-				        					String finalDate = CurrentTime.getFinalDate(fwDate, Constants.TD_RECEIVE_DAYS);//推定收到日
-											String finalDate_cpy = "";//官方绝限提前15天
-											if(tzsName.equals("第一次审查意见通知书")){
-												//发明专利的第一次审查意见通知书的答复期限是下发日+15天+4个月，其余都是2个月
-												if(zlType.equals("fm")){
-													addMonthes = 4;
-												}
-			        						}
-											if(lcNo < 9.9){
-												lcNo += 0.1;
-											}else if(lcNo < 13.9){
-												lcNo += 0.1;
-											}
-											finalDate = CurrentTime.getFinalDate_1(finalDate, addMonthes);
-											finalDate_cpy = CurrentTime.getFinalDate(finalDate,Constants.JF_SL_END_DATE_CPY);
-											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
-											if(currLcId > 0){
-												mxm.addLcMx(currLcId, currUserId, "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
-												//增加专利补正流程
-												Integer currLcId_1 = lcm.addLcInfo(zlId, "专利补正", "专利补正", currDate, finalDate_cpy, "", finalDate, lcNo);
-												if(currLcId_1 > 0){
-													mxm.addLcMx(currLcId_1, zl.getBzUserId(), "专利补正", lcNo, currDate, "", "", 0, "", "", 0.0, "", -1);
-												}
-											}
-											//增加案件补正/案件审查答复任务------------------------
-				        				}
-				        			}else if(tzsName.equals("驳回决定")){//专利被驳回，需要在收到该通知书后3个月内向专利复审委员会请求复审
-				        				readResult = "success";
-				        				readResultChi = "读取成功";
-										String finalDate = CurrentTime.getFinalDate(fwDate, Constants.TD_RECEIVE_DAYS);//推定收到日
-										finalDate = CurrentTime.getFinalDate_1(finalDate, 3);//3个月内进行请求复审
+		        						}
 										if(lcNo < 9.9){
 											lcNo += 0.1;
 										}else if(lcNo < 13.9){
 											lcNo += 0.1;
 										}
-										zlm.updateZlStatusById(zlId, String.valueOf(lcNo), "案件被驳回");
+										finalDate = CurrentTime.getFinalDate_1(finalDate, addMonthes);
+										finalDate_cpy = CurrentTime.getFinalDate(finalDate,Constants.JF_SL_END_DATE_CPY);
 										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
 										if(currLcId > 0){
 											mxm.addLcMx(currLcId, currUserId, "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
-										}
-										//增加向专利复审委员会提出复审请示的任务------------------------
-				        			}else if(tzsName.equals("办理登记手续通知书")){//授权和办理登记手续通知书
-				        				if(!applyDate_db.equals("")){
-				        					readResult = "success";
-				        					readResultChi = "读取成功";
-											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",14.0);//导入通知书期限1个月
-											if(currLcId > 0){
-												mxm.addLcMx(currLcId,currUserId, "导入"+tzsName, 14.0, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
+											//增加专利补正流程
+											Integer currLcId_1 = lcm.addLcInfo(zlId, "专利补正", "专利补正", currDate, finalDate_cpy, "", finalDate, lcNo);
+											if(currLcId_1 > 0){
+												mxm.addLcMx(currLcId_1, zl.getBzUserId(), "专利补正", lcNo, currDate, "", "", 0, "", "", 0.0, "", -1);
 											}
-											List<FeeDetailJson> fdList = tJson.getFdList();//费用明细
-											for(Integer k = 0 ; k < fdList.size() ; k++){
-							        			FeeDetailJson fdJson = fdList.get(k);
-							        			String feeTypeName = fdJson.getFeeName();
-							        			Integer feeTypeId = 0;
-							        			String feeTypePre = "";
-							        			String feeTypeName_final = feeTypeName;
-							        			Integer yearNum = 10;//发明专利是20年度，其他专利都是10年度
-							        			if(feeTypeName.equals("登记费") || feeTypeName.equals("年费")){
-							        				if(zlType.equals("fm")){
-							        					feeTypePre = "发明专利";//对应的是发明专利申请费
-							        					yearNum = 20;
-													}else if(zlType.equals("syxx")){
-														feeTypePre = "实用新型专利";//对应的是实用新型专利申请费
-													}else if(zlType.equals("wg")){
-														feeTypePre = "外观设计专利";//对应的是外观设计专利申请费
-													}
-							        				if(feeTypeName.equals("登记费")){
-							        					feeTypeName_final = feeTypePre+feeTypeName;
-							        				}
-							        			}
-							        			if(feeTypeName.equals("年费")){
-					        						//发明专利前10年度费用由费减，其他专利前6年度都费减
-					        						Integer yearNo_tzs = Integer.parseInt(yearNo);
-					        						for(Integer m = yearNo_tzs ; m <= yearNum ; m++){
-					        							feeTypeName_final = feeTypePre + "第" + m + "年" + feeTypeName;
-					        							String yearFee_sDate = CurrentTime.getFinalDate_2(applyDate_db, m-1);//第一次年费开始日期（可能不是第一年度）
-														String yearFee_eDate = CurrentTime.getFinalDate(CurrentTime.getFinalDate_2(applyDate_db, m), -1);//第一次交年费结束日期（可能不是第一年度）
-														String feeRange = yearFee_sDate+":"+yearFee_eDate;
-														Double yearFee = 0d;
-														List<FeeTypeInfoTb> ftList = fm.listInfoByName(feeTypeName_final);
-														if(ftList.size() > 0){
-							        						feeTypeId = ftList.get(0).getId();
-							        						String feeCpyDate = "";//代理机构期限
-															String feeGfDate = "";//官方期限
-															Double fjRate_final = Double.parseDouble(fjRate);
-															Double fjRate_real = 0.0;
-															if(m == yearNo_tzs){//第一次的(通知书书存在信息)
-																feeCpyDate = feeEndDateCpy;
-																feeGfDate = feeEndDateGf;
-																yearFee = fdJson.getFeeAmount();
-																fjRate_real = fjRate_final;
-															}else{//第二次缴费时不存在通知书，需要通过第一次通知书中的信息进行计算
-																yearFee = CommonTools.getYearFee(m, zlType);
-																feeCpyDate = CurrentTime.getFinalDate(yearFee_sDate, Constants.JF_SL_END_DATE_CPY);
-																feeGfDate = yearFee_sDate;
-																if(fjRate_final > 0){//存在费减
-																	if(zlType.equals("fm")){//发明--头10次年费有费减
-																		if(m < (yearNo_tzs + 10)){//可计算费减
-																			yearFee *= (1-fjRate_final);
-																			fjRate_real = fjRate_final;
-																		}
-																	}else{//新型、外观头6次有费减
-																		if(m < (yearNo_tzs + 6)){//可计算费减
-																			yearFee *= (1-fjRate_final);
-																			fjRate_real = fjRate_final;
-																		}
+										}
+										//增加案件补正/案件审查答复任务------------------------
+			        				}
+			        			}else if(tzsName.equals("驳回决定")){//专利被驳回，需要在收到该通知书后3个月内向专利复审委员会请求复审
+			        				readResult = "success";
+			        				readResultChi = "读取成功";
+									String finalDate = CurrentTime.getFinalDate(fwDate, Constants.TD_RECEIVE_DAYS);//推定收到日
+									finalDate = CurrentTime.getFinalDate_1(finalDate, 3);//3个月内进行请求复审
+									if(lcNo < 9.9){
+										lcNo += 0.1;
+									}else if(lcNo < 13.9){
+										lcNo += 0.1;
+									}
+									zlm.updateZlStatusById(zlId, String.valueOf(lcNo), "案件被驳回");
+									Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
+									if(currLcId > 0){
+										mxm.addLcMx(currLcId, currUserId, "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
+									}
+									//增加向专利复审委员会提出复审请示的任务------------------------
+			        			}else if(tzsName.equals("办理登记手续通知书")){//授权和办理登记手续通知书
+			        				if(!applyDate_db.equals("")){
+			        					readResult = "success";
+			        					readResultChi = "读取成功";
+										Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",14.0);//导入通知书期限1个月
+										if(currLcId > 0){
+											mxm.addLcMx(currLcId,currUserId, "导入"+tzsName, 14.0, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1);
+										}
+										List<FeeDetailJson> fdList = tJson.getFdList();//费用明细
+										for(Integer k = 0 ; k < fdList.size() ; k++){
+						        			FeeDetailJson fdJson = fdList.get(k);
+						        			String feeTypeName = fdJson.getFeeName();
+						        			Integer feeTypeId = 0;
+						        			String feeTypePre = "";
+						        			String feeTypeName_final = feeTypeName;
+						        			Integer yearNum = 10;//发明专利是20年度，其他专利都是10年度
+						        			if(feeTypeName.equals("登记费") || feeTypeName.equals("年费")){
+						        				if(zlType.equals("fm")){
+						        					feeTypePre = "发明专利";//对应的是发明专利申请费
+						        					yearNum = 20;
+												}else if(zlType.equals("syxx")){
+													feeTypePre = "实用新型专利";//对应的是实用新型专利申请费
+												}else if(zlType.equals("wg")){
+													feeTypePre = "外观设计专利";//对应的是外观设计专利申请费
+												}
+						        				if(feeTypeName.equals("登记费")){
+						        					feeTypeName_final = feeTypePre+feeTypeName;
+						        				}
+						        			}
+						        			if(feeTypeName.equals("年费")){
+				        						//发明专利前10年度费用由费减，其他专利前6年度都费减
+				        						Integer yearNo_tzs = Integer.parseInt(yearNo);
+				        						for(Integer m = yearNo_tzs ; m <= yearNum ; m++){
+				        							feeTypeName_final = feeTypePre + "第" + m + "年" + feeTypeName;
+				        							String yearFee_sDate = CurrentTime.getFinalDate_2(applyDate_db, m-1);//第一次年费开始日期（可能不是第一年度）
+													String yearFee_eDate = CurrentTime.getFinalDate(CurrentTime.getFinalDate_2(applyDate_db, m), -1);//第一次交年费结束日期（可能不是第一年度）
+													String feeRange = yearFee_sDate+":"+yearFee_eDate;
+													Double yearFee = 0d;
+													List<FeeTypeInfoTb> ftList = fm.listInfoByName(feeTypeName_final);
+													if(ftList.size() > 0){
+						        						feeTypeId = ftList.get(0).getId();
+						        						String feeCpyDate = "";//代理机构期限
+														String feeGfDate = "";//官方期限
+														Double fjRate_final = Double.parseDouble(fjRate);
+														Double fjRate_real = 0.0;
+														if(m == yearNo_tzs){//第一次的(通知书书存在信息)
+															feeCpyDate = feeEndDateCpy;
+															feeGfDate = feeEndDateGf;
+															yearFee = fdJson.getFeeAmount();
+															fjRate_real = fjRate_final;
+														}else{//第二次缴费时不存在通知书，需要通过第一次通知书中的信息进行计算
+															yearFee = CommonTools.getYearFee(m, zlType);
+															feeCpyDate = CurrentTime.getFinalDate(yearFee_sDate, Constants.JF_SL_END_DATE_CPY);
+															feeGfDate = yearFee_sDate;
+															if(fjRate_final > 0){//存在费减
+																if(zlType.equals("fm")){//发明--头10次年费有费减
+																	if(m < (yearNo_tzs + 10)){//可计算费减
+																		yearFee *= (1-fjRate_final);
+																		fjRate_real = fjRate_final;
+																	}
+																}else{//新型、外观头6次有费减
+																	if(m < (yearNo_tzs + 6)){//可计算费减
+																		yearFee *= (1-fjRate_final);
+																		fjRate_real = fjRate_final;
 																	}
 																}
 															}
-															fm.addZLFee(zlId, currUserId, feeTypeId, Convert.convertInputNumber_2(yearFee), fjRate_real,feeCpyDate, 
-																	feeGfDate, "", 0, cpyId, 1, "", "",tzsName,m,feeRange,0,"","","","","");
-								        					//增加缴费任务------------------------
-								        				}
-					        						}
-					        					}else{
-					        						if(feeTypeName_final.equals("印花费")){
-					        							feeTypeName_final = "印花税";
-					        						}
-					        						List<FeeTypeInfoTb> ftList = fm.listInfoByName(feeTypeName_final);
-							        				if(ftList.size() > 0){
-						        						feeTypeId = ftList.get(0).getId();
-							        					fm.addZLFee(zlId, currUserId, feeTypeId, fdJson.getFeeAmount(), Double.parseDouble(fjRate), feeEndDateCpy, 
-									        					feeEndDateGf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
+														}
+														fm.addZLFee(zlId, currUserId, feeTypeId, Convert.convertInputNumber_2(yearFee), fjRate_real,feeCpyDate, 
+																feeGfDate, "", 0, cpyId, 1, "", "",tzsName,m,feeRange,0,"","","","","");
 							        					//增加缴费任务------------------------
 							        				}
-					        					}
-							        		}
-				        				}else{//不存在申请日不能导入后续的通知书
-				        					readResult = "dateError";
-				        					readResultChi = "指定专利无申请日，无法进行读取";
-				        					tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "指定专利无申请日，无法进行读取", cpyId);
-				        				}
-				        			}else if(tzsName.equals("缴费通知书")){//缴费通知书
-				        				readResult = "success";
-				        				readResultChi = "读取成功";
-				        				String feeTypeName = "";
-				        				if(!yearNo.equals("")){//年费滞纳金
-				        					if(zlType.equals("fm")){
-					        					feeTypeName = "发明专利";
-											}else if(zlType.equals("syxx")){
-												feeTypeName = "实用新型专利";
-											}else if(zlType.equals("wg")){
-												feeTypeName = "外观设计专利";
-											}
-					        				List<LateFeeJson> lfList = tJson.getLfList();//年费滞纳金
-					    		        	if(lfList.size() > 0){
-					    		        		Integer feeTypeId = 0;
-					    		        		List<FeeTypeInfoTb> ftList = fm.listInfoByName(feeTypeName + "年费滞纳金");
-					    		        		if(ftList.size() > 0){
+				        						}
+				        					}else{
+				        						if(feeTypeName_final.equals("印花费")){
+				        							feeTypeName_final = "印花税";
+				        						}
+				        						List<FeeTypeInfoTb> ftList = fm.listInfoByName(feeTypeName_final);
+						        				if(ftList.size() > 0){
 					        						feeTypeId = ftList.get(0).getId();
-					        						List<ZlajFeeInfoTb> feeList = fm.listYearFeeByOpt(zlId, Integer.parseInt(yearNo),"");
-					        						if(feeList.size() > 0){
-					        							Integer feeId = feeList.get(0).getId();
-					        							for(Integer k = 0 ; k < lfList.size() ; k++){
-							    		        			LateFeeJson lfJson = lfList.get(k);
-							    		        			fm.addFeeSubInfo(lfJson.getFeeSDate()+"至"+lfJson.getFeeEDate(), lfJson.getLateFee(), feeId, feeTypeId, "滞纳金");
-							    		        		}
-					        							//修改费用任务中的备注，提示有滞纳金
-					        						}else{
-					        							readResult = "noYearFee";//还没导入年费，无法导入滞纳金
-					        							readResultChi = "还没导入年费，无法导入滞纳金";
-					        						}
-					    		        		}
-					    		        	}
-				        				}
-				        			}else{//未收录该通知书的读取方法
-				        				readResult = "noReadTzs";//系统还未学习该通知书的读取方法
-				        				readResultChi = "系统还未学习该通知书的读取方法";
-				        				tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "系统还未学习该通知书的读取方法", cpyId);
-				        			}
-									if(readResult.equals("success")){
-										if(readFlag){
-											//移动上传通知书到指定的位置
-											FileOpration.copyFile(tzsPath, WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath_final);
-											//删除临时上传位置
-											FileOpration.deleteFile(tzsPath);
+						        					fm.addZLFee(zlId, currUserId, feeTypeId, fdJson.getFeeAmount(), Double.parseDouble(fjRate), feeEndDateCpy, 
+								        					feeEndDateGf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
+						        					//增加缴费任务------------------------
+						        				}
+				        					}
+						        		}
+			        				}else{//不存在申请日不能导入后续的通知书
+			        					readResult = "dateError";
+			        					readResultChi = "指定专利无申请日，无法进行读取";
+			        					tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "指定专利无申请日，无法进行读取", cpyId);
+			        				}
+			        			}else if(tzsName.equals("缴费通知书")){//缴费通知书
+			        				readResult = "success";
+			        				readResultChi = "读取成功";
+			        				String feeTypeName = "";
+			        				if(!yearNo.equals("")){//年费滞纳金
+			        					if(zlType.equals("fm")){
+				        					feeTypeName = "发明专利";
+										}else if(zlType.equals("syxx")){
+											feeTypeName = "实用新型专利";
+										}else if(zlType.equals("wg")){
+											feeTypeName = "外观设计专利";
 										}
-										tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 1, "读取成功", cpyId);
-									}else{
+				        				List<LateFeeJson> lfList = tJson.getLfList();//年费滞纳金
+				    		        	if(lfList.size() > 0){
+				    		        		Integer feeTypeId = 0;
+				    		        		List<FeeTypeInfoTb> ftList = fm.listInfoByName(feeTypeName + "年费滞纳金");
+				    		        		if(ftList.size() > 0){
+				        						feeTypeId = ftList.get(0).getId();
+				        						List<ZlajFeeInfoTb> feeList = fm.listYearFeeByOpt(zlId, Integer.parseInt(yearNo),"");
+				        						if(feeList.size() > 0){
+				        							Integer feeId = feeList.get(0).getId();
+				        							for(Integer k = 0 ; k < lfList.size() ; k++){
+						    		        			LateFeeJson lfJson = lfList.get(k);
+						    		        			fm.addFeeSubInfo(lfJson.getFeeSDate()+"至"+lfJson.getFeeEDate(), lfJson.getLateFee(), feeId, feeTypeId, "滞纳金");
+						    		        		}
+				        							//修改费用任务中的备注，提示有滞纳金
+				        						}else{
+				        							readResult = "noYearFee";//还没导入年费，无法导入滞纳金
+				        							readResultChi = "还没导入年费，无法导入滞纳金";
+				        						}
+				    		        		}
+				    		        	}
+			        				}
+			        			}else{//未收录该通知书的读取方法
+			        				readResult = "noReadTzs";//系统还未学习该通知书的读取方法
+			        				readResultChi = "系统还未学习该通知书的读取方法";
+			        				tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "系统还未学习该通知书的读取方法", cpyId);
+			        			}
+								if(readResult.equals("success")){
+									if(readFlag){
+										//移动上传通知书到指定的位置
+										FileOpration.copyFile(tzsPath, WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath_final);
 										//删除临时上传位置
-										//FileOpration.deleteFile(tzsPath);
+										FileOpration.deleteFile(tzsPath);
 									}
+									tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 1, "读取成功", cpyId);
+								}else{
+									//删除临时上传位置
+									//FileOpration.deleteFile(tzsPath);
 								}
-			        		}else{//案件被终止无法再识别通知书
-			        			readResult =  "ajStop";
-			        			readResultChi = "案件被终止无法再识别通知书";
-			        			tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "案件被终止无法再识别通知书", cpyId);
 							}
-							map_d.put("result", readResult);
-							map_d.put("readResultChi", readResultChi);
-							map_d.put("tzsName", tzsName);
-							map_d.put("zlId", zlId);
-							map_d.put("ajNoGf", ajNoGf);
-							map_d.put("ajTitle", zlName);
-							list_d.add(map_d);
-			        	}else{//不存在
-			        		readResult = "noInfo";//该通知书没有匹配到专利
-			        		readResultChi = "该通知书没有匹配到专利";
-		    				map_d.put("result", readResult);
-		    				map_d.put("readResultChi", readResultChi);
-		    				map_d.put("tzsName", tzsName);
-		    				map_d.put("ajNoGf", ajNoGf);
-		    				map_d.put("ajTitle", zlName);
-		    				list_d.add(map_d);
-		    				tzsm.addTzs(0, tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "没有匹配到专利", cpyId);
-							//删除当前通知书压缩包
-							//FileOpration.deleteFile(tzsPath);
-			        	}
-					}
+		        		}else{//案件被终止无法再识别通知书
+		        			readResult =  "ajStop";
+		        			readResultChi = "案件被终止无法再识别通知书";
+		        			tzsm.addTzs(zlId, tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "案件被终止无法再识别通知书", cpyId);
+						}
+						map_d.put("result", readResult);
+						map_d.put("readResultChi", readResultChi);
+						map_d.put("tzsName", tzsName);
+						map_d.put("zlId", zlId);
+						map_d.put("ajNoGf", ajNoGf);
+						map_d.put("ajTitle", zlName);
+						list_d.add(map_d);
+		        	}else{//不存在
+		        		readResult = "noInfo";//该通知书没有匹配到专利
+		        		readResultChi = "该通知书没有匹配到专利";
+	    				map_d.put("result", readResult);
+	    				map_d.put("readResultChi", readResultChi);
+	    				map_d.put("tzsName", tzsName);
+	    				map_d.put("ajNoGf", ajNoGf);
+	    				map_d.put("ajTitle", zlName);
+	    				list_d.add(map_d);
+	    				tzsm.addTzs(0, tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "没有匹配到专利", cpyId);
+						//删除当前通知书压缩包
+						//FileOpration.deleteFile(tzsPath);
+		        	}
 				}
 			}else{
 				msg = "noAbility";
@@ -5521,6 +5522,63 @@ public class ZlMainAction extends DispatchAction {
 		        e.printStackTrace();  
 		    }
 		}
+		return null;
+	}
+	
+	/**
+	 * 通过客户编号、专利编号获取专利列表(不分页)
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-2 上午11:43:07
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getZlData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		Integer cusId = CommonTools.getFinalInteger("cusId", request);
+		String zlNo = CommonTools.getFinalStr("zlNo", request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		Integer currUserId = this.getLoginUserId(request);
+		String msg = "error";
+		if(cusId > 0 || !zlNo.equals("")){
+			CpyUserInfo user = cum.getEntityById(currUserId);
+			Integer cpyId = user.getCpyInfoTb().getId();
+			List<ZlajMainInfoTb> zlList = zlm.listInfoByOpt_1(zlNo, cusId, cpyId);
+			if(zlList.size() > 0){
+				msg = "success";
+				List<Object> list_d = new ArrayList<Object>();
+				for(Iterator<ZlajMainInfoTb> it = zlList.iterator() ; it.hasNext();){
+					ZlajMainInfoTb zl  = it.next();
+					Map<String,Object> map_d = new HashMap<String,Object>();
+					map_d.put("zlId", zl.getId());
+					map_d.put("zlName", zl.getAjTitle());
+					String zlType = zl.getAjType();
+					if(zlType.equals("fm")){
+						zlType = "发明";
+					}else if(zlType.equals("syxx")){
+						zlType = "实用新型";
+					}else if(zlType.equals("wg")){
+						zlType = "外观";
+					}
+					map_d.put("zlType", zlType);
+					map_d.put("zlNo", zl.getAjNoGf());
+					map_d.put("cusInfo", zl.getAjSqrName());
+					list_d.add(map_d);
+				}
+				map.put("zlInfo", list_d);
+			}else{
+				msg = "noInfo";
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 }

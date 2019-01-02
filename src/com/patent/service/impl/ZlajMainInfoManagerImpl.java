@@ -508,4 +508,21 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajMainInfoTb> listInfoByOpt_1(String zlNo, Integer cusId,
+			Integer cpyId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return zlDao.findInfoByOpt_1(sess, zlNo, cusId, cpyId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("通过专利号、客户编号获取专利列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }
