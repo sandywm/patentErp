@@ -149,11 +149,12 @@ public interface ZlajFeeInfoDao {
 	 * @param cusId 客户/申请人编号(0表示全部)
 	 * @param sDate 开始时间(缴费时间)--feeStatus=1的状态下使用
 	 * @param eDate 结束时间(缴费时间)--feeStatus=1的状态下使用
+	 * @param qdStatus 0：专利局缴费清单-国家，1：专利缴费清单-客户
 	 * @param pageNo 页码
 	 * @param pageSize 每页记录条数
 	 * @return
 	 */
-	List<ZlajFeeInfoTb> findInfoByOpt(Session sess,Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,String sDate,String eDate,Integer pageNo,Integer pageSize);
+	List<ZlajFeeInfoTb> findInfoByOpt(Session sess,Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,String sDate,String eDate,Integer qdStatus,Integer pageNo,Integer pageSize);
 	
 	/**
 	 * 获取指定代理机构下已缴费/全部的费用记录条数

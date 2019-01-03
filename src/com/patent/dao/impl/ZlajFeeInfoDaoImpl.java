@@ -131,7 +131,7 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 
 	@Override
 	public List<ZlajFeeInfoTb> findInfoByOpt(Session sess, Integer cpyId,
-			Integer feeStatus, Integer diffDays,String zlNo,String ajNo,Integer cusId,String sDate,String eDate,Integer pageNo, Integer pageSize) {
+			Integer feeStatus, Integer diffDays,String zlNo,String ajNo,Integer cusId,String sDate,String eDate,Integer qdStatus,Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId;
 		if(!zlNo.equals("")){
@@ -144,6 +144,9 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		}
 		if(feeStatus.equals(0)){//未缴费的费用列表时专利必须在正常状态下
 			hql += " and zlf.feeStatus = "+feeStatus;
+			if(qdStatus.equals(0)){//国家局--去除代理费
+				hql += " and zlf.feeTypeInfoTb.feeStatus != 'dlf'";
+			}//客户的不用去除
 			if(diffDays >= 0){
 				hql += " and TO_DAYS(zlf.feeEndDateJj) - TO_DAYS('"+CurrentTime.getStringDate()+"') <= "+diffDays;
 			}

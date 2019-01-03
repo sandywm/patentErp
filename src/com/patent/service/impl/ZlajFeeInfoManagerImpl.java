@@ -368,13 +368,13 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 	}
 
 	@Override
-	public List<ZlajFeeInfoTb> listInfoByOpt(Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,String sDate,String eDate,Integer pageNo,Integer pageSize)
-			throws WEBException {
+	public List<ZlajFeeInfoTb> listInfoByOpt(Integer cpyId,Integer feeStatus,Integer diffDays,String zlNo,String ajNo,Integer cusId,String sDate,String eDate,
+			Integer qdStatus,Integer pageNo,Integer pageSize)throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return fDao.findInfoByOpt(sess, cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, sDate, eDate, pageNo, pageSize);
+			return fDao.findInfoByOpt(sess, cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, sDate, eDate, qdStatus, pageNo, pageSize);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

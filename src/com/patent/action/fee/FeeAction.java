@@ -245,6 +245,7 @@ public class FeeAction extends DispatchAction {
 			}
 			if(abilityFlag){
 				Integer feeStatus = CommonTools.getFinalInteger("feeStatus", request);//费用缴纳状态（0未交,1：已交,2:全部）
+				Integer qdStatus  = CommonTools.getFinalInteger("qdStatus", request);//0：专利局缴费清单-国家，1：专利缴费清单-客户
 				Integer diffDays = CommonTools.getFinalInteger("diffDays", request);//代理机构缴费截止日期距当前日期天数小于等于指定的天数
 				String zlNo = CommonTools.getFinalStr("zlNo", request);
 				String ajNo = CommonTools.getFinalStr("ajNo", request);
@@ -255,13 +256,13 @@ public class FeeAction extends DispatchAction {
 				List<ZlajFeeInfoTb> zlfList = new ArrayList<ZlajFeeInfoTb>();
 				Integer count = 0;
 				if(feeStatus.equals(0)){//未交费
-					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, "", "", 0, 0);
+					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, "", "", qdStatus, 0, 0);
 				}else{//已缴费或者全部
 					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
 					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
 					count = fm.getCountByOpt(cpyId, feeStatus, zlNo, ajNo, cusId,sDate,eDate);
 					if(count > 0){
-						zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId,sDate,eDate, pageNo, pageSize);
+						zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId,sDate,eDate, qdStatus,pageNo, pageSize); 
 					}
 				}
 				if(zlfList.size() > 0){//
@@ -315,11 +316,15 @@ public class FeeAction extends DispatchAction {
 					}
 					if(feeStatus.equals(0)){//未交
 						map.put("feePriceTotal", Convert.convertInputNumber_3(feeTotal_wj));//应缴费总计--未交费用模式下使用
-					}else{
-						if(feeStatus.equals(2)){//全部
-							map.put("feeTotal", feeTotal);//全部费用总计
-						}
+					}else if(feeStatus.equals(1)){//已交
 						String noBackFeeTotal = Convert.convertInputNumber_3(feeTotal_yj - feeTotal_back);//未收费用总计
+						map.put("yjFeeTotal", Convert.convertInputNumber_3(feeTotal_yj));//已交费用总计
+						map.put("backFeeTotal", Convert.convertInputNumber_3(feeTotal_back));//实收费用总计
+						map.put("noBackFeeTotal", noBackFeeTotal);//未收费用总计
+					}else{
+						map.put("feeTotal", feeTotal);//全部费用总计
+						String noBackFeeTotal = Convert.convertInputNumber_3(feeTotal_yj - feeTotal_back);//未收费用总计
+						map.put("feePriceTotal", Convert.convertInputNumber_3(feeTotal_wj));//应缴费总计--未交费用模式下使用
 						map.put("yjFeeTotal", Convert.convertInputNumber_3(feeTotal_yj));//已交费用总计
 						map.put("backFeeTotal", Convert.convertInputNumber_3(feeTotal_back));//实收费用总计
 						map.put("noBackFeeTotal", noBackFeeTotal);//未收费用总计
