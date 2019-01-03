@@ -118,8 +118,11 @@ public class Convert {
 	 * @return
 	 */
 	public static String convertInputNumber_3(double inputD){
-		DecimalFormat    df   = new DecimalFormat("¥,###.00");   
-		return df.format(inputD);
+		if(inputD > 0){
+			DecimalFormat    df   = new DecimalFormat("¥,###.00");   
+			return df.format(inputD);
+		}
+		return "¥0.00";
 	}
 	
 	public static String convertMoney(double inputMoney){
