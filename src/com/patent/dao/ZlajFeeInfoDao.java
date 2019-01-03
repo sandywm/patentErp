@@ -226,4 +226,17 @@ public interface ZlajFeeInfoDao {
 	 * @return
 	 */
 	List<ZlajFeeInfoTb> findUnBackInfoByOpt(Session sess,Integer cpyId,Integer cusId,String feeType);
+	
+	/**
+	 * 根据专利编号、客户编号获取专利费用列表（统计用）
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2019-1-3 下午10:07:27
+	 * @param sess
+	 * @param cpyId 代理机构编号
+	 * @param zlNo 专利编号
+	 * @param cusId 客户编号
+	 * @return
+	 */
+	List<ZlajFeeInfoTb> findAllInfoByOpt(Session sess,Integer cpyId,String zlNo,Integer cusId);
 }

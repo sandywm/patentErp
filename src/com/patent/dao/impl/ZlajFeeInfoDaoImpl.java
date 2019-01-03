@@ -135,7 +135,7 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		// TODO Auto-generated method stub
 		String hql = " from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId;
 		if(!zlNo.equals("")){
-			hql += " and zlf.zlajMainInfoTb.ajNoGf = '"+zlNo+"'";
+			hql += " and zlf.zlajMainInfoTb.ajNoGf like '%"+zlNo+"%'";
 		}else if(!ajNo.equals("")){
 			hql += " and zlf.zlajMainInfoTb.ajNo = '"+ajNo+"'";
 		}
@@ -172,7 +172,7 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		// TODO Auto-generated method stub
 		String hql ="select count(zlf.id) from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId;
 		if(!zlNo.equals("")){
-			hql += " and zlf.zlajMainInfoTb.ajNoGf = '"+zlNo+"'";
+			hql += " and zlf.zlajMainInfoTb.ajNoGf like '%"+zlNo+"%'";
 		}else if(!ajNo.equals("")){
 			hql += " and zlf.zlajMainInfoTb.ajNo = '"+ajNo+"'";
 		}
@@ -195,7 +195,7 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		// TODO Auto-generated method stub
 		String hql = "select sum(zlf.feePrice),sum(zlf.backFee) from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId + " and zlf.feeStatus = 1";
 		if(!zlNo.equals("")){
-			hql += " and zlf.zlajMainInfoTb.ajNoGf = '"+zlNo+"'";
+			hql += " and zlf.zlajMainInfoTb.ajNoGf like '%"+zlNo+"%'";
 		}else if(!ajNo.equals("")){
 			hql += " and zlf.zlajMainInfoTb.ajNo = '"+ajNo+"'";
 		}
@@ -235,6 +235,20 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 			hql += " and zlf.feeTypeInfoTb.feeName != '代理费'";
 		}else{//只有代理费
 			hql += " and zlf.feeTypeInfoTb.feeName = '代理费'";
+		}
+		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public List<ZlajFeeInfoTb> findAllInfoByOpt(Session sess, Integer cpyId,
+			String zlNo, Integer cusId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajFeeInfoTb as zlf where zlf.cpyInfoTb.id = "+cpyId;
+		if(!zlNo.equals("")){
+			hql += " and zlf.zlajMainInfoTb.ajNoGf like '%"+zlNo+"%'";
+		}
+		if(cusId > 0){
+			hql += " and FIND_IN_SET("+cusId+",zlf.zlajMainInfoTb.ajSqrId) > 0";
 		}
 		return sess.createQuery(hql).list();
 	}

@@ -359,4 +359,15 @@ public interface ZlajFeeInfoManager{
 	 * @throws WEBException
 	 */
 	List<ZlajFeeInfoTb> listUnBackInfoByOpt(Integer cpyId,Integer cusId,String feeType)throws WEBException ;
+	
+	/**
+	 * 根据专利编号、客户编号获取专利费用列表（统计用）
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2019-1-3 下午10:07:27
+	 * @param cpyId 代理机构编号
+	 * @param zlNo 专利编号
+	 * @param cusId 客户编号
+	 */
+	List<ZlajFeeInfoTb> listAllInfoByOpt(Integer cpyId,String zlNo,Integer cusId)throws WEBException ;
 }

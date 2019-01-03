@@ -538,5 +538,22 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajFeeInfoTb> listAllInfoByOpt(Integer cpyId, String zlNo,
+			Integer cusId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fDao.findAllInfoByOpt(sess, cpyId, zlNo, cusId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据专利编号、客户编号获取专利费用列表（统计用）时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 
 }

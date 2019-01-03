@@ -257,7 +257,7 @@ public class FeeAction extends DispatchAction {
 				Integer count = 0;
 				if(feeStatus.equals(0)){//未交费
 					zlfList = fm.listInfoByOpt(cpyId, feeStatus, diffDays, zlNo, ajNo, cusId, "", "", qdStatus, 0, 0);
-				}else{//已缴费或者全部
+				}else{//已缴费或者全部（全部的时候只有专利编号、客户编号为查询条件）
 					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
 					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
 					count = fm.getCountByOpt(cpyId, feeStatus, zlNo, ajNo, cusId,sDate,eDate);
@@ -268,10 +268,7 @@ public class FeeAction extends DispatchAction {
 				if(zlfList.size() > 0){//
 					List<Object> list_d = new ArrayList<Object>();
 					String currDate = CurrentTime.getStringDate();
-					Double feeTotal = 0d;//全部费用总计
 					Double feeTotal_wj = 0d;//未交费用统计
-					Double feeTotal_yj = 0d;//已交费用统计
-					Double feeTotal_back = 0d;//实收费用总计
 					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
 						ZlajFeeInfoTb zlf = it.next();
 						Map<String,Object> map_d = new HashMap<String,Object>();
@@ -296,17 +293,13 @@ public class FeeAction extends DispatchAction {
 							diffDays_jj = CurrentTime.compareDate(currDate,feeEndDateJj);
 							diffDays_gf = CurrentTime.compareDate(currDate,feeEndDateGf);
 							feeTotal_wj = Convert.convertInputNumber_2(feeTotal_wj + feePrice);
-						}else{//已交费用
-							feeTotal_yj = Convert.convertInputNumber_2(feeTotal_yj + feePrice);
 						}
-						feeTotal_back = Convert.convertInputNumber_2(feeTotal_back + zlf.getBackFee());
 						map_d.put("diffDays_jj", diffDays_jj);
 						map_d.put("diffDays_Gf", diffDays_gf);
 						
 						map_d.put("jfDate", zlf.getFeeJnDate());
 						map_d.put("backFee", zlf.getBackFee());//客户退还的费用
 						map_d.put("backDate", zlf.getBackDate());//客户退还时间
-						feeTotal = Convert.convertInputNumber_2(feeTotal + feePrice);
 						map_d.put("feeBatchNo", zlf.getFeeBatchNo());
 						map_d.put("bankSerialNo", zlf.getBankSerialNo());
 						map_d.put("fpDate", zlf.getFpDate());
@@ -315,22 +308,42 @@ public class FeeAction extends DispatchAction {
 						list_d.add(map_d);
 					}
 					
-					fm.getTjFeeInfoByOpt(cpyId, zlNo, ajNo, cusId, sDate, eDate);
-					
 					if(feeStatus.equals(0)){//未交
-						map.put("feePriceTotal", Convert.convertInputNumber_3(feeTotal_wj));//应缴费总计--未交费用模式下使用
+						map.put("wjFeeTotal", Convert.convertInputNumber_3(feeTotal_wj));//应缴费总计--未交费用模式下使用
 					}else if(feeStatus.equals(1)){//已交
-						String noBackFeeTotal = Convert.convertInputNumber_3(feeTotal_yj - feeTotal_back);//未收费用总计
-						map.put("yjFeeTotal", Convert.convertInputNumber_3(feeTotal_yj));//已交费用总计
-						map.put("backFeeTotal", Convert.convertInputNumber_3(feeTotal_back));//实收费用总计
-						map.put("noBackFeeTotal", noBackFeeTotal);//未收费用总计
+						List<Object> yjObj = fm.getTjFeeInfoByOpt(cpyId, zlNo, ajNo, cusId, sDate, eDate);
+						Object[] obj = (Object[])yjObj.get(0);
+						Double yjFeeTotal = (Double)obj[0];//已交费用总计
+						Double backFeeTotal = (Double)obj[1];//实收费用总计
+						Double unBackFeeTotal = Convert.convertInputNumber_2(yjFeeTotal - backFeeTotal);//未收费用总计
+						map.put("yjFeeTotal", Convert.convertInputNumber_3(yjFeeTotal));//已交费用总计
+						map.put("backFeeTotal", Convert.convertInputNumber_3(backFeeTotal));//实收费用总计
+						map.put("noBackFeeTotal", unBackFeeTotal);//未收费用总计
 					}else{
-						map.put("feeTotal", feeTotal);//全部费用总计
-						String noBackFeeTotal = Convert.convertInputNumber_3(feeTotal_yj - feeTotal_back);//未收费用总计
-						map.put("feePriceTotal", Convert.convertInputNumber_3(feeTotal_wj));//应缴费总计--未交费用模式下使用
-						map.put("yjFeeTotal", Convert.convertInputNumber_3(feeTotal_yj));//已交费用总计
-						map.put("backFeeTotal", Convert.convertInputNumber_3(feeTotal_back));//实收费用总计
-						map.put("noBackFeeTotal", noBackFeeTotal);//未收费用总计
+						List<ZlajFeeInfoTb> zlfList_all = fm.listAllInfoByOpt(cpyId, zlNo, cusId);//全部费用
+						Double feeTotal = 0d;//全部费用总计
+						Double yjFeeTotal = 0d;//已交费用总计
+						Double wjFeeTotal = 0d;//未缴费用总计
+						Double backFeeTotal = 0d;//实收费用总计
+						Double unBackFeeTotal = 0d;//未收费用总计
+						for(Iterator<ZlajFeeInfoTb> it_all = zlfList_all.iterator() ; it_all.hasNext();){
+							ZlajFeeInfoTb zlf_all = it_all.next();
+							Double feePrice = zlf_all.getFeePrice();
+							feeTotal = feeTotal + feePrice;//所有费用总计
+							Integer feeStatus_1 = zlf_all.getFeeStatus();
+							if(feeStatus_1.equals(0)){//未缴费
+								wjFeeTotal = wjFeeTotal + feePrice;
+							}else{//已缴费
+								yjFeeTotal = yjFeeTotal + feePrice;
+								backFeeTotal = backFeeTotal + zlf_all.getBackFee();
+							}
+						}
+						unBackFeeTotal = yjFeeTotal - backFeeTotal;
+						map.put("feeTotal", Convert.convertInputNumber_3(feeTotal));//全部费用总计
+						map.put("wjFeeTotal", Convert.convertInputNumber_3(feeTotal_wj));//未缴费总计
+						map.put("yjFeeTotal", Convert.convertInputNumber_3(yjFeeTotal));//已交费用总计
+						map.put("backFeeTotal", Convert.convertInputNumber_3(backFeeTotal));//实收费用总计
+						map.put("noBackFeeTotal", Convert.convertInputNumber_3(unBackFeeTotal));//未收费用总计
 					}
 					map.put("msg", "success");
 					map.put("data", list_d);
