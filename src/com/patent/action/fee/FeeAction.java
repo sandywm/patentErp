@@ -272,6 +272,7 @@ public class FeeAction extends DispatchAction {
 					Double feeTotal_wj = 0d;//未交费用统计
 					Double feeTotal_yj = 0d;//已交费用统计
 					Double feeTotal_back = 0d;//实收费用总计
+					Double feeTotal_unBack = 0d;//未收费用总计
 					for(Iterator<ZlajFeeInfoTb> it = zlfList.iterator() ; it.hasNext();){
 						ZlajFeeInfoTb zlf = it.next();
 						Map<String,Object> map_d = new HashMap<String,Object>();
@@ -317,13 +318,26 @@ public class FeeAction extends DispatchAction {
 					if(feeStatus.equals(0)){//未交
 						map.put("feePriceTotal", Convert.convertInputNumber_3(feeTotal_wj));//应缴费总计--未交费用模式下使用
 					}else if(feeStatus.equals(1)){//已交
-						String noBackFeeTotal = Convert.convertInputNumber_3(feeTotal_yj - feeTotal_back);//未收费用总计
+						feeTotal_unBack = feeTotal_yj - feeTotal_back;
+						String noBackFeeTotal = "¥0.00";
+						if(feeTotal_unBack > 0){
+							noBackFeeTotal = Convert.convertInputNumber_3(feeTotal_unBack);//未收费用总计
+						}
 						map.put("yjFeeTotal", Convert.convertInputNumber_3(feeTotal_yj));//已交费用总计
-						map.put("backFeeTotal", Convert.convertInputNumber_3(feeTotal_back));//实收费用总计
+						if(feeTotal_back > 0){
+							map.put("backFeeTotal", Convert.convertInputNumber_3(feeTotal_back));//实收费用总计
+						}else{
+							map.put("backFeeTotal", "¥0.00");//实收费用总计
+						}
+						
 						map.put("noBackFeeTotal", noBackFeeTotal);//未收费用总计
 					}else{
+						feeTotal_unBack = feeTotal_yj - feeTotal_back;
 						map.put("feeTotal", feeTotal);//全部费用总计
-						String noBackFeeTotal = Convert.convertInputNumber_3(feeTotal_yj - feeTotal_back);//未收费用总计
+						String noBackFeeTotal = "¥0.00";//未收费用总计
+						if(feeTotal_unBack > 0){
+							noBackFeeTotal = Convert.convertInputNumber_3(feeTotal_unBack);//未收费用总计
+						}
 						map.put("feePriceTotal", Convert.convertInputNumber_3(feeTotal_wj));//应缴费总计--未交费用模式下使用
 						map.put("yjFeeTotal", Convert.convertInputNumber_3(feeTotal_yj));//已交费用总计
 						map.put("backFeeTotal", Convert.convertInputNumber_3(feeTotal_back));//实收费用总计
