@@ -314,6 +314,9 @@ public class FeeAction extends DispatchAction {
 						
 						list_d.add(map_d);
 					}
+					
+					fm.getTjFeeInfoByOpt(cpyId, zlNo, ajNo, cusId, sDate, eDate);
+					
 					if(feeStatus.equals(0)){//未交
 						map.put("feePriceTotal", Convert.convertInputNumber_3(feeTotal_wj));//应缴费总计--未交费用模式下使用
 					}else if(feeStatus.equals(1)){//已交
@@ -664,7 +667,7 @@ public class FeeAction extends DispatchAction {
 					}
 				}else{//已缴、全部--给客户或者代理机构自己查看的清单
 					qdStatus = 1;
-					zlIdStr = CommonTools.getFinalStr("zlIdStr", request);//所有选择的专利编号的拼接
+					zlIdStr = CommonTools.getFinalStr("idStr", request);//所有选择的专利编号的拼接
 					if(!zlIdStr.equals("")){
 						String[] zlIdArr = zlIdStr.split(",");
 						Integer currRow = 1;

@@ -5042,7 +5042,7 @@ public class ZlMainAction extends DispatchAction {
 											Integer currLcId_1 = lcm.addLcInfo(zlId, "专利补正", "专利补正", currDate, finalDate_cpy, "", finalDate, lcNo);
 											if(currLcId_1 > 0){
 												mxm.addLcMx(currLcId_1, zl.getBzUserId(), "专利补正", lcNo, currDate, "", "", 0, "", "", 0.0, "", -1);
-											}11
+											}
 										}
 										//增加案件补正/案件审查答复任务------------------------
 			        				}
