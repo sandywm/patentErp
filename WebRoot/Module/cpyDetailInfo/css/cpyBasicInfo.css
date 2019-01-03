@@ -241,6 +241,10 @@
 #workPositionBox li.workPosLi{
 	cursor:pointer;
 }
+#workPositionBox li.workPosLi_spec{
+	color:#bbb;
+	border:1px solid #eee;
+}
 #workPositionBox li.workPosLi.active,
 #workPositionBox li.workPosLi:hover{
 	color:#f44f4c;
@@ -269,6 +273,9 @@
 	position:absolute;
 	left:18px;
 	top:2px;
+}
+#workPositionBox li.workPosLi_spec .posIcon{
+	opacity:.6;
 }
 .bonusTxt{
 	font-weight: 600;

@@ -102,3 +102,21 @@ body{
 	font-weight:600;
 	color:#F47837;
 }
+.noPayStatus,
+.hasPayStatus{
+	width:8px;
+	height:8px;
+	position:absolute;
+	left:3px;
+	top:9px;
+	border-radius:50%;
+}
+.noPayStatus{
+	background:#ccc;
+}
+.hasPayStatus{
+	background:#5FB878;
+}
+.hasPayTxt{
+	color:#5FB878;
+}

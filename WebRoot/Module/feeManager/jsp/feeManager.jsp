@@ -18,32 +18,28 @@
   			<div class="layui-col-md12 layui-col-lg12">
   				<div class="layui-card hasPadBot">
   					<div class="layui-tab layui-tab-brief" lay-filter="feeTabFilter">
-  						<a id="exportFeeBtn_noSub" class="posAbs newAddBtn" data-type="getCheckData" href="javascript:void(0)"><i class="iconfont layui-extend-daochuexcel"></i>导出未缴费用账单</a>
-  						<a id="importFeeBtn" class="posAbs newAddBtn" data-type="getCheckData" href="javascript:void(0)"><i class="iconfont layui-extend-daoru"></i>批量导入缴费单据</a>
+  						<a id="exportFeeBtn_noSub" class="posAbs newAddBtn exportFeeBtn_noSub" data-type="getCheckData" href="javascript:void(0)"><i class="iconfont layui-extend-daochuexcel"></i>导出未交费用账单</a>
+  						<a id="importFeeBtn" class="posAbs newAddBtn" data-type="getCheckData" href="javascript:void(0)"><i class="iconfont layui-extend-daoru"></i>批量导入交费单据</a>
   						<ul class="layui-tab-title">
-  							<li class="layui-this" feeStatus="0">未缴费</li>
-  							<li feeStatus="1">已缴费</li>
-  							<li feeStatus="2">费用导出记录</li>
-  							<li feeStatus="3">费用导入记录</li>
+  							<li feeStatus="5" class="layui-this">费用</li>
+  							<li feeStatus="3">费用导出记录</li>
+  							<li feeStatus="4">费用导入记录</li>
   						</ul>
   						<div class="layui-tab-content">
+  							<input id="feeStatusInp" type="hidden" value="0"/>
   							<div class="searchPart layui-form clearfix"></div>
   							<div class="layui-tab-item layui-show">
-  								<div id="noData_0" class="noData"></div>
-  								<table id="feeListTab_0" class="layui-table" lay-filter="feeInfoListTable"></table>
-  							</div>
-  							<div class="layui-tab-item">
-  								<div id="noData_1" class="noData"></div>
-  								<table id="feeListTab_1" class="layui-table" lay-filter="feeInfoListTable"></table>
-  								<div id="totalWrap"></div> 
-  							</div>
-  							<div class="layui-tab-item">
-  								<div id="noData_2" class="noData"></div>
-  								<table id="feeListTab_2" class="layui-table" lay-filter="feeInfoListTable"></table>
+  								<div id="noData_5" class="noData"></div>
+  								<table id="feeListTab_5" class="layui-table" lay-filter="feeInfoListTable"></table>
+  								<div id="totalWrap"></div>
   							</div>
   							<div class="layui-tab-item">
   								<div id="noData_3" class="noData"></div>
   								<table id="feeListTab_3" class="layui-table" lay-filter="feeInfoListTable"></table>
+  							</div>
+  							<div class="layui-tab-item">
+  								<div id="noData_4" class="noData"></div>
+  								<table id="feeListTab_4" class="layui-table" lay-filter="feeInfoListTable"></table>
   							</div>
   						</div> 
   					</div>
@@ -69,32 +65,47 @@
 			//tab点击事件的监听
   			element.on('tab(feeTabFilter)', function(data){
   				var feeStatus = $(this).attr('feeStatus');
-  				page.data.globalFeeStatus = feeStatus;//切换缴费状态
+  				page.data.globalFeeStatus = feeStatus;//切换交费状态
   				$('#exportFeeBtn_noSub').hide();
   				$('#importFeeBtn').hide();
-  				if(feeStatus == '0'){//未缴费 不分页
-  					page.data.isHasPageFun = false;
+  				if(feeStatus == '5'){//已交费 开启分页
   					$('#exportFeeBtn_noSub').show();
-  				}else if(feeStatus == '1'){//已缴费 开启分页
-  					page.data.isHasPageFun = true;
-  				}else if(feeStatus == '2'){
-
   				}else if(feeStatus == '3'){
+
+  				}else if(feeStatus == '4'){
   					$('#importFeeBtn').show();
   				}
   				page.createSearchHt(feeStatus);
-  				loadFeeInfoList('initLoad');
+  				loadFeeInfoList('queryLoad');
   				page.queryFun();
  			});
+  			form.on('select(feeStatusSel)', function(data){
+				var value = data.value;
+				$('#feeStatusInp').val(value);
+				if($('#feeStatusInp').val() == 0){//未交费不分页
+					page.data.isHasPageFun = false;
+				}else{
+					page.data.isHasPageFun = true;
+				}
+				page.createSearchHt(5);
+				page.queryFun();
+				loadFeeInfoList('initLoad');
+  			});
   			form.on('select(diffDaysSel)', function(data){
 				var value = data.value;
-				value == '' ? $('#diffDaysSelInp').val(15) : $('#diffDaysSelInp').val(value);
+				value == '' ? $('#diffDaysSelInp').val(-1) : $('#diffDaysSelInp').val(value);
 				loadFeeInfoList('queryLoad');
   			});
-  			//获取导出未缴费记录
+  			//选择交费对象
+  			form.on('select(qdStatusSel)', function(data){
+				var value = data.value;
+				$('#qdStatusInp').val(value);
+				loadFeeInfoList('queryLoad');
+  			});
+  			//获取导出未交费记录
 			var active = {
 			    getCheckData: function(){
-			      	var checkStatus = table.checkStatus('feeListTab_0'),data = checkStatus.data;
+			      	var checkStatus = table.checkStatus('feeListTab_5'),data = checkStatus.data;
 			      	page.data.exportFlag = false;
 			      	page.data.globalFeeId.length = 0;
 			    	if(data.length > 0){
@@ -111,7 +122,7 @@
 			var page = {
 				data : {
 					isHasPageFun : false,//用于检测是否需要分页
-					globalFeeStatus : 0, //缴费状态
+					globalFeeStatus : 5, //费用
 					addFeeFlag : false,
 					globalFeeId : [],
 					exportFlag : false
@@ -120,14 +131,14 @@
 					//获取权限
 					this.data.addFeeFlag = common.getPermission('addFee','',0);
 					$('#exportFeeBtn_noSub').show();
-					this.createSearchHt(0);
+					this.createSearchHt(5);
 					loadFeeInfoList('initLoad');
 					this.bindEvent();
 				},
 				bindEvent : function(){
 					var _this = this;
 					this.queryFun();
-					//缴费单据批量导入
+					//交费单据批量导入
 					$('#importFeeBtn').on('click',function(){
 						if(_this.data.addFeeFlag){
 							hasReadFlag = false;
@@ -148,7 +159,7 @@
 							});	
 							layer.full(fullScreenIndex);
 						}else{
-							layer.msg('抱歉，您暂无批量导入缴费单据的权限', {icon:5,anim:6,time:1200});
+							layer.msg('抱歉，您暂无批量导入交费单据的权限', {icon:5,anim:6,time:1200});
 						}
 					});
 					//导出费用账单
@@ -156,18 +167,22 @@
 						var type = $(this).data('type');
 					    active[type] ? active[type].call(this) : '';
 					    if(_this.data.exportFlag){
-						    var idStr = '';
+						    var idStr = '',qdStatus = $('#qdStatusInp').val();
 						    idStr = page.data.globalFeeId.join(',');
 						    layer.load('1');
+						    alert(qdStatus)
 						    var form = $("<form>");   //定义一个form表单
 							form.attr('style', 'display:none;'); //在form表单中添加查询参数
 							form.attr('target', '');
 							form.attr('method', 'post');
 							form.attr('action', "/fee.do?action=exportFeeInfoToExcel_1");
-							var input1 = $('<input>');
-							input1.attr('type', 'hidden');
+							var input1 = $('<input>'),input2 = $('<input>');
+							input1.attr('type', 'text');
+							//input2.attr('type', 'text');
 							input1.attr('name', 'idStr');
+							//input2.attr('name', 'qdStatus');
 							input1.attr('value', idStr);
+							//input2.attr('value', qdStatus);
 							$('body').append(form);  //将表单放置在web中 
 							form.append(input1);   //将查询参数控件提交到表单上
 						  	form.submit();
@@ -193,42 +208,52 @@
 					});
 					$('.resetTime').on('click',function(){
 						$('#zlNoInp').val('');
-						$('#ajNoInp').val('');
 						$('#cusIdInp').val('');
-						$('.cusName').html('请选择客户').attr('title','');
-						$('.layui-select-title').find('input').val('请选择距代理机构缴费期限(全部)').css('color','#666');
-						$('#diffDaysSelInp').val(15);
+						$('.cusName').html('请选择客户').attr('title','').css({'color':'#888'});
 						$('#sDateInp').val('');
 						$('#eDateInp').val('');
-						loadFeeInfoList('initLoad');
+						loadFeeInfoList('queryLoad');
 					});
 				},
 				//创建查询层
 				createSearchHt : function(feeStatus){
-					var strHtml1='',strHtml2='',strHtml3='',strHtml4='' ,strHtml5='';
-					strHtml1 += '<div class="itemDiv zlNoDiv fl"><div class="layui-input-inline">';
-					strHtml1 += '<input type="text" id="zlNoInp" placeholder="请输入专利申请/专利号" autocomplete="off" class="layui-input"></div></div>';
-					strHtml1 += '<div class="itemDiv ajNoDiv fl"><div class="layui-input-inline">';
-					strHtml1 += '<input type="text" id="ajNoInp" placeholder="请输入案件编号" autocomplete="off" class="layui-input"></div></div>';
-					strHtml1 += '<div class="itemDiv cusIdDiv fl"><div class="layui-input-inline">';
-					strHtml1 += '<input type="hidden" id="cusIdInp"/><div class="layui-input selCusP"><p class="cusName ellip">请选择客户</p><i class="layui-edge"></i></div></div></div>';
-					strHtml2 += '<div class="itemDiv diffDaysDiv fl"><div class="layui-input-inline"><input id="diffDaysSelInp" type="hidden" value="15"/>';
-					strHtml2 += '<select id="diffDaysSel" lay-filter="diffDaysSel"><option value="">请选择距代理机构缴费期限(全部)</option>';
-					strHtml2 += '<option value="1">1天</option><option value="7">7天</option><option value="15">15天</option><option value="30">30天</option><option value="60">60天</option>';
-					strHtml2 += '</select></div><input type="checkbox" name="" title="是否包含代理费" lay-skin="primary"></div>';
+					var strHtml1='',strHtml2='',strHtml3='',strHtml4='' ,strHtml5='',strHtml6='',strHtml7='';
+					strHtml1 += '<div class="itemDiv fl" style="width:150px;"><div class="layui-input-inline">';
+					strHtml1 += '<select id="feeStatusSel" lay-filter="feeStatusSel"><option value="2">全部</option>';
+					strHtml1 += '<option value="0" selected>未交费</option><option value="1">已交费</option>';
+					strHtml1 += '</select></div></div>';
+					strHtml6 += '<div class="itemDiv fl" style="width:180px;"><div class="layui-input-inline"><input type="hidden" id="qdStatusInp" value="0"/>';
+					strHtml6 += '<select id="qdStatusSel" lay-filter="qdStatusSel">';
+					strHtml6 += '<option value="0" selected>国家专利局交费清单</option><option value="1">客户交费清单</option>';
+					strHtml6 += '</select></div></div>';
+					strHtml7 += '<div class="itemDiv zlNoDiv fl"><div class="layui-input-inline">';
+					strHtml7 += '<input type="text" id="zlNoInp" placeholder="请输入专利申请/专利号" autocomplete="off" class="layui-input"></div></div>';
+					strHtml7 += '<div class="itemDiv cusIdDiv fl"><div class="layui-input-inline">';
+					strHtml7 += '<input type="hidden" id="cusIdInp"/><div class="layui-input selCusP"><p class="cusName ellip">请选择客户</p><i class="layui-edge"></i></div></div></div>';
+					strHtml2 += '<div class="itemDiv fl"><div class="layui-input-inline"><input id="diffDaysSelInp" type="hidden" value="15"/>';
+					strHtml2 += '<select id="diffDaysSel" lay-filter="diffDaysSel"><option value="">请选择距代理机构交费期限(全部)</option>';
+					strHtml2 += '<option value="1">1天</option><option value="7">7天</option><option value="15" selected>15天</option><option value="30">30天</option><option value="60">60天</option>';
+					strHtml2 += '</select></div></div>';
 					strHtml3 += '<div class="itemDiv sEDateDiv fl"><div class="layui-input-inline">';
-					strHtml3 += '<input type="text" id="sDateInp" placeholder="请选择缴费日期(开始)" autocomplete="off" class="layui-input"></div></div>';
+					strHtml3 += '<input type="text" id="sDateInp" placeholder="请选择交费日期(开始)" autocomplete="off" class="layui-input"></div></div>';
 					strHtml3 += '<div class="itemDiv sEDateDiv fl"><div class="layui-input-inline">';
-					strHtml3 += '<input type="text" id="eDateInp" placeholder="请选择缴费日期(结束)" autocomplete="off" class="layui-input"></div></div>';
+					strHtml3 += '<input type="text" id="eDateInp" placeholder="请选择交费日期(结束)" autocomplete="off" class="layui-input"></div></div>';
 					strHtml5 += '<a class="resetTime" href="javascript:void(0)"><i class="layui-icon layui-icon-refresh"></i>重置</a>';
 					strHtml4 += '<div class="itemDiv fl"><div class="layui-input-inline">';
 					strHtml4 += '<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search"></i></button></div></div>';
-					if(feeStatus == 0){
-						$('.searchPart').html(strHtml1 + strHtml2 + strHtml4 + strHtml5);
+					if(feeStatus == 5){
+						var feeStaInp = $('#feeStatusInp').val();
+						if(feeStaInp == 0){
+							$('.searchPart').html(strHtml1 + strHtml6 + strHtml7 + strHtml2 + strHtml4 + strHtml5);
+						}else if(feeStaInp == 1){//已交费
+							$('.searchPart').html(strHtml1 + strHtml7 +  strHtml3 + strHtml4 + strHtml5);
+							$('#feeStatusSel option:last').attr('selected','selected');
+						}else{
+							$('.searchPart').html(strHtml1 + strHtml7 + strHtml4 + strHtml5);
+							$('#feeStatusSel option:first').attr('selected','selected');
+						}
 						form.render();
-					}else if(feeStatus == 1){
-						$('.searchPart').html(strHtml1 + strHtml3 + strHtml4 + strHtml5);
-					}else if(feeStatus == 2 || feeStatus == 3){
+					}else if(feeStatus == 3 || feeStatus == 4){
 						$('.searchPart').html(strHtml3 + strHtml4 + strHtml5);
 						form.render();
 					}
@@ -239,41 +264,47 @@
 					  
 			//加载费用列表
 			function loadFeeInfoList(opts){
+				var feeStatusInpVal = $('#feeStatusInp').val();
 				if(opts == 'initLoad'){
-					if(page.data.globalFeeStatus == 0){//未缴费
-						var field = {feeStatus:0,diffDays:15,zlNo:'',ajNo:'',cusId:0};	
-					}else if(page.data.globalFeeStatus == 1){//已缴费
-						var field = {feeStatus:1,zlNo:'',ajNo:'',cusId:0,sDate:'',eDate:''};
-					}else if(page.data.globalFeeStatus == 2 || page.data.globalFeeStatus == 3){//费用导出记录 / 费用导入记录
+					if(page.data.globalFeeStatus == 5){//费用
+						if(feeStatusInpVal == 0){
+							var field = {feeStatus:feeStatusInpVal,qdStatus:0,diffDays:15,zlNo:'',cusId:0};	
+						}else{
+							var field = {feeStatus:feeStatusInpVal,zlNo:'',cusId:0,sDate:'',eDate:''};
+						}
+					}else if(page.data.globalFeeStatus == 3 || page.data.globalFeeStatus == 4){//费用导出记录 / 费用导入记录
 						var field = {sDate:'',eDate:''};
 					}
 				}else{//查询
 					var zlNoInpVal = $.trim($('#zlNoInp').val()),
-						ajNoInpVal = $.trim($('#ajNoInp').val()),
-						cusIdInpVal = $.trim($('#cusIdInp').val()),
+						cusIdInpVal = $('#cusIdInp').val(),
+						qdStatusInpVal = $('#qdStatusInp').val(),
 						diffDaysSelInpVal = $('#diffDaysSelInp').val(),
 						sDateInpVal = $('#sDateInp').val(),
 						eDateInpVal = $('#eDateInp').val();
-					if(page.data.globalFeeStatus == 0){//未缴费
-						var field = {feeStatus:0,diffDays:diffDaysSelInpVal,zlNo:zlNoInpVal,ajNo:ajNoInpVal,cusId:cusIdInpVal};
-					}else if(page.data.globalFeeStatus == 1){
-						var field = {feeStatus:1,zlNo:zlNoInpVal,ajNo:ajNoInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal};
-					}else if(page.data.globalFeeStatus == 2 || page.data.globalFeeStatus == 3){//费用导出记录 / 费用导入记录
+					if(page.data.globalFeeStatus == 5){//费用
+						if(feeStatusInpVal == 0){
+							var field = {feeStatus:feeStatusInpVal,qdStatus:qdStatusInpVal,diffDays:diffDaysSelInpVal,zlNo:zlNoInpVal,cusId:cusIdInpVal};
+							console.log(qdStatusInpVal)
+						}else{
+							var field = {feeStatus:feeStatusInpVal,zlNo:zlNoInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal};	
+						}
+					}else if(page.data.globalFeeStatus == 3 || page.data.globalFeeStatus == 4){//费用导出记录 / 费用导入记录
 						var field = {sDate:sDateInpVal,eDate:eDateInpVal};
 					}
 					if(sDateInpVal != '' && eDateInpVal == ''){
-						layer.msg('请选择缴费结束时间段', {icon:5,anim:6,time:1200});
+						layer.msg('请选择交费结束时间段', {icon:5,anim:6,time:1200});
 						return;
 					}else if(sDateInpVal == '' && eDateInpVal != ''){
-						layer.msg('请选择缴费开始时间段', {icon:5,anim:6,time:1200});
+						layer.msg('请选择交费开始时间段', {icon:5,anim:6,time:1200});
 						return;
 					}else if(eDateInpVal < sDateInpVal){
-						layer.msg('缴费开始时间不能大于缴费结束时间', {icon:5,anim:6,time:1200});
+						layer.msg('交费开始时间不能大于交费结束时间', {icon:5,anim:6,time:1200});
 						return;
 					}
 				}
-				//layer.load('1');
-				if(page.data.globalFeeStatus == 0 || page.data.globalFeeStatus == 1){
+				layer.load('1');
+				if(page.data.globalFeeStatus == 5){
 					var overdueSp = '';
 					table.render({
 						elem: '#feeListTab_'+page.data.globalFeeStatus,
@@ -286,8 +317,15 @@
 						limit : 10,
 						limits:[10,20,30,40],
 						cols : [[
-							{type : page.data.globalFeeStatus == 0 ? 'checkbox' : 'numbers', title: '序号', fixed:'left'},
-							{field : 'zlName', title: '专利名称', width:200,fixed:'left', align:'center'},
+							{type : feeStatusInpVal == 0 ? 'checkbox' : 'numbers', title: '序号', fixed:'left'},
+							{field : 'zlName', title: '专利名称', width:200,fixed:'left', align:'center',templet : function(d){
+								if(d.bankSerialNo == ''){//未交费
+									return '<span class="noPayStatus"></span>' + d.zlName;
+								}else{//已交费
+									return '<span class="hasPayStatus"></span>' + d.zlName ;
+								}
+								
+							}},
 							{field : 'zlNo', title: '专利申请/专利号', width:180, align:'center'},
 							{field : 'ajNo', title: '案件编号', width:170, align:'center'},
 							{field : page.data.globalFeeStatus == 0 ? 'diffDays_jj' : 'noneSets', title: '机构绝限(天)', width:140, align:'center',templet : function(d){
@@ -306,7 +344,11 @@
 										return '<span class="'+ overdueSp +'">'+ strDiffDays_jj +'天后到期</span>';
 									}else{
 										if(strDiffDays_jj == 0){
-											return '<span class="'+ overdueSp +'">明天到期</span>';
+											if(feeStatusInpVal == 0){
+												return '<span class="'+ overdueSp +'">明天到期</span>';
+											}else{
+												return '<span class="hasPayTxt">已交费</span>';
+											}
 										}else{
 											var newDiffDays_jj = strDiffDays_jj == 0 ? 0 : strDiffDays_jj.substring(1,strDiffDays_jj.length);
 											return '<span class="'+ overdueSp +'">已过期'+ newDiffDays_jj +'天</span>';	
@@ -330,7 +372,11 @@
 										return '<span class="'+ overdueSp +'">'+ strDiffDays_Gf +'天后到期</span>';
 									}else{
 										if(strDiffDays_Gf == 0){
-											return '<span class="'+ overdueSp +'">明天到期</span>';
+											if(feeStatusInpVal == 0){
+												return '<span class="'+ overdueSp +'">明天到期</span>';
+											}else{
+												return '<span class="hasPayTxt">已交费</span>';
+											}
 										}else{
 											var newDiffDays_gf = strDiffDays_Gf.substring(1,strDiffDays_Gf.length);
 											return '<span class="'+ overdueSp +'">已过期'+ newDiffDays_gf +'天</span>';
@@ -355,7 +401,7 @@
 								}
 							}},
 							{field : 'cusId', title: '客户/申请人编号', width:160, align:'center'},
-							{field : page.data.globalFeeStatus == 0 ? 'noneSets' : 'jfDate', title: '缴费日期（代理机构缴费日期）', width:230, align:'center'},
+							{field : page.data.globalFeeStatus == 0 ? 'noneSets' : 'jfDate', title: '交费日期（代理机构交费日期）', width:230, align:'center'},
 							{field : page.data.globalFeeStatus == 0 ? 'noneSets' : 'backDate', title: '收款日期', width:160, align:'center'},
 							{field : 'feeEndDateJj', title: '费用截止日期(机构)', width:160, align:'center'},
 							{field : 'feeEndDateGf', title: '费用截止日期(官方)', width:160, align:'center'},
@@ -365,14 +411,10 @@
 							{field : 'fpNo', title: '票号', width:140, align:'center'}
 						]],
 						done : function(res, curr, count){
-							layer.closeAll('loading');
-							if(page.data.globalFeeStatus == 0 || page.data.globalFeeStatus == 1){
-								$('.layui-table-box').find('[data-field="noneSets"]').css('display','none');
-							}
 							callBackDone(res);
 						}
 					});
-				}else if(page.data.globalFeeStatus == 2){//费用导出记录
+				}else if(page.data.globalFeeStatus == 3){//费用导出记录
 					table.render({
 						elem: '#feeListTab_'+page.data.globalFeeStatus,
 						height: 'full-200',
@@ -394,14 +436,10 @@
 							}},
 						]],
 						done : function(res, curr, count){
-							layer.closeAll('loading');
-							if(page.data.globalFeeStatus == 0 || page.data.globalFeeStatus == 1){
-								$('.layui-table-box').find('[data-field="noneSets"]').css('display','none');
-							}
 							callBackDone(res);
 						}
 					});
-				}else if(page.data.globalFeeStatus == 3){//费用导入记录
+				}else if(page.data.globalFeeStatus == 4){//费用导入记录
 					table.render({
 						elem: '#feeListTab_'+page.data.globalFeeStatus,
 						height: 'full-200',
@@ -423,10 +461,6 @@
 							}},
 						]],
 						done : function(res, curr, count){
-							layer.closeAll('loading');
-							if(page.data.globalFeeStatus == 0 || page.data.globalFeeStatus == 1){
-								$('.layui-table-box').find('[data-field="noneSets"]').css('display','none');
-							}
 							callBackDone(res);
 						}
 					});
@@ -434,10 +468,24 @@
 				function callBackDone(res){
 					layer.closeAll('loading');
 					if(res.msg == 'success'){
+						console.log(res)
 						$('#feeListTab_'+page.data.globalFeeStatus).siblings('.layui-table-view').show();
 						$('#noData_'+page.data.globalFeeStatus).hide().html('');
-						if(page.data.globalFeeStatus == 1){
-							$('#totalWrap').html('<p>根据系统结算，当前已交费用总计为<span>'+ res.yjFeeTotal +'元</span>，实收费用总计为<span>'+ res.backFeeTotal +'元</span>，未收费用总计未<span>'+ res.noBackFeeTotal +'元</span></p>');
+						if(page.data.globalFeeStatus == 5){
+							var feeStatusInpVal = $('#feeStatusInp').val(),qdStatusInpVal = $('#qdStatusInp').val();
+							if(feeStatusInpVal == 0){
+								if(qdStatusInpVal == 0){
+									$('#totalWrap').html('<p>根据系统结算，当前应交给国家专利局费用总计为<span>'+ res.feePriceTotal +'元</span></p>');	
+								}else{
+									$('#totalWrap').html('<p>根据系统结算，当前客户应交费用总计为<span>'+ res.feePriceTotal +'元</span></p>');
+								}
+								
+							}else if(feeStatusInpVal == 1){
+								$('#totalWrap').html('<p>根据系统结算，当前已交费用总计为<span>'+ res.yjFeeTotal +'元</span>，实收费用总计为<span>'+ res.backFeeTotal +'元</span>，未收费用总计未<span>'+ res.noBackFeeTotal +'元</span></p>');	
+							}else{//全部
+								$('#totalWrap').html('<p>根据系统结算，当前应交费用总计为<span>'+ res.feePriceTotal +'元</span>，当前已交费用总计为<span>'+ res.yjFeeTotal +'元</span>，实收费用总计为<span>'+ res.backFeeTotal +'元</span>，未收费用总计未<span>'+ res.noBackFeeTotal +'元</span></p>');	
+							}
+							
 						}
 					}else if(res.msg == 'noInfo'){
 						$('#totalWrap').hide().html('');

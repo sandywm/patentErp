@@ -97,11 +97,11 @@
 					if(parent.tmpAddBackFee == 'addBackFeeStr'){//从添加客户汇款记录进来
 						var sibingsIframe = parent.window.frames['layui-layer-iframe' + parent.globalIndex];
 						sibingsIframe.document.getElementById('cusName').innerHTML = $(this).attr('cusName');
-						sibingsIframe.document.getElementById('cusName').style.color = '#666';
+						sibingsIframe.document.getElementById('cusName').style.color = '#333';
 						sibingsIframe.document.getElementById('cusIdInp').value = $(this).attr('cusId');
 						parent.layer.close(index);
 					}else{
-						parent.$('.cusName').html($(this).attr('cusName')).css({'color':'#666'});
+						parent.$('.cusName').html($(this).attr('cusName')).css({'color':'#333'});
 						parent.$('.cusName').attr('title',$(this).attr('cusName'));
 						parent.$('#cusIdInp').val($(this).attr('cusId'));
 						parent.layer.close(index);
