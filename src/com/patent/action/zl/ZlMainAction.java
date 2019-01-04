@@ -1176,7 +1176,7 @@ public class ZlMainAction extends DispatchAction {
 								map_d.put("tzsName", tzsName.substring(tzsName.lastIndexOf("\\")+1,tzsName.length()));
 								map_d.put("fwrDate", tzs.getTzsFwr());
 								map_d.put("gfrDate", tzs.getTzsGfr());
-								map_d.put("downFilePath", tzsName);
+								map_d.put("downFilePath", tzs.getTzsPath());
 								list_tzs.add(map_d);
 							}
 							map.put("tzsInfo", list_tzs);
@@ -4989,7 +4989,11 @@ public class ZlMainAction extends DispatchAction {
 													String finalDate = CurrentTime.getFinalDate_2(applyDate_db, 3);//申请人3年后的时间
 													String feeEndDate_gf = CurrentTime.getFinalDate(finalDate, -1);
 													String feeEndDate_cpy = CurrentTime.getFinalDate(feeEndDate_gf, Constants.JF_SL_END_DATE_CPY);//代理机构比官方绝限提前天数
-													double scFee_final  = Double.parseDouble(fjRate) * Constants.SC_FEE;
+													double feeRate_d = Double.parseDouble(fjRate);
+													double scFee_final  =  Constants.SC_FEE;
+													if(feeRate_d > 0){
+														scFee_final  = feeRate_d * Constants.SC_FEE;
+													}
 													fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
 													//增加缴费任务------------------------
 												}
@@ -5186,6 +5190,8 @@ public class ZlMainAction extends DispatchAction {
 				    		        		}
 				    		        	}
 			        				}
+			        			}else if(tzsName.contains("实质审查通知书")){//发明专利申请公布及进入实质审查通知书
+			        				
 			        			}else{//未收录该通知书的读取方法
 			        				readResult = "noReadTzs";//系统还未学习该通知书的读取方法
 			        				readResultChi = "系统还未学习该通知书的读取方法";

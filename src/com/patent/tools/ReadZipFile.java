@@ -76,8 +76,8 @@ public class ReadZipFile {
 		String currDate = CurrentTime.getStringDate();
 		
 		Map<String,Object> map = new HashMap<String,Object>();
-//		String finalPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath;//上传文件的绝对路径
-		String finalPath = upZipPath;
+		String finalPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath;//上传文件的绝对路径
+//		String finalPath = upZipPath;
 		msg = "";
         try {
 			ZipFile zf = new ZipFile(finalPath,gbk);
