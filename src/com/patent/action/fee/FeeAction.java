@@ -315,10 +315,10 @@ public class FeeAction extends DispatchAction {
 						Object[] obj = (Object[])yjObj.get(0);
 						Double yjFeeTotal = (Double)obj[0];//已交费用总计
 						Double backFeeTotal = (Double)obj[1];//实收费用总计
-						Double unBackFeeTotal = Convert.convertInputNumber_2(yjFeeTotal - backFeeTotal);//未收费用总计
+						Double unBackFeeTotal = yjFeeTotal - backFeeTotal;//未收费用总计
 						map.put("yjFeeTotal", Convert.convertInputNumber_3(yjFeeTotal));//已交费用总计
 						map.put("backFeeTotal", Convert.convertInputNumber_3(backFeeTotal));//实收费用总计
-						map.put("noBackFeeTotal", unBackFeeTotal);//未收费用总计
+						map.put("noBackFeeTotal", Convert.convertInputNumber_3(unBackFeeTotal));//未收费用总计
 					}else{
 						List<ZlajFeeInfoTb> zlfList_all = fm.listAllInfoByOpt(cpyId, zlNo, cusId);//全部费用
 						Double feeTotal = 0d;//全部费用总计
@@ -689,6 +689,56 @@ public class FeeAction extends DispatchAction {
 							feeStatus = -1;
 							djStatus = -1;
 						}
+						wb = new HSSFWorkbook();  
+				        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
+				        HSSFSheet sheet = wb.createSheet("费用清单");  
+				        //设置横向打印
+				        sheet.getPrintSetup().setLandscape(true);
+				        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
+				        HSSFRow row = null;  
+				        // 第四步，创建单元格，并设置值表头 设置表头居中  
+				        HSSFCellStyle style = wb.createCellStyle();  
+				        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+			            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+			            style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+				        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+				        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+				        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+			            
+				        HSSFCellStyle style_title = wb.createCellStyle();  
+				        style_title.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 创建一个居中格式  
+				        style_title.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+				        
+			            HSSFCellStyle style_left = wb.createCellStyle();  
+			            style_left.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 创建一个居中格式  
+			            style_left.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+			            
+			            HSSFCellStyle style_head = wb.createCellStyle();  
+			            style_head.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+			            style_head.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+			            style_head.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);//设置单元格填充样式，SOLID_FOREGROUND纯色使用前景颜色填充
+			            style_head.setFillForegroundColor(HSSFColor.LIGHT_TURQUOISE.index);//设置背景颜色
+			            ReadExcelFile.setBorderStyle(style_head);
+			            
+			            HSSFCellStyle style_con = wb.createCellStyle();  
+				        style_con.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+				        style_con.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+				        ReadExcelFile.setBorderStyle(style_con);
+				        
+				        HSSFCellStyle style_tj = wb.createCellStyle();  
+				        style_tj.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 创建一个居右格式  
+				        style_tj.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+			            
+			            HSSFFont font_title = wb.createFont();    
+			            font_title.setFontName("宋体");    
+			            font_title.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
+			            font_title.setFontHeightInPoints((short) 12);//设置字体大小  (备注)
+			            
+			            HSSFFont font_cus = wb.createFont();    
+			            font_cus.setFontName("宋体");    
+			            font_cus.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
+			            font_cus.setFontHeightInPoints((short) 11);//设置字体大小  (备注)
+			            
 						for(Integer i = 0 ; i < zlIdArr.length ; i++){
 							Integer zlId = Integer.parseInt(zlIdArr[i]);
 							List<ZlajFeeInfoTb> zlfList_1 = fm.listAllFeeByOpt(zlId, "", djStatus, feeStatus, -1, cpyId);
@@ -696,61 +746,14 @@ public class FeeAction extends DispatchAction {
 							if(zlList.size() > 0 && zlfList_1.size() > 0){
 								existFlag = true;//有费用记录
 								ZlajMainInfoTb zl = zlList.get(0);
-								wb = new HSSFWorkbook();  
-						        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
-						        HSSFSheet sheet = wb.createSheet("费用清单");  
-						        //设置横向打印
-						        sheet.getPrintSetup().setLandscape(true);
-						        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
-						        HSSFRow row = sheet.createRow(currRow);  
-						        // 第四步，创建单元格，并设置值表头 设置表头居中  
-						        HSSFCellStyle style = wb.createCellStyle();  
-						        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
-					            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-					            style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-						        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-						        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-						        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-					            
-						        HSSFCellStyle style_title = wb.createCellStyle();  
-						        style_title.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 创建一个居中格式  
-						        style_title.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-						        
-					            HSSFCellStyle style_left = wb.createCellStyle();  
-					            style_left.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 创建一个居中格式  
-					            style_left.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-					            
-					            HSSFCellStyle style_head = wb.createCellStyle();  
-					            style_head.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
-					            style_head.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-					            style_head.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);//设置单元格填充样式，SOLID_FOREGROUND纯色使用前景颜色填充
-					            style_head.setFillForegroundColor(HSSFColor.LIGHT_TURQUOISE.index);//设置背景颜色
-					            ReadExcelFile.setBorderStyle(style_head);
-					            
-					            HSSFCellStyle style_con = wb.createCellStyle();  
-						        style_con.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
-						        style_con.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-						        ReadExcelFile.setBorderStyle(style_con);
-						        
-						        HSSFCellStyle style_tj = wb.createCellStyle();  
-						        style_tj.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 创建一个居右格式  
-						        style_tj.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-					            
-					            HSSFFont font_title = wb.createFont();    
-					            font_title.setFontName("宋体");    
-					            font_title.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
-					            font_title.setFontHeightInPoints((short) 12);//设置字体大小  (备注)
-					            
-					            HSSFFont font_cus = wb.createFont();    
-					            font_cus.setFontName("宋体");    
-					            font_cus.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//粗体显示    
-					            font_cus.setFontHeightInPoints((short) 11);//设置字体大小  (备注)
-					            
-					            style_title.setFont(font_title);
+						       
+								row = sheet.createRow(currRow); 
+								
+								style_title.setFont(font_title);
 					            HSSFCell cell = row.createCell(0); 
 					            cell.setCellStyle(style); 
 						        cell.setCellValue(zl.getAjTitle()+"["+zl.getAjNoGf()+"]费用清单");
-						       
+								
 						        this.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, currRow, currRow, 0, 15, sheet, wb);
 						        currRow++;
 						        
