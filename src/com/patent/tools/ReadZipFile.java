@@ -233,7 +233,7 @@ public class ReadZipFile {
 			            	}
 			            	list_sub_d.add(new TzsJson(fwSerial,ajNoGf));//存在数据文件，无需判断
 			            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, sqrName, applyDate,
-			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath));
+			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath,"dataXml"));
 	        			}else if(l11 != null){//电子回单
 	        				tzsName = "电子申请回执";
 	        				zlName = root.element("FAMINGCZMC").getTextTrim();
@@ -248,7 +248,7 @@ public class ReadZipFile {
 	        						list_fl.add(new FileListJson(l.elementText("WENJIANMC"),l.elementText("WENJIANGS"),l.elementText("WENJIANDX")));
 	        					}
 				            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, "", "",
-				            			"", "", "","", fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath));
+				            			"", "", "","", fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath,"dataXml"));
 	        				}
 	        				//不存在申请号的不读取
 	        			}else{//里面不存在数据文件，需要从list.xml中获取(比如补正通知书)
@@ -287,7 +287,7 @@ public class ReadZipFile {
 		        							fwDate = CurrentTime.convertFormatDate(l2.elementText("FAWENR"));
 			        						feeEdate = CurrentTime.getFinalDate(fwDate, (60+Constants.TD_RECEIVE_DAYS));
 			    			            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, sqrName, applyDate,
-			    			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath));
+			    			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath,"listXml"));
 		        						}
 	        						}
 	        					}

@@ -27,6 +27,7 @@ public class TzsJson implements Comparable<TzsJson>{
 	private List<LateFeeJson> lfList = new ArrayList<LateFeeJson>();//年费缴纳时间段
 	private List<FileListJson> flList = new ArrayList<FileListJson>();//电子申请回执清单
 	private String zipPath = "";//通知书路径
+	private String readFile = "";//读取的文件(dataXml--数据文件,listXml--通用文件)
 	
 	public TzsJson(String fwSerial,String ajNoGf){
 		this.fwSerial = fwSerial;
@@ -36,7 +37,7 @@ public class TzsJson implements Comparable<TzsJson>{
 	public TzsJson(String fwSerial, String ajNoGf, String tzsName,
 			String zlName, String fwDate, String sqrName, String applyDate,
 			String zlType, String fjApplyDate, String fjRecord,
-			String feeEdate, String fjRate, String yearNo,List<FeeDetailJson> fdList,List<LateFeeJson> lfList,List<FileListJson> flList,String zipPath) {
+			String feeEdate, String fjRate, String yearNo,List<FeeDetailJson> fdList,List<LateFeeJson> lfList,List<FileListJson> flList,String zipPath,String readFile) {
 		this.fwSerial = fwSerial;
 		this.ajNoGf = ajNoGf;
 		this.tzsName = tzsName;
@@ -54,6 +55,7 @@ public class TzsJson implements Comparable<TzsJson>{
 		this.lfList = lfList;
 		this.flList = flList;
 		this.zipPath = zipPath;
+		this.readFile = readFile;
 	}
 
 	/**
@@ -197,6 +199,14 @@ public class TzsJson implements Comparable<TzsJson>{
 
 	public void setFlList(List<FileListJson> flList) {
 		this.flList = flList;
+	}
+
+	public String getReadFile() {
+		return readFile;
+	}
+
+	public void setReadFile(String readFile) {
+		this.readFile = readFile;
 	}
 
 	

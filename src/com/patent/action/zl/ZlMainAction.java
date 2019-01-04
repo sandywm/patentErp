@@ -4875,6 +4875,7 @@ public class ZlMainAction extends DispatchAction {
 		        	String fjRate = tJson.getFjRate();//费减比率 
 		        	String yearNo = tJson.getYearNo();//年度数字
 		        	String tzsPath = tJson.getZipPath();//上传的压缩包位置(绝对路径)
+		        	String readXml = tJson.getReadFile();//读取的文件(dataXml--数据文件,listXml--通用文件)
 		        	boolean readFlag = false;
 		        	if(!tzsName.equals("电子申请回执")){//电子申请回执的时候不做删除
 		        		if((j+1) < tjList.size()){//不是最后一个
@@ -4982,25 +4983,33 @@ public class ZlMainAction extends DispatchAction {
 							        				}
 								        		}
 								        	}
-											//如果是发明专利，还需要增加缴纳实质审查费的任务
-											if(zlType.equals("fm")){
-												//增加未缴纳实质审查费的清单3--发明专利申请实质审查费（实质审查费在申请日三年之内缴纳）
-												if(fm.listInfoByOpt(zlId, 3).size() == 0){//不存在该费用才增加
-													String finalDate = CurrentTime.getFinalDate_2(applyDate_db, 3);//申请人3年后的时间
-													String feeEndDate_gf = CurrentTime.getFinalDate(finalDate, -1);
-													String feeEndDate_cpy = CurrentTime.getFinalDate(feeEndDate_gf, Constants.JF_SL_END_DATE_CPY);//代理机构比官方绝限提前天数
-													double feeRate_d = Double.parseDouble(fjRate);
-													double scFee_final  =  Constants.SC_FEE;
-													if(feeRate_d > 0){
-														scFee_final  = feeRate_d * Constants.SC_FEE;
-													}
-													fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
-													//增加缴费任务------------------------
+								        	if(readXml.equals("listXml")){
+								        		readResult = "noDataXml";
+												readResultChi = "费用减缓审批通知书中没有数据文件";
+												if(zlType.equals("fm")){
+													readResultChi += ",需手动增加实质审查费";
 												}
-											}
-											readResult = "success";
-											readResultChi = "读取成功";
-											//读取成功的通知书都在最后统一增加读取通知书记录
+								        	}else{
+								        		//如果是发明专利，还需要增加缴纳实质审查费的任务
+												if(zlType.equals("fm")){
+													//增加未缴纳实质审查费的清单3--发明专利申请实质审查费（实质审查费在申请日三年之内缴纳）
+													if(fm.listInfoByOpt(zlId, 3).size() == 0){//不存在该费用才增加
+														String finalDate = CurrentTime.getFinalDate_2(applyDate_db, 3);//申请人3年后的时间
+														String feeEndDate_gf = CurrentTime.getFinalDate(finalDate, -1);
+														String feeEndDate_cpy = CurrentTime.getFinalDate(feeEndDate_gf, Constants.JF_SL_END_DATE_CPY);//代理机构比官方绝限提前天数
+														double feeRate_d = Double.parseDouble(fjRate);
+														double scFee_final  =  Constants.SC_FEE;
+														if(feeRate_d > 0){
+															scFee_final  = feeRate_d * Constants.SC_FEE;
+														}
+														fm.addZLFee(zlId, zl.getFeeUserId(), 3, scFee_final, Double.parseDouble(fjRate),feeEndDate_cpy, feeEndDate_gf, "", 0, cpyId, 1, "","", tzsName, 0, "", 0, "", "", "","","");
+														//增加缴费任务------------------------
+													}
+												}
+												readResult = "success";
+												readResultChi = "读取成功";
+												//读取成功的通知书都在最后统一增加读取通知书记录
+								        	}
 										}
 			        				}else{//不存在申请日不能导入后续的通知书
 			        					readResult = "dateError";
@@ -5191,6 +5200,10 @@ public class ZlMainAction extends DispatchAction {
 				    		        	}
 			        				}
 			        			}else if(tzsName.contains("实质审查通知书")){//发明专利申请公布及进入实质审查通知书
+			        				zlm.updateZlStatusById(zlId, "13", "实质审查中");
+			        				readResult = "success";
+			        				readResultChi = "读取成功";
+			        			}else if(tzsName.equals("电子申请回执")){//电子申请回执
 			        				
 			        			}else{//未收录该通知书的读取方法
 			        				readResult = "noReadTzs";//系统还未学习该通知书的读取方法

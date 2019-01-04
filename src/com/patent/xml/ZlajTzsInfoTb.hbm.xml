@@ -36,7 +36,7 @@
             </column>
         </property>
         <property name="tzsPath" type="java.lang.String">
-            <column name="tzs_path" length="50">
+            <column name="tzs_path" length="200">
                 <comment>通知书上传路径</comment>
             </column>
         </property>
