@@ -192,60 +192,8 @@
 					});
 				}
 			};
-			function loadExportList1(){
-				var zlNoInpVal = $.trim($('#zlNoInp').val()),
-					cusIdInpVal = $('#cusIdInp').val();
-				var field = {zlNo:zlNoInpVal,cusId:cusIdInpVal};
-				$.ajax({
-					type:'post',
-			        async:false,
-			        dataType:'json',
-			        data : field,
-			        url:'/zlm.do?action=getZlData',
-			        success:function (json){
-			        	layer.closeAll('loading');
-			        	console.log(json)
-			        	if(json['result'] == 'success'){
-			        		var exportData = json.zlInfo;
-			        		
-			        	}
-			        	
-			        }
-				});
-				
-				table.render({
-					elem: '#exportTab',
-					height: 'full-200',
-					url : '/fee.do?action=getAllFeeInfo',
-					method : 'post',
-					where:field,
-					page : true,
-					even : true,
-					limit : 10,
-					limits:[10,20,30,40],
-					cellMinWidth:120,
-					cols:[[
-						{type : 'checkbox', fixed:'left'},
-						{field : 'zlName', title: '专利名称', width:200,fixed:'left', align:'center'},
-						{field : 'zlNo', title: '专利申请/专利号', width:180, align:'center'},
-						{field : 'zlType', title: '专利类型', align:'center'},
-						{field : 'cusInfo', title: '客户名称', align:'center',templet : function(d){
-							console.log(d.cusInfo)
-							if(d.cusInfo != ''){
-								return common.switchToArray(d.cusInfo.split(','));
-							}else{
-								return '';
-							}
-						}}
-					]]
-				});
-				
-				
-				
-			}
 			$(function(){
 				page.init();
-				//loadExportList();
 			});
 		});
 	</script>

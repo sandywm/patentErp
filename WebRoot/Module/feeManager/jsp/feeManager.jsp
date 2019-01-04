@@ -154,51 +154,57 @@
 					});
 					//导出费用账单(未交费 导出国家专利局 导出客户清单)
 					$('#exportFeeBtn_noSub').on('click',function(){
-						var type = $(this).data('type');
-					    active[type] ? active[type].call(this) : '';
-					    if(_this.data.exportFlag){
-						    var idStr = '',qdStatus = $('#qdStatusInp').val();
-						    idStr = page.data.globalFeeId.join(',');
-						    layer.load('1');
-						    var form = $("<form>");   //定义一个form表单
-							form.attr('style', 'display:none;'); //在form表单中添加查询参数
-							form.attr('target', '');
-							form.attr('method', 'post');
-							form.attr('action', "/fee.do?action=exportFeeInfoToExcel_1&feeStatus=0&qdStatus=" + qdStatus);
-							var input1 = $('<input>');
-							input1.attr('type', 'text');
-							input1.attr('name', 'idStr');
-							input1.attr('value', idStr);
-							$('body').append(form);  //将表单放置在web中 
-							form.append(input1);   //将查询参数控件提交到表单上
-						  	form.submit();
-							layer.closeAll('loading');
-					    }
+						if(_this.data.addFeeFlag){
+							var type = $(this).data('type');
+						    active[type] ? active[type].call(this) : '';
+						    if(_this.data.exportFlag){
+							    var idStr = '',qdStatus = $('#qdStatusInp').val();
+							    idStr = page.data.globalFeeId.join(',');
+							    layer.load('1');
+							    var form = $("<form>");   //定义一个form表单
+								form.attr('style', 'display:none;'); //在form表单中添加查询参数
+								form.attr('target', '');
+								form.attr('method', 'post');
+								form.attr('action', "/fee.do?action=exportFeeInfoToExcel_1&feeStatus=0&qdStatus=" + qdStatus);
+								var input1 = $('<input>');
+								input1.attr('type', 'text');
+								input1.attr('name', 'idStr');
+								input1.attr('value', idStr);
+								$('body').append(form);  //将表单放置在web中 
+								form.append(input1);   //将查询参数控件提交到表单上
+							  	form.submit();
+								layer.closeAll('loading');
+						    }
+						}else{
+							layer.msg('抱歉，您暂无导出费用账单的权限', {icon:5,anim:6,time:1200});
+						}
 					});
 					//导出费用(已缴费 全部)
 					$('#exportFeeBtn_hasSub').on('click',function(){
-						hasReadFlag = false;
-						tmpAddBackFee = 'addBackFeeStr';
-						var fullScreenIndex = globalIndex = layer.open({
-							title:'',
-							type: 2,
-						  	area: ['700px', '500px'],
-						  	fixed: true, //不固定
-						  	maxmin: false,
-						  	shadeClose :false,
-						  	closeBtn:0,
-						  	content: '/Module/feeManager/jsp/exportFeeList.html',
-						  	end:function(){
-						  		/*if(hasReadFlag){
-						  			loadFeeInfoList('initLoad');
-						  		}*/
-						  	}
-						});	
-						layer.full(fullScreenIndex);
+						if(_this.data.addFeeFlag){
+							tmpAddBackFee = 'addBackFeeStr';
+							var fullScreenIndex = globalIndex = layer.open({
+								title:'',
+								type: 2,
+							  	area: ['700px', '500px'],
+							  	fixed: true, //不固定
+							  	maxmin: false,
+							  	shadeClose :false,
+							  	closeBtn:0,
+							  	content: '/Module/feeManager/jsp/exportFeeList.html'
+							});	
+							layer.full(fullScreenIndex);
+						}else{
+							layer.msg('抱歉，您暂无导出费用账单的权限', {icon:5,anim:6,time:1200});
+						}
 					});
 				},
 				queryFun : function(){
 					$('#queryBtn').on('click',function(){
+						if(page.data.globalFeeStatus == 5 && $('#zlNoInp').val() != 0 && $('#zlNoInp').val().length < 4){
+							layer.msg('专利编号必须4位以上', {icon:5,anim:6,time:1200});
+							return;
+						}
 						loadFeeInfoList('queryLoad');
 					});
 					//选择客户
@@ -488,25 +494,17 @@
 				function callBackDone(res){
 					layer.closeAll('loading');
 					if(res.msg == 'success'){
-						//console.log(res)
 						$('#feeListTab_'+page.data.globalFeeStatus).siblings('.layui-table-view').show();
 						$('#noData_'+page.data.globalFeeStatus).hide().html('');
-						console.log(page.data.globalFeeStatus)
 						if(page.data.globalFeeStatus == 5){
 							var feeStatusInpVal = $('#feeStatusInp').val(),qdStatusInpVal = $('#qdStatusInp').val();
 							if(feeStatusInpVal == 0){
-								if(qdStatusInpVal == 0){
-									$('#totalWrap').html('<p>根据系统结算，当前应交给国家专利局费用总计为<span>'+ res.feePriceTotal +'元</span></p>');	
-								}else{
-									$('#totalWrap').html('<p>根据系统结算，当前客户应交费用总计为<span>'+ res.feePriceTotal +'元</span></p>');
-								}
-								
+								$('#totalWrap').html('<p>根据系统结算，当前应交费用总计为<span>'+ res.wjFeeTotal +'元</span></p>');
 							}else if(feeStatusInpVal == 1){
-								$('#totalWrap').html('<p>根据系统结算，当前已交费用总计为<span>'+ res.yjFeeTotal +'元</span>，实收费用总计为<span>'+ res.backFeeTotal +'元</span>，未收费用总计未<span>'+ res.noBackFeeTotal +'元</span></p>');	
+								$('#totalWrap').html('<p>根据系统结算，当前已交费用总计为<span>'+ res.yjFeeTotal +'元</span>，实收费用总计为<span>'+ res.backFeeTotal +'元</span>，未收费用总计为<span>'+ res.noBackFeeTotal +'元</span></p>');	
 							}else{//全部
-								$('#totalWrap').html('<p>根据系统结算，当前应交费用总计为<span>'+ res.feePriceTotal +'元</span>，当前已交费用总计为<span>'+ res.yjFeeTotal +'元</span>，实收费用总计为<span>'+ res.backFeeTotal +'元</span>，未收费用总计未<span>'+ res.noBackFeeTotal +'元</span></p>');	
+								$('#totalWrap').html('<p>根据系统结算，当前所用费用总计为<span>'+ res.feeTotal +'</span>其中，应交费用总计为<span>'+ res.wjFeeTotal +'元</span>，已交费用总计为<span>'+ res.yjFeeTotal +'元</span>，实收费用总计为<span>'+ res.backFeeTotal +'元</span>，未收费用总计为<span>'+ res.noBackFeeTotal +'元</span></p>');	
 							}
-							
 						}
 					}else if(res.msg == 'noInfo'){
 						$('#totalWrap').hide().html('');
