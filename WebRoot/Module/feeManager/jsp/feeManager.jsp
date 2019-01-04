@@ -17,9 +17,8 @@
   		<div class="layui-row">
   			<div class="layui-col-md12 layui-col-lg12">
   				<div class="layui-card hasPadBot">
-  					<div class="layui-tab layui-tab-brief" lay-filter="feeTabFilter">
-  						<a id="exportFeeBtn_noSub" class="posAbs newAddBtn exportFeeBtn_noSub" data-type="getCheckData" href="javascript:void(0)"><i class="iconfont layui-extend-daochuexcel"></i>导出未交费用账单</a>
-  						<a id="importFeeBtn" class="posAbs newAddBtn" data-type="getCheckData" href="javascript:void(0)"><i class="iconfont layui-extend-daoru"></i>批量导入交费单据</a>
+  					<div id="layuiTabCon" class="layui-tab layui-tab-brief" lay-filter="feeTabFilter">
+  						<div class="btnWrap"></div>
   						<ul class="layui-tab-title">
   							<li feeStatus="5" class="layui-this">费用</li>
   							<li feeStatus="3">费用导出记录</li>
@@ -50,7 +49,7 @@
   	<script src="/plugins/jquery/jquery.min.js"></script>
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
-    	var globalFirId = 0,globalFileName = '',globalFileUrl='',hasReadFlag = false;//是否执行了批量导入并且成功读取结果;
+    	var globalFirId = 0,globalFileName='',globalFeeStatus=0,globalIndex = 0,tmpAddBackFee='',globalFileUrl='',hasReadFlag = false;//是否执行了批量导入并且成功读取结果;
 	    layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -66,29 +65,21 @@
   			element.on('tab(feeTabFilter)', function(data){
   				var feeStatus = $(this).attr('feeStatus');
   				page.data.globalFeeStatus = feeStatus;//切换交费状态
-  				$('#exportFeeBtn_noSub').hide();
-  				$('#importFeeBtn').hide();
-  				if(feeStatus == '5'){//已交费 开启分页
-  					$('#exportFeeBtn_noSub').show();
-  				}else if(feeStatus == '3'){
-
-  				}else if(feeStatus == '4'){
-  					$('#importFeeBtn').show();
-  				}
   				page.createSearchHt(feeStatus);
   				loadFeeInfoList('queryLoad');
-  				page.queryFun();
+  				page.bindEvent();
  			});
   			form.on('select(feeStatusSel)', function(data){
 				var value = data.value;
 				$('#feeStatusInp').val(value);
+				globalFeeStatus = value;
 				if($('#feeStatusInp').val() == 0){//未交费不分页
 					page.data.isHasPageFun = false;
 				}else{
 					page.data.isHasPageFun = true;
 				}
 				page.createSearchHt(5);
-				page.queryFun();
+				page.bindEvent();
 				loadFeeInfoList('initLoad');
   			});
   			form.on('select(diffDaysSel)', function(data){
@@ -130,7 +121,6 @@
 				init : function(){
 					//获取权限
 					this.data.addFeeFlag = common.getPermission('addFee','',0);
-					$('#exportFeeBtn_noSub').show();
 					this.createSearchHt(5);
 					loadFeeInfoList('initLoad');
 					this.bindEvent();
@@ -162,7 +152,7 @@
 							layer.msg('抱歉，您暂无批量导入交费单据的权限', {icon:5,anim:6,time:1200});
 						}
 					});
-					//导出费用账单
+					//导出费用账单(未交费 导出国家专利局 导出客户清单)
 					$('#exportFeeBtn_noSub').on('click',function(){
 						var type = $(this).data('type');
 					    active[type] ? active[type].call(this) : '';
@@ -170,24 +160,41 @@
 						    var idStr = '',qdStatus = $('#qdStatusInp').val();
 						    idStr = page.data.globalFeeId.join(',');
 						    layer.load('1');
-						    alert(qdStatus)
 						    var form = $("<form>");   //定义一个form表单
 							form.attr('style', 'display:none;'); //在form表单中添加查询参数
 							form.attr('target', '');
 							form.attr('method', 'post');
-							form.attr('action', "/fee.do?action=exportFeeInfoToExcel_1");
-							var input1 = $('<input>'),input2 = $('<input>');
+							form.attr('action', "/fee.do?action=exportFeeInfoToExcel_1&feeStatus=0&qdStatus=" + qdStatus);
+							var input1 = $('<input>');
 							input1.attr('type', 'text');
-							//input2.attr('type', 'text');
 							input1.attr('name', 'idStr');
-							//input2.attr('name', 'qdStatus');
 							input1.attr('value', idStr);
-							//input2.attr('value', qdStatus);
 							$('body').append(form);  //将表单放置在web中 
 							form.append(input1);   //将查询参数控件提交到表单上
 						  	form.submit();
 							layer.closeAll('loading');
 					    }
+					});
+					//导出费用(已缴费 全部)
+					$('#exportFeeBtn_hasSub').on('click',function(){
+						hasReadFlag = false;
+						tmpAddBackFee = 'addBackFeeStr';
+						var fullScreenIndex = globalIndex = layer.open({
+							title:'',
+							type: 2,
+						  	area: ['700px', '500px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	closeBtn:0,
+						  	content: '/Module/feeManager/jsp/exportFeeList.html',
+						  	end:function(){
+						  		/*if(hasReadFlag){
+						  			loadFeeInfoList('initLoad');
+						  		}*/
+						  	}
+						});	
+						layer.full(fullScreenIndex);
 					});
 				},
 				queryFun : function(){
@@ -196,6 +203,7 @@
 					});
 					//选择客户
 					$('.selCusP').on('click',function(){
+						tmpAddBackFee = '';
 						layer.open({
 							title:'选择客户',
 							type: 2,
@@ -217,8 +225,12 @@
 				},
 				//创建查询层
 				createSearchHt : function(feeStatus){
+					var strHtmlBtn_noSub = '',strHtmlBtn_hasSub = '',strHtml_impBtn='';
 					var strHtml1='',strHtml2='',strHtml3='',strHtml4='' ,strHtml5='',strHtml6='',strHtml7='';
-					strHtml1 += '<div class="itemDiv fl" style="width:150px;"><div class="layui-input-inline">';
+					strHtmlBtn_noSub += '<a id="exportFeeBtn_noSub" class="posAbs newAddBtn exportFeeBtn_noSub" data-type="getCheckData" href="javascript:void(0)"><i class="iconfont layui-extend-daochuexcel"></i>导出未交费用账单</a>';
+					strHtmlBtn_hasSub += '<a id="exportFeeBtn_hasSub" class="posAbs newAddBtn"href="javascript:void(0)"><i class="iconfont layui-extend-daochuexcel"></i>导出费用账单</a>';
+					strHtml_impBtn += '<a id="importFeeBtn" class="posAbs newAddBtn" href="javascript:void(0)"><i class="iconfont layui-extend-daoru"></i>批量导入交费单据</a>';
+					strHtml1 += '<div class="itemDiv fl" style="width:120px;"><div class="layui-input-inline">';
 					strHtml1 += '<select id="feeStatusSel" lay-filter="feeStatusSel"><option value="2">全部</option>';
 					strHtml1 += '<option value="0" selected>未交费</option><option value="1">已交费</option>';
 					strHtml1 += '</select></div></div>';
@@ -226,8 +238,8 @@
 					strHtml6 += '<select id="qdStatusSel" lay-filter="qdStatusSel">';
 					strHtml6 += '<option value="0" selected>国家专利局交费清单</option><option value="1">客户交费清单</option>';
 					strHtml6 += '</select></div></div>';
-					strHtml7 += '<div class="itemDiv zlNoDiv fl"><div class="layui-input-inline">';
-					strHtml7 += '<input type="text" id="zlNoInp" placeholder="请输入专利申请/专利号" autocomplete="off" class="layui-input"></div></div>';
+					strHtml7 += '<div class="itemDiv zlNoDiv fl"><div class="layui-input-inline" style="width:180px;">';
+					strHtml7 += '<input type="text" id="zlNoInp" placeholder="请输入专利申请号/专利号" autocomplete="off" class="layui-input"></div></div>';
 					strHtml7 += '<div class="itemDiv cusIdDiv fl"><div class="layui-input-inline">';
 					strHtml7 += '<input type="hidden" id="cusIdInp"/><div class="layui-input selCusP"><p class="cusName ellip">请选择客户</p><i class="layui-edge"></i></div></div></div>';
 					strHtml2 += '<div class="itemDiv fl"><div class="layui-input-inline"><input id="diffDaysSelInp" type="hidden" value="15"/>';
@@ -244,16 +256,24 @@
 					if(feeStatus == 5){
 						var feeStaInp = $('#feeStatusInp').val();
 						if(feeStaInp == 0){
+							$('.btnWrap').html(strHtmlBtn_noSub);
 							$('.searchPart').html(strHtml1 + strHtml6 + strHtml7 + strHtml2 + strHtml4 + strHtml5);
 						}else if(feeStaInp == 1){//已交费
+							$('.btnWrap').html(strHtmlBtn_hasSub);
 							$('.searchPart').html(strHtml1 + strHtml7 +  strHtml3 + strHtml4 + strHtml5);
 							$('#feeStatusSel option:last').attr('selected','selected');
 						}else{
+							$('.btnWrap').html(strHtmlBtn_hasSub);
 							$('.searchPart').html(strHtml1 + strHtml7 + strHtml4 + strHtml5);
 							$('#feeStatusSel option:first').attr('selected','selected');
 						}
 						form.render();
 					}else if(feeStatus == 3 || feeStatus == 4){
+						if(feeStatus == 4){
+							$('.btnWrap').html(strHtml_impBtn);
+						}else if(feeStatus == 3){
+							$('.btnWrap').html('');
+						}
 						$('.searchPart').html(strHtml3 + strHtml4 + strHtml5);
 						form.render();
 					}
@@ -468,9 +488,10 @@
 				function callBackDone(res){
 					layer.closeAll('loading');
 					if(res.msg == 'success'){
-						console.log(res)
+						//console.log(res)
 						$('#feeListTab_'+page.data.globalFeeStatus).siblings('.layui-table-view').show();
 						$('#noData_'+page.data.globalFeeStatus).hide().html('');
+						console.log(page.data.globalFeeStatus)
 						if(page.data.globalFeeStatus == 5){
 							var feeStatusInpVal = $('#feeStatusInp').val(),qdStatusInpVal = $('#qdStatusInp').val();
 							if(feeStatusInpVal == 0){

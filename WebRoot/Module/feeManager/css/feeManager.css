@@ -37,14 +37,25 @@ body{
 .resetTime i{
 	margin-right:5px;
 }
+#layuiTabCon{
+	position:relative;
+}
+.btnWrap{
+	width:200px;
+	height:40px;
+	position:absolute;
+	right:0;
+	top:0;
+}
 .newAddBtn{
 	height: 40px;
     line-height: 40px;
     z-index: 10;
 }
-#exportFeeBtn_noSub,
-#importFeeBtn{
-	display:none;
+#exportFeeBtn_noSub:hover,
+#exportFeeBtn_hasSub:hover,
+#importFeeBtn:hover{
+	opacity:.8;
 }
 .layui-table-page>div{
 	text-align:right;
@@ -108,7 +119,7 @@ body{
 	height:8px;
 	position:absolute;
 	left:3px;
-	top:9px;
+	top:10px;
 	border-radius:50%;
 }
 .noPayStatus{
