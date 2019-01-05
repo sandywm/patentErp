@@ -15,6 +15,7 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private Integer id;
 	private Integer ajId;
+	private String ajNo;
 	private String tzsName;
 	private String tzsFwr;
 	private String fwSerial;
@@ -33,11 +34,12 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public ZlajTzsInfoTb(Integer ajId, String tzsName,
+	public ZlajTzsInfoTb(Integer ajId, String ajNo,String tzsName,
 			String tzsFwr, String tzsGfr,String fwSerial,String tzsPath,CpyUserInfo user,
 			String uploadTime,Integer readStatus,String readDetail,CpyInfoTb cpy) {
 		this.ajId = ajId;
 		this.tzsName = tzsName;
+		this.ajNo = ajNo;
 		this.tzsFwr = tzsFwr;
 		this.tzsGfr = tzsGfr;
 		this.fwSerial = fwSerial;
@@ -50,12 +52,13 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public ZlajTzsInfoTb(Integer id,Integer ajId, String tzsName,
+	public ZlajTzsInfoTb(Integer id,Integer ajId, String ajNo,String tzsName,
 			String tzsFwr, String tzsGfr,String fwSerial,String tzsPath,CpyUserInfo user,
 			String uploadTime,Integer readStatus,String readDetail,CpyInfoTb cpy) {
 		this.id = id;
 		this.ajId = ajId;
 		this.tzsName = tzsName;
+		this.ajNo = ajNo;
 		this.tzsFwr = tzsFwr;
 		this.tzsGfr = tzsGfr;
 		this.fwSerial = fwSerial;
@@ -163,6 +166,14 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 
 	public void setCpy(CpyInfoTb cpy) {
 		this.cpy = cpy;
+	}
+
+	public String getAjNo() {
+		return ajNo;
+	}
+
+	public void setAjNo(String ajNo) {
+		this.ajNo = ajNo;
 	}
 
 }

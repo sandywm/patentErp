@@ -62,16 +62,19 @@ public class ZlajTzsInfoDaoImpl implements ZlajTzsInfoDao{
 	}
 
 	@Override
-	public List<ZlajTzsInfoTb> findPageInfoByOpt(Session sess, Integer cpyId,
-			Integer zlId, Integer readStatus, Integer pageNo, Integer pageSize) {
+	public List<ZlajTzsInfoTb> findPageInfoByOpt(Session sess,Integer cpyId,Integer zlId,String ajNo,Integer readStatus,Integer pageNo,Integer pageSize) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajTzsInfoTb as tzs where tzs.cpy.id = "+cpyId;
 		if(zlId > 0){
 			hql += " and tzs.zlajMainInfoTb.id = "+zlId;
 		}
+		if(!ajNo.equals("")){
+			hql += " and tzs.ajNo like '%"+ajNo+"%'";
+		}
 		if(!readStatus.equals(2)){
 			hql += " and tzs.readStatus = "+readStatus;
 		}
+		hql += " order by id desc";
 		int offset = (pageNo - 1) * pageSize;
 		if (offset < 0) {
 			offset = 0;
@@ -80,12 +83,15 @@ public class ZlajTzsInfoDaoImpl implements ZlajTzsInfoDao{
 	}
 
 	@Override
-	public Integer getCountByOpt(Session sess, Integer cpyId, Integer zlId,
+	public Integer getCountByOpt(Session sess, Integer cpyId, Integer zlId,String ajNo,
 			Integer readStatus) {
 		// TODO Auto-generated method stub
 		String hql = "select count(tzs.id) from ZlajTzsInfoTb as tzs where tzs.cpy.id = "+cpyId;
 		if(zlId > 0){
 			hql += " and tzs.ajId = "+zlId;
+		}
+		if(!ajNo.equals("")){
+			hql += " and tzs.ajNo like '%"+ajNo+"%'";
 		}
 		if(!readStatus.equals(2)){
 			hql += " and tzs.readStatus = "+readStatus;

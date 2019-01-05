@@ -26,7 +26,7 @@ public class ZlajTzsInfoManagerImpl implements ZlajTzsInfoManager{
 	Transaction tran = null;
 	
 	@Override
-	public Integer addTzs(Integer zlId,String tzsName,String fwrDate,String gfrDate,String fwSerial,String tzsPath,
+	public Integer addTzs(Integer zlId,String ajNo,String tzsName,String fwrDate,String gfrDate,String fwSerial,String tzsPath,
 			Integer uploadUserId,Integer readStatus,String readDetail,Integer cpyId) throws WEBException{
 		// TODO Auto-generated method stub
 		try {
@@ -36,7 +36,7 @@ public class ZlajTzsInfoManagerImpl implements ZlajTzsInfoManager{
 			cDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			ZlajTzsInfoTb tzs = new ZlajTzsInfoTb(zlId,tzsName,fwrDate,gfrDate,fwSerial,tzsPath,uDao.get(sess, uploadUserId),
+			ZlajTzsInfoTb tzs = new ZlajTzsInfoTb(zlId,ajNo,tzsName,fwrDate,gfrDate,fwSerial,tzsPath,uDao.get(sess, uploadUserId),
 					CurrentTime.getCurrentTime(),readStatus,readDetail,cDao.get(sess, cpyId));
 			tzsDao.save(sess, tzs);
 			tran.commit();
@@ -100,14 +100,14 @@ public class ZlajTzsInfoManagerImpl implements ZlajTzsInfoManager{
 	}
 
 	@Override
-	public List<ZlajTzsInfoTb> listPageInfoByOpt(Integer cpyId, Integer zlId,
+	public List<ZlajTzsInfoTb> listPageInfoByOpt(Integer cpyId, Integer zlId,String ajNo,
 			Integer readStatus, Integer pageNo, Integer pageSize)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			tzsDao = (ZlajTzsInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_TZS_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return tzsDao.findPageInfoByOpt(sess, cpyId, zlId, readStatus, pageNo, pageSize);
+			return tzsDao.findPageInfoByOpt(sess, cpyId, zlId, ajNo,readStatus, pageNo, pageSize);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -118,13 +118,13 @@ public class ZlajTzsInfoManagerImpl implements ZlajTzsInfoManager{
 	}
 
 	@Override
-	public Integer getCountByOpt(Integer cpyId, Integer zlId, Integer readStatus)
+	public Integer getCountByOpt(Integer cpyId, Integer zlId, String ajNo,Integer readStatus)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			tzsDao = (ZlajTzsInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_TZS_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return tzsDao.getCountByOpt(sess, cpyId, zlId, readStatus);
+			return tzsDao.getCountByOpt(sess, cpyId, zlId, ajNo,readStatus);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

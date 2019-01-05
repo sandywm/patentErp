@@ -76,12 +76,13 @@ public interface ZlajTzsInfoDao {
 	 * @param sess
 	 * @param cpyId 代理机构编号
 	 * @param zlId 专利编号（0表示全部）
-	 * @param readStatus 读取状态（0：表示全部，1：读取成功，2:读取失败）
+	 * @param ajNo 专利号（""表示全部）
+	 * @param readStatus 读取状态（2：表示全部，1：读取成功，0:读取失败）
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 */
-	List<ZlajTzsInfoTb> findPageInfoByOpt(Session sess,Integer cpyId,Integer zlId,Integer readStatus,Integer pageNo,Integer pageSize);
+	List<ZlajTzsInfoTb> findPageInfoByOpt(Session sess,Integer cpyId,Integer zlId,String ajNo,Integer readStatus,Integer pageNo,Integer pageSize);
 	
 	/**
 	 * 根据条件获取读取专利通知书记录条数
@@ -90,9 +91,10 @@ public interface ZlajTzsInfoDao {
 	 * @date 2018-12-3 下午05:00:18
 	 * @param sess
 	 * @param cpyId 代理机构编号
+	 * @param ajNo 专利号（""表示全部）
 	 * @param zlId 专利编号（0表示全部）
-	 * @param readStatus 读取状态（0：表示全部，1：读取成功，2:读取失败）
+	 * @param readStatus 读取状态（2：表示全部，1：读取成功，0:读取失败）
 	 * @return
 	 */
-	Integer getCountByOpt(Session sess,Integer cpyId,Integer zlId,Integer readStatus);
+	Integer getCountByOpt(Session sess,Integer cpyId,Integer zlId,String ajNo,Integer readStatus);
 }

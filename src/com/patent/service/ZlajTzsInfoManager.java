@@ -15,6 +15,7 @@ public interface ZlajTzsInfoManager {
 	 * @author wm
 	 * @date 2018-9-3 上午10:25:26
 	 * @param zlId 专利编号
+	 * @param ajNo 专利号
 	 * @param tzsName 通知书名称
 	 * @param fwrDate 发文日
 	 * @param gfrDate 官方绝限日
@@ -27,7 +28,7 @@ public interface ZlajTzsInfoManager {
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addTzs(Integer zlId,String tzsName,String fwrDate,String gfrDate,String fwSerial,String tzsPath,
+	Integer addTzs(Integer zlId,String ajNo,String tzsName,String fwrDate,String gfrDate,String fwSerial,String tzsPath,
 			Integer uploadUserId,Integer readStatus,String readDetail,Integer cpyId) throws WEBException;
 	
 	/**
@@ -71,13 +72,14 @@ public interface ZlajTzsInfoManager {
 	 * @date 2018-12-3 下午05:05:26
 	 * @param cpyId 代理机构编号
 	 * @param zlId 专利编号（0表示全部）
-	 * @param readStatus 读取状态（0：表示全部，1：读取成功，2:读取失败）
+	 * @param ajNo 专利号（""表示全部）
+	 * @param readStatus 读取状态（2：表示全部，1：读取成功，0:读取失败）
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajTzsInfoTb> listPageInfoByOpt(Integer cpyId,Integer zlId,Integer readStatus,Integer pageNo,Integer pageSize) throws WEBException;
+	List<ZlajTzsInfoTb> listPageInfoByOpt(Integer cpyId,Integer zlId,String ajNo,Integer readStatus,Integer pageNo,Integer pageSize) throws WEBException;
 	
 	/**
 	 * 根据条件获取读取专利通知书记录条数
@@ -86,9 +88,10 @@ public interface ZlajTzsInfoManager {
 	 * @date 2018-12-3 下午05:05:29
 	 * @param cpyId 代理机构编号
 	 * @param zlId 专利编号（0表示全部）
-	 * @param readStatus 读取状态（0：表示全部，1：读取成功，2:读取失败）
+	 * @param ajNo 专利号（""表示全部）
+	 * @param readStatus 读取状态（2：表示全部，1：读取成功，0:读取失败）
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer getCountByOpt(Integer cpyId,Integer zlId,Integer readStatus) throws WEBException;
+	Integer getCountByOpt(Integer cpyId,Integer zlId,String ajNo,Integer readStatus) throws WEBException;
 }
