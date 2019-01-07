@@ -70,5 +70,10 @@
                 <comment>读取详情</comment>
             </column>
         </property>
+        <property name="tzsType" type="java.lang.String">
+            <column name="tzs_type" length="20">
+                <comment>通知书类型(tzs--通知书,sqd--申请单)</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

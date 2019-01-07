@@ -26,6 +26,7 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 	private Integer readStatus;
 	private String readDetail;
 	private CpyInfoTb cpy;
+	private String tzsType;
 
 	// Constructors
 
@@ -36,7 +37,7 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 	/** minimal constructor */
 	public ZlajTzsInfoTb(Integer ajId, String ajNo,String tzsName,
 			String tzsFwr, String tzsGfr,String fwSerial,String tzsPath,CpyUserInfo user,
-			String uploadTime,Integer readStatus,String readDetail,CpyInfoTb cpy) {
+			String uploadTime,Integer readStatus,String readDetail,CpyInfoTb cpy,String tzsType) {
 		this.ajId = ajId;
 		this.tzsName = tzsName;
 		this.ajNo = ajNo;
@@ -49,12 +50,13 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 		this.readStatus = readStatus;
 		this.readDetail = readDetail;
 		this.cpy = cpy;
+		this.tzsType = tzsType;
 	}
 
 	/** full constructor */
 	public ZlajTzsInfoTb(Integer id,Integer ajId, String ajNo,String tzsName,
 			String tzsFwr, String tzsGfr,String fwSerial,String tzsPath,CpyUserInfo user,
-			String uploadTime,Integer readStatus,String readDetail,CpyInfoTb cpy) {
+			String uploadTime,Integer readStatus,String readDetail,CpyInfoTb cpy,String tzsType) {
 		this.id = id;
 		this.ajId = ajId;
 		this.tzsName = tzsName;
@@ -68,6 +70,7 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 		this.readStatus = readStatus;
 		this.readDetail = readDetail;
 		this.cpy = cpy;
+		this.tzsType = tzsType;
 	}
 
 	// Property accessors
@@ -174,6 +177,14 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 
 	public void setAjNo(String ajNo) {
 		this.ajNo = ajNo;
+	}
+
+	public String getTzsType() {
+		return tzsType;
+	}
+
+	public void setTzsType(String tzsType) {
+		this.tzsType = tzsType;
 	}
 
 }

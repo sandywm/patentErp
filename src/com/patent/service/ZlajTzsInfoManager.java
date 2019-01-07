@@ -26,11 +26,12 @@ public interface ZlajTzsInfoManager {
 	 * @param readStatus 读取状态（0：失败，1：成功）
 	 * @param readDetail 读取详情
 	 * @param cpyId 代理机构编号
+	 * @param tzsType 通知书类型(tzs--通知书,sqd--申请单)
 	 * @return
 	 * @throws WEBException
 	 */
 	Integer addTzs(Integer zlId,String ajNo,String tzsName,String fwrDate,String gfrDate,String fwSerial,String tzsPath,
-			Integer uploadUserId,Integer readStatus,String readDetail,Integer cpyId) throws WEBException;
+			Integer uploadUserId,Integer readStatus,String readDetail,Integer cpyId,String tzsType) throws WEBException;
 	
 	/**
 	 * 根据案件编号获取所有的通知书信息列表(读取成功的)

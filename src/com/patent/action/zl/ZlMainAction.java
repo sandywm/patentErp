@@ -410,7 +410,7 @@ public class ZlMainAction extends DispatchAction {
 		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利，2：撰写任务领取,3：我的专利,4:我的/专利任务,5:任务移交记录/审核）,6:通知书上传列表
 		Integer comStatus = CommonTools.getFinalInteger("comStatus", request);//我的任务时传递的参数(0:未完成，已完成)
 		Integer checkStatus = CommonTools.getFinalInteger("checkStatus", request);//(0:未审核，1：审核通过，2：审核未通过)
-		Integer readStatus =  CommonTools.getFinalInteger("readStatus", request);//通知书读取状态(0:全部，1：读取成功，2：读取失败)
+		Integer readStatus =  CommonTools.getFinalInteger("readStatus", request);//通知书读取状态(0:读取失败，1：读取成功，2：全部)
 		Integer currLoginUserId = this.getLoginUserId(request);
 		String roleName = this.getLoginRoleName(request);
 		//当任务条件为0时，撰写任务领取，这时需要强制stopStatus为正常（0）
@@ -4962,6 +4962,10 @@ public class ZlMainAction extends DispatchAction {
 		        	}
 		        	Integer zlNum = zlList.size();
 		        	String tzsPath_tmp = tzsPath.replace(path_pre, "");
+		        	String tzsType = "tzs";
+    				if(tzsName.equals("电子申请回执")){
+    					tzsType = "sqd";
+    				}
 		        	if(zlNum > 0){
 		        		ZlajMainInfoTb zl = null;
 		        		if(zlNum.equals(1)){
@@ -4985,7 +4989,7 @@ public class ZlMainAction extends DispatchAction {
 		        			if(tzsList.size() > 0){//有此通知书
 								//无需再增加
 		        				readResult = "uploadExist";//之前已读取过该通知书，无需再次上传
-		        				tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, tzsList.get(0).getTzsPath(),currUserId,0,"之前已读取过该通知书，无需再次读取",cpyId);
+		        				tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, tzsList.get(0).getTzsPath(),currUserId,0,"之前已读取过该通知书，无需再次读取",cpyId,tzsType);
 		        				readResultChi = "之前已读取过该通知书，无需再次读取";
 //		        				看以后需要删除不？
 //								if(readFlag){
@@ -5082,7 +5086,7 @@ public class ZlMainAction extends DispatchAction {
 			        				}else{//不存在申请日不能导入后续的通知书
 			        					readResult = "dateError";
 			        					readResultChi = "不存在申请日不能导入后续的通知书";
-			        					tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "指定专利无申请日，无法进行读取", cpyId);
+			        					tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "指定专利无申请日，无法进行读取", cpyId,tzsType);
 			        				}
 			        			}else if(tzsName.contains("补正通知书") || tzsName.contains("审查意见通知书") || tzsName.contains("初步审查合格通知书")){
 			        				readResult = "success";
@@ -5232,7 +5236,7 @@ public class ZlMainAction extends DispatchAction {
 			        				}else{//不存在申请日不能导入后续的通知书
 			        					readResult = "dateError";
 			        					readResultChi = "指定专利无申请日，无法进行读取";
-			        					tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "指定专利无申请日，无法进行读取", cpyId);
+			        					tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "指定专利无申请日，无法进行读取", cpyId,tzsType);
 			        				}
 			        			}else if(tzsName.equals("缴费通知书")){//缴费通知书
 			        				readResult = "success";
@@ -5277,7 +5281,7 @@ public class ZlMainAction extends DispatchAction {
 			        			}else{//未收录该通知书的读取方法
 			        				readResult = "noReadTzs";//系统还未学习该通知书的读取方法
 			        				readResultChi = "系统还未学习该通知书的读取方法";
-			        				tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "系统还未学习该通知书的读取方法", cpyId);
+			        				tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "系统还未学习该通知书的读取方法", cpyId,tzsType);
 			        			}
 								if(readResult.equals("success")){
 									if(readFlag){
@@ -5286,7 +5290,7 @@ public class ZlMainAction extends DispatchAction {
 										//删除临时上传位置
 										FileOpration.deleteFile(tzsPath);
 									}
-									Integer tzsId = tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 1, "读取成功", cpyId);
+									Integer tzsId = tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 1, "读取成功", cpyId,tzsType);
 									if(tzsName.equals("电子申请回执")){//电子申请回执
 										List<FileListJson> flList = tJson.getFlList();
 				        				if(flList.size() > 0){
@@ -5304,7 +5308,7 @@ public class ZlMainAction extends DispatchAction {
 		        		}else{//案件被终止无法再识别通知书
 		        			readResult =  "ajStop";
 		        			readResultChi = "案件被终止无法再识别通知书";
-		        			tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "案件被终止无法再识别通知书", cpyId);
+		        			tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "案件被终止无法再识别通知书", cpyId,tzsType);
 						}
 						map_d.put("result", readResult);
 						map_d.put("readResultChi", readResultChi);
@@ -5322,7 +5326,7 @@ public class ZlMainAction extends DispatchAction {
 	    				map_d.put("ajNoGf", ajNoGf);
 	    				map_d.put("ajTitle", zlName);
 	    				list_d.add(map_d);
-	    				tzsm.addTzs(0, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "没有匹配到专利", cpyId);
+	    				tzsm.addTzs(0, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "没有匹配到专利", cpyId,tzsType);
 						//删除当前通知书压缩包
 						//FileOpration.deleteFile(tzsPath);
 		        	}
