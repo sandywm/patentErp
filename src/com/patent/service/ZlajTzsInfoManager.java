@@ -76,12 +76,13 @@ public interface ZlajTzsInfoManager {
 	 * @param zlId 专利编号（0表示全部）
 	 * @param ajNo 专利号（""表示全部）
 	 * @param readStatus 读取状态（2：表示全部，1：读取成功，0:读取失败）
+	 * @param tzsType 通知书类型--tzs,sqd,""的时候表示全部
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajTzsInfoTb> listPageInfoByOpt(Integer cpyId,Integer zlId,String ajNo,Integer readStatus,Integer pageNo,Integer pageSize) throws WEBException;
+	List<ZlajTzsInfoTb> listPageInfoByOpt(Integer cpyId,Integer zlId,String ajNo,Integer readStatus,String tzsType,Integer pageNo,Integer pageSize) throws WEBException;
 	
 	/**
 	 * 根据条件获取读取专利通知书记录条数
@@ -92,10 +93,11 @@ public interface ZlajTzsInfoManager {
 	 * @param zlId 专利编号（0表示全部）
 	 * @param ajNo 专利号（""表示全部）
 	 * @param readStatus 读取状态（2：表示全部，1：读取成功，0:读取失败）
+	 * @param tzsType 通知书类型--tzs,sqd,""的时候表示全部
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer getCountByOpt(Integer cpyId,Integer zlId,String ajNo,Integer readStatus) throws WEBException;
+	Integer getCountByOpt(Integer cpyId,Integer zlId,String ajNo,Integer readStatus,String tzsType) throws WEBException;
 	
 	/**
 	 * 根据通知书编号获取申请文件列表（电子申请回单时使用）

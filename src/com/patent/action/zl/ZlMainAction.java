@@ -411,6 +411,7 @@ public class ZlMainAction extends DispatchAction {
 		Integer comStatus = CommonTools.getFinalInteger("comStatus", request);//我的任务时传递的参数(0:未完成，已完成)
 		Integer checkStatus = CommonTools.getFinalInteger("checkStatus", request);//(0:未审核，1：审核通过，2：审核未通过)
 		Integer readStatus =  CommonTools.getFinalInteger("readStatus", request);//通知书读取状态(0:读取失败，1：读取成功，2：全部)
+		String tzsType = CommonTools.getFinalStr("tzsType",request);//通知书类型--tzs,sqd,空的时候表示全部
 		Integer currLoginUserId = this.getLoginUserId(request);
 		String roleName = this.getLoginRoleName(request);
 		//当任务条件为0时，撰写任务领取，这时需要强制stopStatus为正常（0）
@@ -718,9 +719,9 @@ public class ZlMainAction extends DispatchAction {
 					map.put("msg", "noInfo");
 				}
 			}else if(lqStatus.equals(6)){//上传通知书读取列表
-				Integer count = tzsm.getCountByOpt(cpyId, 0, zlNo,readStatus);
+				Integer count = tzsm.getCountByOpt(cpyId, 0, zlNo,readStatus,tzsType);
 				if(count > 0){
-					List<ZlajTzsInfoTb> tzsList = tzsm.listPageInfoByOpt(cpyId, 0, zlNo,readStatus, pageNo, pageSize);
+					List<ZlajTzsInfoTb> tzsList = tzsm.listPageInfoByOpt(cpyId, 0, zlNo,readStatus, tzsType,pageNo, pageSize);
 					List<Object> list_d = new ArrayList<Object>();
 					for(Iterator<ZlajTzsInfoTb> it = tzsList.iterator() ; it.hasNext();){
 						ZlajTzsInfoTb tzs = it.next();
@@ -2921,7 +2922,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 获取指定专利的目前流程任务（定稿提交之前）
+	 * 获取指定专利的目前流程任务
 	 * @description 晚上修改
 	 * @author Administrator
 	 * @date 2018-11-9 上午10:01:47
@@ -3254,6 +3255,8 @@ public class ZlMainAction extends DispatchAction {
 							upUser = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();
 							if(lcmxName.equals("专利补正")){//获取最后一次的撰稿修改文件或者新申请撰稿文件--定稿文件
 								//是否增加通知书内容
+								//还需要获取最近一次的补正审核的意见和附件
+//								11
 							}else if(lcmxName.equals("补正审核")){
 								//补正审核是还需要获取补正的文件
 								List<ZlajLcMxInfoTb> mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "专利补正");
@@ -3995,7 +3998,7 @@ public class ZlMainAction extends DispatchAction {
 										}
 									}else if((lcNo > 9 && lcNo <= 9.9) || (lcNo > 13 && lcNo <= 13.9)){//补正时
 										String upZxFile = CommonTools.getFinalStr("upZxFile", request);//补正人员上传的撰稿文件（参数）
-										
+//										11
 										//补正完成后开启补正审核人员进行审核
 								}else{
 									msg = "fzrError";//当前操作用户和当前流程负责人不一致

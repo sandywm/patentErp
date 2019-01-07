@@ -85,11 +85,12 @@ public interface ZlajTzsInfoDao {
 	 * @param zlId 专利编号（0表示全部）
 	 * @param ajNo 专利号（""表示全部）
 	 * @param readStatus 读取状态（2：表示全部，1：读取成功，0:读取失败）
+	 * @param tzsType 通知书类型--tzs,sqd,""的时候表示全部
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 */
-	List<ZlajTzsInfoTb> findPageInfoByOpt(Session sess,Integer cpyId,Integer zlId,String ajNo,Integer readStatus,Integer pageNo,Integer pageSize);
+	List<ZlajTzsInfoTb> findPageInfoByOpt(Session sess,Integer cpyId,Integer zlId,String ajNo,Integer readStatus,String tzsType,Integer pageNo,Integer pageSize);
 	
 	/**
 	 * 根据条件获取读取专利通知书记录条数
@@ -101,9 +102,10 @@ public interface ZlajTzsInfoDao {
 	 * @param ajNo 专利号（""表示全部）
 	 * @param zlId 专利编号（0表示全部）
 	 * @param readStatus 读取状态（2：表示全部，1：读取成功，0:读取失败）
+	 * @param tzsType 通知书类型--tzs,sqd,""的时候表示全部
 	 * @return
 	 */
-	Integer getCountByOpt(Session sess,Integer cpyId,Integer zlId,String ajNo,Integer readStatus);
+	Integer getCountByOpt(Session sess,Integer cpyId,Integer zlId,String ajNo,Integer readStatus,String tzsType);
 	
 	/**
 	 * 根据通知书编号获取申请文件列表（电子申请回单时使用）
