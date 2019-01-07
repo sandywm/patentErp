@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Session;
 
 import com.patent.dao.ZlajTzsInfoDao;
+import com.patent.module.TzsApplyFileInfo;
 import com.patent.module.ZlajTzsInfoTb;
 import com.patent.tools.CommonTools;
 
@@ -23,6 +24,12 @@ public class ZlajTzsInfoDaoImpl implements ZlajTzsInfoDao{
 		sess.save(tzsInfo);
 	}
 
+	@Override
+	public void saveAf(Session sess, TzsApplyFileInfo tzsAf) {
+		// TODO Auto-generated method stub
+		sess.save(tzsAf);
+	}
+	
 	@Override
 	public void delete(Session sess, int id) {
 		// TODO Auto-generated method stub
@@ -49,7 +56,7 @@ public class ZlajTzsInfoDaoImpl implements ZlajTzsInfoDao{
 	@Override
 	public List<ZlajTzsInfoTb> findInfoByAjId(Session sess, Integer ajId) {
 		// TODO Auto-generated method stub
-		String hql = " from ZlajTzsInfoTb as tzs where tzs.ajId = "+ajId + "  and tzs.readStatus = 1";
+		String hql = " from ZlajTzsInfoTb as tzs where tzs.ajId = "+ajId + "  and tzs.readStatus = 1  order by tzs.tzsFwr desc";
 		return sess.createQuery(hql).list();
 	}
 
@@ -98,6 +105,13 @@ public class ZlajTzsInfoDaoImpl implements ZlajTzsInfoDao{
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);
+	}
+
+	@Override
+	public List<TzsApplyFileInfo> findInfoByTzsId(Session sess, Integer tzsId) {
+		// TODO Auto-generated method stub
+		String hql  = " from TzsApplyFileInfo taf where taf.zlajTzsInfoTb.id = "+tzsId;
+		return sess.createQuery(hql).list();
 	}
 
 }

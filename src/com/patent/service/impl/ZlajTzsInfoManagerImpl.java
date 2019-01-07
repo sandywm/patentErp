@@ -11,6 +11,7 @@ import com.patent.dao.ZlajMainInfoDao;
 import com.patent.dao.ZlajTzsInfoDao;
 import com.patent.exception.WEBException;
 import com.patent.factory.DaoFactory;
+import com.patent.module.TzsApplyFileInfo;
 import com.patent.module.ZlajTzsInfoTb;
 import com.patent.service.ZlajTzsInfoManager;
 import com.patent.tools.CurrentTime;
@@ -129,6 +130,43 @@ public class ZlajTzsInfoManagerImpl implements ZlajTzsInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据条件获取读取专利通知书记录条数时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<TzsApplyFileInfo> listInfoByTzsId(Integer tzsId)throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			tzsDao = (ZlajTzsInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_TZS_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return tzsDao.findInfoByTzsId(sess, tzsId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据通知书编号获取申请文件列表（电子申请回单时使用）时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public Integer addAF(Integer tzsId, String fileName, String fileType,
+			String fileSize) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			tzsDao = (ZlajTzsInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_TZS_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			TzsApplyFileInfo tzsAf = new TzsApplyFileInfo(tzsDao.get(sess, tzsId), fileName,fileType, fileSize);
+			tzsDao.saveAf(sess, tzsAf);
+			tran.commit();
+			return tzsAf.getId();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("增加电子回单申请文件信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

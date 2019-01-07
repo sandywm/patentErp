@@ -44,6 +44,7 @@ import com.patent.util.WebUrl;
 import com.patent.action.base.Transcode;
 import com.patent.factory.AppFactory;
 import com.patent.json.FeeDetailJson;
+import com.patent.json.FileListJson;
 import com.patent.json.LateFeeJson;
 import com.patent.json.TzsJson;
 import com.patent.module.CpyUserInfo;
@@ -53,6 +54,7 @@ import com.patent.module.CustomerLxrInfoTb;
 import com.patent.module.FeeTypeInfoTb;
 import com.patent.module.JsFiledInfoTb;
 import com.patent.module.PubZlInfoTb;
+import com.patent.module.TzsApplyFileInfo;
 import com.patent.module.ZlajEwyqInfoTb;
 import com.patent.module.ZlajFeeInfoTb;
 import com.patent.module.ZlajFeeSubInfoTb;
@@ -724,6 +726,7 @@ public class ZlMainAction extends DispatchAction {
 						ZlajTzsInfoTb tzs = it.next();
 						Map<String,Object> map_d = new HashMap<String,Object>();
 						Integer zlId = tzs.getAjId();
+						map_d.put("tzsId",tzs.getId());
 						map_d.put("zlId", zlId);
 						if(zlId > 0){
 							List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
@@ -757,6 +760,50 @@ public class ZlMainAction extends DispatchAction {
 			}
 				
 		}
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取电子申请回执单中的信息
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-5 上午11:24:48
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getApplyFileInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		Integer tzsId = CommonTools.getFinalInteger("tzsId", request);
+		String msg = "noInfo";
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(tzsId > 0){
+			List<TzsApplyFileInfo>  afList = tzsm.listInfoByTzsId(tzsId);
+			if(afList.size() > 0){
+				Integer cpyId = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId();
+				if(afList.get(0).getZlajTzsInfoTb().getCpy().getId().equals(cpyId)){
+					msg = "success";
+					List<Object> list_d = new ArrayList<Object>();
+					for(Iterator<TzsApplyFileInfo> it = afList.iterator() ; it.hasNext();){
+						Map<String,String> map_d = new HashMap<String,String>();
+						TzsApplyFileInfo af = it.next();
+						map_d.put("fileName", af.getFileName());
+						map_d.put("fileType", af.getFileType());
+						map_d.put("fileSize", af.getFileSize());
+						list_d.add(map_d);
+					}
+					map.put("afInfo", list_d);
+				}
+			}
+		}
+		map.put("result", msg);
 		this.getJsonPkg(map, response);
 		return null;
 	}
@@ -3072,7 +3119,6 @@ public class ZlMainAction extends DispatchAction {
 									mxId_cus = mx_cus.getId();
 								}
 								if(mxId_sh > mxId_cus){//是因为技术审核没通过
-									//做这里-明天
 									if(mx_sh != null){
 										String filePath_sh = mx_sh.getLcMxUpFile();
 										remark = mx_sh.getLcMxRemark();//上一次技术审核的意见
@@ -3193,7 +3239,33 @@ public class ZlMainAction extends DispatchAction {
 			 					map_z.put("sqrLxrId", sqrLxrId);
 			 					list_z.add(map_z);
 							}
+						}else{//专利补正/专利补正审核
+							String lcmxName = lcmx.getLcMxName();
+							List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "撰稿修改");
+							Integer mxLen = mxList_t.size();
+							if(mxLen == 0){//不能存在撰稿修改，说明撰写人一次性通过
+								mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "新申请撰稿");
+								mxLen = mxList_t.size();
+							}
+							ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);//获取最近一次的撰稿修改
+							filePath = mx.getLcMxUpFile();
+							fileType = "定稿文件";
+							upUser = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();
+							if(lcmxName.equals("专利补正")){//获取最后一次的撰稿修改文件或者新申请撰稿文件--定稿文件
+								//是否增加通知书内容
+							}else if(lcmxName.equals("补正审核")){
+								//补正审核是还需要获取补正的文件
+								List<ZlajLcMxInfoTb> mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "专利补正");
+								Integer lcmxLen = mxList_bz.size();
+								if(lcmxLen > 0){
+									ZlajLcMxInfoTb lcmx_curr = mxList_bz.get(lcmxLen - 1);//获取最近一次的专利补正
+									filePath += ":" + lcmx_curr.getLcMxUpFile();
+									fileType += ":定稿文件";
+									upUser += ":"+cum.getEntityById(lcmx_curr.getLcMxUpUserId()).getUserName();
+								}
+							}
 						}
+							
 						
 						List<Object> list_d = new ArrayList<Object>();
 						if(!filePath.equals("")){
@@ -4981,9 +5053,9 @@ public class ZlMainAction extends DispatchAction {
 								        	}
 								        	if(readXml.equals("listXml")){
 								        		readResult = "noDataXml";
-												readResultChi = "费用减缓审批通知书中没有数据文件";
+												readResultChi = "费用减缓审批通知书中没有数据文件，需根据实际情况手动修改专利费减信息并增加费用";
 												if(zlType.equals("fm")){
-													readResultChi += ",需手动增加实质审查费";
+													readResultChi += ",并手动增加实质审查费";
 												}
 								        	}else{
 								        		//如果是发明专利，还需要增加缴纳实质审查费的任务
@@ -5200,7 +5272,8 @@ public class ZlMainAction extends DispatchAction {
 			        				readResult = "success";
 			        				readResultChi = "读取成功";
 			        			}else if(tzsName.equals("电子申请回执")){//电子申请回执
-			        				
+			        				readResult = "success";
+			        				readResultChi = "读取成功";
 			        			}else{//未收录该通知书的读取方法
 			        				readResult = "noReadTzs";//系统还未学习该通知书的读取方法
 			        				readResultChi = "系统还未学习该通知书的读取方法";
@@ -5213,7 +5286,16 @@ public class ZlMainAction extends DispatchAction {
 										//删除临时上传位置
 										FileOpration.deleteFile(tzsPath);
 									}
-									tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 1, "读取成功", cpyId);
+									Integer tzsId = tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 1, "读取成功", cpyId);
+									if(tzsName.equals("电子申请回执")){//电子申请回执
+										List<FileListJson> flList = tJson.getFlList();
+				        				if(flList.size() > 0){
+				        					for(Integer i = 0 ; i < flList.size() ; i++){
+				        						FileListJson flJson = flList.get(i);
+				        						tzsm.addAF(tzsId, flJson.getFileName(), flJson.getFileType(), flJson.getFileSize());
+				        					}
+				        				}
+									}
 								}else{
 									//删除临时上传位置
 									//FileOpration.deleteFile(tzsPath);

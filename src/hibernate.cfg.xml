@@ -90,6 +90,7 @@
 		<mapping resource="com/patent/xml/FeeImportRecordInfo.hbm.xml" />
 		<mapping resource="com/patent/xml/FeeImportDealRecordInfo.hbm.xml" />
 		<mapping resource="com/patent/xml/CusPzInfo.hbm.xml" />
+		<mapping resource="com/patent/xml/TzsApplyFileInfo.hbm.xml" />
 
 	</session-factory>
 

@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Session;
 
 import com.patent.exception.WEBException;
+import com.patent.module.TzsApplyFileInfo;
 import com.patent.module.ZlajTzsInfoTb;
 
 public interface ZlajTzsInfoManager {
@@ -94,4 +95,27 @@ public interface ZlajTzsInfoManager {
 	 * @throws WEBException
 	 */
 	Integer getCountByOpt(Integer cpyId,Integer zlId,String ajNo,Integer readStatus) throws WEBException;
+	
+	/**
+	 * 根据通知书编号获取申请文件列表（电子申请回单时使用）
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-5 上午11:05:34
+	 * @param tzsId 通知书编号
+	 */
+	List<TzsApplyFileInfo> listInfoByTzsId(Integer tzsId)throws WEBException;
+	
+	/**
+	 * 给电子回单通知书增加申请文件信息
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-5 上午11:11:17
+	 * @param tzsId 通知书编号
+	 * @param fileName 文件名称
+	 * @param fileType 文件类型
+	 * @param fileSize 文件大小
+	 * @return
+	 * @throws WEBException
+	 */
+	Integer addAF(Integer tzsId,String fileName,String fileType,String fileSize)throws WEBException;
 }

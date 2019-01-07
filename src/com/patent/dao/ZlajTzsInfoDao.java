@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 
+import com.patent.module.TzsApplyFileInfo;
 import com.patent.module.ZlajTzsInfoTb;
 
 public interface ZlajTzsInfoDao {
@@ -20,6 +21,12 @@ public interface ZlajTzsInfoDao {
 	 * @param tzsInfo 保存的专利案件通知书信息实例
 	 */
 	void save(Session sess,ZlajTzsInfoTb tzsInfo);
+	
+	/**
+	 * 保存申请文件信息实体，新增一条申请文件信息记录
+	 * @param tzsInfo 保存的申请文件信息实例
+	 */
+	void saveAf(Session sess,TzsApplyFileInfo tzsAf);
 	
 	/**
 	 * 根据主键删除专利案件通知书信息实体，删除一条专利案件通知书信息记录
@@ -97,4 +104,15 @@ public interface ZlajTzsInfoDao {
 	 * @return
 	 */
 	Integer getCountByOpt(Session sess,Integer cpyId,Integer zlId,String ajNo,Integer readStatus);
+	
+	/**
+	 * 根据通知书编号获取申请文件列表（电子申请回单时使用）
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-5 上午11:05:34
+	 * @param sess
+	 * @param tzsId 通知书编号
+	 * @return
+	 */
+	List<TzsApplyFileInfo> findInfoByTzsId(Session sess,Integer tzsId);
 }
