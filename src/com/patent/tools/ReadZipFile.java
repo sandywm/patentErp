@@ -3,9 +3,11 @@ package com.patent.tools;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,10 +18,12 @@ import java.util.Map;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
@@ -849,6 +853,82 @@ public class ReadZipFile {
 	}
 	
 	/**
+	 * 复制zip压缩包中的指定文件
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2019-1-7 下午11:16:48
+	 * @param file
+	 */
+	public void copyZipFile(File file){
+		ZipFile zipFile = null;
+		ZipInputStream zipInput = null;
+		ZipEntry zipEntry = null;
+		OutputStream os = null;
+		InputStream is = null;
+		File mainfestFile = new File(file.getParent() + "\\000001.tif");
+		if(!mainfestFile.exists()){
+			try {
+				mainfestFile.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		try {
+			zipFile = new ZipFile(file);
+			zipInput = new ZipInputStream(new FileInputStream(file),Charset.forName("utf-8"));
+			os = new FileOutputStream(mainfestFile);
+			while((zipEntry = zipInput.getNextEntry()) != null){
+				String currFileName = zipEntry.getName();
+//				if(currFileName.endsWith("list.xml")){
+					//获取通知书的ID号
+//					String tzsIdNo = "";
+//					SAXReader reader = new SAXReader();  
+//            		reader.setEntityResolver(new IgnoreDTDEntityResolver());//忽略dtd验证
+//            		is = zipFile.getInputStream(zipEntry);
+//                    Document doc;
+//					try {
+//						doc = reader.read(is);
+//						Element root = doc.getRootElement();  
+//						tzsIdNo = root.elementText("TONGZHISID");
+//						
+//					} catch (DocumentException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+				System.out.println(currFileName);
+				if(currFileName.endsWith("tif")){
+					int indexLen = currFileName.indexOf("\\");
+					if(indexLen > -1){
+						is = zipFile.getInputStream(zipEntry);
+						int len;
+						while((len = is.read()) != -1){
+							os.write(len);
+						}
+					}
+				}
+			}
+		} catch (ZipException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally{
+			try {
+				is.close();
+				os.close();
+				zipInput.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	/**
 	 * @description
 	 * @author Administrator
 	 * @date 2018-9-21 下午05:23:40
@@ -857,54 +937,56 @@ public class ReadZipFile {
 	 */
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		List<TzsJson> tjList = new ArrayList<TzsJson>();
-//		for(int i = 222 ; i <= 223; i++){
-//			List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\"+i+".zip",0,0,0);
-//			tjList.addAll(tj);
-//		}
-		List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\tzs_411050434.zip",0,0,0);
-		tjList.addAll(tj);
-		System.out.println(tj.size());
-//		Collections.sort(tjList);
-		for(int j = 0; j < tjList.size(); j++){
-        	TzsJson tJson = tjList.get(j);
-        	System.out.println("---------------------------------"+j);
-        	System.out.println("发文序号 : "+tJson.getFwSerial());
-        	System.out.println("专利/申请号 : "+tJson.getAjNoGf());
-        	System.out.println("通知书名称 : "+tJson.getTzsName());
-        	System.out.println("专利名称 : "+tJson.getZlName());
-        	System.out.println("发文日 : "+tJson.getFwDate());
-        	System.out.println("申请人 : "+tJson.getSqrName());
-        	System.out.println("申请日 : "+tJson.getApplyDate());
-        	System.out.println("专利类型 : "+tJson.getZlType());
-        	System.out.println("费减请求日期 : "+tJson.getFjApplyDate());
-        	System.out.println("费减记录: "+tJson.getFjRecord());
-        	System.out.println("缴费截止日期/补正截止日期 :  "+tJson.getFeeEdate());
-        	System.out.println("费减比率 : "+tJson.getFjRate());
-        	List<FeeDetailJson> fdList = tJson.getFdList();
-        	if(fdList.size() > 0){
-        		for(Integer k = 0 ; k < fdList.size() ; k++){
-        			FeeDetailJson fdJson = fdList.get(k);
-        			System.out.println(fdJson.getFeeName()+" :"+fdJson.getFeeAmount());
-        		}
-        	}
-        	System.out.println("年度数字:  "+tJson.getYearNo());
-        	List<LateFeeJson> lfList = tJson.getLfList();
-        	if(lfList.size() > 0){
-        		for(Integer k = 0 ; k < lfList.size() ; k++){
-        			LateFeeJson lfJson = lfList.get(k);
-        			System.out.println("缴费时间段："+lfJson.getFeeSDate()+"至"+lfJson.getFeeEDate() + " 滞纳金 " + lfJson.getLateFee());
-        		}
-        	}
-        	List<FileListJson> flList = tJson.getFlList();
-        	if(flList.size() > 0){
-        		for(Integer k = 0 ; k < flList.size() ; k++){
-        			FileListJson lfJson = flList.get(k);
-        			System.out.println("文件名："+lfJson.getFileName() + "   ,文件格式:" + lfJson.getFileType() + "   ,文件大小 :"+lfJson.getFileSize());
-        		}
-        	}
-        	System.out.println("通知书路径 : "+tJson.getZipPath());
-        }
+		ReadZipFile rzf = new ReadZipFile();
+		rzf.copyZipFile(new File("e:\\1122.zip"));
+//		List<TzsJson> tjList = new ArrayList<TzsJson>();
+////		for(int i = 222 ; i <= 223; i++){
+////			List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\"+i+".zip",0,0,0);
+////			tjList.addAll(tj);
+////		}
+//		List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\tzs_411050434.zip",0,0,0);
+//		tjList.addAll(tj);
+//		System.out.println(tj.size());
+////		Collections.sort(tjList);
+//		for(int j = 0; j < tjList.size(); j++){
+//        	TzsJson tJson = tjList.get(j);
+//        	System.out.println("---------------------------------"+j);
+//        	System.out.println("发文序号 : "+tJson.getFwSerial());
+//        	System.out.println("专利/申请号 : "+tJson.getAjNoGf());
+//        	System.out.println("通知书名称 : "+tJson.getTzsName());
+//        	System.out.println("专利名称 : "+tJson.getZlName());
+//        	System.out.println("发文日 : "+tJson.getFwDate());
+//        	System.out.println("申请人 : "+tJson.getSqrName());
+//        	System.out.println("申请日 : "+tJson.getApplyDate());
+//        	System.out.println("专利类型 : "+tJson.getZlType());
+//        	System.out.println("费减请求日期 : "+tJson.getFjApplyDate());
+//        	System.out.println("费减记录: "+tJson.getFjRecord());
+//        	System.out.println("缴费截止日期/补正截止日期 :  "+tJson.getFeeEdate());
+//        	System.out.println("费减比率 : "+tJson.getFjRate());
+//        	List<FeeDetailJson> fdList = tJson.getFdList();
+//        	if(fdList.size() > 0){
+//        		for(Integer k = 0 ; k < fdList.size() ; k++){
+//        			FeeDetailJson fdJson = fdList.get(k);
+//        			System.out.println(fdJson.getFeeName()+" :"+fdJson.getFeeAmount());
+//        		}
+//        	}
+//        	System.out.println("年度数字:  "+tJson.getYearNo());
+//        	List<LateFeeJson> lfList = tJson.getLfList();
+//        	if(lfList.size() > 0){
+//        		for(Integer k = 0 ; k < lfList.size() ; k++){
+//        			LateFeeJson lfJson = lfList.get(k);
+//        			System.out.println("缴费时间段："+lfJson.getFeeSDate()+"至"+lfJson.getFeeEDate() + " 滞纳金 " + lfJson.getLateFee());
+//        		}
+//        	}
+//        	List<FileListJson> flList = tJson.getFlList();
+//        	if(flList.size() > 0){
+//        		for(Integer k = 0 ; k < flList.size() ; k++){
+//        			FileListJson lfJson = flList.get(k);
+//        			System.out.println("文件名："+lfJson.getFileName() + "   ,文件格式:" + lfJson.getFileType() + "   ,文件大小 :"+lfJson.getFileSize());
+//        		}
+//        	}
+//        	System.out.println("通知书路径 : "+tJson.getZipPath());
+//        }
 	}
 
 }
