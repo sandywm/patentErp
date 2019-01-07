@@ -82,7 +82,7 @@ public class ZlajTzsInfoDaoImpl implements ZlajTzsInfoDao{
 			hql += " and tzs.readStatus = "+readStatus;
 		}
 		if(!tzsType.equals("")){
-			hql += " and tzs.zlType = '"+tzsType+"'";
+			hql += " and tzs.tzsType = '"+tzsType+"'";
 		}
 		hql += " order by id desc";
 		int offset = (pageNo - 1) * pageSize;
@@ -107,7 +107,7 @@ public class ZlajTzsInfoDaoImpl implements ZlajTzsInfoDao{
 			hql += " and tzs.readStatus = "+readStatus;
 		}
 		if(!tzsType.equals("")){
-			hql += " and tzs.zlType = '"+tzsType+"'";
+			hql += " and tzs.tzsType = '"+tzsType+"'";
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);

@@ -3253,19 +3253,31 @@ public class ZlMainAction extends DispatchAction {
 							filePath = mx.getLcMxUpFile();
 							fileType = "定稿文件";
 							upUser = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();
-							if(lcmxName.equals("专利补正")){//获取最后一次的撰稿修改文件或者新申请撰稿文件--定稿文件
-								//是否增加通知书内容
-								//还需要获取最近一次的补正审核的意见和附件
-//								11
-							}else if(lcmxName.equals("补正审核")){
-								//补正审核是还需要获取补正的文件
-								List<ZlajLcMxInfoTb> mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "专利补正");
+							
+							//专利补正、补正修改
+							if(lcmxName.equals("补正修改")){//获取最后一次的撰稿修改文件或者新申请撰稿文件--定稿文件
+								List<ZlajLcMxInfoTb> mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "补正修改");
 								Integer lcmxLen = mxList_bz.size();
+								if(lcmxLen.equals(0)){
+									mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "专利补正");
+									lcmxLen = mxList_bz.size();
+								}
 								if(lcmxLen > 0){
 									ZlajLcMxInfoTb lcmx_curr = mxList_bz.get(lcmxLen - 1);//获取最近一次的专利补正
 									filePath += ":" + lcmx_curr.getLcMxUpFile();
-									fileType += ":定稿文件";
+									fileType += ":补正文件";
 									upUser += ":"+cum.getEntityById(lcmx_curr.getLcMxUpUserId()).getUserName();
+								}
+								//是否增加通知书内容
+								//还需要获取最近一次的补正审核的意见和附件
+								List<ZlajLcMxInfoTb> mxList_bzsc = mxm.listSpecInfoInfoByOpt(zlId, "补正审核");
+								Integer lcmxLen_sc = mxList_bzsc.size();
+								if(lcmxLen_sc > 0){
+									ZlajLcMxInfoTb lcmx_curr = mxList_bzsc.get(lcmxLen_sc - 1);//获取最近一次的补正审查
+									filePath += ":" + lcmx_curr.getLcMxUpFile();
+									fileType += ":补正审核";
+									upUser += ":"+cum.getEntityById(lcmx_curr.getLcMxUpUserId()).getUserName();
+									remark = lcmx_curr.getLcMxRemark();
 								}
 							}
 						}
@@ -3298,7 +3310,7 @@ public class ZlMainAction extends DispatchAction {
 									map_f.put("upUser", upUser);
 									list_d.add(map_f);
 								}
-							}else{//存在两种类型的文件
+							}else{//存在两种或者以上类型的文件
 								String[] fjNameArr_main = filePath.split(":");
 								for(Integer i = 0 ; i < fjNameArr_main.length ; i++){
 									String[] fjNameArr_sub = fjNameArr_main[i].split(",");
