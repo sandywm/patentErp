@@ -747,6 +747,7 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("uploadTime", tzs.getUploadTime());
 						map_d.put("readStatus", tzs.getReadStatus());//0:失败，1：成功
 						map_d.put("readDetail", tzs.getReadDetail());
+						map_d.put("tzsType", tzs.getTzsType());
 						list_d.add(map_d);
 					}
 					map.put("msg", "success");
