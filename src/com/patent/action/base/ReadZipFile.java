@@ -225,6 +225,8 @@ public class ReadZipFile {
 	            	String fileName = ze.getName();
 	            	if(fileName.endsWith("TXT") || fileName.endsWith("txt")){//文本文件
 	            		
+	            	}else if(fileName.endsWith("tif")){
+	            		System.out.println(fileName);
 	            	}else if(fileName.endsWith("XML") || fileName.endsWith("xml")){
 	                    ZipEntry zip = zf.getEntry(ze.getName());
 	                    InputStream inputstream = null;
@@ -373,16 +375,16 @@ public class ReadZipFile {
 //	        					l1.elementText("invention-title"), l3.element("document-id").elementText("date"),
 //	        					l2.element("document-id").elementText("date"),dbFile,
 //	        					typeStr, flag);    
-	        	        ReadZipFile.writeReportToExcel("e:\\zl_"+CurrentTime.getStringDate()+".xls", 
-	        	        		sqNo,fmName, sqDate,sqDate_1,dbFile,typeStr.replaceAll(" ", ""));    
-//	        	        System.out.println("读取开始--------------------------------------------");
-//	        			System.out.println("申请号: "+sqNo);
-//	        	        System.out.println("发明名称: "+fmName);
-//	        	        System.out.println("申请日: "+sqDate);
-//	        	        System.out.println("授权公告日: "+sqDate_1);
-//	        	        System.out.println("对比文件: "+dbFile);
-//	        	        System.out.println("分类表: "+typeStr);
-	        	        System.out.println("正在读取："+fName+"\\"+fName_1+"\\"+ze.getName()+":: "+rowNum);
+//	        	        ReadZipFile.writeReportToExcel("e:\\zl_"+CurrentTime.getStringDate()+".xls", 
+//	        	        		sqNo,fmName, sqDate,sqDate_1,dbFile,typeStr.replaceAll(" ", ""));    
+////	        	        System.out.println("读取开始--------------------------------------------");
+////	        			System.out.println("申请号: "+sqNo);
+////	        	        System.out.println("发明名称: "+fmName);
+////	        	        System.out.println("申请日: "+sqDate);
+////	        	        System.out.println("授权公告日: "+sqDate_1);
+////	        	        System.out.println("对比文件: "+dbFile);
+////	        	        System.out.println("分类表: "+typeStr);
+//	        	        System.out.println("正在读取："+fName+"\\"+fName_1+"\\"+ze.getName()+":: "+rowNum);
 	            	}
 	            }
 	        }
@@ -406,21 +408,22 @@ public class ReadZipFile {
 		// TODO Auto-generated method stub
 		
 		//step1:浏览文件夹
-		String filePath = "F:\\SIPO\\1\\CN-BIBS-ABSS-10-B 中国发明专利授权公告标准化著录项目数据_2";
-		File f = new File(filePath);
-		if(f.isDirectory()){
-			File[] fArray = f.listFiles();
-			for(Integer i = 0 ; i < fArray.length ; i++){
-				File f_sub = new File(fArray[i].getPath());
-				File[] fArray_sub = f_sub.listFiles();
-				for(Integer j = 0 ; j < fArray_sub.length ; j++){
-					if(fArray_sub[j].getName().endsWith(".ZIP")){
-						readZipFile_new(fArray_sub[j].getPath(),fArray[i].getPath().split("\\\\")[3],fArray[i].getPath().split("\\\\")[4]);
-					}
-				}
-			}
-			System.out.println("解析完成"+CurrentTime.getCurrentTime());
-		}
+//		String filePath = "F:\\SIPO\\1\\CN-BIBS-ABSS-10-B 中国发明专利授权公告标准化著录项目数据_2";
+//		File f = new File(filePath);
+//		if(f.isDirectory()){
+//			File[] fArray = f.listFiles();
+//			for(Integer i = 0 ; i < fArray.length ; i++){
+//				File f_sub = new File(fArray[i].getPath());
+//				File[] fArray_sub = f_sub.listFiles();
+//				for(Integer j = 0 ; j < fArray_sub.length ; j++){
+//					if(fArray_sub[j].getName().endsWith(".ZIP")){
+//						readZipFile_new(fArray_sub[j].getPath(),fArray[i].getPath().split("\\\\")[3],fArray[i].getPath().split("\\\\")[4]);
+//					}
+//				}
+//			}
+//			System.out.println("解析完成"+CurrentTime.getCurrentTime());
+//		}
+		readZipFile_new("d:\\tzs.zip","","");
 //		ReadZipFile.exportExcel();
 //		ReadZipFile.readXml("");
 	}
