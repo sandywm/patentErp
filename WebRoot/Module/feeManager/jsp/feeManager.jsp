@@ -21,7 +21,7 @@
   						<div class="btnWrap"></div>
   						<ul class="layui-tab-title">
   							<li feeStatus="5" class="layui-this">费用</li>
-  							<li feeStatus="3">费用导出记录</li>
+  							<li feeStatus="3">未交费用导出记录</li>
   							<li feeStatus="4">费用导入记录</li>
   						</ul>
   						<div class="layui-tab-content">

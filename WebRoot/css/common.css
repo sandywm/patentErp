@@ -20,7 +20,7 @@
 }
 /* 头部添加按钮公共标签 */
 .newAddBtn{
-	right:0;
+	right:0px;
 	top:0;
 	height:100%;
 	display:block;

@@ -19,27 +19,26 @@
   			<div class="layui-col-md12 layui-col-lg12">
   				<div class="layui-card">
   					<div class="layui-card-header posRel">
-  						<span>客户管理</span>
-  						<a id="addCusBtn" class="posAbs newAddBtn" opts="addCusOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加客户</a>
-  					</div>
-  					<div class="layui-card-body" pad15>
+  						<!--  span>客户管理</span-->
   						<!-- 查询层  -->
   						<div class="clearfix">
-  							<div class="itemDiv fr">
-	  							<div class="layui-input-inline">
-	  								<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search
-	"></i></button>
-	  							</div>
-	  						</div>
-	  						<div class="itemDiv fr">
+	  						<div class="itemDiv fl">
 	  							<div class="layui-input-inline">
 	  								<input type="text" id="custNameInp" placeholder="请输入客户名称" autocomplete="off" class="layui-input">
 	  							</div>
 	  						</div>
+	  						<div class="itemDiv fl" style="margin-left:10px;">
+	  							<div class="layui-input-inline">
+	  								<button id="queryBtn" class="layui-btn" style="margin-bottom:4px;"><i class="layui-icon layui-icon-search"></i></button>
+	  							</div>
+	  						</div>
   						</div>
+  						<a id="addCusBtn" class="posAbs newAddBtn" opts="addCusOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加客户</a>
+  					</div>
+  					<div class="layui-card-body" pad15>
   						<div id="customerList">
   							<div class='noData'></div>
-  							<table id="cusListTable" class="layui-table" lay-filter="cusTableFilter"></table>
+  							<table id="cusListTable" class="layui-table" style="margin-bottom:-20px;" lay-filter="cusTableFilter"></table>
   						</div>
   					</div>
   				</div>

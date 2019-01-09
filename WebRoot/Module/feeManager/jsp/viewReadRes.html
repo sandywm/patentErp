@@ -53,9 +53,15 @@
 	   			        data:{firId:firId},
 	   			        url : '/fee.do?action=getFidrDetail',
 	   			        success:function (json){
+	   			        	console.log(json)
 	   			        	layer.closeAll('loading');
-	   			        	var readInfo = json.readInfo;
-	   			        	_this.renderReadInfo(readInfo);
+	   			        	if(json['result'] == 'success'){
+	   			        		var readInfo = json.readInfo;
+		   			        	_this.renderReadInfo(readInfo);
+	   			        	}else if(json['result'] == 'noInfo'){
+	   			        		$('.downBox').remove();
+	   			        		$('.readResCon').html('<li class="specLi"><div class="noData"><i class="iconfont layui-extend-noData"></i><p>暂无读取结果</p></div></li>');
+	   			        	}
 	   			        }
 					});
 				},
@@ -88,8 +94,6 @@
 						}
 						$('.readResCon').html(strHtml);
 						$('.readResCon li:odd').addClass('oddColor');
-					}else{
-						
 					}
 				}
 			};

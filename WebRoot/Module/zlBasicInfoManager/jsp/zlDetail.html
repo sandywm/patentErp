@@ -141,7 +141,7 @@
 	<script src="/Module/zlBasicInfoManager/js/delMethod.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var num=0,tmpEwyqIdArray=[],globalFeeId=0,zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
+		var num=0,tmpEwyqIdArray=[],globalFeeId=0,globalTzsId=0,zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -1161,6 +1161,7 @@
 				},
 				//获取通知书
 				renderTzsDetail : function(json){
+					console.log(json)
 					var tzsInfo = json.tzsInfo;
 					var strHtml = '';
 					for(var i=0,iLen = tzsInfo.length;i<iLen;i++){
@@ -1175,10 +1176,31 @@
 						}else{
 							strHtml += '<p>&nbsp;</p>';
 						}
-						strHtml += '<p><a href="javascript:void(0)" class="downloadBtn" downFilePath="'+ tzsInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a></p></li>';
+						//strHtml += '<p><a href="javascript:void(0)" class="downloadBtn" downFilePath="'+ tzsInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a></p></li>';
+						strHtml += '<p><a href="javascript:void(0)" class="viewTzsFun" tzsId="'+ tzsInfo[i].tzsId +'" tzsType="'+ tzsInfo[i].tzsType +'"><i class="layui-icon layui-icon-download-circle"></i>查看</a>';
+						strHtml += '<a href="javascript:void(0)" class="downloadBtn" downFilePath="'+ tzsInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
+						strHtml += '</p></li>';
 					}
 					$('#tzsCon').html(strHtml);
 					$('#tzsCon li:odd').addClass('oddColor');
+					$('.viewTzsFun').on('click',function(){
+						globalTzsId = $(this).attr('tzsId');
+						var tzsType = $(this).attr('tzsType');
+						if(tzsType == 'sqd'){//查看电子回执单
+							layer.open({
+								title:'查看回执单',
+								type: 2,
+							  	area: ['700px', '400px'],
+							  	fixed: true, //不固定
+							  	maxmin: false,
+							  	shadeClose :false,
+							  	closeBtn : 1,
+							  	content: '/Module/zlBasicInfoManager/jsp/viewReceipt.html'
+							});	
+						}else{
+							layer.msg('正在开发中，后续开放...', {icon:5,anim:6,time:1000});
+						}
+					});
 					//下载
 					$('.downLoadBtn').on('click',function(){
 						var downFilePath = $(this).attr('downFilePath');

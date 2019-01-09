@@ -9,14 +9,13 @@
 <body style="background:#fff;">
 	<div class="importBtn">
 		<p><i class="iconfont layui-extend-daoru"></i>通知书批量导入</p>
-		<button class="layui-btn readTzsBtn" style="position:absolute;right:50px;top:3px;">读取通知书</button>
+		<!--  button class="layui-btn readTzsBtn" style="position:absolute;right:50px;top:3px;">读取通知书</button-->
 		<a class="closeBtns" href="javascript:void(0)"><i class="layui-icon layui-icon-close"></i></a>
 	</div>
 	<div class="importConTit">
 		<button type="button" class="layui-btn layui-btn-normal" id="selFileBtn">选择文件</button> 
 		<span class="noticeSpan">注：通知书单个文件大小不能超过10M，一次最多可上传20个通知书文件,文件必须是.zip格式的！ <em class="hasSelWords"></em></span>
 		<button type="button" class="layui-btn" id="upListAction">上传通知书</button>
-		
 	</div>
 	<div class="importCon">
 		<input id="fujianInp" name="zlUpCl" type="hidden"/>
@@ -30,7 +29,10 @@
 	      </tr></thead>
 	      <tbody id="upLoadFileList"></tbody>
 	    </table>
-	    
+	</div>
+	<!-- 读取结果 -->
+	<div class="readResWrap noBor">
+		<table id="readResTab_tzs" lay-filter="readResTab_tzs" class="layui-table resTable"></table>
 	</div>
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
@@ -45,7 +47,6 @@
 			var layer = layui.layer,
 				upload = layui.upload,
 				globalUpload = layui.upLoadFiles;
-				
 			var page = {
 				init : function(){
 					this.bindEvent();
@@ -56,57 +57,6 @@
 					$('.closeBtns').on('click',function(){
 						var index= parent.layer.getFrameIndex(window.name);
 						parent.layer.close(index);
-					});
-					$('.readTzsBtn').on('click',function(){
-						//var indexLayer = globalUpload.data.indexLayer;
-						//parent.parent.$('body').append(indexLayer);
-						//parent.parent.layer.load();
-						//parent.parent.$('.layui-layer-shade').css({'opacity':.5,'background':'#f1f1f1'})
-						/*setTimeout(function(){
-							//parent.parent.layer.closeAll('loading');
-						},5000);*/
-						//读取通知书动作
-						if($('#fujianInp').val() == '' && $('.deleteBtn').length == 0){
-							layer.msg('请添加附件',{icon:5,anim:6,time:1000});
-						}else{
-							var isHasUpLoadFlag = false;
-							if($('.deleteBtn').length > 0){
-								if($('input[name="hasUpSuccInp"]').length == 0){//表示用户选择了文件，但是没有点击上传
-									isHasUpLoadFlag = false;
-								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length == 0){
-									//表示用户选择了文件并且全部上传了
-									isHasUpLoadFlag = true;
-								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0 && errorTypeFlag == false){
-									//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传(格式都是正确的时候)
-									isHasUpLoadFlag = false;
-								}else if($('input[name="hasUpSuccInp"]').length > 0 && $('input[name="notUpInp"]').length > 0 && errorTypeFlag == true){
-									//表示用户选择了文件并且上传了，然后用户又选择了文件但是并没有上传(格式有部分不正确，用户如果没有点击删除不正确按钮，点击保存直接保存)
-									isHasUpLoadFlag = true;
-								}
-								if(isHasUpLoadFlag){
-									upSuccSrcArray.length = 0;
-									$('input[name="hasUpSuccInp"]').each(function(i){
-										upSuccSrcArray.push($('input[name="hasUpSuccInp"]').eq(i).val());
-									});
-									$('#fujianInp').val(upSuccSrcArray.join(','));
-								}else{
-									layer.msg('您有未上传的附件，请先上传附件',{icon:5,anim:6,time:1000});
-									return;
-								}
-							}
-							//执行ajax
-							var upFilePath = $('#fujianInp').val();
-							$.ajax({
-								type:"post",
-								dataType:"json",
-								async:false,
-								data:{zipPath:upFilePath},
-								url:"/zlm.do?action=dealTzsDetail",
-								success:function(json){
-									console.log(json);
-								}
-							});
-						}
 					});
 				},
 				upLoadTzs : function(){

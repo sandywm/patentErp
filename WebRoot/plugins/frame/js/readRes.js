@@ -2,8 +2,8 @@
  * @Description: 批量读取通知书/缴费单据渲染结构
  * @author: hlf
  */
-layui.define(['jquery'],function(exports){
-	var $ = layui.jquery;
+layui.define(['jquery','table'],function(exports){
+	var $ = layui.jquery,table = layui.table;
     var obj = {
     	renderReadRes : function(opts,readInfo){
     		var strHtml = '';
@@ -28,9 +28,31 @@ layui.define(['jquery'],function(exports){
         			strHtml += '<p class="towWid_fee">'+ readStaCHN + readInfo[i].readInfo +'<p>';
         			strHtml += '</li>';
         		}
+    			$('.commonResCon').html(strHtml);
+        		$('.commonResCon li:odd').addClass('oddColor');
+    		}else if(opts == 'batchImp_tzs'){
+    			table.render({
+    				elem : '#readResTab_tzs',
+					height: 'full-200',
+					data : readInfo,
+					page : false,
+					even : true,
+					cellMinWidth:120,
+					cols : [[
+					     {field : '', title: '序号',type:'numbers', width:50, align:'center'},
+					     {field : 'ajTitle', title: '案件名称', width:240, align:'center'},
+					     {field : 'ajNoGf', title: '案件编号', width:180, align:'center'},
+					     {field : 'tzsName', title: '通知书名称', width:240, align:'center'},
+					     {field : 'readResultChi', title: '读取结果', align:'center',templet:function(d){
+					    	 if(d.result == 'success'){
+					    		 return '<span class="readStaSuc">'+ d.readResultChi +'</span>';
+					    	 }else{
+					    		 return '<span class="readStaAlarm">'+ d.readResultChi +'</span>';
+					    	 }
+					     }},
+					]]
+    			});
     		}
-    		$('.commonResCon').html(strHtml);
-    		$('.commonResCon li:odd').addClass('oddColor');
     		parent.hasReadFlag = true;
     	}
     };

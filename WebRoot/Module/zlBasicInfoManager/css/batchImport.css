@@ -56,6 +56,12 @@ body{
 	width:98%;
 	margin:10px 0 0 1%;
 }
+.layui-table.resTable,
+.layui-table.resTable + .layui-table-view{
+	width:100%;
+	margin-top:10px;
+	margin-left:0px;
+}
 #upListAction{
 	float:right;
 	display:none;
@@ -90,6 +96,9 @@ body{
 	color:#666;
 	border:1px solid #e6e6e6;
 	display:none;
+}
+.readResWrap.noBor{
+	border:none;
 }
 .commonResTit{
 	height:40px;

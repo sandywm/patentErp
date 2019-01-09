@@ -828,6 +828,12 @@ body{
 .noPasCheckStatus{
 	background:#FF5722;
 }
+.faileTxt{
+	color:#FF5722;
+}
+.succTxt{
+	color:#5FB878;
+}
 .selZlType + .layui-form-select{
 	width:146px;
 	margin-right:-40px;
@@ -843,4 +849,11 @@ body{
 	margin-top:9px;
 	display:block;
 	float:left;
+}
+.layui-extend-huizhi{
+	color:#009688;
+	font-weight:600;
+	position:absolute;
+	left:3px;
+	top:0px;
 }

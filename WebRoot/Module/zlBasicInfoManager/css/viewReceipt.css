@@ -1,0 +1,61 @@
+@import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
+.receiptTit,
+.receiptCon li{
+	height:40px;
+	line-height:40px;
+}
+.receiptCon{
+	position:relative;
+}
+.receiptConUl{
+	with:100%;
+	position:absolute;
+	left:0;
+	top:0;
+}
+.receiptTit{
+	background:#e6e6e6;
+	box-shadow:0 3px 5px #ccc;
+}
+.receiptCon li{
+	border-bottom:1px solid #ccc;
+}
+.receiptTit li,
+.receiptCon li p{
+	float:left;
+	text-align:center;
+	color:#666;
+}
+.receiptTit li{
+	font-weight:600;
+}
+.oneWid{
+	width:400px;
+}
+.twoWid{
+	width:150px;
+}
+.receiptCon{
+	height:316px;
+}
+.noData.smMargTop{
+	position:absolute;
+	left:50%;
+	margin-left:-40px;
+	top:0px;
+}
+.parentScroll,
+.scrollBar{
+	width: 5px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-radius: 20px;
+}
+.parentScroll{
+	height:100%;
+}
+.scrollBar{
+	height:50px;
+	background:#F47837;
+}

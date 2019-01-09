@@ -33,8 +33,8 @@
   	<script src="/plugins/jquery/jquery.min.js"></script>
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
-    	var loginType=parent.loginType,roleName=parent.roleName,tmpIndex=0;
-		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,applyCause:'',applyName:'',yjId:0,zlType:''},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
+    	var loginType=parent.loginType,roleName=parent.roleName,hasReadFlag=false;
+		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,applyCause:'',applyName:'',yjId:0,zlType:'',tzsId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -60,7 +60,6 @@
   					globalWid = 110;
   				}
   				//globalLqStatus == 0 || globalLqStatus == 1 ? globalWid=180 : globalWid = 100;
-  				loadZlInfoList('initLoad');
   				if(lqStatus == 1 && page.data.addZlFlag){
   					$('#addZlBtn').show();
   				}else{
@@ -71,6 +70,7 @@
   				}else{
   					$('#importBtn').hide();
   				}
+  				loadZlInfoList('initLoad');
  			});
 			var page = {
 				data : {
@@ -94,9 +94,9 @@
   						type:"post",
 				        async:false,
 				        dataType:"json",
-				        data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',checkStatus:0,lqStatus: 5},
+				        data : {readStatus:0,lqStatus: 6},
 				       // data:{stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',comStatus:0,lqStatus: 4},
-				        data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',lqStatus:loginType == 'spUser' ? -1 : 4},
+				        //data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',lqStatus:loginType == 'spUser' ? -1 : 4},
 				        //data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',checkStatus:0,lqStatus: 5},
 				        url:'/zlm.do?action=getPageZlData',
 				        success:function (json){
@@ -143,9 +143,11 @@
 							layer.msg('抱歉，您暂无权限增加新专利', {icon:5,anim:6,time:1000});
 						}
 					});
+					//批量导入
 					$('#importBtn').on('click',function(){
 						if(_this.data.dealZlFlag){
-							var fullScreenIndex = tmpIndex = layer.open({
+							hasReadFlag = false;
+							var fullScreenIndex = layer.open({
 								title:'',
 								type: 2,
 							  	area: ['700px', '500px'],
@@ -155,14 +157,11 @@
 							  	closeBtn:0,
 							  	content: '/Module/zlBasicInfoManager/jsp/batchImport.html',
 							  	end:function(){
-							  		/*if(addZlFlag){
+							  		if(hasReadFlag){
 							  			loadZlInfoList('initLoad');
-							  		}*/
+							  		}
 							  	}
 							});	
-							//alert(tmpIndex)
-							parent.testIndex = tmpIndex;
-							//alert(parent.testIndex + "--" + tmpIndex)
 							layer.full(fullScreenIndex);
 						}else{
 							layer.msg('抱歉，您暂无批量导入通知书的权限', {icon:5,anim:6,time:1000});
@@ -227,7 +226,7 @@
 						strHtmlCon += '<div id="noData_4" class="noData"></div>';
 						strHtmlCon += '<table id="zlBasicListTab_4" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 						//专利移交申请审核/记录
-						strHtmlCon += '<div class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="tranStatusInp" type="hidden" value="0"/>';
+						strHtmlCon += '<div id="layui-tab-item_5" class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="tranStatusInp" type="hidden" value="0"/>';
 						strHtmlCon += '<div class="verifyTxt"><p><span class="noVerifySpan"></span>未审核</p><p><span class="pasVerifySpan"></span>审核已通过</p><p><span class="noPasVerifySpan"></span>审核未通过</p></div>';
 						strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="0" title="未审核" checked/>';
 						strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="1" title="审核通过"/>';
@@ -235,8 +234,17 @@
 						strHtmlCon += '<div id="noData_5" class="noData"></div>';
 						strHtmlCon += '<table id="zlBasicListTab_5" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 						//通知书批量导入
-						strHtmlCon += '<div class="layui-tab-item"><div id="noData_6" class="noData"></div>';
-						strHtmlCon += '<table id="zlBasicListTab_6" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
+						strHtmlCon += '<div class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="readResInp" type="hidden" value="2"/><input id="tzsTypeInp" type="hidden" value=""/>';
+						strHtmlCon += '<div class="verifyTxt" style="left:475px;"><p><span class="noPasVerifySpan"></span>读取失败</p><p><span class="pasVerifySpan"></span>读取成功</p></div>';
+						strHtmlCon += '<div class="" style="float:left;margin-right:10px;"><div class="layui-input-inline">';
+						strHtmlCon += '<select lay-filter="tzsTypeSelFilter"><option value="">请选择通知书类型(全部)</option>';
+						strHtmlCon += '<option value="tzs">通知书</option><option value="sqd">电子回执单</option>';
+						strHtmlCon += '</select></div></div>';
+						strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="2" title="全部" checked/>';
+						strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="1" title="读取成功"/>';
+						strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="0" title="读取失败"/></div>';
+						strHtmlCon += '<div id="noData_6" class="noData"></div>';
+						strHtmlCon += '<table id="zlBasicListTab_6" class="layui-table" lay-filter="zlInfoListTable"></table>';
 					}
 					strHtmlCon += '</div>';
 					$('#layuiTab').append(strHtmlTit + strHtmlCon);
@@ -244,18 +252,21 @@
 				}
 			};
 			function loadZlInfoList(opts){
-				var lqStatusVal = $('#lqStatusInp').val(),taskStaVal = $('#taskStaInp').val();
+				var lqStatusVal = $('#lqStatusInp').val(),taskStaVal = $('#taskStaInp').val(),readResVal = $('#readResInp').val(),tzsTypeVal=$('#tzsTypeInp').val();
 				if(opts == 'initLoad'){
 					if(loginType == 'spUser'){
 						var field = {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:''};
 					}else{
-						if(lqStatusVal != 4 && lqStatusVal != 5){
+						if(lqStatusVal != 4 && lqStatusVal != 5 && lqStatusVal != 6){
 							var field = {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',lqStatus: lqStatusVal};	
 						}else if(lqStatusVal == 4){
 							var field = {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',comStatus:taskStaVal,lqStatus: lqStatusVal};//0未完成(默认) 1 已完成
 						}else if(lqStatusVal == 5){
 							//专利移交审核/专利移交记录
 							var field = {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',checkStatus:$('#tranStatusInp').val(),lqStatus: lqStatusVal};
+						}else if(lqStatusVal == 6){
+							var field = {lqStatus:lqStatusVal,readStatus:readResVal,tzsType:tzsTypeVal};
+							console.log(field)
 						}	
 					}
 				}else{
@@ -425,7 +436,6 @@
 								if(roleName == '管理员' || page.data.fpZlFlag == true){
 									return '<a lay-event="verifyFun" class="layui-btn layui-btn-xs" zlId="'+ d.zlId +'" yjId="'+ d.yjId +'" applyUserName="'+ d.applyUserName +'" applyCause="'+ d.applyCause +'" taskOpts="1" ajTitle="'+ d.zlTitle +'" lcTask="'+ d.taskName +'" fzUserId="'+ d.applyUserId +'"><i class="layui-icon layui-icon-vercode"></i>审核</a>';
 								}
-								//return '<a class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-edit"></i>去完成</a> <a class="layui-btn layui-btn-danger layui-btn-xs"><i style="font-size:20px;" class="iconfont layui-extend-yijiao"></i>移交申请</a>';
 							}}
 						]],
 						done : function(res){
@@ -435,8 +445,57 @@
 							}
 						}
 					});
-				}else if(lqStatusVal == 6){//通知书批量导入
+				}else if(lqStatusVal == 6){//通知书批量导入读取记录
 					layer.closeAll('loading');
+					table.render({
+						elem: '#zlBasicListTab_'+lqStatusVal,
+						height: 'full-200',
+						url : '/zlm.do?action=getPageZlData',
+						method : 'post',
+						where:field,
+						page : true,
+						even : true,
+						limit : 10,
+						cols:[[
+							{field : '', title: '序号', width:60, fixed: 'left' , align:'center',templet:function(d){
+								var strHtml = '';
+								if(d.readStatus== 1){
+									strHtml += '<span class="hasCheckStatus"></span>';
+								}else if(d.readStatus== 0){
+									strHtml += '<span class="noPasCheckStatus"></span>';
+								}
+								return strHtml + d.LAY_INDEX;
+							}},
+							{field : 'zlName', title: '专利名称', width:220, fixed: 'left' , align:'center',templet : function(d){
+								var strHtml = '';
+								if(d.tzsType == 'sqd'){
+									strHtml += '<i class="iconfont layui-extend-huizhi huizhiIcon" title="电子申请回执单"></i>';
+								}else{
+									strHtml += '';
+								}
+								return strHtml + d.zlName;
+							}},
+							{field : 'zlNo', title: '专利编号', width:180, align:'center'},
+							{field : 'tzsName', title: '通知书名称', width:260, align:'center'},
+							{field : 'readDetail', title: '读取结果', width:280, align:'center',templet : function(d){
+								if(d.readStatus== 0){//失败
+									return '<span class="faileTxt">'+ d.readDetail +'</span>';
+								}else if(d.readStatus== 1){//成功
+									return '<span class="succTxt">'+ d.readDetail +'</span>';
+								}
+							}},
+							{field : 'tzsFwr', title: '通知书发文日', width:150,align:'center'},
+							{field : 'fwSerial', title: '发文编号',width:180, align:'center'},
+							{field : 'uploadUserName', title: '上传者',width:100, align:'center'},
+							{field : 'uploadTime', title: '上传日期',width:180, align:'center'},
+							{field : '', title: '操作', align:'center',width:180,fixed:'right',templet : function(d){
+								return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="viewTzsResDetail" tzsType="'+ d.tzsType +'" tzsId="'+ d.tzsId +'"><i class="layui-icon layui-icon-search"></i>查看</a><a class="layui-btn layui-btn-xs" lay-event="downFileFun" downFilePath="'+ d.tzsPath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
+							}},
+						]],
+						done : function(res){
+							callBackDone(res);
+						}
+					});
 				}
 				function callBackDone(res){
 					layer.closeAll('loading');
@@ -686,6 +745,26 @@
 					}else{
 						layer.msg('抱歉，您暂无权限进行流程分配', {icon:5,anim:6,time:1000});
 					}
+				}else if(obj.event == 'viewTzsResDetail'){
+					globalTaskOpts.tzsId = $(this).attr('tzsId');
+					var tzsType = $(this).attr('tzsType');
+					if(tzsType == 'sqd'){//查看电子回执单
+						layer.open({
+							title:'查看回执单',
+							type: 2,
+						  	area: ['700px', '400px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	closeBtn : 1,
+						  	content: '/Module/zlBasicInfoManager/jsp/viewReceipt.html'
+						});	
+					}else{
+						layer.msg('正在开发中，后续开放...', {icon:5,anim:6,time:1000});
+					}
+				}else if(obj.event == 'downFileFun'){
+					var downFilePath = $(this).attr('downFilePath');
+					common.downFiles(downFilePath,0);
 				}
 			});
 			//form 监听获取查看我的任务 未完成/已完成
@@ -697,6 +776,17 @@
 				$('#tranStatusInp').val(data.value);
 				loadZlInfoList('initLoad');
 			}); 
+			//通知书读取结果
+			form.on('radio(readResFilter)', function(data){
+				$('#readResInp').val(data.value);
+				loadZlInfoList('initLoad');
+			}); 
+			//根据通知书类型查看通知书读取结果
+			form.on('select(tzsTypeSelFilter)', function(data){
+				var value = data.value;
+				$('#tzsTypeInp').val(value);
+				loadZlInfoList('initLoad');
+  			});
 			$(function(){
 				page.init();
 				loadZlInfoList('initLoad');
