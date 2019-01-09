@@ -34,6 +34,7 @@ public class Constants {
 	
 	public static final Integer PUB_PRINT_FEE = 50;//公告印刷费
 	
+	public static final Integer WORK_BONUS_COUNT = 18;//工作奖金设置数量（目前只包括撰写、专利审核两个工种三种难度的奖金）
 	
 	//免费会员不能增加子公司
 	public static final Integer SUB_CPY_NUM_YP = 1;//银牌对应的子公司个数

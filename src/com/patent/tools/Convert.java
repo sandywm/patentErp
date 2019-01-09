@@ -148,6 +148,19 @@ public class Convert {
 	}
 	
 	/**
+	 * 保留1位小数的四舍五入
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-9 下午03:02:57
+	 * @param inputD
+	 * @return
+	 */
+	public static Double convertInputNumber_6(double inputD){
+		DecimalFormat    df   = new DecimalFormat("######0.0");   
+		return Double.parseDouble(df.format(inputD));
+	}
+	
+	/**
 	 * 保留4位小数的四舍五入
 	 * @description
 	 * @author wm

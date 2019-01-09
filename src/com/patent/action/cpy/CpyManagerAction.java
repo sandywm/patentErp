@@ -408,6 +408,34 @@ public class CpyManagerAction extends DispatchAction {
 					map.put("code", 0);
 				}
 				map.put("count", count);
+			}else if(opt.equals("comInfo")){//检查公司初始信息完整度
+				String bankNo = cpy.getBankNo();
+				String saleBonus = cpy.getSaleBonus();
+				String dlFeeFm  = cpy.getDlFeeFm();
+				String dlFeeXx  = cpy.getDlFeeXx();
+				String dlFeeWg  = cpy.getDlFeeWg();
+				boolean comFlag = false;
+				boolean bankFlag = false;
+				boolean saleFlag = false;
+				boolean dlFeeFlag = false;
+				boolean workFlag = false;
+				if(!bankNo.equals("")){
+					bankFlag = true;
+				}
+				if(!saleBonus.equals("")){
+					saleFlag = true;
+				}
+				if(!dlFeeFm.equals("") && !dlFeeXx.equals("") && !dlFeeWg.equals("") ){
+					dlFeeFlag = true;
+				}
+				Integer count = cbm.getCountByOpt("", "", 0, cpyId);
+				if(count.equals(Constants.WORK_BONUS_COUNT)){
+					workFlag = true;
+				}
+				if(bankFlag && saleFlag && dlFeeFlag && workFlag){
+					comFlag = true;
+				}
+				map.put("comFlag", comFlag);
 			}
 		}
 		this.getJsonPkg(map, response);

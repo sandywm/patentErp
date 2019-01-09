@@ -80,6 +80,31 @@
                 <comment>备注</comment>
             </column>
         </property>
+        <property name="lastUpFileBz" type="java.lang.String">
+            <column name="last_upFile_self" length="500">
+                <comment>上一次上传的补正附件(补正/补正审核时用)</comment>
+            </column>
+        </property>
+        <property name="lastUpFileBzSc" type="java.lang.String">
+            <column name="last_upFile_other" length="500">
+                <comment>上一次上传的审核附件(补正/补正审核时用)</comment>
+            </column>
+        </property>
+        <property name="lastUpUserIdBz" type="java.lang.Integer">
+            <column name="last_up_user_id_other">
+                <comment>上一次补正人员编号</comment>
+            </column>
+        </property>
+        <property name="lastUpUserIdBzSc" type="java.lang.Integer">
+            <column name="last_up_user_id_other">
+                <comment>上一次补正人员编号</comment>
+            </column>
+        </property>
+        <property name="lastBzScRemark" type="java.lang.String">
+            <column name="last_bzSc_remark"  length="100">
+                <comment>上一次补正审核的备注</comment>
+            </column>
+        </property>
         <set name="lcyjs" inverse="true">
             <key>
                 <column name="lc_mx_id" not-null="true">

@@ -30,6 +30,11 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 	private Integer lcPjScore;
 	private String lcMxRemark;
 	private Integer yjCheckStatus;
+	private String lastUpFileBz;
+	private String lastUpFileBzSc;
+	private Integer lastUpUserIdBz;
+	private Integer lastUpUserIdBzSc;
+	private String lastBzScRemark;
 	private Set<ZlajLcYjInfoTb> lcyjs = new HashSet<ZlajLcYjInfoTb>();
 
 	// Constructors
@@ -42,7 +47,8 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 	public ZlajLcMxInfoTb(Integer lcFzUserId, ZlajLcInfoTb zlajLcInfoTb,
 			String lcMxName, Double lcMxNo, String lcMxSDate, String lcMxEDate,
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,
-			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore,Integer yjCheckStatus) {
+			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore,Integer yjCheckStatus,
+			String lastUpFileBz,String lastUpFileBzSc,Integer lastUpUserIdBz,Integer lastUpUserIdBzSc,String lastBzScRemark) {
 		this.lcFzUserId = lcFzUserId;
 		this.zlajLcInfoTb = zlajLcInfoTb;
 		this.lcMxName = lcMxName;
@@ -57,13 +63,19 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 		this.lcMxFee =  lcMxFee;
 		this.lcPjScore = lcPjScore;
 		this.yjCheckStatus = yjCheckStatus;
+		this.lastUpFileBzSc = lastUpFileBzSc;
+		this.lastUpFileBz = lastUpFileBz;
+		this.lastUpUserIdBz = lastUpUserIdBz;
+		this.lastUpUserIdBzSc = lastUpUserIdBzSc;
+		this.lastBzScRemark = lastBzScRemark;
 	}
 
 	/** full constructor */
 	public ZlajLcMxInfoTb(Integer id,Integer lcFzUserId, ZlajLcInfoTb zlajLcInfoTb,
 			String lcMxName, Double lcMxNo, String lcMxSDate, String lcMxEDate,
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,
-			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore,Integer yjCheckStatus) {
+			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore,Integer yjCheckStatus,
+			String lastUpFileBz,String lastUpFileBzSc,Integer lastUpUserIdBz,Integer lastUpUserIdBzSc,String lastBzScRemark) {
 		this.lcFzUserId = lcFzUserId;
 		this.zlajLcInfoTb = zlajLcInfoTb;
 		this.lcMxName = lcMxName;
@@ -78,9 +90,46 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 		this.lcMxFee =  lcMxFee;
 		this.lcPjScore = lcPjScore;
 		this.yjCheckStatus = yjCheckStatus;
+		this.lastUpFileBzSc = lastUpFileBzSc;
+		this.lastUpFileBz = lastUpFileBz;
+		this.lastUpUserIdBz = lastUpUserIdBz;
+		this.lastUpUserIdBzSc = lastUpUserIdBzSc;
+		this.lastBzScRemark = lastBzScRemark;
 	}
 
 	// Property accessors
+
+	public String getLastUpFileBz() {
+		return lastUpFileBz;
+	}
+
+	public void setLastUpFileBz(String lastUpFileBz) {
+		this.lastUpFileBz = lastUpFileBz;
+	}
+
+	public String getLastUpFileBzSc() {
+		return lastUpFileBzSc;
+	}
+
+	public void setLastUpFileBzSc(String lastUpFileBzSc) {
+		this.lastUpFileBzSc = lastUpFileBzSc;
+	}
+
+	public Integer getLastUpUserIdBz() {
+		return lastUpUserIdBz;
+	}
+
+	public void setLastUpUserIdBz(Integer lastUpUserIdBz) {
+		this.lastUpUserIdBz = lastUpUserIdBz;
+	}
+
+	public Integer getLastUpUserIdBzSc() {
+		return lastUpUserIdBzSc;
+	}
+
+	public void setLastUpUserIdBzSc(Integer lastUpUserIdBzSc) {
+		this.lastUpUserIdBzSc = lastUpUserIdBzSc;
+	}
 
 	public Integer getId() {
 		return this.id;
@@ -208,6 +257,14 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 
 	public void setYjCheckStatus(Integer yjCheckStatus) {
 		this.yjCheckStatus = yjCheckStatus;
+	}
+
+	public String getLastBzScRemark() {
+		return lastBzScRemark;
+	}
+
+	public void setLastBzScRemark(String lastBzScRemark) {
+		this.lastBzScRemark = lastBzScRemark;
 	}
 
 }
