@@ -3040,10 +3040,8 @@ public class ZlMainAction extends DispatchAction {
 									//获取撰写人员最后一次提交的撰稿文件
 									List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "撰稿修改");
 									Integer mxLen = mxList_t.size();
-									if(mxLen > 0){
-										if(mxLen >= 2){
-											mxLen -= 1;
-										}
+									if(mxLen >= 2){
+										mxLen -= 1;
 									}else{//说明没有撰稿修改文件，可能是撰写人员一次性通过
 										mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "新申请撰稿");
 										mxLen = mxList_t.size();
@@ -3254,61 +3252,59 @@ public class ZlMainAction extends DispatchAction {
 							
 							String lastBzFile = "";//上一次补正的文件
 							String lastBzScFile = "";//上一次补正审核的文件
-							String lastBzScRemark = "";//上一次补正审核的备注
+//							String lastBzScRemark = "";//上一次补正审核的备注
 							if(lcmxName.equals("专利补正")){
 								
 							}else if(lcmxName.equals("补正修改")){
-								lastBzFile = mx.getLastUpFileBz();
-								lastBzScFile = mx.getLastUpFileBzSc();
+								lastBzFile = lcmx.getLastUpFileBz();
+								lastBzScFile = lcmx.getLastUpFileBzSc();
 								filePath += ":" + lastBzFile + ":" + lastBzScFile;
 								fileType += ":补正文件:补正审核";
-								upUser += ":"+cum.getEntityById(mx.getLastUpUserIdBz()).getUserName()+":"+cum.getEntityById(mx.getLastUpUserIdBzSc()).getUserName();
+								upUser += ":"+cum.getEntityById(lcmx.getLastUpUserIdBz()).getUserName()+":"+cum.getEntityById(lcmx.getLastUpUserIdBzSc()).getUserName();
 								remark = mx.getLastBzScRemark();
-							}else if(lcmxName.equals("补正审查")){
-								lastBzFile = mx.getLastUpFileOther();
-								lastBzScFile = mx.getLastUpFileSelf();
+							}else if(lcmxName.equals("补正审核")){
+								lastBzFile = lcmx.getLastUpFileBz();
+								lastBzScFile = lcmx.getLastUpFileBzSc();
 								filePath += ":" + lastBzFile;
 								fileType += ":补正文件";
-								upUser += ":"+cum.getEntityById(mx.getLastUpUserIdOther()).getUserName();
+								upUser += ":"+cum.getEntityById(lcmx.getLastUpUserIdBz()).getUserName();
 								if(!lastBzScFile.equals("")){
 									filePath += ":" + lastBzScFile;
-									fileType += "::补正审核";
-									upUser += ":"+cum.getEntityById(mx.getLcMxUpUserId()).getUserName();
+									fileType += ":补正审核";
+									upUser += ":"+cum.getEntityById(lcmx.getLcMxUpUserId()).getUserName();
 								}
-								
-								
 							}
 							
 							
 							//补正这需要直接获取lc_mx_upSize内容就是布阵/审核提交的文件
 							//专利补正、补正修改
-							if(lcmxName.equals("补正修改") || lcmxName.equals("补正审核")){//获取最后一次的补正文件
-								List<ZlajLcMxInfoTb> mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "补正修改");
-								Integer lcmxLen = mxList_bz.size();
-								if(lcmxLen.equals(0)){
-									mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "专利补正");
-									lcmxLen = mxList_bz.size();
-								}
-								if(lcmxLen > 0){
-									ZlajLcMxInfoTb lcmx_curr = mxList_bz.get(lcmxLen - 1);//获取最近一次的专利补正
-									filePath += ":" + lcmx_curr.getLcMxUpFile();
-									fileType += ":补正文件";
-									upUser += ":"+cum.getEntityById(lcmx_curr.getLcMxUpUserId()).getUserName();
-								}
-								//是否增加通知书内容
-								//还需要获取最近一次的补正审核的意见和附件
-								List<ZlajLcMxInfoTb> mxList_bzsc = mxm.listSpecInfoInfoByOpt(zlId, "补正审核");
-								Integer lcmxLen_sc = mxList_bzsc.size();
-								if(lcmxLen_sc > 0){
-									ZlajLcMxInfoTb lcmx_curr = mxList_bzsc.get(lcmxLen_sc - 1);//获取最近一次的补正审查
-									if(!lcmx_curr.getId().equals(lcmxId)){//如果最近一次的补正审查是当前就没有
-										filePath += ":" + lcmx_curr.getLcMxUpFile();
-										fileType += ":补正审核";
-										upUser += ":"+cum.getEntityById(lcmx_curr.getLcMxUpUserId()).getUserName();
-										remark = lcmx_curr.getLcMxRemark();
-									}
-								}
-							}
+//							if(lcmxName.equals("补正修改") || lcmxName.equals("补正审核")){//获取最后一次的补正文件
+//								List<ZlajLcMxInfoTb> mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "补正修改");
+//								Integer lcmxLen = mxList_bz.size();
+//								if(lcmxLen.equals(0)){
+//									mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "专利补正");
+//									lcmxLen = mxList_bz.size();
+//								}
+//								if(lcmxLen > 0){
+//									ZlajLcMxInfoTb lcmx_curr = mxList_bz.get(lcmxLen - 1);//获取最近一次的专利补正
+//									filePath += ":" + lcmx_curr.getLcMxUpFile();
+//									fileType += ":补正文件";
+//									upUser += ":"+cum.getEntityById(lcmx_curr.getLcMxUpUserId()).getUserName();
+//								}
+//								//是否增加通知书内容
+//								//还需要获取最近一次的补正审核的意见和附件
+//								List<ZlajLcMxInfoTb> mxList_bzsc = mxm.listSpecInfoInfoByOpt(zlId, "补正审核");
+//								Integer lcmxLen_sc = mxList_bzsc.size();
+//								if(lcmxLen_sc > 0){
+//									ZlajLcMxInfoTb lcmx_curr = mxList_bzsc.get(lcmxLen_sc - 1);//获取最近一次的补正审查
+//									if(!lcmx_curr.getId().equals(lcmxId)){//如果最近一次的补正审查是当前就没有
+//										filePath += ":" + lcmx_curr.getLcMxUpFile();
+//										fileType += ":补正审核";
+//										upUser += ":"+cum.getEntityById(lcmx_curr.getLcMxUpUserId()).getUserName();
+//										remark = lcmx_curr.getLcMxRemark();
+//									}
+//								}
+//							}
 						}
 						List<Object> list_d = new ArrayList<Object>();
 						if(!filePath.equals("")){

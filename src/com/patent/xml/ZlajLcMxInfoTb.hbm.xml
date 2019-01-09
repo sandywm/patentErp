@@ -81,23 +81,23 @@
             </column>
         </property>
         <property name="lastUpFileBz" type="java.lang.String">
-            <column name="last_upFile_self" length="500">
+            <column name="last_upFile_bz" length="500">
                 <comment>上一次上传的补正附件(补正/补正审核时用)</comment>
             </column>
         </property>
         <property name="lastUpFileBzSc" type="java.lang.String">
-            <column name="last_upFile_other" length="500">
+            <column name="last_upFile_bzsc" length="500">
                 <comment>上一次上传的审核附件(补正/补正审核时用)</comment>
             </column>
         </property>
         <property name="lastUpUserIdBz" type="java.lang.Integer">
-            <column name="last_up_user_id_other">
+            <column name="last_up_user_id_bz">
                 <comment>上一次补正人员编号</comment>
             </column>
         </property>
         <property name="lastUpUserIdBzSc" type="java.lang.Integer">
-            <column name="last_up_user_id_other">
-                <comment>上一次补正人员编号</comment>
+            <column name="last_up_user_id_bzsc">
+                <comment>上一次补正审核人员编号</comment>
             </column>
         </property>
         <property name="lastBzScRemark" type="java.lang.String">

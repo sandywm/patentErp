@@ -545,17 +545,46 @@ public class CpyManagerAction extends DispatchAction {
 				if(user != null){
 					Integer cpyId = user.getCpyInfoTb().getId();
 					if(cpyId > 0){
-						String zlType = CommonTools.getFinalStr("zlType", request);
 						String workType = CommonTools.getFinalStr("workPosition", request);//工作种类(zx,sc)
-						String bonusFee = CommonTools.getFinalStr("bonusFee", request);
-						Integer zlLevel = CommonTools.getFinalInteger("zlLevel", request);//专利难易度1-3
-						if(cbm.listInfoByOpt(workType, zlType, zlLevel, cpyId).size() == 0){
-							Integer cbId = cbm.addCbInfo(workType, zlType, zlLevel, bonusFee, cpyId);
-							if(cbId > 0){
-								msg = "success";
+						//工种奖金按照fm,syxx,wg的顺序
+						String bonusFeeFm = CommonTools.getFinalStr("bonusFeeFm", request);//##,##,##
+						String bonusFeeXx = CommonTools.getFinalStr("bonusFeeXx", request);//##,##,##
+						String bonusFeeWg = CommonTools.getFinalStr("bonusFeeWg", request);//##,##,##
+						String[] bonusFeeFmArr = bonusFeeFm.split(",");
+						String[] bonusFeeXxArr = bonusFeeXx.split(",");
+						String[] bonusFeeWgArr = bonusFeeWg.split(",");
+						if(bonusFeeFmArr.length == 3 && bonusFeeXxArr.length == 3 && bonusFeeWgArr.length == 3){
+							for(int i = 1 ; i <= 3 ; i++){
+								if(cbm.listInfoByOpt(workType, "fm", i, cpyId).size() == 0){
+									cbm.addCbInfo(workType, "fm", i, bonusFeeFmArr[i-1], cpyId);
+									msg = "success";
+								}else{
+									msg = "exist";
+									break;
+								}
 							}
-						}else{
-							msg = "exist";
+							if(msg.equals("success")){
+								for(int i = 1 ; i <= 3 ; i++){
+									if(cbm.listInfoByOpt(workType, "syxx", i, cpyId).size() == 0){
+										cbm.addCbInfo(workType, "syxx", i, bonusFeeXxArr[i-1], cpyId);
+										msg = "success";
+									}else{
+										msg = "exist";
+										break;
+									}
+								}
+								if(msg.equals("success")){
+									for(int i = 1 ; i <= 3 ; i++){
+										if(cbm.listInfoByOpt(workType, "wg", i, cpyId).size() == 0){
+											cbm.addCbInfo(workType, "wg", i, bonusFeeWgArr[i-1], cpyId);
+											msg = "success";
+										}else{
+											msg = "exist";
+											break;
+										}
+									}
+								}
+							}
 						}
 					}
 				}
