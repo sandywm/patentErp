@@ -3287,7 +3287,7 @@ public class ZlMainAction extends DispatchAction {
 								if(!lastBzScFile.equals("")){
 									filePath += ":" + lastBzScFile;
 									fileType += ":补正审核";
-									upUser += ":"+cum.getEntityById(lcmx.getLcMxUpUserId()).getUserName();
+									upUser += ":"+cum.getEntityById(lcmx.getLastUpUserIdBzSc()).getUserName();
 								}
 								remark = lcmx.getLastBzScRemark();
 							}

@@ -897,7 +897,11 @@ public class ReadZipFile {
 //						e.printStackTrace();
 //					}
 //				}
+//				if(currFileName.startsWith(""))
 				System.out.println(currFileName);
+				if(currFileName.endsWith(".tif")){
+					
+				}
 //				if(currFileName.endsWith("tif")){
 //					int indexLen = currFileName.indexOf("\\");
 //					if(indexLen > -1){
