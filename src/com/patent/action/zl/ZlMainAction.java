@@ -607,6 +607,7 @@ public class ZlMainAction extends DispatchAction {
 					if(roleName.equals("管理员") || Ability.checkAuthorization(this.getLoginRoleId(request), "fpZl")){//管理员和流程分配人员标记
 						flag = true;
 					}
+					String currDate = CurrentTime.getStringDate();
 					for(Iterator<ZlajLcMxInfoTb> it = unMxList.iterator() ; it.hasNext();){
 						ZlajLcMxInfoTb mx = it.next();
 						ZlajLcInfoTb lc = mx.getZlajLcInfoTb();
@@ -615,10 +616,25 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("mxId", mx.getId());
 						map_d.put("taskName", mx.getLcMxName());//任务名称
 						map_d.put("fzUserId", mx.getLcFzUserId());//流程负责人员
+						String comDate = mx.getLcMxEDate();
+						String lcCpyDate = lc.getLcCpyDate();
+						String lcGfDate = lc.getLcGfDate();
+						Integer diffDays_cpy = 0;
+						Integer diffDays_gf = 0;
+						if(comDate.equals("")){//未完成
+							if(!lcCpyDate.equals("")){
+								diffDays_cpy = CurrentTime.compareDate(currDate,lcCpyDate);
+								map_d.put("diffDaysCpy", diffDays_cpy);//距离代理机构期限
+							}
+							if(!lcGfDate.equals("")){
+								diffDays_gf = CurrentTime.compareDate(currDate,lcGfDate);
+								map_d.put("diffDaysGf", diffDays_gf);//距离官方期限
+							}
+						}
 						map_d.put("taskSdate", mx.getLcMxSDate());//任务开始日期
-						map_d.put("taskComDate", mx.getLcMxEDate());//任务完成日期
-						map_d.put("taskEdateCpy", lc.getLcCpyDate());//任务期限（代理机构）
-						map_d.put("taskEdateGf", lc.getLcGfDate());//任务期限（官方）
+						map_d.put("taskComDate", comDate);//任务完成日期
+						map_d.put("taskEdateCpy", lcCpyDate);//任务期限（代理机构）
+						map_d.put("taskEdateGf", lcGfDate);//任务期限（官方）
 						map_d.put("zlTitle", zl.getAjTitle());//专利标题
 						map_d.put("zlNo", zl.getAjNoGf());//专利申请/专利号
 						map_d.put("zlNoQt", zl.getAjNoQt());//案件编号
@@ -3040,7 +3056,7 @@ public class ZlMainAction extends DispatchAction {
 									//获取撰写人员最后一次提交的撰稿文件
 									List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "撰稿修改");
 									Integer mxLen = mxList_t.size();
-									if(mxLen >= 2){
+									if(mxLen >= 2){//如果是等于1，相当于是当前任务，还没完成
 										mxLen -= 1;
 									}else{//说明没有撰稿修改文件，可能是撰写人员一次性通过
 										mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "新申请撰稿");
@@ -3851,6 +3867,7 @@ public class ZlMainAction extends DispatchAction {
 									}else{
 										msg = "error";
 									}
+									lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 									if(msg.equals("success")){
 										//增加下一个流程
 										Integer nextLcId = lcm.addLcInfo(zlId, "专利审核", "专利审核", currDate, cpyDate, "", "",lcNo);
@@ -4055,6 +4072,7 @@ public class ZlMainAction extends DispatchAction {
 											}else{
 												lcNo += 0.1;
 											}
+											lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 											//增加下一个流程
 											Integer nextLcId = lcm.addLcInfo(zlId, "补正审核", "补正审核", currDate, cpyDate, "", "",lcNo);
 											if(nextLcId > 0){
@@ -4092,6 +4110,7 @@ public class ZlMainAction extends DispatchAction {
 											}else{
 												lcNo += 0.1;
 											}
+											lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 											if(checkStatus.equals(0)){//没通过，增加补正修改任务
 												//增加下一个流程
 												Integer nextLcId = lcm.addLcInfo(zlId, "补正修改", "补正修改", currDate, cpyDate, "", "",lcNo);

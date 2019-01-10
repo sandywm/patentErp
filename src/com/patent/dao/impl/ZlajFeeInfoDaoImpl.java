@@ -147,8 +147,11 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 			if(qdStatus.equals(0)){//国家局--去除代理费
 				hql += " and zlf.feeTypeInfoTb.feeStatus != 'dlf'";
 			}//客户的不用去除
-			if(diffDays >= 0){
+			if(diffDays > 0){
 				hql += " and TO_DAYS(zlf.feeEndDateJj) - TO_DAYS('"+CurrentTime.getStringDate()+"') <= "+diffDays;
+				hql += " and TO_DAYS(zlf.feeEndDateJj) - TO_DAYS('"+CurrentTime.getStringDate()+"') >= 0 ";
+			}else if(diffDays.equals(-2)){
+				hql += " and TO_DAYS(zlf.feeEndDateJj) - TO_DAYS('"+CurrentTime.getStringDate()+"') < 0 ";
 			}
 			hql += " and zlf.zlajMainInfoTb.ajStopStatus = 0 order by zlf.feeEndDateJj asc";
 			return sess.createQuery(hql).list();
