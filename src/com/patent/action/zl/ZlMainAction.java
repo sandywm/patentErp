@@ -4103,7 +4103,7 @@ public class ZlMainAction extends DispatchAction {
 												}
 											}
 											
-											if(checkStatus.equals(0)){//没通过，增加补正修改任务
+											if(checkStatus.equals(0)){//没通过，增加补正修改任务11
 												lcNo -= 1;
 												lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 												//增加下一个流程
