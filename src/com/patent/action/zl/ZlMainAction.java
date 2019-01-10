@@ -4048,7 +4048,7 @@ public class ZlMainAction extends DispatchAction {
 									}else{
 										msg = "inComInfo";//信息不完整
 									}
-								}else if((lcNo >= 9 && lcNo <= 9.9) || (lcNo >= 13 && lcNo <= 13.9)){//补正、补正审核时
+								}else if((lcNo >= 9 && lcNo <= 10.9)){//补正、补正审核时
 									String upZxFile = CommonTools.getFinalStr("upZxFile", request);//补正人员上传的撰稿文件（参数）
 									//补正完成后开启补正审核人员进行审核
 									String lcmxName = lcmx.getLcMxName();
@@ -4068,11 +4068,7 @@ public class ZlMainAction extends DispatchAction {
 													fjm.addFj(zlId, fjNameArr[i], fjVersion, "补正_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 												}
 											}
-											if(lcNo == 9.9 || lcNo == 13.9){
-												
-											}else{
-												lcNo += 0.1;
-											}
+											lcNo += 1;
 											lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 											//增加下一个流程
 											Integer nextLcId = lcm.addLcInfo(zlId, "补正审核", "补正审核", currDate, cpyDate, "", "",lcNo);
@@ -4106,13 +4102,10 @@ public class ZlMainAction extends DispatchAction {
 													fjm.addFj(zlId, fjNameArr[i], fjVersion, "补正审核_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 												}
 											}
-											if(lcNo == 9.9 || lcNo == 13.9){
-												
-											}else{
-												lcNo += 0.1;
-											}
-											lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
+											
 											if(checkStatus.equals(0)){//没通过，增加补正修改任务
+												lcNo -= 1;
+												lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 												//增加下一个流程
 												Integer nextLcId = lcm.addLcInfo(zlId, "补正修改", "补正修改", currDate, cpyDate, "", "",lcNo);
 												if(nextLcId > 0){
@@ -4951,10 +4944,8 @@ public class ZlMainAction extends DispatchAction {
 				        				if(tzsName.contains("初步审查合格通知书")){//初审合格
 				        					if(lcNo >= 9.0 && lcNo < 9.9){
 												lcNo += 0.1;
-											}else if(lcNo >= 13.0 && lcNo < 13.9){
-												lcNo += 0.1;
 											}else{
-												lcNo = 9.2;
+												lcNo = 9;
 											}
 				        					lcNo = Convert.convertInputNumber_6(lcNo);
 				        					Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入初步审查合格通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",lcNo);//导入通知书期限1个月
@@ -4963,7 +4954,7 @@ public class ZlMainAction extends DispatchAction {
 											}
 											if(zlType.equals("fm")){
 												if(lcNo_db < lcNo){
-													zlm.updateZlStatusById(zlId, "13.0", "实审中");
+													zlm.updateZlStatusById(zlId, String.valueOf(lcNo), "实审中");
 												}
 											}else{
 												if(lcNo_db < lcNo){
@@ -4982,10 +4973,8 @@ public class ZlMainAction extends DispatchAction {
 			        						}
 											if(lcNo >= 9.0 && lcNo < 9.9){
 												lcNo += 0.1;
-											}else if(lcNo >= 13.0 && lcNo < 13.9){
-												lcNo += 0.1;
 											}else{
-												lcNo = 9.2;
+												lcNo = 9.1;
 											}
 											lcNo = Convert.convertInputNumber_6(lcNo);
 											finalDate = CurrentTime.getFinalDate_1(finalDate, addMonthes);
@@ -4993,10 +4982,16 @@ public class ZlMainAction extends DispatchAction {
 											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
 											if(currLcId > 0){
 												mxm.addLcMx(currLcId, currUserId, "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1,"","",0,0,"");
-												if(lcNo >= 9.0 && lcNo < 9.9){
-													lcNo += 0.1;
-												}else if(lcNo >= 13.0 && lcNo < 13.9){
-													lcNo += 0.1;
+												//获取最后一个专利补正的lcNo
+												List<ZlajLcMxInfoTb> lastMxList = mxm.listSpecInfoInfoByOpt(zlId, "专利补正");
+												Integer mxLen = lastMxList.size();
+												if(mxLen > 0){
+													lcNo = lastMxList.get(mxLen - 1).getLcMxNo();
+													if(lcNo != 9.9){
+														lcNo += 0.1;
+													}
+												}else{
+													lcNo = 9.2;
 												}
 												lcNo = Convert.convertInputNumber_6(lcNo);
 												//增加专利补正流程
@@ -5016,12 +5011,10 @@ public class ZlMainAction extends DispatchAction {
 				        				readResultChi = "读取成功";
 										String finalDate = CurrentTime.getFinalDate(fwDate, Constants.TD_RECEIVE_DAYS);//推定收到日
 										finalDate = CurrentTime.getFinalDate_1(finalDate, 3);//3个月内进行请求复审
-										if(lcNo < 9.9){
-											lcNo += 0.1;
-										}else if(lcNo < 13.9){
+										if(lcNo >= 11 && lcNo < 12){
 											lcNo += 0.1;
 										}else{
-											lcNo = 9.4;
+											lcNo = 11;
 										}
 										lcNo = Convert.convertInputNumber_6(lcNo);
 										if(lcNo_db < lcNo){
