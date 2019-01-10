@@ -175,15 +175,15 @@
         			roleProfile = $.trim($("#roleProfile").val());
 	        		if(inpRoleName == ""){
 	        			layer.msg("角色名称不能为空", {icon:5,anim:6,time:1000});
-	        		}else if(roleProfile == ""){
+	        		}/*else if(roleProfile == ""){
 	        			layer.msg("角色简介不能为空", {icon:5,anim:6,time:1000});
-	        		}else{
+	        		}*/else{
 	        			var reg = /^[\u4E00-\u9FA5]+$/; 
 	        			if(!reg.test(inpRoleName)){
 	        				layer.msg("角色名应为汉字", {icon:5,anim:6,time:1000});
-	        			}else if(!reg.test(roleProfile)){
+	        			}/*else if(!reg.test(roleProfile)){
 	        				layer.msg("角色简介应为汉字", {icon:5,anim:6,time:1000});
-	        			}else{
+	        			}*/else{
 	        				var url = "";
 	        				if(globalOpts == "addBtn"){//表示增加角色
 	        					var field = {inpRoleName : escape(inpRoleName),roleProfile : escape(roleProfile)};

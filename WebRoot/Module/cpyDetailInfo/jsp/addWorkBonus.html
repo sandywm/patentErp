@@ -84,11 +84,12 @@
 				},
 				onLoad : function(){
 					this.bindEvent();
-					if(cbId == 0){
+					this.rateFun(zlLevel,true);
+					/*if(cbId == 0){
 						this.rateFun(0,false);
 					}else{
 						this.rateFun(zlLevel,true);
-					}
+					}*/
 				},
 				bindEvent : function(){
 					var _this = this;
@@ -111,19 +112,19 @@
 							$('#workPositionBox').show().stop().animate({'top':0},300);
 						});
 					}
-					$('.workPosLi').on('click',function(){
+					/*$('.workPosLi').on('click',function(){
 						$(this).addClass('active').siblings().removeClass('active');
 						$('#workPositionInp').val($(this).attr('posVal'));
 						$('#workPositionTxt').html($(this).text()).css({'color':'#666'});
 						$('#workPositionBox').animate({'top':'-100%'},300,function(){
 							$('#workPositionBox').hide();
 						});
-					});
+					});*/
 					$('#bonusInp').on('keyup',function(){
 						_this.judgeBackFee('bonusInp');
 					});
 					//保存奖金
-					$('.saveBonusBtn').on('click',function(){
+					/*$('.saveBonusBtn').on('click',function(){
 						var zlTypeInpVal = $('#zlTypeInp').val(),
 							workPositionInpVal = $('#workPositionInp').val(),
 							bonusInpVal = $.trim($('#bonusInp').val());
@@ -163,7 +164,7 @@
 			  					});
 							}
 						}
-					});
+					});*/
 					//编辑保存
 					$('.updateBonusFeeBtn').on('click',function(){
 						var bonusInpVal = $.trim($('#bonusInp').val());

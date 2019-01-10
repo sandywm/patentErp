@@ -200,12 +200,27 @@
    					});
    					//增加工作奖金
    					$('.addWorkBonusBtn').on('click',function(){
+						addWorkBonusFlag = false;
    						globalWorkBonus.globalCbId = 0;
    	   					globalWorkBonus.workPosition = '';
    	   					globalWorkBonus.zlLevel = 0;
    	   					globalWorkBonus.zlType = ''; 
    	   					globalWorkBonus.bonusFee = ''; 
-   						_this.addWorkBounsLayer('添加工作奖金');
+						var fullScreenIndex = layer.open({
+							title:'<svg class="icon-svg" aria-hidden="true"><use xlink:href="#icon-svg-bonus"></use></svg><span style="margin-left:5px;">添加工作奖金</span>',
+							type: 2,
+							area: ['500px', '550px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	content: '/Module/cpyDetailInfo/jsp/addBonus.html',
+						  	end:function(){
+						  		if(addWorkBonusFlag){
+						  			_this.loadWorkBonusList('initLoad');
+							  	}
+						  	}
+						});
+						layer.full(fullScreenIndex);
    					});
    					$('#queryBtn').on('click',function(){
    						_this.loadWorkBonusList('queryLoad');
@@ -224,7 +239,7 @@
    					layer.load('1');
    					$.ajax({
   						type:'post',
-				        async:false,
+				        async:true,
 				        dataType:'json',
 				        data : field,
 				        url:'/cpyManager.do?action=updateCpyInitInfo',

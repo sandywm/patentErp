@@ -1,4 +1,3 @@
-@import url("../../../css/common.css");
 @import url("../../../css/dottingAnimation.css");
 @import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
 body{
@@ -483,6 +482,7 @@ body{
 	left:0;
 	top:-100%;
 	display:none;
+	z-index:100;
 }
 .innerAddCon{
 	width: 320px;

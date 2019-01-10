@@ -38,13 +38,11 @@
 	line-height:40px;
 }
 .viewDetailBtn,
-.viewFujianBtn,
-.downBtn{
+.viewFujianBtn{
 	color:#666;
 }
 .viewDetailBtn:hover,
-.viewFujianBtn:hover,
-.downBtn:hover{
+.viewFujianBtn:hover{
 	color:#F47837;
 }
 #lxMxDetailCon{
@@ -141,8 +139,8 @@
 	width:100%;
 	display:block;
 }
-.statusIcon,
-.statusIcon_com{
+.statusIcon
+/*.statusIcon_com*/{
 	font-size:19px;
 	position:absolute;
 	left:10px;
@@ -151,10 +149,10 @@
 .statusIcon{
 	color:#F47837;
 }
-.statusIcon_com{
+/*.statusIcon_com{
 	color:#009688;
 	font-weight:600;
-}
+}*/
 .animation{
 	-webkit-animation:mymove .5s; /* Safari and Chrome */
 	animation:mymove .5s;
@@ -278,7 +276,7 @@
 #fjCon li{
 	border-bottom:1px solid #ccc;
 }
-#fujianCon li a,
+/*#fujianCon li a,
 #tzsCon li a,
 #fjCon li a,
 #zdCons li a{
@@ -290,7 +288,7 @@
 	position:absolute;
 	left:50%;
 	margin-left:-25px;
-}
+}*/
 /* 通知书 */
 .tzsTit,
 .fjTit{
@@ -437,9 +435,6 @@
 .liushuiNum p span{
 	font-weight:600;
 	color:#F47837;
-}
-.oddColor{
-	background:#f0f0f0;
 }
 .hasNoTxt{
 	color:#999;

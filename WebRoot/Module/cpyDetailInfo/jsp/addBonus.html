@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>
+	<link href="/Module/cpyDetailInfo/css/addBonus.css" rel="stylesheet" type="text/css"/>
+	<script src="https://at.alicdn.com/t/font_787377_yd0a5qoppn.js"></script>
+  	<title>添加工作奖金</title>
+</head>
+<body style="background:#fff;color:#666;">
+	<!-- 专利类型 工种 难易程度 奖金  -->
+	<div id="addBounsWrap" class="layui-form">
+		<!--  div class="layui-form-item hasMargT">
+		    <input type="hidden" id="workPositionInp"/>
+		    <div class="layui-input-block" style="width:96%;margin-left:25px;">
+		        <div class="layui-input selWorkPos">
+		    		<p id="workPositionTxt">请选择工种</p><i class="layui-edge"></i>
+		    	</div>
+		    </div>
+		</div-->
+		<div id="workPositionBox" class="layui-form-item" style="margin-top:10px;">
+			<input type="hidden" id="workPositionInp"/>
+			<ul class="layui-clear">
+				<li class="workPosLi" posVal="zx"><svg class="icon-svg posIcon" aria-hidden="true"><use xlink:href="#icon-svg-workPosition"></use></svg>专利撰写</li>
+				<li class="workPosLi" posVal="sc"><svg class="icon-svg posIcon" aria-hidden="true"><use xlink:href="#icon-svg-workPosition"></use></svg>专利审核</li>
+				<!-- li class="workPosLi_spec"><svg class="icon-svg posIcon" aria-hidden="true"><use xlink:href="#icon-svg-workPosition"></use></svg>待开通...</li>
+				<li class="workPosLi_spec"><svg class="icon-svg posIcon" aria-hidden="true"><use xlink:href="#icon-svg-workPosition"></use></svg>待开通...</li>
+				<li class="workPosLi_spec"><svg class="icon-svg posIcon" aria-hidden="true"><use xlink:href="#icon-svg-workPosition"></use></svg>待开通...</li>
+				<li class="workPosLi_spec"><svg class="icon-svg posIcon" aria-hidden="true"><use xlink:href="#icon-svg-workPosition"></use></svg>待开通...</li>
+				<li class="workPosLi_spec"><svg class="icon-svg posIcon" aria-hidden="true"><use xlink:href="#icon-svg-workPosition"></use></svg>待开通...</li>
+				<li class="workPosLi_spec"><svg class="icon-svg posIcon" aria-hidden="true"><use xlink:href="#icon-svg-workPosition"></use></svg>待开通...</li>
+				<li class="workPosLi_spec"><svg class="icon-svg posIcon" aria-hidden="true"><use xlink:href="#icon-svg-workPosition"></use></svg>待开通...</li -->
+			</ul>
+		</div>
+		<div class="layui-form-item hasMargT">
+			<div class="layui-input-block" style="width:96%;margin-left:25px;">
+				<fieldset class="layui-elem-field">
+					<legend>发明</legend>
+					<div class="layui-field-box">
+						<div class="comSetBox layui-clear">
+							<div class="diffWrap">
+								<div id="diffLevel_fm_1"></div>
+							</div>
+							<div class="bonusWrap">
+								<em class="moneyDec">¥</em>
+								<input type="text" id="bonusInp_fm_1" name="bonusInp_fm" class="layui-input" placeholder="请输入奖金金额(大于0小于100000)" autocomplete="off"/>
+							</div>
+						</div>
+						<div class="comSetBox layui-clear">
+							<div class="diffWrap">
+								<div id="diffLevel_fm_2"></div>
+							</div>
+							<div class="bonusWrap">
+								<em class="moneyDec">¥</em>
+								<input type="text" id="bonusInp_fm_2" name="bonusInp_fm" class="layui-input" placeholder="请输入奖金金额(大于0小于100000)" autocomplete="off"/>
+							</div>
+						</div>
+						<div class="comSetBox noMargBot layui-clear">
+							<div class="diffWrap">
+								<div id="diffLevel_fm_3"></div>
+							</div>
+							<div class="bonusWrap">
+								<em class="moneyDec">¥</em>
+								<input type="text" id="bonusInp_fm_3" name="bonusInp_fm" class="layui-input" placeholder="请输入奖金金额(大于0小于100000)" autocomplete="off"/>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+				<fieldset class="layui-elem-field">
+					<legend>外观</legend>
+					<div class="layui-field-box">
+						<div class="comSetBox layui-clear">
+							<div class="diffWrap">
+					    		<div id="diffLevel_wg_1"></div>
+					    	</div>
+					    	<div class="bonusWrap">
+					    		<em class="moneyDec">¥</em>
+								<input type="text" id="bonusInp_wg_1" name="bonusInp_wg" class="layui-input" placeholder="请输入奖金金额(大于0小于100000)" autocomplete="off"/>
+							</div>
+						</div>
+						<div class="comSetBox layui-clear">
+							<div class="diffWrap">
+					    		<div id="diffLevel_wg_2"></div>
+					    	</div>
+					    	<div class="bonusWrap">
+					    		<em class="moneyDec">¥</em>
+								<input type="text" id="bonusInp_wg_2" name="bonusInp_wg" class="layui-input" placeholder="请输入奖金金额(大于0小于100000)" autocomplete="off"/>
+							</div>
+						</div>
+						<div class="comSetBox noMargBot layui-clear">
+							<div class="diffWrap">
+					    		<div id="diffLevel_wg_3"></div>
+					    	</div>
+					    	<div class="bonusWrap">
+					    		<em class="moneyDec">¥</em>
+								<input type="text" id="bonusInp_wg_3" name="bonusInp_wg" class="layui-input" placeholder="请输入奖金金额(大于0小于100000)" autocomplete="off"/>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+				<fieldset class="layui-elem-field">
+					<legend>实用新型</legend>
+				  	<div class="layui-field-box">
+				    	<div class="layui-field-box layui-clear">
+							<div class="comSetBox layui-clear">
+								<div class="diffWrap">
+						    		<div id="diffLevel_xx_1"></div>
+						    	</div>
+						    	<div class="bonusWrap">
+						    		<em class="moneyDec">¥</em>
+									<input type="text" id="bonusInp_xx_1" name="bonusInp_xx" class="layui-input" placeholder="请输入奖金金额(大于0小于100000)" autocomplete="off"/>
+								</div>
+							</div>
+							<div class="comSetBox layui-clear">
+								<div class="diffWrap">
+						    		<div id="diffLevel_xx_2"></div>
+						    	</div>
+						    	<div class="bonusWrap">
+						    		<em class="moneyDec">¥</em>
+									<input type="text" id="bonusInp_xx_2" name="bonusInp_xx" class="layui-input" placeholder="请输入奖金金额(大于0小于100000)" autocomplete="off"/>
+								</div>
+							</div>
+							<div class="comSetBox noMargBot layui-clear">
+								<div class="diffWrap">
+						    		<div id="diffLevel_xx_3"></div>
+						    	</div>
+						    	<div class="bonusWrap">
+						    		<em class="moneyDec">¥</em>
+									<input type="text" id="bonusInp_xx_3" name="bonusInp_xx" class="layui-input" placeholder="请输入奖金金额(大于0小于100000)" autocomplete="off"/>
+								</div>
+							</div>
+						</div>
+				  	</div>
+				</fieldset>
+			</div>
+		</div>
+		<div id="btnBox" class="layui-form-item hasMargT">
+		    <button class="layui-btn saveBonusBtn">保存</button>
+		</div>
+	</div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','form','rate'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery,
+				rate = layui.rate,
+				form = layui.form;
+			var page = {
+				data : {
+					difflevel : 0
+				},
+				init : function(){
+					this.onLoad();
+				},
+				onLoad : function(){
+					this.bindEvent();
+					this.createRateStar('fm');
+					this.createRateStar('wg');
+					this.createRateStar('xx');
+				},
+				createRateStar : function(opts){
+					var _this = this;
+					for(var i=0;i<3;i++){
+						this.rateFun('diffLevel_'+ opts +'_'+ (i+1),(i+1),true);
+					}
+				},
+				bindEvent : function(){
+					var _this = this;
+					$('.workPosLi').on('click',function(){
+						$(this).addClass('active').siblings().removeClass('active');
+						$('#workPositionInp').val($(this).attr('posVal'));
+					});
+					$('#bonusInp_fm_1').on('keyup',function(){
+						_this.judgeBackFee('bonusInp_fm_1');
+					});
+					$('#bonusInp_fm_2').on('keyup',function(){
+						_this.judgeBackFee('bonusInp_fm_2');
+					});
+					$('#bonusInp_fm_3').on('keyup',function(){
+						_this.judgeBackFee('bonusInp_fm_3');
+					});
+					$('#bonusInp_wg_1').on('keyup',function(){
+						_this.judgeBackFee('bonusInp_wg_1');
+					});
+					$('#bonusInp_wg_2').on('keyup',function(){
+						_this.judgeBackFee('bonusInp_wg_2');
+					});
+					$('#bonusInp_wg_3').on('keyup',function(){
+						_this.judgeBackFee('bonusInp_wg_3');
+					});
+					$('#bonusInp_xx_1').on('keyup',function(){
+						_this.judgeBackFee('bonusInp_xx_1');
+					});
+					$('#bonusInp_xx_2').on('keyup',function(){
+						_this.judgeBackFee('bonusInp_xx_2');
+					});
+					$('#bonusInp_xx_3').on('keyup',function(){
+						_this.judgeBackFee('bonusInp_xx_3');
+					});
+					//保存奖金
+					$('.saveBonusBtn').on('click',function(){
+						var workPositionInpVal = $('#workPositionInp').val(),bonusInp_fmFlag = true,tmpBonusFm=[],bonusInp_wgFlag=true,tmpBonusWg=[],bonusInp_xxFlag=true,tmpBonusXx=[];
+						$('input[name=bonusInp_xx]').each(function(i){
+							if($('input[name=bonusInp_xx]').eq(i).val() == ''){
+								bonusInp_xxFlag = false;
+							}
+						});
+						if(!bonusInp_xxFlag){
+							layer.msg('请设置新型类型的奖金', {icon:5,anim:6,time:1000});
+						}else{
+							$('input[name=bonusInp_xx]').each(function(i){
+								tmpBonusXx.push($('input[name=bonusInp_xx]').eq(i).val());
+							});
+						}
+						
+						$('input[name=bonusInp_wg]').each(function(i){
+							if($('input[name=bonusInp_wg]').eq(i).val() == ''){
+								bonusInp_wgFlag = false;
+							}
+						});
+						if(!bonusInp_wgFlag){
+							layer.msg('请设置外观类型的奖金', {icon:5,anim:6,time:1000});
+						}else{
+							$('input[name=bonusInp_wg]').each(function(i){
+								tmpBonusWg.push($('input[name=bonusInp_wg]').eq(i).val());
+							});
+						}
+						
+						$('input[name=bonusInp_fm]').each(function(i){
+							if($('input[name=bonusInp_fm]').eq(i).val() == ''){
+								bonusInp_fmFlag = false;
+							}
+						});
+						if(!bonusInp_fmFlag){
+							layer.msg('请设置发明类型的奖金', {icon:5,anim:6,time:1000});
+						}else{
+							$('input[name=bonusInp_fm]').each(function(i){
+								tmpBonusFm.push($('input[name=bonusInp_fm]').eq(i).val());
+							});
+						}
+						if(workPositionInpVal == ''){
+							layer.msg('请选择职位工种', {icon:5,anim:6,time:1000});
+						}else{
+							if(bonusInp_fmFlag && bonusInp_wgFlag && bonusInp_xxFlag){
+								var tmpBonusFeeFm = tmpBonusFm.join(','),
+								tmpBonusFeeWg = tmpBonusWg.join(','),
+								tmpBonusFeeXx = tmpBonusXx.join(',');
+								layer.load('1');
+			   					$.ajax({
+			  						type:'post',
+							        async:false,
+							        dataType:'json',
+							        data : {workPosition:workPositionInpVal,bonusFeeFm:tmpBonusFeeFm,bonusFeeWg:tmpBonusFeeWg,bonusFeeXx:tmpBonusFeeXx},
+							        url:'/cpyManager.do?action=addCpyBonus',
+							        success:function (json){
+							        	layer.closeAll('loading');
+							        	if(json['result'] == 'success'){
+							        		layer.msg('添加工作奖金成功',{icon:1,time:1000},function(){
+							        			var index= parent.layer.getFrameIndex(window.name);
+						        				parent.addWorkBonusFlag = true;
+						        				parent.layer.close(index);
+							        		});
+							        	}else if(json['result'] == 'noAbility'){
+							        		layer.msg('抱歉，您暂无权限添加工作奖金', {icon:5,anim:6,time:1000});
+							        	}else if(json['result'] == 'exist'){
+							        		layer.msg('此专利类型下的工种奖金已存在', {icon:5,anim:6,time:1200});
+							        	}
+							        }
+			  					});
+							}
+						}
+					});
+				},
+				judgeBackFee : function(obj){
+					if($('#'+obj).val().length==1){
+						$('#'+obj).val($('#'+obj).val().replace(/[^1-9]/g,''));
+					}else{
+						$('#'+obj).val($('#'+obj).val().replace(/\D/g,''));
+					}
+				},
+				//设置专利难易度
+				rateFun : function(elem,value,isEditFlag){
+					var _this = this;
+					rate.render({
+					    elem: '#'+elem
+					    ,value : value
+					    ,length:3
+					    ,text: true
+					    ,theme: '#FF8000'
+					    ,readonly:isEditFlag
+				    	,choose: function(value){
+							if(value == 1){
+								_this.data.difflevel = 1;
+							}else if(value == 2){
+								_this.data.difflevel = 2;
+							}else if(value == 3){
+								_this.data.difflevel = 3;
+							}
+						}
+					    ,setText: function(value){ //自定义文本的回调
+					      var arrs = {
+					        '1': '简单'
+					        ,'2': '困难'
+					        ,'3': '复杂'
+					      };
+					      this.span.text(arrs[value] || '');
+					    }
+					});
+				}
+			};
+			form.on('radio(zlTypeFilter)', function(data){
+				$('#zlTypeInp').val(data.value);
+			});
+			$(function(){
+				page.init();				
+			});
+		});
+	</script>
+</body> 
+</html>

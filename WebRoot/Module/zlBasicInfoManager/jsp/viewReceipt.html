@@ -36,12 +36,12 @@
 					var _this = this;
 					$.ajax({
   						type:'post',
-				        async:false,
+				        async:true,
 				        dataType:'json',
 				        data : {tzsId:tzsId},
 				        url:'/zlm.do?action=getApplyFileInfo',
 				        success:function (json){
-				        	if(json['result' == 'success']){
+				        	if(json['result'] == 'success'){
 				        		var afInfo = json.afInfo;
 				        		_this.renderReceiptHtml(afInfo);
 				        	}else if(json['result'] == 'noInfo'){
@@ -55,10 +55,11 @@
 					for(var i=0;i<afInfo.length;i++){
 						strHtml += '<li>';
 						strHtml += '<p class="oneWid">'+ afInfo[i].fileName +'</p>';
-						strHtml += '<p class="towWid">'+ afInfo[i].fileSize +'</p>';
-						strHtml += '<p class="towWid">'+ afInfo[i].fileType +'</p>';
+						strHtml += '<p class="twoWid">'+ afInfo[i].fileSize +'</p>';
+						strHtml += '<p class="twoWid">'+ afInfo[i].fileType +'</p></li>';
 					}
 					$('.receiptCon ul').html(strHtml);
+					$('.receiptCon ul li:odd').addClass('oddBgColor');
 					this.addActScrollBar();
 				},
 				//检测高度动态给容器添加模拟滚动条

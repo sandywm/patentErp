@@ -8,6 +8,7 @@
 	<meta http-equiv="keywords" content="专利管理系统,专利基本信息管理">
 	<meta http-equiv="description" content="专利管理系统专利基本信息管理">
 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+	<link href="/css/common.css" rel="stylesheet" type="text/css"/>
 	<link href="/Module/zlBasicInfoManager/css/zlBasicInfoManager.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
 	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>	

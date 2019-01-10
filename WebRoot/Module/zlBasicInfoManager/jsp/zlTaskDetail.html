@@ -133,7 +133,6 @@
 				        	layer.closeAll('loading');
 				        	$('#zlTitSp').html('专利 ['+ zlTit +'] 任务详情');
 				        	if(json['result'] == 'success'){
-				        		console.log(json)
 				        		$('.taskStep').show();
 				        		_this.data.cpyDate = json.cpyDate;
 								_this.data.gfDate = json.gfDate;
@@ -141,6 +140,7 @@
 								_this.data.lcName = json.lcName;
 								_this.data.remark = json.remark;
 				        		var fileInfo = json.fileInfo,zlInfo = json.zlInfo,lcNo = json.lcNo;
+				        		alert(lcNo)
 				        		_this.loadTaskLcDetail(fileInfo,zlInfo,lcNo);
 				        		_this.loadCurrStep(lcNo);
 				        	}else if(json['result'] == 'noInfo'){
@@ -153,7 +153,7 @@
 				},
 				loadTaskLcDetail : function(fileInfo,zlInfo,lcNo){
 					var prevHtml = '',nowHtml_jud = '',nowHtml_sub = '',nowHtml_cus='';
-					if(lcNo >= 3 && lcNo <= 6 || this.data.lcName == '专利补正'){
+					if(lcNo >= 3 && lcNo <= 6 || this.data.lcName == '专利补正' || this.data.lcName == '补正修改' || this.data.lcName == '补正审核'){
 						prevHtml += '<div class="prevTit"><p class="showHideBtn" isOpen="true"><i class="iconfont layui-extend-taskComp"></i>任务详情<i class="iconfont layui-extend-more rotateIcon"></i></p><a class="viewZlDetail" href="javascript:void(0)" opts="byTaskDetailOpt"><i class="layui-icon layui-icon-search"></i>专利详情</a></div>';
 						prevHtml += '<div class="pervWrap"><div class="detailPrevCon">';
 						prevHtml += '<ul class="basicInfoUl">';
@@ -206,13 +206,13 @@
 						$('.judgeBox').addClass('shenheHei').html(nowHtml_jud);
 						form.render();
 						this.judgeScore();
-					}else if(lcNo >= 5 && lcNo < 6){
+					}else if(lcNo >= 5 && lcNo < 6 || this.data.lcName == '补正审核'){
 						//客户确认 增加审核
 						nowHtml_cus += '<span>审核意见：</span><input type="hidden" id="adviceInp"/>';
 						nowHtml_cus += '<div class="isPassBox layui-form">';
 						nowHtml_cus += '<input type="radio" name="adviceRad" lay-filter="isPassFilter_cus" value="0" title="退回修改">';
 						nowHtml_cus += '<input type="radio" name="adviceRad" lay-filter="isPassFilter_cus" value="1" title="审核通过"></div>';
-						$('.judgeBox').html(nowHtml_cus);
+						$('.judgeBox').addClass('shenheHei').html(nowHtml_cus);
 						form.render();
 						this.judgeByCustom();
 					}else if(lcNo == 6){//定稿提交
@@ -339,8 +339,8 @@
 						}else if(this.data.lcName == '补正审核'){
 							$('#stepSeven').addClass('active').find('span').html(this.data.isCompIcon);
 							$('#stepEight').addClass('active hasBlink');
+							$('.addFileTips').html('请添加补正审核意见书');
 						}
-						console.log("进来了==" + this.data.lcName)
 					}
 				},
 				//展开关闭任务详情层
@@ -511,7 +511,7 @@
 							}
 							//alert(globalZlId + "--" + ajTitleVal + "--" + ajSqrIdVal + "--" + sqrName + "--" + ajLxrIdVal + "=----" + ajFmrIdVal + "--" + rateInpVal + "--" + $('#fujianInp').val())
 							var field = {/*zlId : globalZlId*/lcmxId:globalMxId,zlTitle:ajTitleVal,sqrId:ajSqrIdVal,sqrName:sqrName,lxrId:ajLxrIdVal,fmrId:ajFmrIdVal,ajFjInfo:rateInpVal,taskRemark:'',upZxFile:$('#fujianInp').val()};
-						}else if(_this.data.lcName){
+						}else if(_this.data.lcName == '专利补正' || _this.data.lcName == '补正修改'){
 							//专利补正/补正修改 (附件必填 备注选填)
 							var remarkVal = $.trim($('.remarkArea').val());
 							if($('#fujianInp').val() == ''){
@@ -519,6 +519,21 @@
 								return;
 							}
 							var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val()};
+						}else if(_this.data.lcName == '补正审核'){
+							var adviceInpVal = $('#adviceInp').val(),remarkVal = $.trim($('.remarkArea').val());
+							if(adviceInpVal == ''){
+								layer.msg('请选择审核意见',{icon:5,anim:6,time:1500});
+								return;
+							}else{
+								if(adviceInpVal == 0){//不通过
+									if(remarkVal == ''){
+										layer.msg('请填写备注',{icon:5,anim:6,time:1500});
+										return;
+									}
+								}
+							}
+							var field = {/*zlId : globalZlId*/lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),checkStatus:adviceInpVal};
+							console.log(field);
 						}
 						$.ajax({
 	  						type:'post',

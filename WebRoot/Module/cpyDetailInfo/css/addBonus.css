@@ -1,0 +1,114 @@
+.hasMargT{
+	margin-top:20px;
+}
+.selWorkPos{
+	line-height:38px;
+	cursor:pointer;
+	position:relative;
+}
+.selWorkPos p{
+	max-width:90%;
+	color:#888;
+}
+.selWorkPos i{
+	position: absolute;
+    right: 10px;
+    top: 50%;
+    margin-top: -3px;
+    cursor: pointer;
+    border-width: 6px;
+    border-top-color: #c2c2c2;
+    border-top-style: solid;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+}
+.layui-elem-field{
+	margin-top:25px;
+}
+.comSetBox{
+	margin-bottom:15px;
+}
+.comSetBox.noMargBot{
+	margin-bottom:0px;
+}
+.diffWrap{
+	width:20%;
+	height:38px;
+	float:left;
+}
+.bonusWrap{
+	width:80%;
+	float:left;
+	position:relative;
+}
+.moneyDec{
+	font-style: normal;
+    position: absolute;
+    top: 8px;
+    left: 6px;	
+    font-size: 18px;
+    color: #F47837;
+}
+.moneyDec + input{
+	font-weight:600;
+	color:#666;
+	padding-left:20px;
+}
+.moneyDec + input::-webkit-input-placeholder{
+	font-weight:normal;
+}
+legend{
+	color:#009688;
+	font-size:16px !important;
+}
+#btnBox{
+	text-align:center;
+}
+.saveBonusBtn{
+	width:120px;
+	display:inline-block;
+}
+#workPositionBox{
+	width:96%;
+	margin:0 auto;
+}
+#workPositionBox li{
+	width:140px;
+	height:35px;
+	line-height:35px;
+	float:left;
+	border:1px solid #ccc;
+	border-radius:2px;
+	text-align:center;
+	position:relative;
+	margin:10px 15px 0 0px;
+}
+#workPositionBox li.workPosLi{
+	cursor:pointer;
+}
+#workPositionBox li.workPosLi_spec{
+	color:#bbb;
+	border:1px solid #eee;
+}
+#workPositionBox li.workPosLi.active,
+#workPositionBox li.workPosLi:hover{
+	color:#f44f4c;
+	border:1px solid #f44f4c;
+}
+#workPositionBox li.workPosLi.active{
+	font-weight:600;
+}
+.posIcon{
+	width: 1.5em;
+    height: 1.5em;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    overflow: hidden;
+    font-size: 21px;
+	position:absolute;
+	left:10px;
+	top:2px;
+}
+#workPositionBox li.workPosLi_spec .posIcon{
+	opacity:.6;
+}

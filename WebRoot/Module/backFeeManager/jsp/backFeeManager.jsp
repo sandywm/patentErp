@@ -2,7 +2,7 @@
 <!DOCTYPE html> 
 <html>
   <head>
-    <title>专利费用管理</title>
+    <title>客户汇款管理</title>
 	<meta http-equiv="pragma" content="no-cache">
 	<meta http-equiv="cache-control" content="no-cache"> 
 	<meta http-equiv="keywords" content="专利管理系统,客户汇款记录管理">

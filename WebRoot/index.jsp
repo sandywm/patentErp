@@ -85,7 +85,7 @@
 	            <div class="layui-tab-content">
 	                <div class="layui-tab-item layui-show">
 	                	<!--  iframe id="mainIframe" src="cpyManager.do?action=goCpyDetailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
-	                    <!--  iframe id="mainIframe" src="user.do?action=goWelcomePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
+	                    <iframe id="mainIframe" src="user.do?action=goWelcomePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
 	                    <!--  iframe id="mainIframe" src="jfm.do?action=goJfPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                    <!-- iframe id="mainIframe" src="user.do?action=goUserDetailPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
@@ -96,7 +96,7 @@
 	                	<!--  iframe id="mainIframe" src="pubZl.do?action=goPubZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!--  iframe id="mainIframe" src="customer.do?action=goCusPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!-- iframe id="mainIframe" src="zlyq.do?action=goZlyqPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe -->
-	                	<iframe id="mainIframe" src="zlm.do?action=goZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
+	                	<!-- iframe id="mainIframe" src="zlm.do?action=goZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!-- iframe id="mainIframe" src="fee.do?action=goFeePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                	<!--  iframe id="mainIframe" src="fee.do?action=goBackFeePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe-->
 	                </div>
@@ -122,7 +122,7 @@
 	        	var liItem = '';
 	        	if(loginType == 'cpyUser'){//代理机构管理员
 	        		if(roleName == '管理员'){
-	        			liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="3"><i class="iconfont layui-extend-xiugai"></i><cite>代理机构信息管理</cite></a></li>';
+	        			liItem += '<li class="layui-nav-item navLi goSetCpy"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="3"><i class="iconfont layui-extend-xiugai"></i><cite>代理机构信息管理</cite></a></li>';
 		        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)"><i class="iconfont layui-extend-guanli"></i>代理机构管理</a>';
 		        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="7">代理机构角色权限管理</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="user.do?action=goUserPage" tab-id="4">代理机构员工管理</a></dd>';
@@ -199,17 +199,59 @@
 	        	}else{
 	        		$('#mailNavLi').remove();
 	        	}
+	        	createSetInfoLayer();	        	
 	        });
-	        
+	        function createSetInfoLayer(){
+	        	var setInfoTxt = '',fullLayer = '<div class="indexLayer"></div>';
+	        	var isComFlag = checkCpyInitInfoSet();
+	        	setInfoTxt += '<div class="setInfoTxt">';
+	        	setInfoTxt += '<div><p class="firstTxt">请先设置代理机构初始信息</p></div>';
+	        	setInfoTxt += '<a class="goSetCpyInfoBtn" path="cpyManager.do?action=goCpyDetailPage" tab-id="3" href="javascript:void(0)">去设置</a></div>';
+	      		if(isComFlag == false){
+	      			$('body').append(fullLayer + setInfoTxt);
+	        		goSetCpyInfo();
+	      		}
+	        }
+	        function checkCpyInitInfoSet(){
+	        	var isComFlag = false;
+	        	$.ajax({
+					type:'post',
+					async:false,
+			        dataType:'json',
+			        url:'cpyManager.do?action=getCpyInitInfo',
+			        data:{opt:'comInfo'},
+			        success:function (json){
+			        	isComFlag = json.comFlag;
+			        }
+				});
+	        	return isComFlag;
+	        }
+	        function goSetCpyInfo(){
+	        	$('.goSetCpyInfoBtn').on('click',function(){
+	        		$('.indexLayer').remove();
+	        		$('.setInfoTxt').remove();
+	        		var title = '代理机构信息管理';
+			        var path = $(this).attr('path');
+			        var tabId = $(this).attr('tab-id');
+			        commonCreateIf(tabId,title,path);
+	        	});
+	        }
 	        $(".navLi").click(function () {
-		        var title = $(this).text();
-		        var path = $(this).children('a').attr('path');
-		        var tabId = $(this).children('a').attr('tab-id');
-		        // 去重复选项卡
+	        	var isComFlag = checkCpyInitInfoSet();
+	        	if(isComFlag == false && $(this).hasClass('goSetCpy') == false){
+	        		createSetInfoLayer();
+	        	}else{
+			        var title = $(this).text();
+			        var path = $(this).children('a').attr('path');
+			        var tabId = $(this).children('a').attr('tab-id');
+			        commonCreateIf(tabId,title,path);
+	        	}
+		    });
+	        function commonCreateIf(tabId,title,path){
+	        	// 去重复选项卡
 		        for (var i = 0; i < $('.mainIframe').length; i++) {
 		            if ($('.mainIframe').eq(i).attr('tab-id') == tabId) {
 		                element.tabChange("mainTab", tabId);
-		                
 		                event.stopPropagation();
 		                return;
 		            }
@@ -221,8 +263,8 @@
 		            id: tabId
 		        });
 		        // 切换选项卡
-		        element.tabChange("mainTab", tabId);
-		    });
+		        element.tabChange("mainTab", tabId);	
+	        }
 	        $("#animation-left-nav").click(function(){
 				//这里定义一个全局变量来方便判断动画收缩的效果,也就是放在最外面
 				if(i == 0){

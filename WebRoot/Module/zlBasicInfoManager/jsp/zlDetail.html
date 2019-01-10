@@ -57,7 +57,7 @@
 					<li>通知书名称</li>
 					<li>通知书发文日</li>
 					<li>官方绝限日</li>
-					<li>下载</li>
+					<li>操作</li>
 				</ul>
 				<ul id="tzsCon"></ul>
 			</div>
@@ -141,7 +141,7 @@
 	<script src="/Module/zlBasicInfoManager/js/delMethod.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var num=0,tmpEwyqIdArray=[],globalFeeId=0,globalTzsId=0,zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
+		var num=0,tmpEwyqIdArray=[],globalTaskOpts={tzsId:0},globalTzsId=0,zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -1177,14 +1177,14 @@
 							strHtml += '<p>&nbsp;</p>';
 						}
 						//strHtml += '<p><a href="javascript:void(0)" class="downloadBtn" downFilePath="'+ tzsInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a></p></li>';
-						strHtml += '<p><a href="javascript:void(0)" class="viewTzsFun" tzsId="'+ tzsInfo[i].tzsId +'" tzsType="'+ tzsInfo[i].tzsType +'"><i class="layui-icon layui-icon-download-circle"></i>查看</a>';
-						strHtml += '<a href="javascript:void(0)" class="downloadBtn" downFilePath="'+ tzsInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
+						strHtml += '<p><a href="javascript:void(0)" class="layui-btn layui-btn-primary layui-btn-xs viewTzsFun" tzsId="'+ tzsInfo[i].tzsId +'" tzsType="'+ tzsInfo[i].tzsType +'"><i class="layui-icon layui-icon-search"></i>查看</a>';
+						strHtml += '<a href="javascript:void(0)" class="layui-btn layui-btn-xs downloadBtn_tzs" downFilePath="'+ tzsInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
 						strHtml += '</p></li>';
 					}
 					$('#tzsCon').html(strHtml);
 					$('#tzsCon li:odd').addClass('oddColor');
 					$('.viewTzsFun').on('click',function(){
-						globalTzsId = $(this).attr('tzsId');
+						globalTaskOpts.tzsId = $(this).attr('tzsId');
 						var tzsType = $(this).attr('tzsType');
 						if(tzsType == 'sqd'){//查看电子回执单
 							layer.open({
@@ -1202,7 +1202,7 @@
 						}
 					});
 					//下载
-					$('.downLoadBtn').on('click',function(){
+					$('.downloadBtn_tzs').on('click',function(){
 						var downFilePath = $(this).attr('downFilePath');
 						common.downFiles(downFilePath,0);
 					});
@@ -1223,11 +1223,11 @@
 						}
 						strHtml += '<p class="twoFjWid">'+ fjInfo[i].upUserName +'</p>';
 						strHtml += '<p class="threeFjWid">'+ fjInfo[i].upDate +'</p>';
-						strHtml += '<p class="fourFjWid"><a href="javascript:void(0)" class="downloadBtn downBtn" downFilePath="'+ fjInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a></p></li>';
+						strHtml += '<p class="fourFjWid"><a href="javascript:void(0)" class="layui-btn layui-btn-xs downLoadBtn_fj" downFilePath="'+ fjInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a></p></li>';
 					}
 					$('#fjCon').html(strHtml);
 					$('#fjCon li:odd').addClass('oddColor');
-					$('.downloadBtn').on('click',function(){
+					$('.downLoadBtn_fj').on('click',function(){
 						var downFilePath = $(this).attr('downFilePath');
 						common.downFiles(downFilePath,0);
 					});

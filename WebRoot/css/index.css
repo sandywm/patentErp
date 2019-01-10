@@ -58,3 +58,49 @@
 #mailNavLi{
 	visibility:hidden;
 }
+.setInfoTxt{
+	width:418px;
+	height:300px;
+	position:fixed;
+	left:156px;
+	top:72px;
+	z-index:10000;
+}
+.setInfoTxt div{
+	width:418px;
+	height:224px;
+	background:url(../images/setTips.png) no-repeat;
+}
+.setInfoTxt p{
+	color:#fff;
+	position:absolute;
+	font-size:18px;
+}
+.setInfoTxt p.firstTxt{
+	left:155px;
+	top:122px;
+}
+.setInfoTxt a{
+	width:114px;
+	height:53px;
+	line-height:53px;
+	background:url(../images/setInfoBtn.png) no-repeat;
+	position:absolute;
+	right:90px;
+	bottom:0px;
+	text-align:center;
+	color:#fff;
+	font-size:18px;
+}
+.setInfoTxt a:hover{
+	text-decoration:underline;
+}
+.sideLayer{
+	width:100%;
+	height:100%;
+	position:absolute;
+	left:0;
+	top:0;
+	z-index:100;
+	background:transparent;
+}

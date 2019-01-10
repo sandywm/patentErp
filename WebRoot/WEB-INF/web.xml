@@ -27,7 +27,7 @@
   
   <error-page>
   	<error-code>404</error-code><!-- 找不到该页面异常 -->
-  	<location>/login.jsp</location>
+  	<location>/exception/jsp/404Page.html</location>
   </error-page>
   
   <error-page>
