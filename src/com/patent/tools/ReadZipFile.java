@@ -863,21 +863,21 @@ public class ReadZipFile {
 		ZipFile zipFile = null;
 		ZipInputStream zipInput = null;
 		ZipEntry zipEntry = null;
-		OutputStream os = null;
-		InputStream is = null;
-		File mainfestFile = new File(file.getParent() + "\\000001.tif");
-		if(!mainfestFile.exists()){
-			try {
-				mainfestFile.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+//		OutputStream os = null;
+//		InputStream is = null;
+//		File mainfestFile = new File(file.getParent() + "\\000001.tif");
+//		if(!mainfestFile.exists()){
+//			try {
+//				mainfestFile.createNewFile();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
 		try {
 			zipFile = new ZipFile(file);
 			zipInput = new ZipInputStream(new FileInputStream(file),Charset.forName("utf-8"));
-			os = new FileOutputStream(mainfestFile);
+//			os = new FileOutputStream(mainfestFile);
 			while((zipEntry = zipInput.getNextEntry()) != null){
 				String currFileName = zipEntry.getName();
 //				if(currFileName.endsWith("list.xml")){
@@ -898,16 +898,16 @@ public class ReadZipFile {
 //					}
 //				}
 				System.out.println(currFileName);
-				if(currFileName.endsWith("tif")){
-					int indexLen = currFileName.indexOf("\\");
-					if(indexLen > -1){
-						is = zipFile.getInputStream(zipEntry);
-						int len;
-						while((len = is.read()) != -1){
-							os.write(len);
-						}
-					}
-				}
+//				if(currFileName.endsWith("tif")){
+//					int indexLen = currFileName.indexOf("\\");
+//					if(indexLen > -1){
+//						is = zipFile.getInputStream(zipEntry);
+//						int len;
+//						while((len = is.read()) != -1){
+//							os.write(len);
+//						}
+//					}
+//				}
 			}
 		} catch (ZipException e) {
 			// TODO Auto-generated catch block
@@ -917,8 +917,8 @@ public class ReadZipFile {
 			e.printStackTrace();
 		} finally{
 			try {
-				is.close();
-				os.close();
+//				is.close();
+//				os.close();
 				zipInput.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

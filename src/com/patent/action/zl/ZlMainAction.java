@@ -3270,14 +3270,14 @@ public class ZlMainAction extends DispatchAction {
 							String lastBzScFile = "";//上一次补正审核的文件
 //							String lastBzScRemark = "";//上一次补正审核的备注
 							if(lcmxName.equals("专利补正")){
-								
+								remark = zl.getAjRemark();
 							}else if(lcmxName.equals("补正修改")){
 								lastBzFile = lcmx.getLastUpFileBz();
 								lastBzScFile = lcmx.getLastUpFileBzSc();
 								filePath += ":" + lastBzFile + ":" + lastBzScFile;
 								fileType += ":补正文件:补正审核";
 								upUser += ":"+cum.getEntityById(lcmx.getLastUpUserIdBz()).getUserName()+":"+cum.getEntityById(lcmx.getLastUpUserIdBzSc()).getUserName();
-								remark = mx.getLastBzScRemark();
+								remark = lcmx.getLastBzScRemark();
 							}else if(lcmxName.equals("补正审核")){
 								lastBzFile = lcmx.getLastUpFileBz();
 								lastBzScFile = lcmx.getLastUpFileBzSc();
@@ -3289,6 +3289,7 @@ public class ZlMainAction extends DispatchAction {
 									fileType += ":补正审核";
 									upUser += ":"+cum.getEntityById(lcmx.getLcMxUpUserId()).getUserName();
 								}
+								remark = lcmx.getLastBzScRemark();
 							}
 							
 							
