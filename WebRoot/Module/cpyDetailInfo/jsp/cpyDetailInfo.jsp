@@ -325,7 +325,7 @@
    					strHtml += '<div class="layui-input-inline"><input type="text" name="lxrTel" value="'+ list.lxrTel +'" required placeholder="请输入手机号码" lay-verify="phoneNum" autocomplete="off" class="layui-input" maxlength="11"></div></div>';
    					//联系人邮箱
    					strHtml += '<div class="layui-form-item"><label class="layui-form-label">联系人邮箱</label>';
-   					strHtml += '<div class="layui-input-inline"><input type="text" name="lxrEmail" value="'+ list.lxrEmail +'" required lay-verify="email" placeholder="请输入联系人邮箱" autocomplete="off" class="layui-input"></div></div>';
+   					strHtml += '<div class="layui-input-inline"><input type="text" name="lxrEmail" value="'+ list.lxrEmail +'" required lay-verify="email" placeholder="请输入联系人邮箱" maxlength="30" autocomplete="off" class="layui-input"></div></div>';
    					//选择省、市
    					strHtml += '<div class="layui-form-item"><label class="layui-form-label">选择地区</label>';
    					if(list.cpyProv != '' && list.cpyCity != ''){
@@ -424,7 +424,7 @@
    					strHtml += '<div class="layui-form-item">';
    					strHtml += '<label class="layui-form-label">开户行</label>';
    					strHtml += '<div class="layui-input-inline">';
-   					strHtml += '<input type="text" placeholder="请输入开户行" value="'+ json.bankName +'" autocomplete="off" maxlength="30" class="layui-input bankNameInp"/></div></div>';
+   					strHtml += '<input type="text" placeholder="请输入开户行" value="'+ json.bankName +'" maxlength="40" autocomplete="off" maxlength="30" class="layui-input bankNameInp"/></div></div>';
    					strHtml += '<div class="layui-form-item" style="position:realtive;">';
    					strHtml += '<label class="layui-form-label">银行卡号</label>';
    					strHtml += '<div class="layui-input-inline">';

@@ -114,7 +114,7 @@
 	  			strHtml += '<div class="layui-input-inline"><input type="password" name="comfirmPas" required lay-verify="required" placeholder="请再次确认密码" autocomplete="off" class="layui-input" maxlength="16"></div></div>';
 				//个人邮箱
 	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label">个人邮箱</label>';
-	  			strHtml += '<div class="layui-input-inline"><input type="email" name="email" lay-verify="email" placeholder="请输入个人邮箱" autocomplete="off" class="layui-input"></div></div>';
+	  			strHtml += '<div class="layui-input-inline"><input type="email" name="email" lay-verify="email" placeholder="请输入个人邮箱" maxlength="30" autocomplete="off" class="layui-input"></div></div>';
 	  			if(signType == 'appUser'){
 	  				//申请人名字(默认) 另一种就是公司名字
 	  	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label canChange_name">申请人姓名</label>';
