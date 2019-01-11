@@ -95,6 +95,7 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 		}else if(comStatus.equals(1)){
 			hql += " and lcmx.lcMxEDate != ''";
 		}
+		hql += " order by lcmx.id desc";
 		int offset = (pageNo - 1) * pageSize;
 		if (offset < 0) {
 			offset = 0;
