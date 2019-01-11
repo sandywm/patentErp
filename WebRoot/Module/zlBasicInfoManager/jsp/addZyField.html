@@ -190,7 +190,7 @@
    				        dataType:"json",
    				        data :{zyName : escape(zyName),zyProfile : escape(zyProfile)},
    				        url:"/jfm.do?action=addJf",
-   				        success:function (json){
+   				        success:function (json){ 
    				        	if(json["result"] == "success"){
    				        		layer.msg("添加成功",{icon:1,time:1000},function(){
    				        			_this.hideField();
