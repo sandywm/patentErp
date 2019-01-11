@@ -6,6 +6,9 @@
 layui.define(['rate'],function(exports){
 	var $ = layui.jquery,rate = layui.rate;
     var obj = {
+    	getId : function(id){
+    		return document.getElementById(id);
+    	},
     	//通用验证码更换	
         vercode : function(){        	
         	var obj = this.getId("sessCode");
