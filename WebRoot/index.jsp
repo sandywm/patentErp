@@ -55,7 +55,7 @@
 	            <li class="layui-nav-item">
 	                <a href="javascript:;">
 	                	<i class="layui-icon layui-icon-username headsmIcon"></i>
-	                   	黄利峰<span class="layui-nav-more"></span>
+	                   	<span id="userName"></span><span class="layui-nav-more"></span>
 	                </a>
 	                <dl class="layui-nav-child">
 	                    <dd class="navLi"><a href="javascript:void(0)" tab-id="1" path="user.do?action=goUserDetailPage">基本资料</a></dd>
@@ -111,13 +111,17 @@
   	<script src="/plugins/jquery/jquery.min.js"></script>
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
-  		//console.log(roleName + "--roleName" + loginType)
-	  	layui.use(['element','layer'], function(){
+	  	layui.config({
+			base: '/plugins/frame/js/'
+		}).extend({ //设定组件别名
+		    common: 'common'
+		}).use(['element','layer','common'], function(){
 	  		 //动态加载模块
 	        var element = layui.element,
 	        	layer = layui.layer,
 	        	$ = layui.jquery,
-	        	i = 0;
+	        	i = 0,
+	        	common = layui.common;
 	        function renderModuleList(){
 	        	var liItem = '';
 	        	if(loginType == 'cpyUser'){//代理机构管理员
@@ -199,6 +203,7 @@
 	        	}else{
 	        		$('#mailNavLi').remove();
 	        	}
+	        	common.getUserBasicInfo('mine');
 	        	createSetInfoLayer();	        	
 	        });
 	        function createSetInfoLayer(){

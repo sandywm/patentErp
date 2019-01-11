@@ -139,8 +139,8 @@
 	width:100%;
 	display:block;
 }
-.statusIcon
-/*.statusIcon_com*/{
+.statusIcon,
+.statusIcon_com_1{
 	font-size:19px;
 	position:absolute;
 	left:10px;
@@ -149,10 +149,10 @@
 .statusIcon{
 	color:#F47837;
 }
-/*.statusIcon_com{
+.statusIcon_com_1{
 	color:#009688;
 	font-weight:600;
-}*/
+}
 .animation{
 	-webkit-animation:mymove .5s; /* Safari and Chrome */
 	animation:mymove .5s;
@@ -314,11 +314,6 @@
 }
 .fourFjWid{
 	width:10%;
-}
-.ellip{
-	overflow: hidden;
-	white-space:nowrap;
-	text-overflow: ellipsis;
 }
 #noData{
 	display:none;

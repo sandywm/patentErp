@@ -8,7 +8,7 @@
 	<meta http-equiv="keywords" content="专利管理系统,专利基本信息管理">
 	<meta http-equiv="description" content="专利管理系统专利基本信息管理">
 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
-	<link href="/css/common.css" rel="stylesheet" type="text/css"/>
+	
 	<link href="/Module/zlBasicInfoManager/css/zlBasicInfoManager.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
 	<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>	
@@ -25,7 +25,7 @@
   						<input type="hidden" id="lqStatusInp" value="1"/>
   						<a id="addZlBtn" class="posAbs newAddBtn" opts="addZlOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加新专利</a>
   						<a id="importBtn" style="display:none;" class="posAbs newAddBtn" href="javascript:void(0)"><i class="iconfont layui-extend-daoru"></i>批量导入通知书</a>
-						<i class="iconfont layui-extend-bangzhu helpIcon" title="帮助"></i>
+						<!--  i class="iconfont layui-extend-bangzhu helpIcon" title="帮助"></i-->
 					</div>   
   				</div>
   			</div>
@@ -373,8 +373,23 @@
 							{field : 'taskName', title: '任务名称', width:180, align:'center'},
 							{field : 'taskSdate', title: '任务开始日期', width:200, align:'center'},
 							{field : 'taskComDate', title: '任务完成日期', width:200, align:'center'},
-							{field : 'taskEdateCpy', title: '任务完成期限(机构)', width:200, align:'center'},
-							{field : 'taskEdateGf', title: '任务完成期限(官方)', width:200, align:'center'},
+							{field : 'taskEdateCpy', title: '任务完成期限(机构)', width:220, align:'center',templet:function(d){
+								console.log(d)
+								if(d.diffDaysCpy < 0 && d.taskEdateCpy != ''){
+									var strDiffDays_Cpy = d.diffDaysCpy.toString();
+									return d.taskEdateCpy + '(<span class="hasOverDate">已过期'+ strDiffDays_Cpy.substring(1,strDiffDays_Cpy.length) +'天</span>)';
+								}else{
+									return d.taskEdateCpy;
+								}
+							}},
+							{field : 'taskEdateGf', title: '任务完成期限(官方)', width:220, align:'center',templet:function(d){
+								if(d.diffDaysGf < 0 && d.taskEdateGf != ''){
+									var strDiffDays_Gf = d.diffDaysGf.toString();
+									return d.taskEdateGf + '(<span class="hasOverDate">已过期'+ strDiffDays_Gf.substring(1,strDiffDays_Gf.length) +'天</span>)';
+								}else{
+									return d.taskEdateGf;
+								}
+							}},
 							{field : 'sets', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
 								if(taskStaVal == 0){
 									var strHtml = '';

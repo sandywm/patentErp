@@ -250,7 +250,7 @@
 					strHtml7 += '<input type="hidden" id="cusIdInp"/><div class="layui-input selCusP"><p class="cusName ellip">请选择客户</p><i class="layui-edge"></i></div></div></div>';
 					strHtml2 += '<div class="itemDiv fl"><div class="layui-input-inline"><input id="diffDaysSelInp" type="hidden" value="15"/>';
 					strHtml2 += '<select id="diffDaysSel" lay-filter="diffDaysSel"><option value="">请选择距代理机构交费期限(全部)</option>';
-					strHtml2 += '<option value="1">1天</option><option value="7">7天</option><option value="15" selected>15天</option><option value="30">30天</option><option value="60">60天</option>';
+					strHtml2 += '<option value="1">1天</option><option value="7">7天</option><option value="15" selected>15天</option><option value="30">30天</option><option value="60">60天</option><option value="-2">已过期</option>';
 					strHtml2 += '</select></div></div>';
 					strHtml3 += '<div class="itemDiv sEDateDiv fl"><div class="layui-input-inline">';
 					strHtml3 += '<input type="text" id="sDateInp" placeholder="请选择交费日期(开始)" autocomplete="off" class="layui-input"></div></div>';
@@ -345,12 +345,11 @@
 						cols : [[
 							{type : feeStatusInpVal == 0 ? 'checkbox' : 'numbers', title: '序号', fixed:'left'},
 							{field : 'zlName', title: '专利名称', width:200,fixed:'left', align:'center',templet : function(d){
-								if(d.bankSerialNo == ''){//未交费
+								if(d.feeStatus == 0){//未交费
 									return '<span class="noPayStatus"></span>' + d.zlName;
-								}else{//已交费
+								}else if(d.feeStatus == 1){//已交费
 									return '<span class="hasPayStatus"></span>' + d.zlName ;
 								}
-								
 							}},
 							{field : 'zlNo', title: '专利申请/专利号', width:180, align:'center'},
 							{field : 'ajNo', title: '案件编号', width:170, align:'center'},

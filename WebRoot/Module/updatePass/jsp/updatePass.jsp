@@ -24,19 +24,19 @@
   							<div class="layui-form-item">
   								<label class="layui-form-label">当前密码</label>
   								<div class="layui-input-inline">
-  									<input id="passOldInp" type="password" name="passOld" required lay-verify="judgeOldPass" class="layui-input" placeholder="请输入当前密码">
+  									<input id="passOldInp" type="password" name="passOld" required lay-verify="judgeOldPass" class="layui-input" autocomplete="off" placeholder="请输入当前密码">
   								</div>
   							</div>
   							<div class="layui-form-item">
   								<label class="layui-form-label">新密码</label>
   								<div class="layui-input-inline">
-  									<input id="newPassInp" type="password" name="newPass" required lay-verify="judgePass" class="layui-input" placeholder="请输入新密码">
+  									<input id="newPassInp" type="password" name="newPass" required lay-verify="judgePass" class="layui-input" autocomplete="off" placeholder="请输入新密码">
   								</div>
   							</div>
   							<div class="layui-form-item">
   								<label class="layui-form-label">确认新密码</label>
   								<div class="layui-input-inline">
-  									<input type="password" name="confirNewPass" lay-verify="required" class="layui-input" placeholder="请再次输入新密码">
+  									<input type="password" name="confirNewPass" lay-verify="required" class="layui-input" autocomplete="off" placeholder="请再次输入新密码">
   								</div>
   							</div>
   							<div class="layui-form-item">

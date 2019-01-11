@@ -109,11 +109,11 @@
 					cellMinWidth : 100,
 					cols : [[
 						{field : '', title: '序号',type:'numbers', fixed: 'left' , align:'center'},
-						{field : 'cusName', title: '客户名称', align:'center',fixed: 'left'},
+						{field : 'cusName', title: '客户名称',width:240, align:'center',fixed: 'left'},
 						{field : 'cusType', title: '客户类型', align:'center',templet : function(d){
 							if(d.cusType == 'gr'){return '个人';}else{return d.cusType;};
 						}},
-						{field : 'cusICard', title:'组织机构代码/身份证号码', align:'center'},
+						{field : 'cusICard', title:'组织机构代码/身份证号码',width:200, align:'center'},
 						{field : 'cusZip', title: '客户邮编', align:'center'},
 						{field : '', title: '操作', align:'center', fixed: 'right', width:390,templet : function(d){
 							return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewCusDetails" cusName="'+ d.cusName +'" cusId="'+ d.id +'"><i class="layui-icon layui-icon-search"></i>查看详情</a> <a class="btn layui-btn layui-btn-xs" lay-event="editCust" cusName="'+ d.cusName +'" cusId="'+ d.id +'"><i class="layui-icon layui-icon-edit"></i>编辑</a> <a class="btn layui-btn layui-btn-xs layui-btn-normal" lay-event="addLxr" cusName="'+ d.cusName +'" cusId="'+ d.id +'" opts="addLxrOpts"><i class="layui-icon layui-icon-add-1"></i>添加联系人</a>  <a class="btn layui-btn layui-btn-xs" lay-event="addFmr" opts="addFmrOpts" cusName="'+ d.cusName +'" cusId="'+ d.id +'"><i class="layui-icon layui-icon-add-1"></i>添加发明人</a>';

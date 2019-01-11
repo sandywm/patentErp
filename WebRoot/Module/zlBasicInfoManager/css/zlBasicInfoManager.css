@@ -1,3 +1,4 @@
+@import url("../../../css/common.css");
 @import url("../../../css/dottingAnimation.css");
 @import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
 body{
@@ -672,6 +673,8 @@ body{
 	z-index:10;
 	cursor:pointer;
 	color:#009688;
+	position:relative;
+	z-index:100;
 }
 .layui-extend-bangzhu:hover{
 	color:#F47837;
@@ -856,4 +859,7 @@ body{
 	position:absolute;
 	left:3px;
 	top:0px;
+}
+.hasOverDate{
+	color:#f00;
 }

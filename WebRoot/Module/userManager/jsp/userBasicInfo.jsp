@@ -28,10 +28,15 @@
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
   		var fieldList = [];
-  		layui.use(['layer','jquery','form'],function(){
+  		layui.config({
+			base: '/plugins/frame/js/'
+		}).extend({ //设定组件别名
+		    common: 'common'
+		}).use(['layer','jquery','form','common'],function(){
   			var layer = layui.layer,
   				$ = layui.jquery,
-  				form = layui.form;
+  				form = layui.form,
+  				common = layui.common;
   			
   			var page = {
   				init : function(){
@@ -40,17 +45,8 @@
   				onLoad : function(){
   					//获取用户信息
   					layer.load("1");
-  					$.ajax({
-  						type:"post",
-				        async:false,
-				        dataType:"json",
-				        url:"user.do?action=getUserDetail",
-				        success:function (json){
-				        	layer.closeAll("loading");	
-				        	//回填基本信息
-				        	getUserInfo(json);
-				        }
-  					});
+  					var userInfoList = JSON.parse(sessionStorage.getItem('userInfo'));
+  					getUserInfo(userInfoList);
   				}
   			};
   			//渲染form
@@ -74,8 +70,10 @@
   				}else if(list.roleName == "super"){
   					list.roleName = "超级管理员";
   				}
-  				//账户身份
   				strHtml += '<div class="layui-form-item"><label class="layui-form-label">当前身份</label>';
+  				strHtml += '<div class="layui-input-inline"><input type="text" value="'+ parent.roleName +'" disabled class="layui-input"></div></div>';
+  				//账户身份
+  				strHtml += '<div class="layui-form-item"><label class="layui-form-label">拥有身份</label>';
   				strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.roleName +'" disabled class="layui-input"></div></div>';
   				//注册账号
 	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label">注册账号</label>';
@@ -193,10 +191,11 @@
   				form.render();
   			}
   			//回填、修改用户基本信息
-  			function getUserInfo(list){
-	  			if(list["result"] == "success"){
-	  				renderForm(list);
-  				}else if(list["result"] == "noUser"){
+  			function getUserInfo(userInfoList){
+  				layer.closeAll("loading");
+	  			if(userInfoList["result"] == "success"){
+	  				renderForm(userInfoList);
+  				}else if(userInfoList["result"] == "noUser"){
   					$('#setPerInfo').html("<div class='noThisPeo'><i class='iconfont layui-extend-noData'></i><p>查无此人</p></div");
   				}
   			}
@@ -319,6 +318,7 @@
 			        	layer.closeAll('loading');
 			        	if(json["result"] == true){
 			        		layer.msg("保存成功",{icon:1,time:1000},function(){
+			        			common.getUserBasicInfo('myParent');
 			        			form.render();
 			        		});
 			        	}else if(json["result"] == false){

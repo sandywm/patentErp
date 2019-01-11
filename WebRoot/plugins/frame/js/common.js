@@ -11,6 +11,25 @@ layui.define(['rate'],function(exports){
         	var obj = this.getId("sessCode");
 			obj.src = "authImg?code="+Math.random()+100;
 		},
+		//获取用户基本信息
+		getUserBasicInfo : function(opts){
+			$.ajax({
+				type:"post",
+		        dataType:"json",
+		        url:"user.do?action=getUserDetail",
+		        success:function (json){
+		        	layer.closeAll("loading");
+		        	if(json['result'] == 'success'){
+		        		if(opts == 'mine'){
+		        			$('#userName').html(json.name);
+		        		}else if(opts == 'myParent'){
+		        			parent.$('#userName').html(json.name);
+		        		}
+			        	sessionStorage.setItem('userInfo',JSON.stringify(json));
+		        	}
+		        }
+			});
+		},
 		//获取权限
 		getPermission : function(actModName,lcNameEng,zlId){
 			var permissionFlag = false;

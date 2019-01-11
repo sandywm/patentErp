@@ -95,9 +95,6 @@ legend{
 	color:#f44f4c;
 	border:1px solid #f44f4c;
 }
-#workPositionBox li.workPosLi.active{
-	font-weight:600;
-}
 .posIcon{
 	width: 1.5em;
     height: 1.5em;
