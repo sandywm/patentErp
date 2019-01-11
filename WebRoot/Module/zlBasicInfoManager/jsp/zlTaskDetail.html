@@ -514,7 +514,7 @@
 							//专利补正/补正修改 (附件必填 备注选填)
 							var remarkVal = $.trim($('.remarkArea').val());
 							if($('#fujianInp').val() == ''){
-								layer.msg('请上传撰稿文件',{icon:5,anim:6,time:1500});
+								layer.msg('请上传补正文件',{icon:5,anim:6,time:1500});
 								return;
 							}
 							var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val()};
