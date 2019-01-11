@@ -416,9 +416,9 @@ public class LoginAction extends DispatchAction {
 		String comAddress = "";//公司地址
 		String comProv = Transcode.unescape(request.getParameter("prov"), request);//公司所在省份
 		String comCity = Transcode.unescape(request.getParameter("city"), request);//公司所在城市
-		String comLxr = Transcode.unescape(request.getParameter("lxr"), request);//公司联系人
+		String comLxr = Transcode.unescape(request.getParameter("lxr"), request);//公司联系人--变为当前注册人员名称
 		String email = request.getParameter("email");//个人邮箱--用于找回密码
-		String comTel = Transcode.unescape(request.getParameter("tel"), request);//公司联系电话
+		String comTel = Transcode.unescape(request.getParameter("tel"), request);//公司联系电话----变为当前注册人员名称
 		
 		String account = request.getParameter("account");
 		String password = request.getParameter("password");
@@ -436,8 +436,8 @@ public class LoginAction extends DispatchAction {
 						//自动为每个代理机构初始一个管理员身份
 						Integer roleId = crm.addRole("管理员", "管理机构基本信息", cpyId);
 						//增加代理机构管理员
-						Integer cpyUserId = cum.addCpyUser(cpyId, "", "", account, md5.calcMD5(password), "m", 
-								email, "", CurrentTime.getStringDate(), "", "");
+						Integer cpyUserId = cum.addCpyUser(cpyId, comLxr, Convert.getFirstSpell(comLxr), account, md5.calcMD5(password), "m", 
+								email, comTel, CurrentTime.getStringDate(), "", "");
 						//增加身份绑定
 						Integer ruId = crm.addRoleUser(roleId, cpyUserId);
 						if(ruId > 0){
