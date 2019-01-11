@@ -140,7 +140,6 @@
 								_this.data.lcName = json.lcName;
 								_this.data.remark = json.remark;
 				        		var fileInfo = json.fileInfo,zlInfo = json.zlInfo,lcNo = json.lcNo;
-				        		alert(lcNo)
 				        		_this.loadTaskLcDetail(fileInfo,zlInfo,lcNo);
 				        		_this.loadCurrStep(lcNo);
 				        	}else if(json['result'] == 'noInfo'){
