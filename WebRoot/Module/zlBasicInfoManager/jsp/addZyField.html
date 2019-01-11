@@ -43,6 +43,7 @@
 				init : function(){
 					this.onLoad();
 					this.bindEvent();
+					this.inpFieldClick();
 				},
 				onLoad : function(){
 					this.loadZyFieldList();
@@ -60,16 +61,6 @@
 					$('#addBtn_field').on('click',function(){
 						_this.addJfField();
 					});
-					if(noDataFlag == false){//表示存在数据
-						$('input[name=jfFieldInp]').on('click',function(){
-							var checkStatus = this.checked;
-							if(checkStatus){
-								$(this).prev().addClass('hasActive');
-							}else{
-								$(this).prev().removeClass('hasActive');
-							}
-						});
-					}
 					//保存已添加到新增专利的技术领域
 					$('#saveZlBtn').on('click',function(){
 						var hasCheckedLen = $('input[name=jfFieldInp]:checked').length;
@@ -103,6 +94,18 @@
 					        parent.delHasAddMethod('delFieldBtn','delFieldOpt');
 						}
 					});
+				},
+				inpFieldClick : function(){
+					if(noDataFlag == false){//表示存在数据
+						$('input[name=jfFieldInp]').on('click',function(){
+							var checkStatus = this.checked;
+							if(checkStatus){
+								$(this).prev().addClass('hasActive');
+							}else{
+								$(this).prev().removeClass('hasActive');
+							}
+						});
+					}
 				},
 				showAddField : function(){
 					$(".addJfFieldBox").find("input").val("");
@@ -192,7 +195,7 @@
    				        		layer.msg("添加成功",{icon:1,time:1000},function(){
    				        			_this.hideField();
 	    				        	_this.loadZyFieldList();
-	    				        	_this.bindEvent();
+	    				        	_this.inpFieldClick();
    				        		});
    				        	}else if(json["result"] == "exist"){
    				        		layer.msg("专业名称已存在，请重新编辑", {icon:5,anim:6,time:1000});
