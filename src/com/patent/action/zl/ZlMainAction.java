@@ -3978,6 +3978,9 @@ public class ZlMainAction extends DispatchAction {
 												}else{
 													lcNo = zg_lcNo_final + 0.1;
 												}
+											}else{//说明没有撰稿修改
+												lcList_t = lcm.listLcInfoByLcMz(zlId, "新申请撰稿");//获取是否存在撰稿修改列表
+												lcNo = lcList_t.get(0).getLcNo() + 0.1;
 											}
 										}
 										lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
