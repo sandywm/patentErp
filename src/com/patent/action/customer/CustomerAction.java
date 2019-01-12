@@ -188,7 +188,7 @@ public class CustomerAction extends DispatchAction {
 					map.put("count", count);
 					map.put("code", 0);
 				}else{
-					map.put("msg", "noInfo");
+					map.put("msg", "暂无记录");
 				}
 			}else{
 				map.put("msg", "noAbility");

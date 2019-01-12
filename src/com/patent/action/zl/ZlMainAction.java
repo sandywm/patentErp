@@ -589,7 +589,7 @@ public class ZlMainAction extends DispatchAction {
 					map.put("count", count);
 					map.put("code", 0);
 				}else{
-					map.put("msg", "noInfo");
+					map.put("msg", "暂无记录");
 				}
 			}else if(lqStatus.equals(4)){//我的任务（去完成、任务移交）,管理员时叫专利任务
 				if(roleName.equals("管理员")){//管理员可做所有任务
@@ -663,7 +663,7 @@ public class ZlMainAction extends DispatchAction {
 					map.put("count", count);
 					map.put("code", 0);
 				}else{
-					map.put("msg", "noInfo");
+					map.put("msg", "暂无记录");
 				}
 			}else if(lqStatus.equals(5)){//流程人员叫任务移交记录，管理员、流程分配人员时叫任务移交审核
 				Integer applyUserId = 0;
@@ -732,7 +732,7 @@ public class ZlMainAction extends DispatchAction {
 					map.put("count", count);
 					map.put("code", 0);
 				}else{
-					map.put("msg", "noInfo");
+					map.put("msg", "暂无记录");
 				}
 			}else if(lqStatus.equals(6)){//上传通知书读取列表
 				Integer count = tzsm.getCountByOpt(cpyId, 0, zlNo,readStatus,tzsType);
@@ -772,7 +772,7 @@ public class ZlMainAction extends DispatchAction {
 					map.put("count", count);
 					map.put("code", 0);
 				}else{
-					map.put("msg", "noInfo");
+					map.put("msg", "暂无记录");
 				}
 				
 			}
@@ -1353,7 +1353,7 @@ public class ZlMainAction extends DispatchAction {
 							}
 							msg = "success";
 						}else{
-							msg = "noInfo";
+							msg = "暂无记录";
 						}
 						diffFeeTotal = Convert.convertInputNumber_2(djFeeTotal - backFeeTotal - discountsFeeTotal);
 						map.put("feeInfo", list_d);

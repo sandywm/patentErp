@@ -228,7 +228,7 @@ public class PubZlAction extends DispatchAction {
 			map.put("count", count);
 			map.put("code", 0);
 		}else{
-			map.put("msg", "noInfo");
+			map.put("msg", "暂无记录");
 		}
 		this.getJsonPkg(map, response);
 		return null;
@@ -395,10 +395,10 @@ public class PubZlAction extends DispatchAction {
 					map.put("zlCheckStatusChi", zlCheckStatusChi);
 					map.put("zlCheckRemark", pz.getZlCheckRemark());
 				}else{
-					msg = "noInfo";
+					msg = "暂无记录";
 				}
 			}else{
-				msg = "noInfo";
+				msg = "暂无记录";
 			}
 		}
 		map.put("result", msg);

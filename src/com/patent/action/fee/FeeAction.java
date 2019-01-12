@@ -351,7 +351,7 @@ public class FeeAction extends DispatchAction {
 					map.put("count", count);
 					map.put("code", 0);
 				}else{
-					map.put("msg", "noInfo");
+					map.put("msg", "暂无记录");
 				}
 			}
 		}
@@ -1169,7 +1169,7 @@ public class FeeAction extends DispatchAction {
 							list_d.add(map_d);
 						}
 					}else{
-						msg = "noInfo";
+						msg = "暂无记录";
 					}
 				}
 				map.put("data", list_d);
@@ -1448,7 +1448,7 @@ public class FeeAction extends DispatchAction {
 							list_d.add(map_d);
 						}
 					}else{
-						msg = "noInfo";
+						msg = "暂无记录";
 					}
 				}
 				map.put("data", list_d);
@@ -1718,7 +1718,7 @@ public class FeeAction extends DispatchAction {
 					map.put("count", count);
 					map.put("code", 0);
 				}else{
-					map.put("msg", "noInfo");
+					map.put("msg", "暂无记录");
 				}
 			}else{
 				map.put("msg", "noAbility");
