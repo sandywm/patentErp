@@ -25,6 +25,11 @@
                 <comment>费用名称</comment>
             </column>
         </property>
+        <property name="yearNo" type="java.lang.Integer">
+            <column name="year_no"  not-null="true">
+                <comment>年度(滞纳金、年费时会出现，其他费用时为0)</comment>
+            </column>
+        </property>
         <property name="dealTime" type="java.lang.String">
             <column name="deal_time" length="50" not-null="true">
                 <comment>处理时间</comment>

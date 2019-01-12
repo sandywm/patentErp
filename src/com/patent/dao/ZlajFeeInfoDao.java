@@ -197,9 +197,10 @@ public interface ZlajFeeInfoDao {
 	 * @param sess
 	 * @param cpyId 代理机构编号
 	 * @param idStr 拼接的费用编号（###,###）
+	 * @param feeStatus 缴费状态(0:未交费，1：已缴费)
 	 * @return
 	 */
-	List<ZlajFeeInfoTb> findUnJfInfoByOpt(Session sess,Integer cpyId,String idStr);
+	List<ZlajFeeInfoTb> findUnJfInfoByOpt(Session sess,Integer cpyId,String idStr,Integer feeStatus);
 	
 	/**
 	 * 根据专利号、费用名称获取指定代理机构下的费用列表(导入excel缴费清单平账用)

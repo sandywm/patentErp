@@ -31,13 +31,14 @@ public interface FeeImportRecordInfoManager {
 	 * @param firId 费用导入编号
 	 * @param zlNo 专利号
 	 * @param feeName 费用名称
+	 * @param yearNo 年度(滞纳金出现，其他费用时为0)
 	 * @param dealTime 处理时间
 	 * @param dealStatus 处理状态
 	 * @param dealResult 处理结果
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addFIDR(Integer firId,String zlNo, String feeName, String dealTime, String dealStatus,String dealResult)throws WEBException;
+	Integer addFIDR(Integer firId,String zlNo, String feeName, Integer yearNo,String dealTime, String dealStatus,String dealResult)throws WEBException;
 	
 	/**
 	 * 获取指定时间段的费用导入信息记录条数

@@ -16,6 +16,7 @@ public class FeeImportDealRecordInfo implements java.io.Serializable {
 	private FeeImportRecordInfo feeImportRecordInfo;
 	private String zlNo;
 	private String feeName;
+	private Integer yearNo;
 	private String dealTime;
 	private String dealStatus;
 	private String dealResult;
@@ -27,11 +28,12 @@ public class FeeImportDealRecordInfo implements java.io.Serializable {
 	}
 
 	public FeeImportDealRecordInfo(FeeImportRecordInfo feeImportRecordInfo,
-			String zlNo, String feeName, String dealTime, String dealStatus,
+			String zlNo, String feeName, Integer yearNo,String dealTime, String dealStatus,
 			String dealResult) {
 		this.feeImportRecordInfo = feeImportRecordInfo;
 		this.zlNo = zlNo;
 		this.feeName = feeName;
+		this.yearNo = yearNo;
 		this.dealTime = dealTime;
 		this.dealStatus = dealStatus;
 		this.dealResult = dealResult;
@@ -39,12 +41,13 @@ public class FeeImportDealRecordInfo implements java.io.Serializable {
 	
 	/** full constructor */
 	public FeeImportDealRecordInfo(Integer id,FeeImportRecordInfo feeImportRecordInfo,
-			String zlNo, String feeName, String dealTime, String dealStatus,
+			String zlNo, String feeName, Integer yearNo,String dealTime, String dealStatus,
 			String dealResult) {
 		this.id = id;
 		this.feeImportRecordInfo = feeImportRecordInfo;
 		this.zlNo = zlNo;
 		this.feeName = feeName;
+		this.yearNo = yearNo;
 		this.dealTime = dealTime;
 		this.dealStatus = dealStatus;
 		this.dealResult = dealResult;
@@ -106,6 +109,14 @@ public class FeeImportDealRecordInfo implements java.io.Serializable {
 
 	public void setDealResult(String dealResult) {
 		this.dealResult = dealResult;
+	}
+
+	public Integer getYearNo() {
+		return yearNo;
+	}
+
+	public void setYearNo(Integer yearNo) {
+		this.yearNo = yearNo;
 	}
 
 }

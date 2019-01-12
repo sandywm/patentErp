@@ -446,13 +446,13 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 	}
 
 	@Override
-	public List<ZlajFeeInfoTb> listUnJfInfoByOpt(Integer cpyId, String idStr)
+	public List<ZlajFeeInfoTb> listUnJfInfoByOpt(Integer cpyId, String idStr,Integer feeStatus)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return fDao.findUnJfInfoByOpt(sess, cpyId, idStr);
+			return fDao.findUnJfInfoByOpt(sess, cpyId, idStr,feeStatus);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -554,6 +554,4 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			HibernateUtil.closeSession();
 		}
 	}
-
-
 }

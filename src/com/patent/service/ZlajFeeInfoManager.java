@@ -306,10 +306,11 @@ public interface ZlajFeeInfoManager{
 	 * @date 2018-12-12 下午04:19:49
 	 * @param cpyId 代理机构编号
 	 * @param idStr 专利费用编号
+	 * @param feeStatus 缴费状态(0:未交费，1：已缴费)
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajFeeInfoTb> listUnJfInfoByOpt(Integer cpyId,String idStr)throws WEBException;
+	List<ZlajFeeInfoTb> listUnJfInfoByOpt(Integer cpyId,String idStr,Integer feeStatus)throws WEBException;
 	
 	/**
 	 * 根据专利号、费用名称获取指定代理机构下的费用列表(导入excel缴费清单平账用)

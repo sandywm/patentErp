@@ -49,7 +49,7 @@ public class FeeImportRecordInfoManagerImpl implements FeeImportRecordInfoManage
 	}
 
 	@Override
-	public Integer addFIDR(Integer firId, String zlNo, String feeName,
+	public Integer addFIDR(Integer firId, String zlNo, String feeName,Integer yearNo,
 			String dealTime, String dealStatus, String dealResult)
 			throws WEBException {
 		// TODO Auto-generated method stub
@@ -58,7 +58,7 @@ public class FeeImportRecordInfoManagerImpl implements FeeImportRecordInfoManage
 			fidrDao = (FeeImportDealRecordInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_FEE_IMPORT_DEAL_RECORD_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			FeeImportDealRecordInfo fidr = new FeeImportDealRecordInfo(firDao.get(sess, firId), zlNo,feeName, dealTime, dealStatus,dealResult);
+			FeeImportDealRecordInfo fidr = new FeeImportDealRecordInfo(firDao.get(sess, firId), zlNo,feeName,yearNo, dealTime, dealStatus,dealResult);
 			fidrDao.save(sess, fidr);
 			tran.commit();
 			return fidr.getId();
