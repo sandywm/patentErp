@@ -34,6 +34,7 @@ import com.patent.module.ZlajFjInfoTb;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.ZlajFeeInfoManager;
 import com.patent.service.ZlajFjInfoManager;
+import com.patent.service.ZlajMainInfoManager;
 import com.patent.service.ZlajTzsInfoManager;
 import com.patent.tools.CheckImage;
 import com.patent.tools.CommonTools;
@@ -132,10 +133,9 @@ public class UploadAction extends DispatchAction {
 		String loginType = this.getLoginType(request);
 		Integer currLoginUserId = this.getLoginUserId(request);
 		Map<String,Object> map = new HashMap<String,Object>();
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		Integer cpyId = 0;
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
-//		ZlajFjInfoManager fjm = (ZlajFjInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FJ_INFO);
-//		ZlajFeeInfoManager fm = (ZlajFeeInfoManager)  AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
 		//通知书、票据、附件需要具有专利流程处理权限的才能上传
 		boolean abilityFlag = false;
 		if(loginType.equals("cpyUser")){
@@ -150,17 +150,13 @@ public class UploadAction extends DispatchAction {
 				}else if(fileType.equals("pj") || fileType.equals("fee")){//上传发票和已缴费清单
 					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addFee");//增加费用权限
 					cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
+				}else if(fileType.equals("tzs")){
+					if(zlm.listInfoByOpt("tzs", currLoginUserId, cpyId).size() > 0){
+						abilityFlag = true;
+					}
 				}else{
 					//撰稿人员、专利审核人员、客户确认人员、定稿提交、补正提交、补正审核人员上传的都是附件类
 					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "dealZl");//专利流程处理
-					//通知书导入人员上传的是tzs类，费用催缴人员上传的是pj类
-//					if(abilityFlag){//所有流程人员必须具有dealZl的权限
-//						if(fileType.equals("tzs")){
-//							
-//						}else if(fileType.equals("pj")){
-//							
-//						}
-//					}
 				}
 			}
 		}else{
