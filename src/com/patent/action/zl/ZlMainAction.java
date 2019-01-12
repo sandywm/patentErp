@@ -404,7 +404,8 @@ public class ZlMainAction extends DispatchAction {
 		String zlNo = CommonTools.getFinalStr("zlNo", request);
 		String ajTitle = Transcode.unescape_new("ajTitle", request);
 		String ajType = CommonTools.getFinalStr("ajType", request);
-		String lxr = CommonTools.getFinalStr("lxr", request);
+//		String lxr = CommonTools.getFinalStr("lxr", request);
+		Integer cusId = CommonTools.getFinalInteger("cusId", request);
 		String sDate = CommonTools.getFinalStr("sDate", request);
 		String eDate = CommonTools.getFinalStr("eDate", request);
 		Integer lqStatus = CommonTools.getFinalInteger("lqStatus", request);//任务条件（0：流程任务分配，1：专利，2：撰写任务领取,3：我的专利,4:我的/专利任务,5:任务移交记录/审核）,6:通知书上传列表
@@ -440,9 +441,9 @@ public class ZlMainAction extends DispatchAction {
 			Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
 			Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
 			if(lqStatus <= 3){
-				Integer count = zlm.getCountByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate,lqStatus,currLoginUserId);
+				Integer count = zlm.getCountByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, cusId, sDate, eDate,lqStatus,currLoginUserId);
 				if(count > 0){
-					List<ZlajMainInfoTb> zlList = zlm.listPageInfoByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, lqStatus, currLoginUserId,pageNo, pageSize);
+					List<ZlajMainInfoTb> zlList = zlm.listPageInfoByOpt(cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, cusId, sDate, eDate, lqStatus, currLoginUserId,pageNo, pageSize);
 					List<Object> list_d = new ArrayList<Object>();
 					for(Iterator<ZlajMainInfoTb> it = zlList.iterator() ; it.hasNext();){
 						ZlajMainInfoTb zl = it.next();

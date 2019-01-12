@@ -68,7 +68,7 @@ public interface ZlajMainInfoManager {
 	 * @param zlNo 专利号/申请号（""时表示全部）
 	 * @param ajTitle 案件标题（""时表示全部）
 	 * @param ajType 案件类型（""时表示全部）
-	 * @param lxr 联系人（""时表示全部）
+	 * @param cusId 客户编号（0表示全部）
 	 * @param sDate 开始日期（""时表示全部）
 	 * @param eDate 结束日期（""时表示全部）
 	 * @param lqStatus 任务条件（0：流程任务分配，1：专利任务，2：撰写任务领取，3：我的专利）-1的时候为全部（超管用）
@@ -79,7 +79,7 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajMainInfoTb> listPageInfoByOpt(Integer cpyId,Integer stopStatus, String sqAddress, String ajNoQt, String zlNo,
-			String ajTitle, String ajType, String lxr, String sDate,
+			String ajTitle, String ajType, Integer cusId, String sDate,
 			String eDate, Integer lqStatus,Integer ajAddUserId, Integer pageNo, Integer pageSize) throws WEBException;
 	
 	/**
@@ -94,7 +94,7 @@ public interface ZlajMainInfoManager {
 	 * @param zlNo 专利号/申请号（""时表示全部）
 	 * @param ajTitle 案件标题（""时表示全部）
 	 * @param ajType 案件类型（""时表示全部）
-	 * @param lxr 联系人（""时表示全部）
+	 * @param cusId 客户编号（0表示全部）
 	 * @param sDate 开始日期（""时表示全部）
 	 * @param eDate 结束日期（""时表示全部）
 	 * @param lqStatus 任务条件（0：流程任务分配，1：专利任务，2：撰写任务领取，3：我的专利）
@@ -103,7 +103,7 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	Integer getCountByOpt(Integer cpyId,Integer stopStatus, String sqAddress, String ajNoQt, String zlNo,
-			String ajTitle, String ajType, String lxr, String sDate,String eDate,Integer lqStatus,Integer ajAddUserId)  throws WEBException;
+			String ajTitle, String ajType,  Integer cusId, String sDate,String eDate,Integer lqStatus,Integer ajAddUserId)  throws WEBException;
 	
 	/**
 	 * 根据主键获取专利信息

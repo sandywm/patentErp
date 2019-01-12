@@ -38,7 +38,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 	@Override
 	public List<ZlajMainInfoTb> findPageInfoByOpt(Session sess, Integer cpyId,
 			Integer stopStatus, String sqAddress, String ajNoQt, String zlNo,
-			String ajTitle, String ajType, String lxr, String sDate,
+			String ajTitle, String ajType, Integer cusId, String sDate,
 			String eDate,Integer lqStatus,Integer ajAddUserId, Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
 		int offset = (pageNo - 1) * pageSize;
@@ -52,17 +52,23 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 		if(stopStatus > 0){
 			hql += " and zl.stopStatus = "+stopStatus;
 		}
+		if(!ajTitle.equals("")){
+			hql += "and zl.ajTitle like = '"+ajTitle+"'";
+		}
 		if(!sqAddress.equals("")){
 			hql += " and zl.sqAddress = '"+sqAddress+"'";
 		}
 		if(!ajNoQt.equals("")){
 			hql += " and zl.ajNoQt like '%"+ajNoQt+"%'";
 		}
+		if(!zlNo.equals("")){
+			hql += " and zl.ajNoGf like '%"+zlNo+"%'";
+		}
 		if(!ajType.equals("")){
 			hql += " and zl.ajType = '"+ajType+"'";
 		}
-		if(!lxr.equals("")){
-//			hql += " and zl.lxr = '"+lxr+"'";
+		if(cusId > 0){
+			hql += " and FIND_IN_SET("+cusId+",zl.ajSqrId) > 0";
 		}
 		if(!sDate.equals("")){
 			hql += " and SUBSTR(zl.ajAddDate,1,7) >= '"+sDate+"' and SUBSTR(zl.ajAddDate,1,7) <= '"+eDate+"'";
@@ -83,7 +89,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 	@Override
 	public Integer getCountByOpt(Session sess, Integer cpyId,
 			Integer stopStatus, String sqAddress, String ajNoQt, String zlNo,
-			String ajTitle, String ajType, String lxr, String sDate,
+			String ajTitle, String ajType, Integer cusId, String sDate,
 			String eDate,Integer lqStatus,Integer ajAddUserId) {
 		// TODO Auto-generated method stub
 		String hql = "select count(zl.id) from ZlajMainInfoTb as zl where 1=1";
@@ -93,17 +99,23 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 		if(stopStatus > 0){
 			hql += " and zl.stopStatus = "+stopStatus;
 		}
+		if(!ajTitle.equals("")){
+			hql += "and zl.ajTitle like = '"+ajTitle+"'";
+		}
 		if(!sqAddress.equals("")){
 			hql += " and zl.sqAddress = '"+sqAddress+"'";
 		}
 		if(!ajNoQt.equals("")){
 			hql += " and zl.ajNoQt like '%"+ajNoQt+"%'";
 		}
+		if(!zlNo.equals("")){
+			hql += " and zl.ajNoGf like '%"+zlNo+"%'";
+		}
 		if(!ajType.equals("")){
 			hql += " and zl.ajType = '"+ajType+"'";
 		}
-		if(!lxr.equals("")){
-//			hql += " and zl.ajLxrName = '"+lxr+"'";
+		if(cusId > 0){
+			hql += " and FIND_IN_SET("+cusId+",zl.ajSqrId) > 0";
 		}
 		if(!sDate.equals("")){
 			hql += " and SUBSTR(zl.ajAddDate,1,7) >= '"+sDate+"' and SUBSTR(zl.ajAddDate,1,7) <= '"+eDate+"'";

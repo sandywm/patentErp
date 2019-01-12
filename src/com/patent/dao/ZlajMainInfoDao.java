@@ -46,7 +46,7 @@ public interface ZlajMainInfoDao {
 	 * @param zlNo 案件专利号（""表示全部）
 	 * @param ajTitle 案件名称（""表示全部）
 	 * @param ajType 案件类型（""表示全部）
-	 * @param lxr 案件联系人（""表示全部）
+	 * @param cusId 客户编号（0表示全部）
 	 * @param sDate 开始时间(####-##)确定要月份（""表示全部）
 	 * @param eDate 结束时间(####-##)确定要月份（""表示全部）
 	 * @param lqStatus 任务条件（0：流程任务分配，1：专利任务，2：撰写任务领取，3：我的专利）
@@ -56,7 +56,7 @@ public interface ZlajMainInfoDao {
 	 * @return
 	 */
 	List<ZlajMainInfoTb> findPageInfoByOpt(Session sess,Integer cpyId,Integer stopStatus,String sqAddress,
-			String ajNoQt,String zlNo,String ajTitle,String ajType,String lxr,String sDate,String eDate,Integer lqStatus,Integer ajAddUserId,Integer pageNo,Integer pageSize);
+			String ajNoQt,String zlNo,String ajTitle,String ajType,Integer cusId,String sDate,String eDate,Integer lqStatus,Integer ajAddUserId,Integer pageNo,Integer pageSize);
 	
 	/**
 	 * 根据条件获取专利基本信息记录条数
@@ -70,7 +70,7 @@ public interface ZlajMainInfoDao {
 	 * @param zlNo 案件专利号（""表示全部）
 	 * @param ajTitle 案件名称（""表示全部）
 	 * @param ajType 案件类型（""表示全部）
-	 * @param lxr 案件联系人（""表示全部）
+	 * @param cusId 客户编号（0表示全部）
 	 * @param sDate 开始时间(####-##)确定要月份（""表示全部）
 	 * @param eDate 结束时间(####-##)确定要月份（""表示全部）
 	 * @param lqStatus 任务条件（0：流程任务分配，1：专利任务，2：撰写任务领取，3：我的专利）
@@ -78,7 +78,7 @@ public interface ZlajMainInfoDao {
 	 * @return
 	 */
 	Integer getCountByOpt(Session sess,Integer cpyId,Integer stopStatus,String sqAddress,
-			String ajNoQt,String zlNo,String ajTitle,String ajType,String lxr,String sDate,String eDate,Integer lqStatus,Integer ajAddUserId);
+			String ajNoQt,String zlNo,String ajTitle,String ajType,Integer cusId,String sDate,String eDate,Integer lqStatus,Integer ajAddUserId);
 	
 	/**
 	 * 根据主键获取专利案件信息

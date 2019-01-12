@@ -53,13 +53,13 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	@Override
 	public List<ZlajMainInfoTb> listPageInfoByOpt(Integer cpyId,
 			Integer stopStatus, String sqAddress, String ajNoQt, String zlNo,
-			String ajTitle, String ajType, String lxr, String sDate,
+			String ajTitle, String ajType,  Integer cusId, String sDate,
 			String eDate,Integer lqStatus,Integer ajAddUserId, Integer pageNo, Integer pageSize) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return zlDao.findPageInfoByOpt(sess, cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, lqStatus,ajAddUserId, pageNo, pageSize);
+			return zlDao.findPageInfoByOpt(sess, cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, cusId, sDate, eDate, lqStatus,ajAddUserId, pageNo, pageSize);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -72,13 +72,13 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	@Override
 	public Integer getCountByOpt(Integer cpyId, Integer stopStatus,
 			String sqAddress, String ajNoQt, String zlNo, String ajTitle,
-			String ajType, String lxr, String sDate, String eDate,Integer lqStatus,Integer ajAddUserId)
+			String ajType,  Integer cusId, String sDate, String eDate,Integer lqStatus,Integer ajAddUserId)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return zlDao.getCountByOpt(sess, cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, lxr, sDate, eDate, lqStatus,ajAddUserId);
+			return zlDao.getCountByOpt(sess, cpyId, stopStatus, sqAddress, ajNoQt, zlNo, ajTitle, ajType, cusId, sDate, eDate, lqStatus,ajAddUserId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
