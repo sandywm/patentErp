@@ -10,7 +10,7 @@
 		<property name="connection.driver_class">
 			com.mysql.jdbc.Driver
 		</property>
-		<!-- ?useUnicode=true&amp;characterEncoding=utf-8 -->
+		<!-- useUnicode=true&amp;characterEncoding=utf-8 -->
 		<!-- 目的是为了防止数据库查询不到条件为中文时的记录 -->
 		<property name="connection.url">
 			jdbc:mysql://localhost:3306/patent?useUnicode=true&amp;characterEncoding=utf-8
