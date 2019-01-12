@@ -55,14 +55,16 @@
    				onLoad : function(){
    					//获取代理机构基本信息
   					layer.load("1");
-  					this.getCpyBasicInfo();
+  					
   					if(abilityFlag == "true"){
+  						this.createTab();
   						for(var i=0;i<cpyInitInfo.length;i++){
   	  						this.getCpyInitSet(cpyInitInfo[i]);//银行账户、代理费、销售提成比例、工作奖金
   	  					}
   						this.workBonusSet();
   						this.bindEvent();
   					}
+  					this.getCpyBasicInfo();
    				},
    				getCpyInitSet : function(opt){
    					var _this = this;
@@ -92,9 +94,6 @@
 				        url:"cpyManager.do?action=getCpyDetailInfo",
 				        success:function (json){
 				        	layer.closeAll("loading");
-				        	if(abilityFlag == "true"){
-				        		_this.createTab();
-				        	}
 				        	//回填基本信息
 				        	_this.getUserInfo(json);
 				        }
@@ -104,13 +103,6 @@
    					if(list["result"] == "success"){
    	   					if(abilityFlag == "true"){
    	   		  				this.renderForm(list);
-   	   		  				if(list.cpyProv != ""){
-   	   			  				setTimeout(function(){
-   	   			  					$("select[name='cpyProvSel']").next().find("input").val(list.cpyProv);
-   	   			  					$("select[name='cpyCitySel']").next().find("input").val(list.cpyCity);
-   	   			  					$(".layui-disabled").css({"color":"black"});
-   	   			  				},100);
-   	   		  				}
    	   					}else{
    	   						$('.layui-fluid').css({'margin-top':'15px'});
    	   						this.renderBasicInfo(list);
@@ -329,8 +321,8 @@
    					//选择省、市
    					strHtml += '<div class="layui-form-item"><label class="layui-form-label">选择地区</label>';
    					if(list.cpyProv != '' && list.cpyCity != ''){
-   						strHtml += '<div class="layui-input-inline"><input id="provInp" name="cpyProv" value="'+ list.cpyProv +'" type="hidden"/><select name="cpyProvSel" lay-verify="judgeProv" lay-filter="province" class="province"><option value="">'+ list.cpyProv +'</option></select></div>';
-   						strHtml += '<div class="layui-input-inline"><input id="cityInp" name="cpyCity" value="'+ list.cpyCity +'" type="hidden"/><select name="cpyCitySel" lay-verify="judgeCity" lay-filter="city"><option value="">'+ list.cpyCity +'</option></select></div></div>';
+   						strHtml += '<div class="layui-input-inline"><select name="cpyProvSel" lay-verify="judgeProv" lay-filter="province" class="province"></select><input id="provInp" name="cpyProv" value="'+ list.cpyProv +'" type="hidden"/></div>';
+   						strHtml += '<div class="layui-input-inline"><select name="cpyCitySel" lay-verify="judgeCity" lay-filter="city"></select><input id="cityInp" name="cpyCity" value="'+ list.cpyCity +'" type="hidden"/></div></div>';
    					}else{
    						strHtml += '<div class="layui-input-inline"><input id="provInp" name="cpyProv" type="hidden"/><select name="cpyProvSel" required lay-verify="judgeProv" lay-filter="province" class="province"><option value="">请选择省</option></select></div>';
    						strHtml += '<div class="layui-input-inline"><input id="cityInp" name="cpyCity" type="hidden"/><select name="cpyCitySel" required lay-verify="judgeCity" lay-filter="city" disabled><option value="">请选择市</option></select></div></div>';
@@ -663,15 +655,15 @@
 					if(value == ''){
 						return '联系地址不能为空';
 					}else{
-						if(value.length < 4){
-							return '请如实填写地址';
+						if(value.length < 6){
+							return '联系地址不能少于6个字符';
 						}
 					}
 				},
 				judgejianjie : function(value){
 					if(value != ''){
 						if(value.length < 10){
-							return '请如实公司简介';
+							return '公司简介不能少于10个字符';
 						}
 					}
 				},
@@ -732,14 +724,17 @@
    			form.on('select(zlTypeFilter)', function(data){
 				var value = data.value;
 				value == '' ? $('#zlTypeInp').val('') : $('#zlTypeInp').val(value);
+				page.loadWorkBonusList('queryLoad');
 			});
    			form.on('select(workPositionFilter)', function(data){
 				var value = data.value;
 				value == '' ? $('#workPositionInp').val('') : $('#workPositionInp').val(value);
+				page.loadWorkBonusList('queryLoad');
 			});
    			form.on('select(zlLevelFilter)', function(data){
 				var value = data.value;
 				value == '' ? $('#zlLevelInp').val(0) : $('#zlLevelInp').val(value);
+				page.loadWorkBonusList('queryLoad');
 			});
    		});
 		function showHotStatusNote(){

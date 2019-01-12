@@ -22,7 +22,7 @@
 		<div class="layui-form-item">
 		    <label class="layui-form-label">汇款金额：</label>
 		    <div class="layui-input-block" style="width:80.1%;">
-		        <input type="text" id="backFeePriceInp" placeholder="请输入汇款金额(大于0的正整数)" autocomplete="off" class="layui-input dlFeeInp">
+		        <input type="text" id="backFeePriceInp" maxlength="6" placeholder="请输入汇款金额(大于0小于10万的正整数)" autocomplete="off" class="layui-input dlFeeInp">
 		    	<input type="hidden" id="dlfStatusInp" value="0"/>
 		    	<input type="checkbox" lay-filter="isHasAgentFee" title="是否包含冲抵代理费" lay-skin="primary" style="float:left;margin-left:10px;"/>
 		    </div>
@@ -101,29 +101,32 @@
 						}else if(backTypeInpVal == ''){
 							layer.msg('请选择汇款类型', {icon:5,anim:6,time:1000});
 						}else{
-							//var feeReg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
-							layer.load('1');
-							$.ajax({
-		  						type:'post',
-						        async:false,
-						        dataType:'json',
-						        data : {cusId:cusIdInpVal,backFeePrice:backFeePriceInpVal,backDate:backDateInpVal,backType:backTypeInpVal,remark:remarkVal,dlfStatus:dlfStatusVal},
-						        url:'/fee.do?action=addBackFee',
-						        success:function (json){
-						        	layer.closeAll('loading');
-						        	if(json['result'] == 'success'){
-						        		layer.msg('添加成功', {icon:1,time:1000},function(){
-						        			var index= parent.layer.getFrameIndex(window.name);
-					        				parent.addFeeFlag = true;
-					        				parent.layer.close(index);
-						        		});
-						        	}else if(json['result'] == 'inpError'){
-						        		layer.msg('汇款金额只能是大于0的正整数', {icon:5,anim:6,time:1200});
-						        	}else if(json['result'] == 'noAbility'){
-						        		layer.msg('抱歉，您暂无权限添加汇款记录', {icon:5,anim:6,time:1200});
-						        	}
-						        }
-		  					});
+							if(backFeePriceInpVal >= 100000){
+								layer.msg('汇款金额最高不能超过10万元', {icon:5,anim:6,time:1000});
+							}else{
+								layer.load('1');
+								$.ajax({
+			  						type:'post',
+							        async:false,
+							        dataType:'json',
+							        data : {cusId:cusIdInpVal,backFeePrice:backFeePriceInpVal,backDate:backDateInpVal,backType:backTypeInpVal,remark:remarkVal,dlfStatus:dlfStatusVal},
+							        url:'/fee.do?action=addBackFee',
+							        success:function (json){
+							        	layer.closeAll('loading');
+							        	if(json['result'] == 'success'){
+							        		layer.msg('添加成功', {icon:1,time:1000},function(){
+							        			var index= parent.layer.getFrameIndex(window.name);
+						        				parent.addFeeFlag = true;
+						        				parent.layer.close(index);
+							        		});
+							        	}else if(json['result'] == 'inpError'){
+							        		layer.msg('汇款金额只能是大于0的正整数', {icon:5,anim:6,time:1200});
+							        	}else if(json['result'] == 'noAbility'){
+							        		layer.msg('抱歉，您暂无权限添加汇款记录', {icon:5,anim:6,time:1200});
+							        	}
+							        }
+			  					});
+							}
 						}
 					});
 				},

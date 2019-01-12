@@ -153,6 +153,7 @@
 						strHtml += '<p>'+ lxrArray[i].lxrEmail +'</p>';
 					}
 					$('#viewCustLxrBox').html(strHtml);
+					$('#viewCustLxrBox li:odd').addClass('oddColor');
 				},
 				//编辑发明人结构
 				renderCustFmr : function(fmrArray){
@@ -164,6 +165,7 @@
 						strHtml += '<p>'+ fmrArray[i].fmrEmail +'</p>';
 					}
 					$('#viewCustFmrBox').html(strHtml);
+					$('#viewCustFmrBox li:odd').addClass('oddColor');
 				}
 			};
 			$(function(){

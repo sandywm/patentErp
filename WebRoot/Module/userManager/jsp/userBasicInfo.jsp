@@ -27,7 +27,7 @@
   	</div>
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
-  		var fieldList = [];
+  		var fieldList = [],loginType = parent.loginType;
   		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -70,11 +70,13 @@
   				}else if(list.roleName == "super"){
   					list.roleName = "超级管理员";
   				}
-  				strHtml += '<div class="layui-form-item"><label class="layui-form-label">当前身份</label>';
-  				strHtml += '<div class="layui-input-inline"><input type="text" value="'+ parent.roleName +'" disabled class="layui-input"></div></div>';
-  				//账户身份
-  				strHtml += '<div class="layui-form-item"><label class="layui-form-label">拥有身份</label>';
-  				strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.roleName +'" disabled class="layui-input"></div></div>';
+				if(loginType == 'cpyUser'){
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">当前身份</label>';
+					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ parent.roleName +'" disabled class="layui-input"></div></div>';
+					//账户身份
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">拥有身份</label>';
+					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ list.roleName +'" disabled class="layui-input"></div></div>';
+				}
   				//注册账号
 	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label">注册账号</label>';
 	  			if(loginType == 'cpyUser' || loginType == 'spUser'){

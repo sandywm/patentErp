@@ -204,12 +204,12 @@
 			   			        		}
 			   			        		if(addEditZlOpts == 'editZlOpts'){
 			   			        			if(_this.data.zlCheckStatus == 2){
-			   			        				layer.msg('编辑审核未通过专利成功',{icon:1,time:1500},callBackSucc);
+			   			        				layer.msg('编辑审核未通过专利成功',{icon:1,time:1200},callBackSucc);
 			   			        			}else{
-			   			        				layer.msg('编辑专利成功',{icon:1,time:1000},callBackSucc);
+			   			        				layer.msg('编辑专利成功',{icon:1,time:1200},callBackSucc);
 			   			        			}
 			   			        		}else{
-			   			        			layer.msg('添加专利成功',{icon:1,time:1000},callBackSucc);
+			   			        			layer.msg('添加专利成功,等待管理员审核中...',{icon:1,time:1200},callBackSucc);
 			   			        		}
 			   			        	}else if(json['result'] == 'noAbility'){
 			   			        		layer.msg('抱歉，您暂无权限添加编辑专利', {icon:5,anim:6,time:1000});

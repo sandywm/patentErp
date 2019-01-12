@@ -202,7 +202,7 @@
 					//个人身份证号/公司组织机构代码
 					if(json.cusType == 'gr'){
 						strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label id="cusiCardLab" class="layui-form-label">个人身份证号</label><div class="layui-input-block">';
-						strHtml += '<input type="text" name="cusiCard" value="'+ json.cusiCard +'" required lay-verify="identity" placeholder="请输入身份证号" autocomplete="off" class="layui-input"/></div></div>';
+						strHtml += '<input type="text" name="cusiCard" value="'+ json.cusiCard +'" required lay-verify="identity" placeholder="请输入身份证号" maxlength="18" autocomplete="off" class="layui-input"/></div></div>';
 					}else{
 						strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label id="cusiCardLab" class="layui-form-label">公司组织机构代码</label><div class="layui-input-block">';
 						strHtml += '<input type="text" name="cusiCard" value="'+ json.cusiCard +'" required lay-verify="judegeOrgCode" placeholder="请输入公司组织机构代码" autocomplete="off" class="layui-input"/></div></div>';
@@ -212,11 +212,12 @@
 					strHtml += '<input type="text" name="cusAddress" value="'+ json.cusAddress +'" required lay-verify="judegeAddress" placeholder="请输入客户地址(50字以内)" maxlength="50" autocomplete="off" class="layui-input"/></div></div>';
 					//邮政编码
 					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">邮政编码</label><div class="layui-input-block">';
-					strHtml += '<input type="text" name="cusZip" value="'+ json.cusZip +'" required lay-verify="judegeCusZip" placeholder="请输入邮政编码" autocomplete="off" class="layui-input"/></div></div>';
+					strHtml += '<input type="text" name="cusZip" value="'+ json.cusZip +'" required lay-verify="judegeCusZip" placeholder="请输入邮政编码" autocomplete="off" maxlength="6" class="layui-input"/></div></div>';
 					//保存按钮
 					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"></label><div class="layui-input-block">';
 					strHtml += '<button type="button" lay-submit lay-filter="setCustInfo" class="layui-btn" style="width:120px;margin-left:160px;">保存客户信息</button></div></div>';
 					$('#editCustBox').html(strHtml);
+					
 					form.render();
 				},
 				//编辑联系人结构
@@ -229,6 +230,7 @@
 						strHtml += '<p><a class="blockA editBtn_lxr" opts="editLxrOpts" lxrName="'+ lxrArray[i].lxrName +'" lxrId="'+ lxrArray[i].lxrId +'" href="javascript:void(0)"><i class="layui-icon layui-icon-edit"></i>编辑</a></p></li>';
 					}
 					$('#editCustLxrBox').html(strHtml);
+					$('#editCustLxrBox li:odd').addClass('oddColor');
 				},
 				//编辑发明人结构
 				renderCustFmr : function(fmrArray){
@@ -241,6 +243,7 @@
 						strHtml += '<p><a class="blockA editBtn_fmr" opts="editFmrOpts" fmrName="'+ fmrArray[i].fmrName +'" fmrId="'+ fmrArray[i].fmrId +'" href="javascript:void(0)"><i class="layui-icon layui-icon-edit"></i>编辑</a></p></li>';
 					}
 					$('#editCustFmrBox').html(strHtml);
+					$('#editCustFmrBox li:odd').addClass('oddColor');
 				}
 			};
 			//form radio事件监听

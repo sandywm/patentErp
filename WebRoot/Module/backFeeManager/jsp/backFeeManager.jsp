@@ -127,7 +127,7 @@
 					});
 					$('.resetTime').on('click',function(){
 						$('#cusIdInp').val('');
-						$('.cusName').html('请选择客户').attr('title','');
+						$('.cusName').html('请选择客户').attr('title','').css({'color':'#888'});
 						$('#sDateInp').val('');
 						$('#eDateInp').val('');
 						_this.loadBackFeeList('initLoad');

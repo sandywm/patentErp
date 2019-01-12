@@ -116,6 +116,7 @@
 						var _this = this;
 						$("#addRole").on("click",function(){
 							if(addFlag == "true"){
+								loadFlag = false;
 								layer.open({
 									title:'添加员工',
 									type: 2,
@@ -170,14 +171,17 @@
 				form.on('select(roleListSel)', function(data){
 					var value = data.value;
 					value == '' ? $('#roleIdInp').val(-1) : $('#roleIdInp').val(value);
+					loadQueryStaffList('queryLoad');
 				});
 				form.on('select(accStatusSel)', function(data){
 					var value = data.value;
 					value == '' ? $('#accStatusInp').val(-1) : $('#accStatusInp').val(value);
+					loadQueryStaffList('queryLoad');
 				});
 				form.on('select(lzStatusSel)', function(data){
 					var value = data.value;
 					value == '' ? $('#lzStatusInp').val(-1) : $('#lzStatusInp').val(value);
+					loadQueryStaffList('queryLoad');
 				});
 				//获取员工信息list
 				function loadQueryStaffList(opts){

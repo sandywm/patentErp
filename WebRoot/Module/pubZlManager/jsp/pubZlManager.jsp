@@ -122,16 +122,6 @@
 						$('.verifyTxt').show();
 						this.getTabNav();
 					}
-					$.ajax({
-  						type:"post",
-				        async:false,
-				        dataType:"json",
-				        data : {zlTitle : '',zlNo : '',zlType : '',pubDate : '', zlStatus : -1,zlCheckStatus:2},
-				        url:'/pubZl.do?action=getPageInfo',
-				        success:function (json){
-				        	console.log(json)
-				        }
-  					});
 				},
 				//根据loginType动态加载tab
 				getTabNav : function(){
@@ -436,11 +426,13 @@
 			form.on('select(zlTypeListSel)', function(data){
 				var value = data.value;
 				value == '' ? $('#zlTypeInp').val('') : $('#zlTypeInp').val(value);
+				loadQueryZlList('queryLoad');
 			});
 			//form 监听选择领取状态
 			form.on('select(zlStatusSel)', function(data){
 				var value = data.value;
 				value == '' ? $('#zlStatusInp').val(-1) : $('#zlStatusInp').val(value);
+				loadQueryZlList('queryLoad');
 			});
 			
 			$(function(){

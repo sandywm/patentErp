@@ -311,7 +311,6 @@
 					if(page.data.globalFeeStatus == 5){//费用
 						if(feeStatusInpVal == 0){
 							var field = {feeStatus:feeStatusInpVal,qdStatus:qdStatusInpVal,diffDays:diffDaysSelInpVal,zlNo:zlNoInpVal,cusId:cusIdInpVal};
-							console.log(qdStatusInpVal)
 						}else{
 							var field = {feeStatus:feeStatusInpVal,zlNo:zlNoInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal};	
 						}
@@ -481,8 +480,8 @@
 							{field : 'fileName', title: '文件名',width:380, align:'center'},
 							{field : 'addTime', title: '导入时间',  align:'center'},
 							{field : 'userName', title: '导入者',align:'center'},
-							{field : '', title: '操作',width:180, align:'center',templet : function(d){
-								return '<a lay-event="viewImpRes" fileName="'+ d.fileName +'" fileUrl="'+ d.excelPath +'" firId="'+ d.firId +'" class="layui-btn layui-btn-primary layui-btn-xs"><i class="layui-icon layui-icon-search"></i>查看结果</a> <a lay-event="downFileFun" downFilePath="'+ d.excelPath +'" class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
+							{field : '', title: '操作',width:310, align:'center',templet : function(d){
+								return '<a lay-event="viewImpRes" fileName="'+ d.fileName +'" fileUrl="'+ d.excelPath +'" firId="'+ d.firId +'" class="layui-btn layui-btn-primary layui-btn-xs"><i class="layui-icon layui-icon-search"></i>查看</a> <a lay-event="downFileFun_cus" firId="'+ d.firId +'" downFilePath="'+ d.excelPath +'" class="layui-btn layui-btn-normal layui-btn-xs"><i class="layui-icon layui-icon-download-circle"></i>下载客户清单</a> <a lay-event="downFileFun" downFilePath="'+ d.excelPath +'" class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-download-circle"></i>下载缴费清单</a>';
 							}},
 						]],
 						done : function(res, curr, count){
@@ -538,6 +537,9 @@
 					  	content: '/Module/feeManager/jsp/viewReadRes.html'
 					});	
 					layer.full(fullScreenIndex);
+				}else if(obj.event == 'downFileFun_cus'){
+					var firId = $(this).attr('firId'),downFilePath = $(this).attr('downFilePath');
+					common.downFiles(downFilePath,2,firId);
 				}
 			});
 			$(function(){

@@ -19,7 +19,7 @@
   			<div class="layui-col-md12 layui-col-lg12">
   				<div class="layui-card">
   					<div class="layui-card-header posRel">
-  						<span>代理机构管理</span>
+  						<span id="cpyManagerTxt"></span>
   					</div>
   					<div class="layui-card-body" pad15>
   						<!-- 查询条件 -->
@@ -92,7 +92,6 @@
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
   		var loginType = parent.loginType;
-  		//alert(loginType)
   		var sonUseObj = {
   			globalCpyId : 0,
   			cpyId : 0,
@@ -116,7 +115,10 @@
   				$('#accYxWrap').show();
   				$('#frNameWrap').show();
   				$('#lxrNameWrap').show();
-  			}
+				$('#cpyManagerTxt').html('代理机构管理');
+  			}else{
+				$('#cpyManagerTxt').html('查看代理机构');
+			}
 			//加载代理机构列表
   			function loadQueryCpyList(opts){
   				if(opts == 'loadListData'){//初始化加载
