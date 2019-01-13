@@ -541,7 +541,7 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("ajAddress", zl.getAjSqAddress());
 						map_d.put("applyDate", zl.getAjApplyDate());
 						map_d.put("ajStatus", zl.getAjStatusChi());
-						map_d.put("ajStopStatus", zl.getAjStopStatus().equals(0) ? "正常":"终止");
+						map_d.put("ajStopStatus", zl.getAjStopStatus());
 						map_d.put("ajStopDate", zl.getAjStopDate());
 						map_d.put("ajStopUser", zl.getAjStopUser());
 						String soptUserType = zl.getAjStopUserType();
