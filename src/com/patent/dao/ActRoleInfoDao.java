@@ -62,4 +62,16 @@ public interface ActRoleInfoDao {
 	 * @return
 	 */
 	List<ActRoleInfoTb> findSpecInfoByOpt(Session sess,Integer roleId,String actNameEng);
+	
+	/**
+	 * 获取指定角色、指定模块下已拥有的权限
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2019-1-13 下午07:32:58
+	 * @param sess
+	 * @param roleId 角色编号
+	 * @param modId 模块编号
+	 * @return
+	 */
+	List<ActRoleInfoTb> findSpecInfoByOpt_1(Session sess,Integer roleId,Integer modId);
 }

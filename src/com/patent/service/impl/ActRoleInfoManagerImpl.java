@@ -144,4 +144,21 @@ public class ActRoleInfoManagerImpl implements ActRoleInfoManager{
 			HibernateUtil.closeSession();
 		}
 	}
+
+	@Override
+	public List<ActRoleInfoTb> listInfoByOpt_1(Integer roleId, Integer modId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			arDao = (ActRoleInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ACT_ROLE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return arDao.findSpecInfoByOpt_1(sess, roleId, modId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定角色、指定模块下已拥有的权限列表时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
 }

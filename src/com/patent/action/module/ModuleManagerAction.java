@@ -265,9 +265,19 @@ public class ModuleManagerAction extends DispatchAction {
 						if(arm.listInfoByOpt(selRoleId, ma.getId()).size() == 0){
 							map_2.put("bindFlag",false);
 							mainModCheckStatus *= 0;
+							map_2.put("disabledFlag",false);
 						}else{
 							map_2.put("bindFlag",true);
 							mainModCheckStatus *= 1;
+							if(ma.getActNameEng().startsWith("list")){
+								if(arm.listInfoByOpt_1(selRoleId, mod.getId()).size() >= 2){//拥有两个或者两个以上的权限(包括list)
+									map_2.put("disabledFlag",true);//list权限为true
+								}else{//只有list权限就是false
+									map_2.put("disabledFlag",false);
+								}
+							}else{//不是浏览权限的其他权限全是false
+								map_2.put("disabledFlag",false);
+							}
 						}
 					}else{
 						map_2.put("bindFlag",false);

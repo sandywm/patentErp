@@ -60,4 +60,13 @@ public class ActRoleInfoDaoImpl implements ActRoleInfoDao{
 		String hql = " from ActRoleInfoTb as ar where ar.cpyRoleInfoTb.id = "+roleId + " and ar.modActInfoTb.actNameEng = '"+actNameEng+"'";
 		return sess.createQuery(hql).list();
 	}
+
+	@Override
+	public List<ActRoleInfoTb> findSpecInfoByOpt_1(Session sess,
+			Integer roleId, Integer modId) {
+		// TODO Auto-generated method stub
+		String hql = " from ActRoleInfoTb as ar where ar.cpyRoleInfoTb.id = "+roleId;
+		hql += " and exists(select ma.id from ModActInfoTb as ma where ma.moduleInfoTb.id = "+ modId +" and ma.id = ar.modActInfoTb.id)";
+		return sess.createQuery(hql).list();
+	}
 }
