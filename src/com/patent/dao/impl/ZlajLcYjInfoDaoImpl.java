@@ -50,7 +50,7 @@ public class ZlajLcYjInfoDaoImpl implements ZlajLcYjInfoDao{
 	@Override
 	public List<ZlajLcYjInfoTb> findPageInfoByOpt(Session sess,
 			Integer applyUserId, Integer checkStatus, Integer checkUserId,
-			Integer cpyId, Integer pageNo, Integer pageSize) {
+			Integer cpyId, String zlTitle,String ajNo,String zlNo,Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajLcYjInfoTb as lcyj where lcyj.cpy.id = "+cpyId + " and lcyj.checkStatus = "+checkStatus;
 		if(applyUserId > 0){
@@ -58,6 +58,15 @@ public class ZlajLcYjInfoDaoImpl implements ZlajLcYjInfoDao{
 		}
 		if(checkUserId > 0){
 			hql += " and lcyj.checkUserId = "+checkUserId;
+		}
+		if(!zlTitle.equals("")){
+			hql += " and lcyj.lcmx.zlajLcInfoTb.zlajMainInfoTb.ajTitle like '%"+zlTitle+"%'";
+		}
+		if(!ajNo.equals("")){
+			hql += " and lcyj.lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoQt like '%"+ajNo+"%'";
+		}
+		if(!zlNo.equals("")){
+			hql += " and lcyj.lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoGf like '%"+zlNo+"%'";
 		}
 		hql += " order by lcyj.id desc";
 		int offset = (pageNo - 1) * pageSize;
@@ -69,7 +78,8 @@ public class ZlajLcYjInfoDaoImpl implements ZlajLcYjInfoDao{
 
 	@Override
 	public Integer getCountByOpt(Session sess, Integer applyUserId,
-			Integer checkStatus, Integer checkUserId, Integer cpyId) {
+			Integer checkStatus, Integer checkUserId, Integer cpyId,
+			String zlTitle,String ajNo,String zlNo) {
 		// TODO Auto-generated method stub
 		String hql = "select count(lcyj.id) from ZlajLcYjInfoTb as lcyj where lcyj.cpy.id = "+cpyId + " and lcyj.checkStatus = "+checkStatus;
 		if(applyUserId > 0){
@@ -77,6 +87,15 @@ public class ZlajLcYjInfoDaoImpl implements ZlajLcYjInfoDao{
 		}
 		if(checkUserId > 0){
 			hql += " and lcyj.checkUserId = "+checkUserId;
+		}
+		if(!zlTitle.equals("")){
+			hql += " and lcyj.lcmx.zlajLcInfoTb.zlajMainInfoTb.ajTitle like '%"+zlTitle+"%'";
+		}
+		if(!ajNo.equals("")){
+			hql += " and lcyj.lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoQt like '%"+ajNo+"%'";
+		}
+		if(!zlNo.equals("")){
+			hql += " and lcyj.lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoGf like '%"+zlNo+"%'";
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);

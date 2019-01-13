@@ -413,6 +413,7 @@ public class ZlMainAction extends DispatchAction {
 		Integer checkStatus = CommonTools.getFinalInteger("checkStatus", request);//(0:未审核，1：审核通过，2：审核未通过)
 		Integer readStatus =  CommonTools.getFinalInteger("readStatus", request);//通知书读取状态(0:读取失败，1：读取成功，2：全部)
 		String tzsType = CommonTools.getFinalStr("tzsType",request);//通知书类型--tzs,sqd,空的时候表示全部
+		String zlTitle = Transcode.unescape_new("zlTitle", request);//专利名称
 		Integer currLoginUserId = this.getLoginUserId(request);
 		String roleName = this.getLoginRoleName(request);
 		//当任务条件为0时，撰写任务领取，这时需要强制stopStatus为正常（0）
@@ -599,9 +600,10 @@ public class ZlMainAction extends DispatchAction {
 					}
 					//已完成状态时获取的是自己完成的任务列表
 				}
-				Integer count = mxm.getCountByOpt(currLoginUserId, comStatus, cpyId);
+				Integer count = mxm.getCountByOpt(currLoginUserId, comStatus, zlNo, ajNoQt,zlTitle,cusId,cpyId);
 				if(count > 0){
-					List<ZlajLcMxInfoTb> unMxList = mxm.listLcMxByOpt(currLoginUserId, comStatus, cpyId, pageNo, pageSize);
+					List<ZlajLcMxInfoTb> unMxList = mxm.listLcMxByOpt(currLoginUserId, comStatus, zlNo, 
+							ajNoQt,zlTitle,cpyId, cusId,pageNo, pageSize);
 					List<Object> list_d = new ArrayList<Object>();
 					map.put("result", "success");
 					boolean flag = false;
@@ -674,11 +676,11 @@ public class ZlMainAction extends DispatchAction {
 				}else{
 					applyUserId = currLoginUserId;
 				}
-				Integer count = lcyjm.getCountByOpt(applyUserId, checkStatus, 0, cpyId);
+				Integer count = lcyjm.getCountByOpt(applyUserId, checkStatus, 0, cpyId,zlTitle,ajNoQt,zlNo);
 				List<Object> list_d = new ArrayList<Object>();
 				if(count > 0){
 					map.put("result", "success");
-					List<ZlajLcYjInfoTb> yjList = lcyjm.listPageInfoByOpt(applyUserId, checkStatus, 0, cpyId, pageNo, pageSize);
+					List<ZlajLcYjInfoTb> yjList = lcyjm.listPageInfoByOpt(applyUserId, checkStatus, 0, cpyId,zlTitle,ajNoQt,zlNo, pageNo, pageSize);
 					for(Iterator<ZlajLcYjInfoTb> it = yjList.iterator() ; it.hasNext();){
 						ZlajLcYjInfoTb yj = it.next();
 						ZlajLcMxInfoTb mx = yj.getLcmx();

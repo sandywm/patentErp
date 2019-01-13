@@ -113,11 +113,16 @@ public interface ZlajLcMxInfoDao {
 	 * @param fzUserId 流程负责人编号（0表示全部）
 	 * @param comStatus 完成状态（0：未完成，1：已完成）
 	 * @param cpyId 代理机构编号（流程负责人大于0时不用传递）
+	 * @param zlNo 专利号(""时表示全部)
+	 * @param ajNo 案件号(""时表示全部)
+	 * @param zlTitle 专利名称(""时表示全部)
+	 * @param cusId 客户编号(""时表示全部)
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 */
-	List<ZlajLcMxInfoTb> findLcMxByOpt(Session sess,Integer fzUserId,Integer comStatus,Integer cpyId,Integer pageNo,Integer pageSize);
+	List<ZlajLcMxInfoTb> findLcMxByOpt(Session sess,Integer fzUserId,Integer comStatus,
+			String zlNo,String ajNo,String zlTitle,Integer cusId,Integer cpyId,Integer pageNo,Integer pageSize);
 	
 	/**
 	 * 根据条件获取任务记录条数(新申请撰稿开始)
@@ -130,7 +135,12 @@ public interface ZlajLcMxInfoDao {
 	 * @param fzUserId 流程负责人编号（0表示全部）
 	 * @param comStatus 完成状态（0：未完成，1：已完成）
 	 * @param cpyId 代理机构编号（流程负责人大于0时不用传递）
+	 * @param zlNo 专利号(""时表示全部)
+	 * @param ajNo 案件号(""时表示全部)
+	 * @param zlTitle 专利名称(""时表示全部)
+	 * @param cusId 客户编号(""时表示全部)
 	 * @return
 	 */
-	Integer getCountByOpt(Session sess,Integer fzUserId,Integer comStatus,Integer cpyId);
+	Integer getCountByOpt(Session sess,Integer fzUserId,Integer comStatus,String zlNo,String ajNo,
+			String zlTitle,Integer cusId,Integer cpyId);
 }

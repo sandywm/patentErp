@@ -45,12 +45,16 @@ public interface ZlajLcYjInfoManager {
 	 * @param checkStauts 审核状态
 	 * @param checkUserId 审核人员（0时表示全部）
 	 * @param cpyId 代理机构编号
+	 * @param zlTitle 专利名称(""时表示全部)
+	 * @param ajNo 案件编号(""时表示全部)
+	 * @param zlNo 专利号(""时表示全部)
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajLcYjInfoTb> listPageInfoByOpt(Integer applyUserId,Integer checkStauts,Integer checkUserId,Integer cpyId,Integer pageNo,Integer pageSize)throws WEBException;
+	List<ZlajLcYjInfoTb> listPageInfoByOpt(Integer applyUserId,Integer checkStauts,Integer checkUserId,
+			Integer cpyId,String zlTitle,String ajNo,String zlNo,Integer pageNo,Integer pageSize)throws WEBException;
 	
 	/**
 	 * 根据条件获取申请记录条数
@@ -61,10 +65,14 @@ public interface ZlajLcYjInfoManager {
 	 * @param checkStauts 审核状态
 	 * @param checkUserId 审核人员（0时表示全部）
 	 * @param cpyId 代理机构编号
+	 * @param zlTitle 专利名称(""时表示全部)
+	 * @param ajNo 案件编号(""时表示全部)
+	 * @param zlNo 专利号(""时表示全部)
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer getCountByOpt(Integer applyUserId,Integer checkStauts,Integer checkUserId,Integer cpyId)throws WEBException;
+	Integer getCountByOpt(Integer applyUserId,Integer checkStauts,Integer checkUserId,Integer cpyId,
+			String zlTitle,String ajNo,String zlNo)throws WEBException;
 
 	/**
 	 * 根据移交流程主键获取移交流程申请信息

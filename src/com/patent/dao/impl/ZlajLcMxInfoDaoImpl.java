@@ -80,8 +80,8 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 	}
 
 	@Override
-	public List<ZlajLcMxInfoTb> findLcMxByOpt(Session sess, Integer fzUserId,
-			Integer comStatus, Integer cpyId, Integer pageNo, Integer pageSize) {
+	public List<ZlajLcMxInfoTb> findLcMxByOpt(Session sess, Integer fzUserId,Integer comStatus, 
+			String zlNo,String ajNo,String zlTitle,Integer cusId,Integer cpyId, Integer pageNo, Integer pageSize) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajLcMxInfoTb as lcmx where lcmx.lcMxNo >= 3";
 		if(fzUserId > 0){//指定流程负责人
@@ -95,6 +95,18 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 		}else if(comStatus.equals(1)){
 			hql += " and lcmx.lcMxEDate != ''";
 		}
+		if(!zlNo.equals("")){
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoGf like '%"+zlNo+"%'";
+		}
+		if(!ajNo.equals("")){
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoQt like '%"+ajNo+"%'";
+		}
+		if(!zlTitle.equals("")){
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.zlTitle like '%"+zlTitle+"%'";
+		}
+		if(cusId > 0){
+			hql += " and FIND_IN_SET("+cusId+",lcmx.zlajLcInfoTb.zlajMainInfoTb.ajSqrId) > 0";
+		}
 		hql += " order by lcmx.id desc";
 		int offset = (pageNo - 1) * pageSize;
 		if (offset < 0) {
@@ -104,8 +116,8 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 	}
 
 	@Override
-	public Integer getCountByOpt(Session sess, Integer fzUserId,
-			Integer comStatus, Integer cpyId) {
+	public Integer getCountByOpt(Session sess, Integer fzUserId,Integer comStatus, String zlNo,
+			String ajNo,String zlTitle,Integer cusId,Integer cpyId) {
 		// TODO Auto-generated method stub
 		String hql = "select count(lcmx.id)  from ZlajLcMxInfoTb as lcmx where lcmx.lcMxNo >= 3";
 		if(fzUserId > 0){//指定流程负责人
@@ -118,6 +130,18 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 			hql += " and lcmx.lcMxEDate = '' and lcmx.yjCheckStatus != 0" ;
 		}else if(comStatus.equals(1)){
 			hql += " and lcmx.lcMxEDate != ''";
+		}
+		if(!zlNo.equals("")){
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoGf like '%"+zlNo+"%'";
+		}
+		if(!ajNo.equals("")){
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoQt like '%"+ajNo+"%'";
+		}
+		if(!zlTitle.equals("")){
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.zlTitle like '%"+zlTitle+"%'";
+		}
+		if(cusId > 0){
+			hql += " and FIND_IN_SET("+cusId+",lcmx.zlajLcInfoTb.zlajMainInfoTb.ajSqrId) > 0";
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);

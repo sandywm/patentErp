@@ -248,14 +248,14 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 	}
 
 	@Override
-	public List<ZlajLcMxInfoTb> listLcMxByOpt(Integer fzUserId,
-			Integer comStatus, Integer cpyId, Integer pageNo, Integer pageSize)
+	public List<ZlajLcMxInfoTb> listLcMxByOpt(Integer fzUserId,Integer comStatus, String zlNo,
+			String ajNo,String zlTitle,Integer cusId,Integer cpyId, Integer pageNo, Integer pageSize)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return mxDao.findLcMxByOpt(sess, fzUserId, comStatus, cpyId, pageNo, pageSize);
+			return mxDao.findLcMxByOpt(sess, fzUserId, comStatus, zlNo, ajNo,zlTitle,cusId,cpyId, pageNo, pageSize);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -267,12 +267,12 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 
 	@Override
 	public Integer getCountByOpt(Integer fzUserId, Integer comStatus,
-			Integer cpyId) throws WEBException {
+			String zlNo,String ajNo,String zlTitle,Integer cusId,Integer cpyId) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return mxDao.getCountByOpt(sess, fzUserId, comStatus, cpyId);
+			return mxDao.getCountByOpt(sess, fzUserId, comStatus, zlNo, ajNo,zlTitle,cusId,cpyId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

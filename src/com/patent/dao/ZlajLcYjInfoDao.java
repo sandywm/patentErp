@@ -53,11 +53,16 @@ public interface ZlajLcYjInfoDao {
 	 * @param checkStauts 审核状态
 	 * @param checkUserId 审核人员（0时表示全部）
 	 * @param cpyId 代理机构编号
+	 * @param zlTitle 专利名称(""时表示全部)
+	 * @param ajNo 案件编号(""时表示全部)
+	 * @param zlNo 专利号(""时表示全部)
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 */
-	List<ZlajLcYjInfoTb> findPageInfoByOpt(Session sess,Integer applyUserId,Integer checkStauts,Integer checkUserId,Integer cpyId,Integer pageNo,Integer pageSize);
+	List<ZlajLcYjInfoTb> findPageInfoByOpt(Session sess,Integer applyUserId,Integer checkStauts,
+			Integer checkUserId,Integer cpyId,String zlTitle,String ajNo,String zlNo,
+			Integer pageNo,Integer pageSize);
 	
 	/**
 	 * 根据条件获取申请记录条数
@@ -68,9 +73,13 @@ public interface ZlajLcYjInfoDao {
 	 * @param checkStauts 审核状态
 	 * @param checkUserId 审核人员（0时表示全部）
 	 * @param cpyId 代理机构编号
+	 * @param zlTitle 专利名称(""时表示全部)
+	 * @param ajNo 案件编号(""时表示全部)
+	 * @param zlNo 专利号(""时表示全部)
 	 * @return
 	 */
-	Integer getCountByOpt(Session sess,Integer applyUserId,Integer checkStauts,Integer checkUserId,Integer cpyId);
+	Integer getCountByOpt(Session sess,Integer applyUserId,Integer checkStauts,Integer checkUserId,
+			Integer cpyId,String zlTitle,String ajNo,String zlNo);
 
 	/**
 	 * 获取指定流程
