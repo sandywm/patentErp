@@ -584,7 +584,6 @@
 			    		});
 		    		}else{
 		    			$('.sonModSelInp').eq(i).attr('disabled',true).css({'cursor':'default'});
-		    			$('.sonModSelInp').eq(i).parent().parent().parent().addClass('disabledBg');
 		    		}
 		    	});
 			}
@@ -631,7 +630,15 @@
 				}
 				for(var i=0;i<modList.length;i++){
 					page.data.globalMainModId.push(modList[i].modId);
-					strHtml += '<ul class="clearfix">';
+					if(loginType == 'spUser'){
+						strHtml += '<ul class="spUl clearfix">';
+					}else if(loginType == 'cpyUser'){
+						if(modList[i].useFlag){
+							strHtml += '<ul class="noDisUl clearfix">';
+						}else{
+							strHtml += '<ul class="disUl disabledBg clearfix">';
+						}
+					}
 					if(loginType == 'spUser'){//增加序号
 						if(modList[i].modLevel == 0){
 							strHtml += '<li class="orderNumWid hasPosAbso posL tongpaiColor flexBox">'+ modList[i].orderNo +'</li>';
@@ -734,7 +741,11 @@
 				$('#moduleList').html(strHtml);
 				form.render();
 				inpCheckboxSel();
-				$('#listModCon').find('ul:odd').addClass('oddBg');
+				if(loginType == 'cpyUser'){
+					$('.noDisUl:odd').addClass('oddBg');
+				}else if(loginType == 'spUser'){
+					$('.spUl:odd').addClass('oddBg_sp');
+				}
 			}
 			function showOutDateTips(){
 				$('#outDateTip').click(function(){

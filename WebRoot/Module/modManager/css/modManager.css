@@ -71,12 +71,8 @@ body{
 	position:relative;
 }
 #listModCon li{
-	/*height:40px;*/
 	float:left;
-	/*line-height:40px;*/
-	/*text-align:center;*/
 	box-sizing:border-box;
-	/*position:relative;*/
 }
 .hasPosAbso{
 	height:100%;
@@ -116,7 +112,6 @@ body{
 	height:40px;
 	line-height:40px;
 	box-sizing:border-box;
-	/*border-right:1px solid #eee;*/
 	overflow:hidden;
 	position:relative;
 }
@@ -308,7 +303,11 @@ body{
 	font-weight:600;
 }
 .oddBg{
-	background:#f2f2f2;
+	/* ebf0f3 ffefe6  eaf3fd */
+	background:#ffefe6;
+}
+.oddBg_sp{  
+	background:#f1f1f1;
 }
 .disColor{
 	color:#ccc;
