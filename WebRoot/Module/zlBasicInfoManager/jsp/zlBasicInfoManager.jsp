@@ -535,6 +535,7 @@
 					});
 				}else if(lqStatusVal == 5){
 					//加载专利移交申请审核/专利移交申请记录
+					console.log(page.data.fpZlFlag)
 					table.render({
 						elem: '#zlBasicListTab_'+lqStatusVal,
 						height: 'full-200',
@@ -575,7 +576,7 @@
 						]],
 						done : function(res){
 							layer.closeAll('loading');
-							if($('#tranStatusInp').val() == 1 || $('#tranStatusInp').val() == 2){
+							if($('#tranStatusInp').val() == 1 || $('#tranStatusInp').val() == 2 || page.data.fpZlFlag == false){
 								$('.layui-table-box').find('[data-field="set"]').css('display','none');
 							}
 						}
