@@ -187,7 +187,7 @@
 				queryFun : function(){
 					$('#queryBtn').on('click',function(){
 						if(page.data.globalFeeStatus == 5 && $('#zlNoInp').val() != 0 && $('#zlNoInp').val().length < 4){
-							layer.msg('专利编号必须4位以上', {icon:5,anim:6,time:1200});
+							layer.msg('专利申请号/专利号必须4位以上', {icon:5,anim:6,time:1200});
 							return;
 						}
 						loadFeeInfoList('queryLoad');
@@ -351,8 +351,8 @@
 									return '<span class="hasPayStatus"></span>' + d.zlName ;
 								}
 							}},
-							{field : 'zlNo', title: '专利申请/专利号', width:180, align:'center'},
 							{field : 'ajNo', title: '案件编号', width:170, align:'center'},
+							{field : 'zlNo', title: '专利申请/专利号', width:180, align:'center'},
 							{field : page.data.globalFeeStatus == 0 ? 'diffDays_jj' : 'noneSets', title: '机构绝限(天)', width:140, align:'center',templet : function(d){
 								if(d.diffDays_jj != undefined){
 									var strDiffDays_jj = d.diffDays_jj.toString();

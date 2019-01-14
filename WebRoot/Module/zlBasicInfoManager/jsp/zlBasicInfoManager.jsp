@@ -118,25 +118,6 @@
 						  	content: '/Module/zlBasicInfoManager/jsp/readMe.html'
 						});	
 					});
-					//选择客户
-					$('.selCusP').on('click',function(){
-						tmpAddBackFee = '';
-						layer.open({
-							title:'选择客户',
-							type: 2,
-						  	area: ['800px', '500px'],
-						  	fixed: true, //不固定
-						  	maxmin: false,
-						  	shadeClose :false,
-						  	content: '/Module/feeManager/jsp/addSqr.html',
-						  	end : function(){
-						  		if($('#cusIdInp').val() != 0){
-						  			//执行加载
-						  			loadZlInfoList('queryLoad');
-						  		}
-						  	}
-						});	
-					});
 					$('#addZlBtn').on('click',function(){
 						if(_this.data.addZlFlag == true){
 							var addZlOpts = $(this).attr('opts');
@@ -202,6 +183,25 @@
 						$('#sDateInp').val('');
 						$('eDateInp').val('');
 						loadZlInfoList('initLoad');
+					});
+					//选择客户
+					$('.selCusP').on('click',function(){
+						tmpAddBackFee = '';
+						layer.open({
+							title:'选择客户',
+							type: 2,
+						  	area: ['800px', '500px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	content: '/Module/feeManager/jsp/addSqr.html',
+						  	end : function(){
+						  		if($('#cusIdInp').val() != 0){
+						  			//执行加载
+						  			loadZlInfoList('queryLoad');
+						  		}
+						  	}
+						});	
 					});
 				},
 				//创建tab
@@ -341,20 +341,33 @@
 				var ajTypeInpVal = $('#ajTypeInp').val(),ajStopStatusInpVal = $('#ajStopStatusInp').val(),ajNoTitInp_ajNoVal = $('#ajNoTitInp_ajNo').val(),
 				ajNoTitInp_ajZlNoVal = $('#ajNoTitInp_ajZlNo').val(),ajNoTitInp_ajTitVal = $('#ajNoTitInp_ajTit').val(),cusIdInpVal = $('#cusIdInp').val(),sDateInpVal = $('#sDateInp').val(),eDateInpVal = $('#eDateInp').val();
 				if(loginType == 'spUser'){
-					var field = {stopStatus:ajStopStatusInpVal,ajNoQt:ajNoTitInp_ajNoVal,sqAddress:'',zlNo:ajNoTitInp_ajZlNoVal,ajTitle:ajNoTitInp_ajTitVal,ajType:ajTypeInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal};
+					var field = {stopStatus:ajStopStatusInpVal,ajNoQt:ajNoTitInp_ajNoVal,zlNo:ajNoTitInp_ajZlNoVal,ajTitle:ajNoTitInp_ajTitVal,ajType:ajTypeInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal};
 				}else{
 					if(lqStatusVal != 4 && lqStatusVal != 5 && lqStatusVal != 6){	
-						var field = {stopStatus:ajStopStatusInpVal,ajNoQt:ajNoTitInp_ajNoVal,sqAddress:'',zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),ajType:ajTypeInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal,lqStatus: lqStatusVal};
+						var field = {stopStatus:ajStopStatusInpVal,ajNoQt:ajNoTitInp_ajNoVal,zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),ajType:ajTypeInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal,lqStatus: lqStatusVal};
 					}else if(lqStatusVal == 4){
-						var field = {stopStatus:ajStopStatusInpVal,ajNoQt:ajNoTitInp_ajNoVal,sqAddress:'',zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),ajType:ajTypeInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal,comStatus:taskStaVal,lqStatus: lqStatusVal};//0未完成(默认) 1 已完成
+						var field = {ajNoQt:ajNoTitInp_ajNoVal,zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),cusId:cusIdInpVal,comStatus:taskStaVal,lqStatus: lqStatusVal};//0未完成(默认) 1 已完成
 					}else if(lqStatusVal == 5){
 						//专利移交审核/专利移交记录
-						var field = {stopStatus:ajStopStatusInpVal,ajNoQt:ajNoTitInp_ajNoVal,sqAddress:'',zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),ajType:ajTypeInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal,checkStatus:$('#tranStatusInp').val(),lqStatus: lqStatusVal};
+						var field = {ajNoQt:ajNoTitInp_ajNoVal,zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),checkStatus:$('#tranStatusInp').val(),lqStatus: lqStatusVal};
 					}else if(lqStatusVal == 6){
 						var field = {lqStatus:lqStatusVal,readStatus:readResVal,tzsType:tzsTypeVal};
 					}	
 				}
+				console.log(field)
 				if(opts == 'queryLoad'){
+					if($('#ajNoTitInp_ajNo').val() != '' && $('#ajNoTitInp_ajNo').val().length < 4){
+						layer.msg('案件编号必须4位以上', {icon:5,anim:6,time:1200});
+						return;
+					}
+					if($('#ajNoTitInp_ajZlNo').val() != '' && $('#ajNoTitInp_ajZlNo').val().length < 4){
+						layer.msg('案件申请/专利号必须4位以上', {icon:5,anim:6,time:1200});
+						return;
+					}
+					if($('#ajNoTitInp_ajTit').val() != '' && $('#ajNoTitInp_ajTit').val().length < 4){
+						layer.msg('案件标题必须大于4个字符', {icon:5,anim:6,time:1200});
+						return;
+					}
 					if(sDateInpVal != '' && eDateInpVal == ''){
 						layer.msg('请选择创建专利结束时间段', {icon:5,anim:6,time:1200});
 						return;
@@ -646,7 +659,6 @@
 					$('#ajNoTitInp_ajNo').hide().val('');
 					$('#ajNoTitInp_ajZlNo').hide().val('');
 				}
-				//loadZlInfoList('queryLoad');
 			});
 			table.on('tool(zlInfoListTable)',function(obj){
 				if(obj.event == 'editZlTask'){//专利(查看/编辑)

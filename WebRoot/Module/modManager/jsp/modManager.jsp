@@ -497,11 +497,13 @@
 								$(this).prev().addClass('hasActive');
 								if($(this).attr('actNameEng') == 'list'){
 									$(this).attr('disabled','disabled');
+									$(this).next().addClass('disColor');
 								}
 							}else{
 			            		$(this).prev().removeClass('hasActive');
 			            		if($(this).attr('actNameEng') == 'list'){
 									$(this).removeAttr('disabled');
+									$(this).next().removeClass('disColor');
 								}
 			            	}
 						}
@@ -528,12 +530,14 @@
 								aInp.prev().addClass('hasActive');
 								if($('.listSonMod_'+rowMainModId).length > 0){
 									$('.listSonMod_'+rowMainModId).attr('disabled','disabled');
+									$('.listSonMod_'+rowMainModId).next().addClass('disColor');
 								}
 							}else{
 								$(this).prev().removeClass('hasActive');
 								aInp.prev().removeClass('hasActive');
 								if($('.listSonMod_'+rowMainModId).length > 0){
 									$('.listSonMod_'+rowMainModId).removeAttr('disabled');
+									$('.listSonMod_'+rowMainModId).next().removeClass('disColor');
 								}
 							}
 							if(hasCheckedLen == totalLen){
@@ -706,7 +710,11 @@
 								}else{
 									strHtml += '<input type="checkbox" actNameEng="'+ actNameEng +'" onclick="checkStatusInp(this,'+ modList[i].modActInfo[j].modId +',\''+ actNameEng +'\')" name="sonInpCheck_'+ modList[i].useFlag +'" canUseFlag="'+ modList[i].useFlag +'" class="sonModSelInp inpRadCheck comModInp otherSonMod_'+ modList[i].modActInfo[j].modId +'" value="'+ modList[i].modActInfo[j].maId +'" checked/>';	
 								}
-								strHtml += '<strong class="ellip">'+ modList[i].modActInfo[j].actNameChi +'</strong>';
+								if(actNameEng == 'list' && disabFlag){
+									strHtml += '<strong class="ellip disColor">'+ modList[i].modActInfo[j].actNameChi +'</strong>';
+								}else{
+									strHtml += '<strong class="ellip">'+ modList[i].modActInfo[j].actNameChi +'</strong>';
+								}
 							}else{
 								strHtml += '<span class="likeCheckSpan"><b class="layui-icon layui-icon-ok"></b></span>';
 								if(actNameEng == 'list'){
@@ -768,6 +776,7 @@
 					//选择了当前主模块下的其他子模块 自动让list子模块选中并且disabled
 					$('.listSonMod_' + modId).prop('checked',true);
 					$('.listSonMod_' + modId).prev().addClass('hasActive');
+					$('.listSonMod_' + modId).next().addClass('disColor');
 					$('.listSonMod_' + modId).attr('disabled','disabled');
 				}
 			}else{//取消选中的时候
@@ -778,6 +787,7 @@
 				if(len == 0 && actNameEng != 'list' && $('.listSonMod_' + modId).length > 0){
 					//检测当前除了list之外取消选中如果为0且存在list子模块 将list设置未选中但是去除disabled
 					$('.listSonMod_' + modId).removeAttr('disabled');
+					$('.listSonMod_' + modId).next().removeClass('disColor');
 				}
 			}
 		}
