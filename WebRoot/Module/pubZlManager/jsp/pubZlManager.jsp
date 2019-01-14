@@ -78,7 +78,6 @@
 	  						</div>
 	  					</div>
   						<div id="puZlList">
-  							<div class='noData'></div>
   							<table id="pubZlListTable" class="layui-table" lay-filter="pubZlTable"></table>
   						</div>
   					</div>
@@ -304,18 +303,6 @@
 					]],
 					done : function(res, curr, count){
 						layer.closeAll('loading');
-						if(res.msg == 'success'){
-							$('.noData').hide().html('');
-			        		$('.layui-table-view').show();
-						}else if(res.msg == 'noInfo'){
-							$('.layui-table-view').hide();
-			        		$('.noData').show();
-			        		if(opts == 'initLoad'){
-			        			$('.noData').html("<i class='iconfont layui-extend-noData'></i><p>暂无专利记录</p>");
-			        		}else{
-			        			$('.noData').html("<i class='iconfont layui-extend-noData'></i><p>暂无查询记录</p>");
-			        		}
-						}
 					}
 				});
 			}

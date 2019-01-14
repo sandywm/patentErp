@@ -55,17 +55,14 @@ layui.define(['rate'],function(exports){
 			return permissionFlag;
 		},
 		//通用下载附件方法
-		downFiles : function(downFilePath,downFileType,firId){
+		downFiles : function(downFilePath,downFileType){
 			layer.load('1');
 			var url = '';
 			if(downFileType == 0){//下载通用附件
 				url = '/zlm.do?action=downFile';
 			}else if(downFileType == 1){//下载导出费用记录/发票
 				url = '/zlm.do?action=downFile_1';
-			}else if(downFileType == 2){//费用导出记录中的下载客户清单
-				url = '/zlm.do?action=downFile_1&exportStatus=1&firId=' + firId;
 			}
-			console.log(firId);
 			var form = $("<form>");   //定义一个form表单
 			form.attr('style', 'display:none'); //在form表单中添加查询参数
 			form.attr('target', '');

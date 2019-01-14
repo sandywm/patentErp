@@ -762,6 +762,7 @@ body{
 }
 .taskStatusBox{
 	position:relative;
+	margin-top:10px;
 }
 .tipsInfoTask{
 	position:absolute;
@@ -862,4 +863,112 @@ body{
 }
 .hasOverDate{
 	color:#f00;
+}
+.zlStatusInfoBox,
+.overDateTxt{
+	height:30px;
+	line-height:30px;
+}
+.overDateTxt{
+	position:absolute;
+	left:775px;
+	top:6px;
+}
+.zlStatusInfoBox p,
+.overDateTxt p{
+	float:left;
+	margin-right: 15px;
+    position: relative;
+    padding-left: 13px;
+    color: #999;
+}
+.zlStatusInfoBox p span,
+.commonStaSp,
+.overDateTxt p span{
+	width:8px;
+	height:8px;
+	border-radius:50%;
+	position:absolute;
+}
+.zlStatusInfoBox p span,
+.overDateTxt p span{
+	left:0;
+	top:11px;
+}
+.commonStaSp{
+	left:5px;
+	top:10px;
+}
+.zlStaColor_zc{
+	background:#5FB878;
+}
+.zlStaColor_jj{
+	background:#FFB800;
+}
+.zlStaColor_gq{
+	background:#f00;
+}
+.zlStaColor_zz{
+	background:#ccc;
+}
+/* 公共查询部分 */
+.queryPart{
+	margin-top:5px;
+	margin-bottom:-10px;
+}
+.queryItem{
+	float:left;
+	margin-right:15px;
+	margin-bottom:10px;
+}
+.queryItem:last-child{
+	margin-right:0px;
+}
+.selWid{
+	width:165px;
+}
+.selWid1{
+	width:140px;
+}
+.inpWid{
+	width:180px;
+}
+#sDateInp,
+#eDateInp{
+	width:160px;
+}
+.selWid2{
+	width:100px;
+}
+.selCusP{
+	width:200px;
+	line-height:38px;
+	cursor:pointer;
+}
+.selCusP p{
+	max-width:90%;
+	color:#888;
+}
+.selCusP i{
+	position: absolute;
+    right: 10px;
+    top: 50%;
+    margin-top: -3px;
+    cursor: pointer;
+    border-width: 6px;
+    border-top-color: #c2c2c2;
+    border-top-style: solid;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+}
+.resetBtn{
+	color:#666;
+	float:left;
+	margin-top:6px;
+}
+.resetBtn:hover{
+	color:#F47837;
+}
+.resetBtn i{
+	margin-right:5px;
 }

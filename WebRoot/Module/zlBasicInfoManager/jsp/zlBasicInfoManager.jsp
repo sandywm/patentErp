@@ -34,33 +34,42 @@
   	<script src="/plugins/jquery/jquery.min.js"></script>
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
-    	var loginType=parent.loginType,roleName=parent.roleName,hasReadFlag=false;
+    	var loginType=parent.loginType,roleName=parent.roleName,hasReadFlag=false,tmpAddBackFee='';
 		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,applyCause:'',applyName:'',yjId:0,zlType:'',tzsId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
 		    common: 'common'// 表示模块文件的名字
-		}).use(['layer','table','form','common','element'],function(){
+		}).use(['layer','table','form','common','laydate','element'],function(){
 			var layer = layui.layer,
-				//$ = layui.jquery,
 				table = layui.table,
 				form = layui.form,
 				common = layui.common,
-				element = layui.element;
+				element = layui.element,
+				laydate = layui.laydate;
 			
 			//tab点击事件的监听
   			element.on('tab(zlWrapFilter)', function(data){
-  				var lqStatus = $(this).attr('lqStatus');
+  				var lqStatus = $(this).attr('lqStatus'),zlsearchopts = $(this).attr('zlsearchopts');
   				$('#lqStatusInp').val(lqStatus);
   				globalLqStatus = lqStatus;
-  				if(/*globalLqStatus == 0 ||*/ globalLqStatus == 1 || globalLqStatus == 2){
+  				if(zlsearchopts != ''){
+  					page.createSearchPart(zlsearchopts,false);
+  				}else{
+  					$('.queryPart ').html('');
+  				}
+  				if(lqStatus == 0 || lqStatus == 1 || lqStatus == 2 || lqStatus == 3){
+  					$('.zlStatusInfoBox').show();
+  				}else{
+  					$('.zlStatusInfoBox').hide();
+  				}
+  				if(lqStatus == 1 || lqStatus == 2){
   					globalWid=170;
   				}else if(globalLqStatus == 4){
   					globalWid=200;
   				}else{
   					globalWid = 110;
   				}
-  				//globalLqStatus == 0 || globalLqStatus == 1 ? globalWid=180 : globalWid = 100;
   				if(lqStatus == 1 && page.data.addZlFlag){
   					$('#addZlBtn').show();
   				}else{
@@ -71,6 +80,7 @@
   				}else{
   					$('#importBtn').hide();
   				}
+  				page.queryFun();
   				loadZlInfoList('initLoad');
  			});
 			var page = {
@@ -91,22 +101,11 @@
 					//创建tab
 					this.createTab();
 					this.bindEvent();
-					/*$.ajax({
-  						type:"post",
-				        async:false,
-				        dataType:"json",
-				        data : {readStatus:0,lqStatus: 6},
-				       // data:{stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',comStatus:0,lqStatus: 4},
-				        //data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',lqStatus:loginType == 'spUser' ? -1 : 4},
-				        //data : {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',checkStatus:0,lqStatus: 5},
-				        url:'/zlm.do?action=getPageZlData',
-				        success:function (json){
-				        	console.log(json)
-				        }
-  					});*/
+					
 				},
 				bindEvent : function(){
 					var _this = this;
+					_this.queryFun();
 					//帮助
 					$('.helpIcon').on('click',function(){
 						layer.open({
@@ -117,6 +116,25 @@
 						  	maxmin: false,
 						  	shadeClose :true,
 						  	content: '/Module/zlBasicInfoManager/jsp/readMe.html'
+						});	
+					});
+					//选择客户
+					$('.selCusP').on('click',function(){
+						tmpAddBackFee = '';
+						layer.open({
+							title:'选择客户',
+							type: 2,
+						  	area: ['800px', '500px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	content: '/Module/feeManager/jsp/addSqr.html',
+						  	end : function(){
+						  		if($('#cusIdInp').val() != 0){
+						  			//执行加载
+						  			loadZlInfoList('queryLoad');
+						  		}
+						  	}
 						});	
 					});
 					$('#addZlBtn').on('click',function(){
@@ -169,52 +187,73 @@
 						}
 					});
 				},
+				queryFun : function(){
+					$('#queryBtn').on('click',function(){
+						loadZlInfoList('queryLoad');
+					});
+					$('.resetBtn').on('click',function(){
+						$('#ajTypeInp').val('');
+						$('#ajStopStatusInp').val(-1);
+						$('#ajNoTitInp_ajNo').val('');
+						$('#ajNoTitInp_ajZlNo').val('');
+						$('#ajNoTitInp_ajTit').val('');
+						$('#cusIdInp').val(0);
+						$('.cusName').html('请选择客户').attr('title','').css({'color':'#888'});
+						$('#sDateInp').val('');
+						$('eDateInp').val('');
+						loadZlInfoList('initLoad');
+					});
+				},
 				//创建tab
 				createTab : function(){
-					var strHtmlTit = '',strHtmlCon = '';
+					var strHtmlTit = '',strHtmlCon = '',strZlStatusTxt = '';
+					var strZlStatusTxt = '<div class="zlStatusInfoBox"><p><span class="zlStaColor_zc"></span>正常</p><p><span class="zlStaColor_jj"></span>即将过期</p><p><span class="zlStaColor_gq"></span>已过期</p><p><span class="zlStaColor_zz"></span>案件终止</p></div>';
 					strHtmlTit += '<ul class="layui-tab-title">';
 					if(loginType == 'spUser'){
-						strHtmlTit += '<li class="layui-this" lqStatus="1">专利</li>';
+						strHtmlTit += '<li class="layui-this" zlSearchOpts="zlGlOpt" lqStatus="1">专利</li>';
 					}else if(loginType == 'cpyUser'){
-						strHtmlTit += '<li class="layui-this" lqStatus="1">专利</li>';
+						strHtmlTit += '<li class="layui-this" zlSearchOpts="zlGlOpt" lqStatus="1">专利</li>';
 						if(this.data.fpZlFlag == true){
-							strHtmlTit += ' <li lqStatus="0">流程分配</li>';
+							strHtmlTit += ' <li zlSearchOpts="lcfpOpt" lqStatus="0">流程分配</li>';
 						}
 						if(this.data.lqZlFlag == true){
-							strHtmlTit += ' <li lqStatus="2">撰写任务领取</li>';
+							strHtmlTit += ' <li zlSearchOpts="rwlqOpt" lqStatus="2">撰写任务领取</li>';
 						}
-						strHtmlTit += ' <li lqStatus="3">我的专利</li>';
+						strHtmlTit += ' <li zlSearchOpts="myZlOpt" lqStatus="3">我的专利</li>';
 						if(roleName == '管理员'){//查看机构下所有员工的任务
-							strHtmlTit += ' <li lqStatus="4">专利任务</li>';
+							strHtmlTit += ' <li zlSearchOpts="myTaskOpt" lqStatus="4">专利任务</li>';
 						}else{
-							strHtmlTit += ' <li lqStatus="4">我的任务</li>';
+							strHtmlTit += ' <li zlSearchOpts="myTaskOpt" lqStatus="4">我的任务</li>';
 						}
 						//管理员下增加个移交申请审核
 						if(roleName == '管理员' || this.data.fpZlFlag == true){
-							strHtmlTit += ' <li lqStatus="5">任务移交审核</li>';
-							strHtmlTit += ' <li lqStatus="6">通知书批量导入</li>';
+							strHtmlTit += ' <li zlSearchOpts="shenheOpt" lqStatus="5">任务移交审核</li>';
+							strHtmlTit += ' <li zlSearchOpts="" lqStatus="6">通知书批量导入</li>';
 						}else{
 							strHtmlTit += ' <li lqStatus="5">任务移交记录</li>';
 						}
 					}
 					strHtmlTit += '</ul>';
 					strHtmlCon += '<div class="layui-card-body layui-tab-content">';
+					strHtmlCon += strZlStatusTxt;
+					var tmpStrHtml = this.createSearchPart('zlGlOpt',true);
+					strHtmlCon += '<div class="queryPart layui-form layui-clear">'+ tmpStrHtml +'</div>';
 					if(loginType == 'spUser'){
-						strHtmlCon += '<div class="layui-tab-item layui-show"><div id="noData_1" class="noData"></div>';
+						strHtmlCon += '<div class="layui-tab-item layui-show">';
 						strHtmlCon += '<table id="zlBasicListTab_1" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 					}else if(loginType == 'cpyUser'){
-						strHtmlCon += '<div class="layui-tab-item layui-show"><div id="noData_1" class="noData"></div>';
+						strHtmlCon += '<div class="layui-tab-item layui-show">';
 						strHtmlCon += '<table id="zlBasicListTab_1" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
-						if(this.data.fpZlFlag == true){
-							strHtmlCon += '<div class="layui-tab-item"><div id="noData_0" class="noData"></div>';
+						if(this.data.fpZlFlag == true){//流程分配
+							strHtmlCon += '<div class="layui-tab-item">';
 							strHtmlCon += '<table id="zlBasicListTab_0" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 						}
-						if(this.data.lqZlFlag == true){
-							strHtmlCon += '<div class="layui-tab-item"><div id="noData_2" class="noData"></div>';
+						if(this.data.lqZlFlag == true){//撰写任务领取
+							strHtmlCon += '<div class="layui-tab-item">';
 							strHtmlCon += '<table id="zlBasicListTab_2" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 						}
 						//我的专利对应内容
-						strHtmlCon += '<div class="layui-tab-item"><div id="noData_3" class="noData"></div>';
+						strHtmlCon += '<div class="layui-tab-item">';
 						strHtmlCon += '<table id="zlBasicListTab_3" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 						//我的任务对应内容 
 						strHtmlCon += '<div class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="taskStaInp" type="hidden" value="0"/>';
@@ -222,17 +261,16 @@
 						strHtmlCon += '<input type="radio" name="taskStatusInp" lay-filter="taskStatusFilter" value="1" title="已完成"/>';
 						if(roleName == '管理员'){//管理员这块对任务这块已完成和未完成记录做个特别说明
 							strHtmlCon += '<p class="tipsInfoTask"><i class="layui-icon layui-icon-tips"></i> <span>未完成：管理员可以操作专利的所有流程任务</span> <span>已完成：管理员只能查看自己完成的流程任务</span></p>';
+							strHtmlCon += '<div class="overDateTxt"><p><span class="zlStaColor_zc"></span>未过期</p><p><span class="zlStaColor_gq"></span>已过期</p></div>';
 						}
 						strHtmlCon += '</div>';
-						strHtmlCon += '<div id="noData_4" class="noData"></div>';
 						strHtmlCon += '<table id="zlBasicListTab_4" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 						//专利移交申请审核/记录
-						strHtmlCon += '<div id="layui-tab-item_5" class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="tranStatusInp" type="hidden" value="0"/>';
+						strHtmlCon += '<div class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="tranStatusInp" type="hidden" value="0"/>';
 						strHtmlCon += '<div class="verifyTxt"><p><span class="noVerifySpan"></span>未审核</p><p><span class="pasVerifySpan"></span>审核已通过</p><p><span class="noPasVerifySpan"></span>审核未通过</p></div>';
 						strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="0" title="未审核" checked/>';
 						strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="1" title="审核通过"/>';
 						strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="2" title="审核未通过"/></div>';
-						strHtmlCon += '<div id="noData_5" class="noData"></div>';
 						strHtmlCon += '<table id="zlBasicListTab_5" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 						//通知书批量导入
 						strHtmlCon += '<div class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="readResInp" type="hidden" value="2"/><input id="tzsTypeInp" type="hidden" value=""/>';
@@ -244,34 +282,89 @@
 						strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="2" title="全部" checked/>';
 						strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="1" title="读取成功"/>';
 						strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="0" title="读取失败"/></div>';
-						strHtmlCon += '<div id="noData_6" class="noData"></div>';
 						strHtmlCon += '<table id="zlBasicListTab_6" class="layui-table" lay-filter="zlInfoListTable"></table>';
 					}
 					strHtmlCon += '</div>';
 					$('#layuiTab').append(strHtmlTit + strHtmlCon);
 					form.render();
+				},
+				//创建查询条件
+				createSearchPart : function(options,isReturn){
+					var searchHtml = '';
+					var queryHtmlStr = {
+						searchHtml_stop : '',
+						searchHtml_NoTit : '',
+						searchHtml_ajType : '',
+						searchHtml_date : '',
+						searchHtml_cus : ''
+					};
+					//专利终止状态 案件编号 案卷专利号 案件名称 案件类型 开始结束日期 客户名称
+					queryHtmlStr.searchHtml_stop += '<div class="queryItem selWid"><input id="ajStopStatusInp" type="hidden" value="-1"/>';
+					queryHtmlStr.searchHtml_stop += '<select id="ajStopStatusSel" lay-filter="ajStopStatusSel"><option value="">案件终止状态(全部)</option>';
+					queryHtmlStr.searchHtml_stop += '<option value="0">正常</option><option value="1">终止</option></select></div>';
+					queryHtmlStr.searchHtml_NoTit += '<div class="queryItem selWid2"><input id="ajStopStatusInp" type="hidden" value="0"/>';
+					//0：案件编号 1：专利申请号 2：案件标题
+					queryHtmlStr.searchHtml_NoTit += '<select id="ajNoTitSel" lay-filter="ajNoTitSel"><option value="0">案件编号</option>';
+					queryHtmlStr.searchHtml_NoTit += '<option value="1">案件专利号</option><option value="2">案件标题</option></select></div>';
+					queryHtmlStr.searchHtml_NoTit += '<div class="queryItem inpWid" style="margin-left:-15px;">';
+					queryHtmlStr.searchHtml_NoTit += '<input type="text" id="ajNoTitInp_ajNo" style="border-left:none;" maxlength="25" placeholder="请输入案件编号" autocomplete="off" class="layui-input">';
+					queryHtmlStr.searchHtml_NoTit += '<input type="text" id="ajNoTitInp_ajZlNo" style="border-left:none;display:none;" maxlength="25" placeholder="请输入案件专利号" autocomplete="off" class="layui-input">';
+					queryHtmlStr.searchHtml_NoTit += '<input type="text" id="ajNoTitInp_ajTit" style="border-left:none;display:none;" maxlength="25" placeholder="请输入案件标题" autocomplete="off" class="layui-input"></div>';
+
+					queryHtmlStr.searchHtml_ajType += '<div class="queryItem selWid1"><input id="ajTypeInp" type="hidden" value=""/>';
+					queryHtmlStr.searchHtml_ajType += '<select id="ajTypeSel" lay-filter="ajTypeSel"><option value="">案件类型(全部)</option>';
+					queryHtmlStr.searchHtml_ajType += '<option value="fm">发明</option><option value="wg">外观</option><option value="syxx">实用新型</option></select></div>';
+					queryHtmlStr.searchHtml_date += '<div class="queryItem"><div class="layui-input-inline"><input type="text" id="sDateInp" placeholder="请选择新建日期(开始)" autocomplete="off" class="layui-input"></div></div>';
+					queryHtmlStr.searchHtml_date += '<div class="queryItem"><div class="layui-input-inline"><input type="text" id="eDateInp" placeholder="请选择新建日期(结束)" autocomplete="off" class="layui-input"></div></div>';
+					queryHtmlStr.searchHtml_cus += '<div class="queryItem cusIdDiv"><div class="layui-input-inline"><input type="hidden" id="cusIdInp" value="0"/>';
+					queryHtmlStr.searchHtml_cus += '<div class="layui-input selCusP"><p class="cusName ellip">请选择客户</p><i class="layui-edge"></i></div></div></div>';
+					
+					if(options == 'zlGlOpt'){//专利
+						searchHtml += queryHtmlStr.searchHtml_ajType+queryHtmlStr.searchHtml_stop+queryHtmlStr.searchHtml_NoTit+queryHtmlStr.searchHtml_cus+queryHtmlStr.searchHtml_date;	
+					}else if(options == 'lcfpOpt' || options == 'rwlqOpt' || options == 'myZlOpt' || options == 'myTaskOpt'){
+						searchHtml += queryHtmlStr.searchHtml_ajType + queryHtmlStr.searchHtml_NoTit + queryHtmlStr.searchHtml_cus;
+					}else if(options == 'shenheOpt'){
+						searchHtml += queryHtmlStr.searchHtml_NoTit;
+					}
+					searchHtml += '<div class="queryItem"><div class="layui-input-inline"><button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search"></i></button></div></div><a class="resetBtn" href="javascript:void(0)"><i class="layui-icon layui-icon-refresh"></i>重置</a>';
+					if(isReturn){
+						return searchHtml;
+					}else{
+						$('.queryPart').html(searchHtml);
+						form.render();
+					}
+					
 				}
 			};
 			function loadZlInfoList(opts){
 				var lqStatusVal = $('#lqStatusInp').val(),taskStaVal = $('#taskStaInp').val(),readResVal = $('#readResInp').val(),tzsTypeVal=$('#tzsTypeInp').val();
-				if(opts == 'initLoad'){
-					if(loginType == 'spUser'){
-						var field = {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:''};
-					}else{
-						if(lqStatusVal != 4 && lqStatusVal != 5 && lqStatusVal != 6){
-							var field = {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',lqStatus: lqStatusVal};	
-						}else if(lqStatusVal == 4){
-							var field = {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',comStatus:taskStaVal,lqStatus: lqStatusVal};//0未完成(默认) 1 已完成
-						}else if(lqStatusVal == 5){
-							//专利移交审核/专利移交记录
-							var field = {stopStatus:-1,ajNoQt:'',sqAddress:'',zlNo:'',ajTitle:'',ajType:'',lxr:'',sDate:'',eDate:'',checkStatus:$('#tranStatusInp').val(),lqStatus: lqStatusVal};
-						}else if(lqStatusVal == 6){
-							var field = {lqStatus:lqStatusVal,readStatus:readResVal,tzsType:tzsTypeVal};
-							console.log(field)
-						}	
-					}
+				var ajTypeInpVal = $('#ajTypeInp').val(),ajStopStatusInpVal = $('#ajStopStatusInp').val(),ajNoTitInp_ajNoVal = $('#ajNoTitInp_ajNo').val(),
+				ajNoTitInp_ajZlNoVal = $('#ajNoTitInp_ajZlNo').val(),ajNoTitInp_ajTitVal = $('#ajNoTitInp_ajTit').val(),cusIdInpVal = $('#cusIdInp').val(),sDateInpVal = $('#sDateInp').val(),eDateInpVal = $('#eDateInp').val();
+				if(loginType == 'spUser'){
+					var field = {stopStatus:ajStopStatusInpVal,ajNoQt:ajNoTitInp_ajNoVal,sqAddress:'',zlNo:ajNoTitInp_ajZlNoVal,ajTitle:ajNoTitInp_ajTitVal,ajType:ajTypeInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal};
 				}else{
-					var field = {};
+					if(lqStatusVal != 4 && lqStatusVal != 5 && lqStatusVal != 6){	
+						var field = {stopStatus:ajStopStatusInpVal,ajNoQt:ajNoTitInp_ajNoVal,sqAddress:'',zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),ajType:ajTypeInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal,lqStatus: lqStatusVal};
+					}else if(lqStatusVal == 4){
+						var field = {stopStatus:ajStopStatusInpVal,ajNoQt:ajNoTitInp_ajNoVal,sqAddress:'',zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),ajType:ajTypeInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal,comStatus:taskStaVal,lqStatus: lqStatusVal};//0未完成(默认) 1 已完成
+					}else if(lqStatusVal == 5){
+						//专利移交审核/专利移交记录
+						var field = {stopStatus:ajStopStatusInpVal,ajNoQt:ajNoTitInp_ajNoVal,sqAddress:'',zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),ajType:ajTypeInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal,checkStatus:$('#tranStatusInp').val(),lqStatus: lqStatusVal};
+					}else if(lqStatusVal == 6){
+						var field = {lqStatus:lqStatusVal,readStatus:readResVal,tzsType:tzsTypeVal};
+					}	
+				}
+				if(opts == 'queryLoad'){
+					if(sDateInpVal != '' && eDateInpVal == ''){
+						layer.msg('请选择创建专利结束时间段', {icon:5,anim:6,time:1200});
+						return;
+					}else if(sDateInpVal == '' && eDateInpVal != ''){
+						layer.msg('请选择创建专利开始时间段', {icon:5,anim:6,time:1200});
+						return;
+					}else if(eDateInpVal < sDateInpVal){
+						layer.msg('创建专利开始时间不能大于创建专利结束时间', {icon:5,anim:6,time:1200});
+						return;
+					}
 				}
 				layer.load('1');
 				if(lqStatusVal != 4 && lqStatusVal != 5 && lqStatusVal != 6){
@@ -287,7 +380,21 @@
 						limits:[10,20,30,40],
 						cols : [[
 							{field : '', title: '序号',type:'numbers', width:60, fixed: 'left' , align:'center'},
-							{field : 'ajTitle', title: '案件标题', width:220, fixed: 'left' , align:'center'},
+							{field : 'ajTitle', title: '案件标题', width:220, fixed: 'left' , align:'center',templet : function(d){
+								var strHtml = '';
+								if(d.ajStopStatus == 0){
+									if(d.zlStatusInfo == 'outDate_zc'){//正常
+										strHtml += '<span class="commonStaSp zlStaColor_zc"></span>';
+									}else if(d.zlStatusInfo == 'outDate_jj'){
+										strHtml += '<span class="commonStaSp zlStaColor_jj"></span>';
+									}else if(d.zlStatusInfo == 'outDate'){
+										strHtml += '<span class="commonStaSp zlStaColor_gq"></span>';
+									}
+								}else if(d.ajStopStatus == 1){//案件终止
+									strHtml += '<span class="commonStaSp zlStaColor_zz"></span>';
+								}
+								return strHtml + d.ajTitle;
+							}},
 							{field : 'ajNo', title: '案件编号', width:180, align:'center'},
 							{field : 'ajNoGf', title: '案件申请/专利号', width:150, align:'center'},
 							{field : 'ajType', title: '案件类型', width:150, align:'center'},
@@ -329,13 +436,11 @@
 							}},
 							{field : 'applyDate', title: '案件申请时间', width:160, align:'center'},
 							{field : 'ajStatus', title: '流程状态', width:180, align:'center'},
-							{field : 'ajStopStatus', title: '案件终止状态', width:140, align:'center'},
 							{field : 'ajStopDate', title: '案件终止日期', width:120, align:'center'},
 							{field : 'ajStopUser', title: '案件终止人', width:120, align:'center'},
 							{field : 'ajStopUserType', title: '案件终止人类型', width:140, align:'center'},
 							{field : 'ajAddDate', title: '案件录入时间', width:120, align:'center'},
 							{field : 'zxUserName', title: '案件撰写人', width:120, align:'center'},
-							{field : 'zlStatusInfo', title: '案件状态', width:120, align:'center'},
 							{field : '', title: '操作', width:globalWid, fixed: 'right', align:'center',templet : function(d){
 								if(globalLqStatus == 0){//流程分配
 									return '<a class="layui-btn layui-btn-xs" lay-event="lcfpFun" zlId="'+ d.id +'" ajTitle="'+ d.ajTitle +'" taskOpts="0"><i class="layui-icon layui-icon-edit"></i>流程分配</a>';
@@ -348,8 +453,10 @@
 								}
 							}}
 						]],
-						done : function(res, curr, count){
-							callBackDone(res);
+						done : function(){
+							layer.closeAll('loading');
+							laydate.render({elem:'#sDateInp'});
+							laydate.render({elem:'#eDateInp'});
 						}
 					});
 				}else if(lqStatusVal == 4){
@@ -367,14 +474,13 @@
 						cols:[[
 							{field : '', title: '序号',type:'numbers', width:60, fixed: 'left' , align:'center'},
 							{field : 'zlTitle', title: '案件标题', width:220, fixed: 'left' , align:'center'},
-							{field : 'zlNoQt', title: '专利编号', width:180, align:'center'},
+							{field : 'zlNoQt', title: '案件编号', width:180, align:'center'},
 							{field : 'zlNo', title: '专利/申请号', width:150, align:'center'},
 							{field : 'zlType', title: '专利类型', width:150, align:'center'},
 							{field : 'taskName', title: '任务名称', width:180, align:'center'},
 							{field : 'taskSdate', title: '任务开始日期', width:200, align:'center'},
 							{field : 'taskComDate', title: '任务完成日期', width:200, align:'center'},
 							{field : 'taskEdateCpy', title: '任务完成期限(机构)', width:220, align:'center',templet:function(d){
-								console.log(d)
 								if(d.diffDaysCpy < 0 && d.taskEdateCpy != ''){
 									var strDiffDays_Cpy = d.diffDaysCpy.toString();
 									return d.taskEdateCpy + '(<span class="hasOverDate">已过期'+ strDiffDays_Cpy.substring(1,strDiffDays_Cpy.length) +'天</span>)';
@@ -408,7 +514,7 @@
 							}}
 						]],
 						done : function(res){
-							callBackDone(res);
+							layer.closeAll('loading');
 							if(taskStaVal == 1){
 								$('.layui-table-box').find('[data-field="sets"]').css('display','none');
 							}
@@ -439,7 +545,7 @@
 								}
 								return strHtml + d.zlTitle;
 							}},
-							{field : 'zlNoQt', title: '专利编号', width:150, align:'center'},
+							{field : 'zlNoQt', title: '案件编号', width:150, align:'center'},
 							{field : 'zlNo', title: '专利/申请号', width:180, align:'center'},
 							{field : 'zlType', title: '专利类型', width:150, align:'center'},
 							{field : 'taskName', title: '任务名称', width:180, align:'center'},
@@ -455,7 +561,7 @@
 							}}
 						]],
 						done : function(res){
-							callBackDone(res);
+							layer.closeAll('loading');
 							if($('#tranStatusInp').val() == 1 || $('#tranStatusInp').val() == 2){
 								$('.layui-table-box').find('[data-field="set"]').css('display','none');
 							}
@@ -491,7 +597,7 @@
 								}
 								return strHtml + d.zlName;
 							}},
-							{field : 'zlNo', title: '专利编号', width:180, align:'center'},
+							{field : 'zlNo', title: '案件编号', width:180, align:'center'},
 							{field : 'tzsName', title: '通知书名称', width:260, align:'center'},
 							{field : 'readDetail', title: '读取结果', width:280, align:'center',templet : function(d){
 								if(d.readStatus== 0){//失败
@@ -508,27 +614,40 @@
 								return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="viewTzsResDetail" tzsType="'+ d.tzsType +'" tzsId="'+ d.tzsId +'"><i class="layui-icon layui-icon-search"></i>查看</a><a class="layui-btn layui-btn-xs" lay-event="downFileFun" downFilePath="'+ d.tzsPath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
 							}},
 						]],
-						done : function(res){
-							callBackDone(res);
+						done : function(){
+							layer.closeAll('loading');
 						}
 					});
 				}
-				function callBackDone(res){
-					layer.closeAll('loading');
-					if(res.msg == 'success'){
-						$('#noData_'+lqStatusVal).hide().html('');
-		        		$('#zlBasicListTab_'+lqStatusVal).siblings('.layui-table-view').show();
-					}else if(res.msg == 'noInfo'){
-						$('#zlBasicListTab_'+lqStatusVal).siblings('.layui-table-view').hide();
-		        		$('#noData_'+lqStatusVal).show();
-		        		if(opts == 'initLoad'){
-		        			$('#noData_'+lqStatusVal).html("<i class='iconfont layui-extend-noData'></i><p>暂无记录</p>");
-		        		}else{
-		        			$('#noData_'+lqStatusVal).html("<i class='iconfont layui-extend-noData'></i><p>暂无查询记录</p>");
-		        		}
-					}
-				}
+				
 			}
+			form.on('select(ajTypeSel)', function(data){
+				var value = data.value;
+				value == '' ? $('#ajTypeInp').val('') : $('#ajTypeInp').val(value);
+				loadZlInfoList('queryLoad');
+			});
+			form.on('select(ajStopStatusSel)', function(data){
+				var value = data.value;
+				value == '' ? $('#ajStopStatusInp').val('-1') : $('#ajStopStatusInp').val(value);
+				loadZlInfoList('queryLoad');
+			});
+			form.on('select(ajNoTitSel)', function(data){
+				var value = data.value;
+				if(value == 0){//案件编号
+					$('#ajNoTitInp_ajNo').show().val('');
+					$('#ajNoTitInp_ajZlNo').hide().val('');
+					$('#ajNoTitInp_ajTit').hide().val('');
+				}else if(value == 1){
+					$('#ajNoTitInp_ajZlNo').val('').show();
+					$('#ajNoTitInp_ajNo').hide().val('');
+					$('#ajNoTitInp_ajTit').hide().val('');
+				}else{
+					$('#ajNoTitInp_ajTit').show().val('');
+					$('#ajNoTitInp_ajNo').hide().val('');
+					$('#ajNoTitInp_ajZlNo').hide().val('');
+				}
+				//loadZlInfoList('queryLoad');
+			});
 			table.on('tool(zlInfoListTable)',function(obj){
 				if(obj.event == 'editZlTask'){//专利(查看/编辑)
 					addEditZlOpts = $(this).attr('opts');

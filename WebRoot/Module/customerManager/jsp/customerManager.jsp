@@ -37,7 +37,7 @@
   					</div>
   					<div class="layui-card-body" pad15>
   						<div id="customerList">
-  							<div class='noData'></div>
+  							<!--  div class='noData'></div-->
   							<table id="cusListTable" class="layui-table" style="margin-bottom:-20px;" lay-filter="cusTableFilter"></table>
   						</div>
   					</div>
@@ -121,18 +121,7 @@
 					]],
 					done : function(res, curr, count){
 						layer.closeAll('loading');
-						if(res.msg == 'success'){
-							$('.noData').hide().html('');
-			        		$('.layui-table-view').show();
-						}else if(res.msg == 'noInfo'){
-							$('.layui-table-view').hide();
-			        		$('.noData').show();
-			        		if(opts == 'initLoad'){
-			        			$('.noData').html("<i class='iconfont layui-extend-noData'></i><p>暂无客户记录</p>");
-			        		}else{
-			        			$('.noData').html("<i class='iconfont layui-extend-noData'></i><p>暂无查询记录</p>");
-			        		}
-						}else if(res.msg == 'error'){
+						if(res.msg == 'error'){
 							layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
 						}
 					}

@@ -210,3 +210,8 @@ body{
 	display:block;
 	float:left;
 }
+.hideItem{
+	display:none;
+	opacity:0;
+	filter:alpha(opacity=0);
+}

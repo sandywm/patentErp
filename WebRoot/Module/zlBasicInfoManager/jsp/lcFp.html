@@ -102,7 +102,7 @@
 					}
 					strHtml += '</div><span id="addTzs" opt="addTongZhiShuUser" lcfpId="'+ json.tzsUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo7" class="currLcNo"></p></div></div>';
 					//费用催缴人员
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>费用催缴人员</label>';
+					strHtml += '<div class="layui-form-item hideItem"><label class="layui-form-label"><span>*</span>费用催缴人员</label>';
 					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="feiyongBox" class="multiBox fl">';
 					if(json.feeUserId != 0){
 						strHtml += '<p id="addFeeUser_con" userId="'+ json.feeUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.feeUserName +'</p>';
@@ -123,7 +123,7 @@
 					}
 					strHtml += '</div><span id="addShBz" opt="addBuzhengShUser" lcfpId="'+ json.bzshUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo10" class="currLcNo"></p></div></div>';
 					//专利驳回人员
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>专利驳回人员</label>';
+					strHtml += '<div class="layui-form-item hideItem"><label class="layui-form-label"><span>*</span>专利驳回人员</label>';
 					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="bohuiBox" class="multiBox fl">';
 					if(json.bhUserId != 0){
 						strHtml += '<p id="addZlBhUser_con" userId="'+ json.bhUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.bhUserName +'</p>';

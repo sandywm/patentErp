@@ -48,7 +48,6 @@
 		  						<a class="resetTime" href="javascript:void(0)"><i class="layui-icon layui-icon-refresh"></i>重置</a>
 	  						</div>
 	  						<div class="backFeeWrap">
-	  							<div class='noData'></div>
 	  							<table id="backFeeList" class="layui-table" lay-filter="backFeeList"></table>
 	  						</div>
 	  					</div>
@@ -175,18 +174,7 @@
 							{field : 'remark', title: '备注', align:'center'}
 						]],
 						done : function(res){
-							if(res.msg == 'success'){
-								$('#backFeeList').siblings('.layui-table-view').show();
-								$('.noData').hide().html('');
-							}else if(res.msg == 'noInfo'){
-								$('#backFeeList').siblings('.layui-table-view').hide();
-								$('.noData').show();
-				        		if(opts == 'initLoad'){
-				        			$('.noData').html("<i class='iconfont layui-extend-noData'></i><p>暂无客户汇款记录</p>");
-				        		}else{
-				        			$('.noData').html("<i class='iconfont layui-extend-noData'></i><p>暂无查询记录</p>");
-				        		}
-							}else if(res.msg == 'noAbility'){
+							if(res.msg == 'noAbility'){
 								layer.msg('抱歉，您暂无权限查看客户汇款记录', {icon:5,anim:6,time:1000});
 							}
 						}

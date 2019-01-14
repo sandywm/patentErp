@@ -60,13 +60,11 @@
 		  						</div>
 		  						<div class="itemDiv fl">
 		  							<div class="layui-input-inline">
-		  								<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search
-	 "></i></button>
+		  								<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search"></i></button>
 		  							</div>
 		  						</div>
 		  					</div>
 	  						<div id="staffList">
-	  							<div class='noData'></div>
 	  							<table id="staffListTable" class="layui-table" lay-filter="staffTable"></table>
 								<!-- 设置中账号有效状态  -->
 								<script type="text/html" id="isAccYxTpl">
@@ -228,20 +226,8 @@
 							}},
 						]],
 						done : function(res, curr, count){
-							console.log(res.msg);
 							layer.closeAll("loading");
-							if(res.msg == "success"){
-								$(".noData").hide().html("");
-    			        		$(".layui-table-view").show();
-    			        	}else if(res.msg == "noInfo"){
-    			        		$(".layui-table-view").hide();
-    			        		$(".noData").show();
-    			        		if(opts == "loadListData"){
-    			        			$(".noData").html("<i class='iconfont layui-extend-noData'></i><p>暂无员工，请添加</p>");
-    			        		}else{
-    			        			$(".noData").html("<i class='iconfont layui-extend-noData'></i><p>暂无查询记录</p>");
-    			        		}
-							}else if(res.msg == "fail"){
+							if(res.msg == "fail"){
     			        		layer.msg("加载失败，请刷新重试", {icon:5,anim:6,time:1000});
     			        	}
 						}

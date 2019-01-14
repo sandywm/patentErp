@@ -49,7 +49,6 @@
 	  						</div>
   						</div>
   						<div id="zlLqHisList">
-  							<div class='noData'></div>
   							<table id="zlLqHisListTable" class="layui-table" lay-filter="zlLqHisTable"></table>
   						</div>
   					</div>
@@ -136,18 +135,7 @@
 					]],
 					done : function(res, curr, count){
 						layer.closeAll('loading');
-						if(res.result == 'success'){
-							$('.noData').hide().html('');
-			        		$('.layui-table-view').show();
-						}else if(res.result == 'noInfo'){
-							$('.layui-table-view').hide();
-			        		$('.noData').show();
-			        		if(opts == 'initLoad'){
-			        			$('.noData').html("<i class='iconfont layui-extend-noData'></i><p>暂无专利领取记录</p>");
-			        		}else{
-			        			$('.noData').html("<i class='iconfont layui-extend-noData'></i><p>暂无查询记录</p>");
-			        		}
-						}else if(res.result == 'error'){
+						if(res.result == 'error'){
 							layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1500});
 						}
 					}

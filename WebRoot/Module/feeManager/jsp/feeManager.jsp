@@ -28,16 +28,13 @@
   							<input id="feeStatusInp" type="hidden" value="0"/>
   							<div class="searchPart layui-form clearfix"></div>
   							<div class="layui-tab-item layui-show">
-  								<div id="noData_5" class="noData"></div>
   								<table id="feeListTab_5" class="layui-table" lay-filter="feeInfoListTable"></table>
   								<div id="totalWrap"></div>
   							</div>
   							<div class="layui-tab-item">
-  								<div id="noData_3" class="noData"></div>
   								<table id="feeListTab_3" class="layui-table" lay-filter="feeInfoListTable"></table>
   							</div>
   							<div class="layui-tab-item">
-  								<div id="noData_4" class="noData"></div>
   								<table id="feeListTab_4" class="layui-table" lay-filter="feeInfoListTable"></table>
   							</div>
   						</div> 
@@ -159,21 +156,9 @@
 						    active[type] ? active[type].call(this) : '';
 						    if(_this.data.exportFlag){
 							    var idStr = '',qdStatus = $('#qdStatusInp').val();
+							    var url = '/fee.do?action=exportFeeInfoToExcel_1&feeStatus=0&qdStatus=' + qdStatus;
 							    idStr = page.data.globalFeeId.join(',');
-							    layer.load('1');
-							    var form = $("<form>");   //定义一个form表单
-								form.attr('style', 'display:none;'); //在form表单中添加查询参数
-								form.attr('target', '');
-								form.attr('method', 'post');
-								form.attr('action', "/fee.do?action=exportFeeInfoToExcel_1&feeStatus=0&qdStatus=" + qdStatus);
-								var input1 = $('<input>');
-								input1.attr('type', 'text');
-								input1.attr('name', 'idStr');
-								input1.attr('value', idStr);
-								$('body').append(form);  //将表单放置在web中 
-								form.append(input1);   //将查询参数控件提交到表单上
-							  	form.submit();
-								layer.closeAll('loading');
+							   _this. commonExportFun(url,'idStr',idStr);
 						    }
 						}else{
 							layer.msg('抱歉，您暂无导出费用账单的权限', {icon:5,anim:6,time:1200});
@@ -222,7 +207,7 @@
 					});
 					$('.resetTime').on('click',function(){
 						$('#zlNoInp').val('');
-						$('#cusIdInp').val('');
+						$('#cusIdInp').val(0);
 						$('.cusName').html('请选择客户').attr('title','').css({'color':'#888'});
 						$('#sDateInp').val('');
 						$('#eDateInp').val('');
@@ -247,7 +232,7 @@
 					strHtml7 += '<div class="itemDiv zlNoDiv fl"><div class="layui-input-inline" style="width:180px;">';
 					strHtml7 += '<input type="text" id="zlNoInp" placeholder="请输入专利申请号/专利号" autocomplete="off" class="layui-input"></div></div>';
 					strHtml7 += '<div class="itemDiv cusIdDiv fl"><div class="layui-input-inline">';
-					strHtml7 += '<input type="hidden" id="cusIdInp"/><div class="layui-input selCusP"><p class="cusName ellip">请选择客户</p><i class="layui-edge"></i></div></div></div>';
+					strHtml7 += '<input type="hidden" id="cusIdInp" value="0"/><div class="layui-input selCusP"><p class="cusName ellip">请选择客户</p><i class="layui-edge"></i></div></div></div>';
 					strHtml2 += '<div class="itemDiv fl"><div class="layui-input-inline"><input id="diffDaysSelInp" type="hidden" value="15"/>';
 					strHtml2 += '<select id="diffDaysSel" lay-filter="diffDaysSel"><option value="">请选择距代理机构交费期限(全部)</option>';
 					strHtml2 += '<option value="1">1天</option><option value="7">7天</option><option value="15" selected>15天</option><option value="30">30天</option><option value="60">60天</option><option value="-2">已过期</option>';
@@ -285,6 +270,22 @@
 					}
 					laydate.render({elem:'#sDateInp'});
 					laydate.render({elem:'#eDateInp'});
+				},
+				commonExportFun : function(url,name,value){
+					layer.load('1');
+				    var form = $("<form>");   //定义一个form表单
+					form.attr('style', 'display:none;'); //在form表单中添加查询参数
+					form.attr('target', '');
+					form.attr('method', 'post');
+					form.attr('action', url);
+					var input1 = $('<input>');
+					input1.attr('type', 'text');
+					input1.attr('name', name);
+					input1.attr('value', value);
+					$('body').append(form);  //将表单放置在web中 
+					form.append(input1);   //将查询参数控件提交到表单上
+				  	form.submit();
+					layer.closeAll('loading');
 				}
 			};
 					  
@@ -481,7 +482,7 @@
 							{field : 'addTime', title: '导入时间',  align:'center'},
 							{field : 'userName', title: '导入者',align:'center'},
 							{field : '', title: '操作',width:310, align:'center',templet : function(d){
-								return '<a lay-event="viewImpRes" fileName="'+ d.fileName +'" fileUrl="'+ d.excelPath +'" firId="'+ d.firId +'" class="layui-btn layui-btn-primary layui-btn-xs"><i class="layui-icon layui-icon-search"></i>查看</a> <a lay-event="downFileFun_cus" firId="'+ d.firId +'" downFilePath="'+ d.excelPath +'" class="layui-btn layui-btn-normal layui-btn-xs"><i class="layui-icon layui-icon-download-circle"></i>下载客户清单</a> <a lay-event="downFileFun" downFilePath="'+ d.excelPath +'" class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-download-circle"></i>下载缴费清单</a>';
+								return '<a lay-event="viewImpRes" fileName="'+ d.fileName +'" fileUrl="'+ d.excelPath +'" firId="'+ d.firId +'" class="layui-btn layui-btn-primary layui-btn-xs"><i class="layui-icon layui-icon-search"></i>查看</a> <a lay-event="downFileFun_cus" firId="'+ d.firId +'" class="layui-btn layui-btn-normal layui-btn-xs"><i class="layui-icon layui-icon-download-circle"></i>下载客户清单</a> <a lay-event="downFileFun" downFilePath="'+ d.excelPath +'" class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-download-circle"></i>下载缴费清单</a>';
 							}},
 						]],
 						done : function(res, curr, count){
@@ -492,27 +493,18 @@
 				function callBackDone(res){
 					layer.closeAll('loading');
 					if(res.msg == 'success'){
-						$('#feeListTab_'+page.data.globalFeeStatus).siblings('.layui-table-view').show();
-						$('#noData_'+page.data.globalFeeStatus).hide().html('');
 						if(page.data.globalFeeStatus == 5){
 							var feeStatusInpVal = $('#feeStatusInp').val(),qdStatusInpVal = $('#qdStatusInp').val();
 							if(feeStatusInpVal == 0){
-								$('#totalWrap').html('<p>根据系统结算，当前应交费用总计为<span>'+ res.wjFeeTotal +'元</span></p>');
+								$('#totalWrap').show().html('<p>根据系统结算，当前应交费用总计为<span>'+ res.wjFeeTotal +'元</span></p>');
 							}else if(feeStatusInpVal == 1){
-								$('#totalWrap').html('<p>根据系统结算，当前已交费用总计为<span>'+ res.yjFeeTotal +'元</span>，实收费用总计为<span>'+ res.backFeeTotal +'元</span>，未收费用总计为<span>'+ res.noBackFeeTotal +'元</span></p>');	
+								$('#totalWrap').show().html('<p>根据系统结算，当前已交费用总计为<span>'+ res.yjFeeTotal +'元</span>，实收费用总计为<span>'+ res.backFeeTotal +'元</span>，未收费用总计为<span>'+ res.noBackFeeTotal +'元</span></p>');	
 							}else{//全部
-								$('#totalWrap').html('<p>根据系统结算，当前所用费用总计为<span>'+ res.feeTotal +'</span>其中，应交费用总计为<span>'+ res.wjFeeTotal +'元</span>，已交费用总计为<span>'+ res.yjFeeTotal +'元</span>，实收费用总计为<span>'+ res.backFeeTotal +'元</span>，未收费用总计为<span>'+ res.noBackFeeTotal +'元</span></p>');	
+								$('#totalWrap').show().html('<p>根据系统结算，当前所用费用总计为<span>'+ res.feeTotal +'元</span>其中，应交费用总计为<span>'+ res.wjFeeTotal +'元</span>，已交费用总计为<span>'+ res.yjFeeTotal +'元</span>，实收费用总计为<span>'+ res.backFeeTotal +'元</span>，未收费用总计为<span>'+ res.noBackFeeTotal +'元</span></p>');	
 							}
 						}
-					}else if(res.msg == 'noInfo'){
+					}else if(res.msg == '暂无记录'){
 						$('#totalWrap').hide().html('');
-						$('#feeListTab_'+page.data.globalFeeStatus).siblings('.layui-table-view').hide();
-		        		$('#noData_'+page.data.globalFeeStatus).show();
-		        		if(opts == 'initLoad'){
-		        			$('#noData_'+page.data.globalFeeStatus).html("<i class='iconfont layui-extend-noData'></i><p>暂无记录</p>");
-		        		}else{
-		        			$('#noData_'+page.data.globalFeeStatus).html("<i class='iconfont layui-extend-noData'></i><p>暂无查询记录</p>");
-		        		}
 					}else if(res.msg == 'noAbility'){
 						layer.msg('抱歉，您暂无权限', {icon:5,anim:6,time:1000});
 					}
@@ -538,8 +530,9 @@
 					});	
 					layer.full(fullScreenIndex);
 				}else if(obj.event == 'downFileFun_cus'){
-					var firId = $(this).attr('firId'),downFilePath = $(this).attr('downFilePath');
-					common.downFiles(downFilePath,2,firId);
+					var firId = $(this).attr('firId');
+					var url = '/fee.do?action=exportFeeInfoToExcel_1&exportStatus=1';
+					page.commonExportFun(url,'firId',firId);
 				}
 			});
 			$(function(){

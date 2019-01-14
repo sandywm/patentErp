@@ -260,7 +260,7 @@
 				        url:'/zlm.do?action=getZlDetail',
 				        success:function (json){
 				        	layer.closeAll('loading');
-				        	console.log(json)
+				        	//console.log(json)
 				        	if(json['result'] == 'success'){
 				        		if(opts == 'basic'){//获取基本信息
 				        			zlId = json.ajId;
@@ -903,7 +903,7 @@
 					}
 					strHtml += '</div></div>';
 					//费用催缴人员
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>费用催缴人员</label>';
+					strHtml += '<div class="layui-form-item hideItem"><label class="layui-form-label"><span>*</span>费用催缴人员</label>';
 					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="feiyongBox" class="multiBox fl">';
 					if(json.feeUserId != 0){
 						strHtml += '<p id="addFeeUser_con" userId="'+ json.feeUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.feeUserName +'</p>';
@@ -936,7 +936,7 @@
 					}
 					strHtml += '</div></div>';
 					//专利驳回人员
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>专利驳回人员</label>';
+					strHtml += '<div class="layui-form-item hideItem"><label class="layui-form-label"><span>*</span>专利驳回人员</label>';
 					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="bohuiBox" class="multiBox fl">';
 					if(json.bhUserId != 0){
 						strHtml += '<p id="addZlBhUser_con" userId="'+ json.bhUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.bhUserName +'</p>';
@@ -1161,7 +1161,6 @@
 				},
 				//获取通知书
 				renderTzsDetail : function(json){
-					console.log(json)
 					var tzsInfo = json.tzsInfo;
 					var strHtml = '';
 					for(var i=0,iLen = tzsInfo.length;i<iLen;i++){
@@ -1239,6 +1238,8 @@
 						elem: '#feeListTable',
 						height: 'full-220',
 						data:feeInfo,
+						page:false,
+						limit : 100000,
 						even : true,
 						cols:[[
 							{field : 'feeName', title: '费用名称', width:200, fixed: 'left', align:'center'},
