@@ -93,3 +93,90 @@ input[type="text"]:disabled{
 	width:95%;
 	margin:10px auto 10px;
 }
+/* 查看员工基本信息 */
+#basicInfo{
+	width:96%;
+	margin:50px auto 0;
+}
+#basicInfo ul{
+	/*border:1px solid #eaf4ff;*/
+}
+#basicInfo li{
+	width:100%;
+	min-height:40px;
+	line-height:40px;
+	position:relative;
+}
+#basicInfo li.hasBorTop{
+	border-top:1px solid #eaf4ff;
+}
+#basicInfo li div.innerPar{
+	width:50%;
+	height:100%;
+	float:left;
+	box-sizing:border-box;
+	position:relative;
+}
+#basicInfo li div.innerPar:first-child,
+#basicInfo li.specLi div.innerPar{
+	border-right:1px solid #eaf4ff;
+	border-left:1px solid #eaf4ff;
+	border-bottom:1px solid #eaf4ff;
+}
+#basicInfo li div.innerPar:last-child{
+	border-bottom:1px solid #eaf4ff;
+	border-right:1px solid #eaf4ff;
+}
+#basicInfo li div.innerPar p{
+	float:left;
+	position:relative;
+}
+#basicInfo li div.innerPar p:first-child{
+	width:100px;
+	height:100%;
+	text-align:center;
+	border-right:1px solid #eaf4ff;
+	background:rgba(0, 132, 255, 0.03);
+	color:#666;
+	position:absolute;
+	left:0;
+	top:0;
+}
+#basicInfo li div.innerPar p:last-child{
+	text-indent:10px;
+	width:80%;
+	margin-left:100px;
+}
+#basicInfo li div.innerPar p:last-child span{
+	height:100%;
+	display:block;
+	float:left;
+	text-indent:0px;
+	margin-left:5px;
+}
+#basicInfo li div.innerPar p:last-child span em{
+	font-style:normal;
+	padding:3px 5px;
+	background:#1E9FFF;
+	color:#fff;
+}
+#basicInfo li.specLi{
+	border-bottom:none;
+}
+#basicInfo li.specLi div.innerPar{
+	border-bottom:1px solid #eaf4ff;
+}
+#basicInfo li.specLi div.innerPar:first-child{
+	width:100%;
+}
+#basicInfo li.specLi div.innerPar p:last-child{
+	width:91%;
+}
+.maleB{
+	color:#01AAED;
+	font-weight:normal;
+}
+.femaleB{
+	color:#F581B1;
+	font-weight:normal;
+}

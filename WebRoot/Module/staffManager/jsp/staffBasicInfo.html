@@ -9,8 +9,9 @@
   <title>代理机构员工基本信息</title>
 </head>
 <body style="background:#fff;">
-	<!--  input type="hidden" id="userId"/-->
-	<div id="basicInfo" class="layui-form"></div>
+	<div id="basicInfo" class="layui-form">
+		<ul></ul>
+	</div>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		layui.use(['layer','jquery'],function(){
@@ -40,26 +41,20 @@
 		  			});
 				},
 				loadBasicInfo : function(infoList){
-					//console.log(infoList)
-					var strHtml = '',
-						roleNameInfo = infoList.roleNameInfo;
- 			    	strHtml += '<div class="layui-form-item"><label class="layui-form-label">账号</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.account +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">用户身份</label>';
-					strHtml += '<div class="layui-input-inline">';
+					var strHtml = '',roleNameInfo = infoList.roleNameInfo;
+					strHtml += '<li class="hasBorTop"><div class="innerPar"><p>姓名</p><p>'+ infoList.name +'</p></div>';
+					strHtml += '<div class="innerPar"><p>拼音首字母</p><p>'+ infoList.namePy +'</p></div></li>';
+					infoList.sex == 'm' ? infoList.sex = '<b class="maleB">男</b>' : infoList.sex = '<b class="femaleB">女</b>';
+					strHtml += '<li><div class="innerPar"><p>性别</p><p>'+ infoList.sex  +'</p></div>';
+					strHtml += '<div class="innerPar"><p>账号</p><p>'+ infoList.account +'</p></div></li>';
+					strHtml += '<li class="specLi"><div class="innerPar"><p>角色身份</p><p>';
 					for(var i=0;i<roleNameInfo.length;i++){
 						if(roleNameInfo[i].checked == true){
-							strHtml += '<span>'+ roleNameInfo[i].roleName +'</span>';
+							strHtml += '<span><em>'+ roleNameInfo[i].roleName +'</em></span>';
 						}
 					}
-					strHtml += '</div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">姓名</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.name +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">拼音首字母</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.namePy +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">用户经验</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.useExp +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">用户等级</label>';
+					strHtml += '</p></div></li>';
+					strHtml += '<li><div class="innerPar"><p>经验值</p><p>'+ infoList.useExp +'</p></div>';
 					var strLevel = '';
 					if(infoList.useExp >=0 && infoList.useExp <=100){
 						strLevel = '铜牌';
@@ -68,40 +63,31 @@
 					}else if(infoList.useExp > 1001){
 						strLevel = '金牌';
 					}
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ strLevel +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">性别</label>';
-					infoList.sex == 'm' ? infoList.sex = '男' : infoList.sex = '女';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.sex +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">电话</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.tel +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">邮箱</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.email +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">擅长领域</label>';
-					strHtml += '<div class="layui-input-inline">';
+					strHtml += '<div class="innerPar"><p>等级</p><p>'+ strLevel +'</p></div></li>';
+					strHtml += '<li class="specLi"><div class="innerPar"><p>擅长领域</p><p>';
 					if(infoList.scFiledName != ''){
 						var fieldArray = infoList.scFiledName.split(',');
 						for(var i = 0;i<fieldArray.length;i++){
-							strHtml += '<span>'+ fieldArray[i] +'</span>';
+							strHtml += '<span><em>'+ fieldArray[i] +'</em></span>';
 						}
 					}else{
 						strHtml += '<p style="color:#999;line-height:40px;">暂未给该员工增加技术领域</p>';
 					}
-					strHtml += '</div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">撰写总量</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.zxNum +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">入职时间</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.inDate +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">账号状态</label>';
+					strHtml += '</p></div></li>';
+					infoList.tel == '' ? infoList.tel = '&nbsp' : infoList.tel;
+					infoList.email == '' ? infoList.email = '&nbsp' : infoList.email;
+					strHtml += '<li><div class="innerPar"><p>电话</p><p>'+ infoList.tel +'</p></div>';
+					strHtml += '<div class="innerPar"><p>邮箱</p><p>'+ infoList.email +'</p></div></li>';
+					strHtml += '<li><div class="innerPar"><p>撰写总量</p><p>'+ infoList.zxNum +'</p></div>';
+					strHtml += '<div class="innerPar"><p>入职时间</p><p>'+ infoList.inDate +'</p></div></li>';
 					infoList.yxStatus == 0 ? infoList.yxStatus = '无效' : infoList.yxStatus = '有效';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.yxStatus +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">离职状态</label>';
+					strHtml += '<li><div class="innerPar"><p>账号状态</p><p>'+ infoList.yxStatus +'</p></div>';
 					infoList.lzStatus == 0 ? infoList.lzStatus = '离职' : infoList.lzStatus = '在职';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.lzStatus +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">离职时间</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.outDate +'" readonly class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">最后登录时间</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" value="'+ infoList.lastLoginDate +'" readonly class="layui-input"/></div></div>';
-					$("#basicInfo").html(strHtml);
+					strHtml += '<div class="innerPar"><p>离职状态</p><p>'+ infoList.lzStatus +'</p></div></li>';
+					infoList.outDate == '' ? infoList.outDate = '未离职' : infoList.outDate;
+					strHtml += '<li><div class="innerPar"><p>离职时间</p><p>'+ infoList.outDate +'</p></div>';
+					strHtml += '<div class="innerPar"><p>最后登录时间</p><p>'+ infoList.lastLoginDate +'</p></div></li>';
+					$('#basicInfo').html(strHtml);
 				}
 			};
 			$(function(){

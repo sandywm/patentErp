@@ -83,7 +83,7 @@
   									{{#  if(d.sex === 'f'){ }}
     									<span style="color: #F581B1;">{{ d.sex = "女" }}</span>
   									{{#  } else { }}
-    									{{ d.sex = "男" }}
+    									<span style="color: #01AAED;">{{ d.sex = "男" }}</span>
   									{{#  } }}
 								</script>
 	  						</div>
@@ -118,7 +118,7 @@
 								layer.open({
 									title:'添加员工',
 									type: 2,
-								  	area: ['700px', '500px'],
+								  	area: ['750px', '500px'],
 								  	fixed: false, //不固定
 								  	maxmin: true,
 								  	shadeClose :false,
@@ -336,15 +336,15 @@
 						var userId = $(this).attr("userId"),
 							name = $(this).attr("name");
 						globalUserId = userId;
-						layer.open({
+						var fullIndex = layer.open({
 							title:'员工' + name + '的基本信息',
 							type: 2,
 						  	area: ['700px', '450px'],
 						  	fixed: false, //不固定
-						  	maxmin: true,
 						  	shadeClose :true,
 						  	content: "/Module/staffManager/jsp/staffBasicInfo.html"
 						});	
+						layer.full(fullIndex);
 					}else if(obj.event === 'updateInfo'){
 						var userId = $(this).attr("userId"),
 						name = $(this).attr("name");
