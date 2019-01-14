@@ -50,10 +50,10 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and zl.cpyInfoTb.id = "+cpyId;
 		}
 		if(stopStatus > 0){
-			hql += " and zl.stopStatus = "+stopStatus;
+			hql += " and zl.ajStopStatus = "+stopStatus;
 		}
 		if(!ajTitle.equals("")){
-			hql += "and zl.ajTitle like = '"+ajTitle+"'";
+			hql += " and zl.ajTitle like '%"+ajTitle+"%'";
 		}
 		if(!sqAddress.equals("")){
 			hql += " and zl.sqAddress = '"+sqAddress+"'";
@@ -97,10 +97,10 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and zl.cpyInfoTb.id = "+cpyId;
 		}
 		if(stopStatus > 0){
-			hql += " and zl.stopStatus = "+stopStatus;
+			hql += " and zl.ajStopStatus = "+stopStatus;
 		}
 		if(!ajTitle.equals("")){
-			hql += "and zl.ajTitle like = '"+ajTitle+"'";
+			hql += " and zl.ajTitle like '%"+ajTitle+"%'";
 		}
 		if(!sqAddress.equals("")){
 			hql += " and zl.sqAddress = '"+sqAddress+"'";

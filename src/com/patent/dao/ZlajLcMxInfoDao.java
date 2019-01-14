@@ -143,4 +143,16 @@ public interface ZlajLcMxInfoDao {
 	 */
 	Integer getCountByOpt(Session sess,Integer fzUserId,Integer comStatus,String zlNo,String ajNo,
 			String zlTitle,Integer cusId,Integer cpyId);
+	
+	/**
+	 * 获取当前指定负责人指定专利下未完成的流程任务
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-14 下午01:07:11
+	 * @param sess
+	 * @param fzUserId 负责人编号
+	 * @param zlId 专利编号
+	 * @return
+	 */
+	List<ZlajLcMxInfoTb> findUnComLcMxByOpt(Session sess,Integer fzUserId,Integer zlId);
 }

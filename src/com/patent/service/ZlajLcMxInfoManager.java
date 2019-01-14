@@ -202,4 +202,29 @@ public interface ZlajLcMxInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateYjCheckStatus(Integer lcmxId,Integer checkStatus) throws WEBException;
+	
+	/**
+	 * 修改指定流程明细的流程负责人(流程分配修改负责人时使用)
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-14 上午09:43:15
+	 * @param id
+	 * @param fzUserId 负责人编号
+	 * @param lcMxRemark 流程明细备注
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateFzrInfoById(Integer id,Integer fzUserId,String lcMxRemark) throws WEBException;
+	
+	/**
+	 * 获取当前指定负责人指定专利下未完成的流程任务
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-14 下午01:12:18
+	 * @param fzUserId 负责人编号
+	 * @param zlId 专利编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajLcMxInfoTb> listUnComLcMxByOpt(Integer fzUserId,Integer zlId) throws WEBException;
 }

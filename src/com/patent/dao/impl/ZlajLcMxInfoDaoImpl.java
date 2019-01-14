@@ -102,7 +102,7 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoQt like '%"+ajNo+"%'";
 		}
 		if(!zlTitle.equals("")){
-			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.zlTitle like '%"+zlTitle+"%'";
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajTitle like '%"+zlTitle+"%'";
 		}
 		if(cusId > 0){
 			hql += " and FIND_IN_SET("+cusId+",lcmx.zlajLcInfoTb.zlajMainInfoTb.ajSqrId) > 0";
@@ -138,13 +138,22 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajNoQt like '%"+ajNo+"%'";
 		}
 		if(!zlTitle.equals("")){
-			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.zlTitle like '%"+zlTitle+"%'";
+			hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.ajTitle like '%"+zlTitle+"%'";
 		}
 		if(cusId > 0){
 			hql += " and FIND_IN_SET("+cusId+",lcmx.zlajLcInfoTb.zlajMainInfoTb.ajSqrId) > 0";
 		}
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);
+	}
+
+	@Override
+	public List<ZlajLcMxInfoTb> findUnComLcMxByOpt(Session sess,
+			Integer fzUserId, Integer zlId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajLcMxInfoTb as lcmx where lcmx.lcFzUserId = "+fzUserId + " and lcmx.lcMxEDate != ''";
+		hql += " and lcmx.zlajLcInfoTb.zlajMainInfoTb.id = "+zlId;
+		return sess.createQuery(hql).list();
 	}
 
 }

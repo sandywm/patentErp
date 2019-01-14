@@ -307,4 +307,51 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 		}
 	}
 
+	@Override
+	public boolean updateFzrInfoById(Integer id, Integer fzUserId,String lcMxRemark)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajLcMxInfoTb mx = mxDao.get(sess, id);
+			if(mx != null){
+				if(fzUserId > 0){
+					mx.setLcFzUserId(fzUserId);
+				}
+				if(!lcMxRemark.equals("")){
+					mx.setLcMxRemark(lcMxRemark);
+				}
+				mxDao.update(sess, mx);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改指定流程明细编号的流程负责人信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<ZlajLcMxInfoTb> listUnComLcMxByOpt(Integer fzUserId,
+			Integer zlId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return mxDao.findUnComLcMxByOpt(sess, fzUserId, zlId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取当前指定负责人指定专利下未完成的流程任务时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }
