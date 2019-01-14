@@ -17,7 +17,6 @@ layui.define(["layer","form","jquery"],function(exports){
             	$("#provVal").val("");
                 var value = proData.value;
                 if (value > 0) {
-                	that.citys(data[$(this).index()].childs);
                 	if(isHasCityFlag){
                 		that.citys(data[$(this).index()].childs);
                 	}else{
@@ -32,7 +31,6 @@ layui.define(["layer","form","jquery"],function(exports){
             });
             if($("#provInp").val() != "" && $("#provInp").val() != undefined){ //表示已经保存了省、市到数据库
             	isHasCityFlag = true;
-            	console.log(isHasCityFlag)
             	//根据当前的省的值拿取其对应市区的值
             	$("select[name=cpyProvSel] option:first").html('请选择省');
             	var hasDataCityHtml = '<option value="">请选择市</option>';
