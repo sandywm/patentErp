@@ -230,7 +230,7 @@
 							strHtmlTit += ' <li zlSearchOpts="shenheOpt" lqStatus="5">任务移交审核</li>';
 							strHtmlTit += ' <li zlSearchOpts="" lqStatus="6">通知书批量导入</li>';
 						}else{
-							strHtmlTit += ' <li lqStatus="5">任务移交记录</li>';
+							strHtmlTit += ' <li zlSearchOpts="shenheOpt" lqStatus="5">任务移交记录</li>';
 						}
 					}
 					strHtmlTit += '</ul>';

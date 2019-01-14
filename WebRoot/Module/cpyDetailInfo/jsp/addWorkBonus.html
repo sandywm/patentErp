@@ -40,7 +40,7 @@
 		    <label class="layui-form-label specWidLabel">奖金金额：</label>
 		    <div class="layui-input-block" style="width:80.1%;">
 		    	<em class="moneyDec" style="left:16px;">¥</em>
-		        <input type="text" id="bonusInp" style="width:93%;" placeholder="请输入奖金金额(大于0小于100000)" autocomplete="off" class="layui-input">
+		        <input type="text" id="bonusInp" style="width:93%;" maxlength="6" placeholder="请输入奖金金额(大于0小于100000)" autocomplete="off" class="layui-input">
 		    </div>
 		</div>
 		<div class="layui-form-item hasMargT">
@@ -85,11 +85,6 @@
 				onLoad : function(){
 					this.bindEvent();
 					this.rateFun(zlLevel,true);
-					/*if(cbId == 0){
-						this.rateFun(0,false);
-					}else{
-						this.rateFun(zlLevel,true);
-					}*/
 				},
 				bindEvent : function(){
 					var _this = this;
@@ -112,59 +107,9 @@
 							$('#workPositionBox').show().stop().animate({'top':0},300);
 						});
 					}
-					/*$('.workPosLi').on('click',function(){
-						$(this).addClass('active').siblings().removeClass('active');
-						$('#workPositionInp').val($(this).attr('posVal'));
-						$('#workPositionTxt').html($(this).text()).css({'color':'#666'});
-						$('#workPositionBox').animate({'top':'-100%'},300,function(){
-							$('#workPositionBox').hide();
-						});
-					});*/
 					$('#bonusInp').on('keyup',function(){
 						_this.judgeBackFee('bonusInp');
 					});
-					//保存奖金
-					/*$('.saveBonusBtn').on('click',function(){
-						var zlTypeInpVal = $('#zlTypeInp').val(),
-							workPositionInpVal = $('#workPositionInp').val(),
-							bonusInpVal = $.trim($('#bonusInp').val());
-						if(zlTypeInpVal == ''){
-							layer.msg('请选择专利类型', {icon:5,anim:6,time:1000});
-						}else if(workPositionInpVal == ''){
-							layer.msg('请选择职位工种', {icon:5,anim:6,time:1000});
-						}else if(_this.data.difflevel == 0){
-							layer.msg('请设置专利难易度', {icon:5,anim:6,time:1000});
-						}else if(bonusInpVal == 0){
-							layer.msg('请设置此奖金金额', {icon:5,anim:6,time:1000});
-						}else{
-							if(bonusInpVal > 100000){
-								layer.msg('奖金金额最高不能超过100000', {icon:5,anim:6,time:1000});
-							}else{
-								layer.load('1');
-			   					$.ajax({
-			  						type:'post',
-							        async:false,
-							        dataType:'json',
-							        data : {zlType:zlTypeInpVal,workPosition:workPositionInpVal,zlLevel:_this.data.difflevel,bonusFee:bonusInpVal},
-							        url:'/cpyManager.do?action=addCpyBonus',
-							        success:function (json){
-							        	layer.closeAll('loading');
-							        	if(json['result'] == 'success'){
-							        		layer.msg('添加工作奖金成功',{icon:1,time:1000},function(){
-							        			var index= parent.layer.getFrameIndex(window.name);
-						        				parent.addWorkBonusFlag = true;
-						        				parent.layer.close(index);
-							        		});
-							        	}else if(json['result'] == 'noAbility'){
-							        		layer.msg('抱歉，您暂无权限添加工作奖金', {icon:5,anim:6,time:1000});
-							        	}else if(json['result'] == 'exist'){
-							        		layer.msg('此专利类型下的工种奖金已存在', {icon:5,anim:6,time:1200});
-							        	}
-							        }
-			  					});
-							}
-						}
-					});*/
 					//编辑保存
 					$('.updateBonusFeeBtn').on('click',function(){
 						var bonusInpVal = $.trim($('#bonusInp').val());
