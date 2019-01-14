@@ -23,8 +23,9 @@
 		</ul>
 	</div>
 	<ul class="readResCon"></ul>
-	<div class="downBox">
-		<a href="javascript:void(0)" class="layui-btn downLoadBtn"><i class="layui-icon layui-icon-download-circle"></i>下载</a>
+	<div class="downBox layui-clear">
+		<a href="javascript:void(0)" class="comDownBtn downLoadBtn_cus"><i class="layui-icon layui-icon-download-circle"></i>下载客户清单</a>
+		<a href="javascript:void(0)" class="comDownBtn downLoadBtn"><i class="layui-icon layui-icon-download-circle"></i>下载缴费清单</a>
 	</div>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
@@ -53,7 +54,6 @@
 	   			        data:{firId:firId},
 	   			        url : '/fee.do?action=getFidrDetail',
 	   			        success:function (json){
-	   			        	console.log(json)
 	   			        	layer.closeAll('loading');
 	   			        	if(json['result'] == 'success'){
 	   			        		var readInfo = json.readInfo;
@@ -70,6 +70,10 @@
 					$('.closeBtns').on('click',function(){
 						var index= parent.layer.getFrameIndex(window.name);
 						parent.layer.close(index);
+					});
+					$('.downLoadBtn_cus').on('click',function(){
+						var url = '/fee.do?action=exportFeeInfoToExcel_1&exportStatus=1';
+						common.commonExportFun(url,'firId',firId);
 					});
 					$('.downLoadBtn').on('click',function(){
 						common.downFiles(fileUrl,1);

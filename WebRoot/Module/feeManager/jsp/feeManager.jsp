@@ -158,7 +158,7 @@
 							    var idStr = '',qdStatus = $('#qdStatusInp').val();
 							    var url = '/fee.do?action=exportFeeInfoToExcel_1&feeStatus=0&qdStatus=' + qdStatus;
 							    idStr = page.data.globalFeeId.join(',');
-							   _this. commonExportFun(url,'idStr',idStr);
+								common.commonExportFun(url,'idStr',idStr);
 						    }
 						}else{
 							layer.msg('抱歉，您暂无导出费用账单的权限', {icon:5,anim:6,time:1200});
@@ -270,22 +270,6 @@
 					}
 					laydate.render({elem:'#sDateInp'});
 					laydate.render({elem:'#eDateInp'});
-				},
-				commonExportFun : function(url,name,value){
-					layer.load('1');
-				    var form = $("<form>");   //定义一个form表单
-					form.attr('style', 'display:none;'); //在form表单中添加查询参数
-					form.attr('target', '');
-					form.attr('method', 'post');
-					form.attr('action', url);
-					var input1 = $('<input>');
-					input1.attr('type', 'text');
-					input1.attr('name', name);
-					input1.attr('value', value);
-					$('body').append(form);  //将表单放置在web中 
-					form.append(input1);   //将查询参数控件提交到表单上
-				  	form.submit();
-					layer.closeAll('loading');
 				}
 			};
 					  
@@ -532,7 +516,7 @@
 				}else if(obj.event == 'downFileFun_cus'){
 					var firId = $(this).attr('firId');
 					var url = '/fee.do?action=exportFeeInfoToExcel_1&exportStatus=1';
-					page.commonExportFun(url,'firId',firId);
+					common.commonExportFun(url,'firId',firId);
 				}
 			});
 			$(function(){

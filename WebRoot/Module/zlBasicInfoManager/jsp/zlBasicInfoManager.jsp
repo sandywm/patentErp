@@ -571,6 +571,8 @@
 							{field : 'set', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
 								if(roleName == '管理员' || page.data.fpZlFlag == true){
 									return '<a lay-event="verifyFun" class="layui-btn layui-btn-xs" zlId="'+ d.zlId +'" yjId="'+ d.yjId +'" applyUserName="'+ d.applyUserName +'" applyCause="'+ d.applyCause +'" taskOpts="1" ajTitle="'+ d.zlTitle +'" lcTask="'+ d.taskName +'" fzUserId="'+ d.applyUserId +'"><i class="layui-icon layui-icon-vercode"></i>审核</a>';
+								}else{
+									return '';
 								}
 							}}
 						]],

@@ -77,6 +77,23 @@ layui.define(['rate'],function(exports){
 		  	form.submit();
 		  	layer.closeAll('loading');
 		},
+		//导出费用清单 客户清单 费用清单
+		commonExportFun : function(url,name,value){
+			layer.load('1');
+		    var form = $("<form>");   //定义一个form表单
+			form.attr('style', 'display:none;'); //在form表单中添加查询参数
+			form.attr('target', '');
+			form.attr('method', 'post');
+			form.attr('action', url);
+			var input1 = $('<input>');
+			input1.attr('type', 'text');
+			input1.attr('name', name);
+			input1.attr('value', value);
+			$('body').append(form);  //将表单放置在web中 
+			form.append(input1);   //将查询参数控件提交到表单上
+		  	form.submit();
+			layer.closeAll('loading');
+		},
 		//星星只读
 		rateFunReadOnly : function(elem,value){
 			rate.render({
