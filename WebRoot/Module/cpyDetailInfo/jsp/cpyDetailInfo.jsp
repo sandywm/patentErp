@@ -412,7 +412,7 @@
    					strHtml += '<div class="layui-form-item">';
    					strHtml += '<label class="layui-form-label">账户名</label>';
    					strHtml += '<div class="layui-input-inline">';
-   					strHtml += '<input type="text" placeholder="请输入账户人姓名" value="'+ json.bankAccountName +'" maxlength="5" autocomplete="off" class="layui-input bankAccNameInp"/></div></div>';
+   					strHtml += '<input type="text" placeholder="请输入账户人姓名" value="'+ json.bankAccountName +'" maxlength="30" autocomplete="off" class="layui-input bankAccNameInp"/></div></div>';
    					strHtml += '<div class="layui-form-item">';
    					strHtml += '<label class="layui-form-label">开户行</label>';
    					strHtml += '<div class="layui-input-inline">';

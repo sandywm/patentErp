@@ -5,7 +5,7 @@ layui.define(["layer","form","jquery"],function(exports){
 
     Address.prototype.provinces = function() {
         //加载省数据
-        var proHtml = '',that = this;
+        var proHtml = '',that = this,isHasCityFlag = false;
         $.get("/plugins/frame/json/address.json", function (data) {
             for (var i = 0; i < data.length; i++) {
             	proHtml += '<option value="' + data[i].code + '">' + data[i].name + '</option>';
@@ -17,8 +17,12 @@ layui.define(["layer","form","jquery"],function(exports){
             	$("#provVal").val("");
                 var value = proData.value;
                 if (value > 0) {
-                    //that.citys(data[$(this).index() - 1].childs);
                 	that.citys(data[$(this).index()].childs);
+                	if(isHasCityFlag){
+                		that.citys(data[$(this).index()].childs);
+                	}else{
+                		that.citys(data[$(this).index() - 1].childs);
+                	}
                 } else {
                     $("select[name=cpyCitySel]").attr("disabled", "disabled");
                 }
@@ -27,10 +31,11 @@ layui.define(["layer","form","jquery"],function(exports){
                 $("#cityInp").val("");
             });
             if($("#provInp").val() != "" && $("#provInp").val() != undefined){ //表示已经保存了省、市到数据库
+            	isHasCityFlag = true;
+            	console.log(isHasCityFlag)
             	//根据当前的省的值拿取其对应市区的值
             	$("select[name=cpyProvSel] option:first").html('请选择省');
             	var hasDataCityHtml = '<option value="">请选择市</option>';
-            	console.log($('#cityInp').val())
             	for (var i = 0; i < data.length; i++) {
             		if($("#provInp").val() == data[i].name){
             			$("select[name=cpyProvSel] option[value='"+ data[i].code +"']").attr("selected","selected");

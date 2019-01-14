@@ -93,15 +93,21 @@ body{
 .botSaveBox{
 	margin-top:10px;
 	width:100%;
-	text-align:right;
 	height:38px;
 	line-height:38px;
+}
+.botSaveBox p{
+	float:left;
+	margin-left:15px;
+	color:#FF5722;
+	font-weight:600;
 }
 .botSaveBox button{
 	width:120px;
 	font-size:14px;
 	margin-right:10px;
 	padding:0px;
+	float:right;
 }
 .labelMod{
 	height:24px;
