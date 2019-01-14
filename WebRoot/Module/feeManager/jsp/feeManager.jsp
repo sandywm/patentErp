@@ -202,7 +202,13 @@
 						  	fixed: true, //不固定
 						  	maxmin: false,
 						  	shadeClose :false,
-						  	content: '/Module/feeManager/jsp/addSqr.html'
+						  	content: '/Module/feeManager/jsp/addSqr.html',
+						  	end : function(){
+						  		if($('#cusIdInp').val() != 0){
+						  			//执行加载
+						  			loadFeeInfoList('queryLoad');
+						  		}
+						  	}
 						});	
 					});
 					$('.resetTime').on('click',function(){
