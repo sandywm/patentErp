@@ -64,6 +64,7 @@ import com.patent.module.CusPzInfo;
 import com.patent.module.FeeExportRecordInfo;
 import com.patent.module.FeeImportDealRecordInfo;
 import com.patent.module.FeeImportRecordInfo;
+import com.patent.module.FeeTypeInfoTb;
 import com.patent.module.ZlajFeeInfoTb;
 import com.patent.module.ZlajFeeSubInfoTb;
 import com.patent.module.ZlajMainInfoTb;
@@ -1786,6 +1787,42 @@ public class FeeAction extends DispatchAction {
 			}else{
 				msg = "noAbility";
 			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 根据专利类型获取专利下的费用类型列表
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2019-1-15 下午08:18:22
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getFeeTypeData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<Object> list_d = new ArrayList<Object>();
+		String zlType = CommonTools.getFinalStr("zlType", request);//专利类型(fm,syxx,wg)
+		List<FeeTypeInfoTb>  ftList = fm.listInfoByzlType(zlType);
+		String msg = "noInfo";
+		if(ftList.size() > 0){
+			for(Iterator<FeeTypeInfoTb> it = ftList.iterator() ; it.hasNext();){
+				FeeTypeInfoTb ft = it.next();
+				Map<String,Object> map_d = new HashMap<String,Object>();
+				map_d.put("feeTypeId", ft.getId());
+				map_d.put("feeTypeName", ft.getFeeName());
+				list_d.add(map_d);
+			}
+			map.put("ftList", list_d);
+			msg = "success";
 		}
 		map.put("result", msg);
 		this.getJsonPkg(map, response);
