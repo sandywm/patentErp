@@ -220,22 +220,22 @@
    					}
    					strHtml += '<div class="layui-input-inline">'+ jiangpaiHtml +'<p>'+ list.cpyLevel +'</p><input type="hidden" name="cpyLevel" value="'+ list.cpyLevel +'" disabled></div></div>';
    	  				//公司法人
-   	   				strHtml += '<div class="layui-form-item"><label class="layui-form-label">公司法人</label>';
+   	   				strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>公司法人</label>';
    	  				strHtml += '<div class="layui-input-inline"><input type="text" name="cpyFr" value="'+ list.cpyFr +'" placeholder="请输入公司法人姓名" lay-verify="judegeName" class="layui-input" autocomplete="off"  maxlength="4"></div></div>';
    	  				//公司组织机构代码
    	  				strHtml += '<div class="layui-form-item"><label class="layui-form-label">公司组织机构代码</label>';
    	  				strHtml += '<div class="layui-input-inline"><input type="text" name="cpyYyzz" value="'+ list.cpyYyzz +'" required placeholder="请输入公司组织机构代码" autocomplete="off" class="layui-input" maxlength="30"></div></div>';
    	  				//公司联系人
-   	  				strHtml += '<div class="layui-form-item"><label class="layui-form-label">公司联系人</label>';
+   	  				strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>公司联系人</label>';
    					strHtml += '<div class="layui-input-inline"><input type="text" name="cpyLxr" value="'+ list.cpyLxr +'" required placeholder="请输入联系人姓名" lay-verify="judegeName" autocomplete="off" class="layui-input" maxlength="4"></div></div>';
    	  				//联系人电话
-   	  				strHtml += '<div class="layui-form-item"><label class="layui-form-label">联系人手机号码</label>';
+   	  				strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>联系人手机号码</label>';
    					strHtml += '<div class="layui-input-inline"><input type="text" name="lxrTel" value="'+ list.lxrTel +'" required placeholder="请输入手机号码" lay-verify="phoneNum" autocomplete="off" class="layui-input" maxlength="11"></div></div>';
    					//联系人邮箱
-   					strHtml += '<div class="layui-form-item"><label class="layui-form-label">联系人邮箱</label>';
+   					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>联系人邮箱</label>';
    					strHtml += '<div class="layui-input-inline"><input type="text" name="lxrEmail" value="'+ list.lxrEmail +'" required lay-verify="email" placeholder="请输入联系人邮箱" maxlength="30" autocomplete="off" class="layui-input"></div></div>';
    					//选择省、市
-   					strHtml += '<div class="layui-form-item"><label class="layui-form-label">选择地区</label>';
+   					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>选择地区</label>';
    					if(list.cpyProv != '' && list.cpyCity != ''){
    						strHtml += '<div class="layui-input-inline"><select name="cpyProvSel" lay-verify="judgeProv" lay-filter="province" class="province"></select><input id="provInp" name="cpyProv" value="'+ list.cpyProv +'" type="hidden"/></div>';
    						strHtml += '<div class="layui-input-inline"><select name="cpyCitySel" lay-verify="judgeCity" lay-filter="city"></select><input id="cityInp" name="cpyCity" value="'+ list.cpyCity +'" type="hidden"/></div></div>';
@@ -244,7 +244,7 @@
    						strHtml += '<div class="layui-input-inline"><input id="cityInp" name="cpyCity" type="hidden"/><select name="cpyCitySel" required lay-verify="judgeCity" lay-filter="city" disabled><option value="">请选择市</option></select></div></div>';
    					}
    					//具体地址
-   					strHtml += '<div class="layui-form-item"><label class="layui-form-label">联系地址</label>';
+   					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>联系地址</label>';
    					strHtml += '<div class="layui-input-inline"><input type="text" name="cpyAddress" value="'+ list.cpyAddress +'" required placeholder="请输入联系地址" lay-verify="judegeAddress" autocomplete="off" class="layui-input"></div></div>';
    					//公司网址
    					strHtml += '<div class="layui-form-item"><label class="layui-form-label">公司网址</label>';
@@ -302,17 +302,17 @@
    					var strHtml = '';
    					strHtml += '<blockquote class="layui-elem-quote">专利代理费初始设置</blockquote>';
    					strHtml += '<div class="layui-form-item">';
-   					strHtml += '<label class="layui-form-label">发明专利代理费</label>';
+   					strHtml += '<label class="layui-form-label"><span class="mustItem">*</span>发明专利代理费</label>';
    					strHtml += '<div class="layui-input-inline posRe">';
    					strHtml += '<em class="moneyDec">¥</em>';
    					strHtml += '<input type="text" id="fmDlFeeInp" placeholder="请输入发明专利代理费" maxlength="6" value="'+ json.dlFeeFm +'" autocomplete="off" class="layui-input"/></div><div class="layui-form-mid layui-word-aux">发明代理费须为不能小于100大于99999的正整数</div></div>';
    					strHtml += '<div class="layui-form-item">';
-   					strHtml += '<label class="layui-form-label">外观专利代理费</label>';
+   					strHtml += '<label class="layui-form-label"><span class="mustItem">*</span>外观专利代理费</label>';
    					strHtml += '<div class="layui-input-inline posRe">';
    					strHtml += '<em class="moneyDec">¥</em>';
    					strHtml += '<input type="text" id="wgDlFeeInp" placeholder="请输入外观专利代理费" maxlength="6" value="'+ json.dlFeeWg +'" autocomplete="off" class="layui-input"/></div><div class="layui-form-mid layui-word-aux">外观代理费须为不能小于100大于99999的正整数</div></div>';
    					strHtml += '<div class="layui-form-item">';
-   					strHtml += '<label class="layui-form-label">新型专利代理费</label>';
+   					strHtml += '<label class="layui-form-label"><span class="mustItem">*</span>新型专利代理费</label>';
    					strHtml += '<div class="layui-input-inline posRe">';
    					strHtml += '<em class="moneyDec">¥</em>';
    					strHtml += '<input type="text" id="xxDlFeeInp" placeholder="请输入新型专利代理费" maxlength="6" value="'+ json.dlFeeXx +'" autocomplete="off" class="layui-input"/></div><div class="layui-form-mid layui-word-aux">新型代理费须为不能小于100大于99999的正整数</div></div>';
@@ -365,15 +365,15 @@
    					var strHtml = '';
    					strHtml += '<blockquote class="layui-elem-quote">银行账户设置</blockquote>';
    					strHtml += '<div class="layui-form-item">';
-   					strHtml += '<label class="layui-form-label">账户名</label>';
+   					strHtml += '<label class="layui-form-label"><span class="mustItem">*</span>账户名</label>';
    					strHtml += '<div class="layui-input-inline">';
    					strHtml += '<input type="text" placeholder="请输入账户人姓名" value="'+ json.bankAccountName +'" maxlength="30" autocomplete="off" class="layui-input bankAccNameInp"/></div></div>';
    					strHtml += '<div class="layui-form-item">';
-   					strHtml += '<label class="layui-form-label">开户行</label>';
+   					strHtml += '<label class="layui-form-label"><span class="mustItem">*</span>开户行</label>';
    					strHtml += '<div class="layui-input-inline">';
    					strHtml += '<input type="text" placeholder="请输入开户行" value="'+ json.bankName +'" maxlength="40" autocomplete="off" maxlength="30" class="layui-input bankNameInp"/></div></div>';
    					strHtml += '<div class="layui-form-item" style="position:realtive;">';
-   					strHtml += '<label class="layui-form-label">银行卡号</label>';
+   					strHtml += '<label class="layui-form-label"><span class="mustItem">*</span>银行卡号</label>';
    					strHtml += '<div class="layui-input-inline">';
    					strHtml += '<input type="text" id="pattbBankNum" readonly/>';
    					strHtml += '<input type="text" id="bankNo" placeholder="请输入银行卡号" value="'+ json.bankNo +'" maxlength="19" autocomplete="off" class="layui-input bankNumInp"/></div></div>';
@@ -448,7 +448,7 @@
    					var strHtml = '';
    					strHtml += '<blockquote class="layui-elem-quote">销售提成比例设置</blockquote>';
    					strHtml += '<div class="layui-form-item">';
-   					strHtml += '<label class="layui-form-label">销售提成比例</label>';
+   					strHtml += '<label class="layui-form-label"><span class="mustItem">*</span>销售提成比例</label>';
    					strHtml += '<div class="layui-input-inline posRe">';
    					strHtml += '<em class="percentDec">%</em>';
    					strHtml += '<input type="text" id="saleBonusInp" placeholder="请输入销售提成比例" maxlength="3" value="'+ json.saleBonus +'" autocomplete="off" class="layui-input"/></div><div class="layui-form-mid layui-word-aux">销售提成比例数值在1-99之间设置</div></div>';

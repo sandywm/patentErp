@@ -11,7 +11,7 @@
 <body style="background:#fff;">
   	<div class="layui-form">
   		<div class="layui-form-item addBackFee">
-			<label class="layui-form-label">选择客户：</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>选择客户</label>
 		    <div class="layui-input-block">
 		    	<input id="cusIdInp" type="hidden"/>
 		    	<div class="layui-input selCusP" style="width:95%;">
@@ -20,7 +20,7 @@
 		    </div>
 		</div>
 		<div class="layui-form-item">
-		    <label class="layui-form-label">汇款金额：</label>
+		    <label class="layui-form-label"><span class="mustItem">*</span>汇款金额</label>
 		    <div class="layui-input-block" style="width:80.1%;">
 		        <input type="text" id="backFeePriceInp" maxlength="6" placeholder="请输入汇款金额(大于0小于10万的正整数)" autocomplete="off" class="layui-input dlFeeInp">
 		    	<input type="hidden" id="dlfStatusInp" value="0"/>
@@ -28,13 +28,13 @@
 		    </div>
 		</div>
 		<div class="layui-form-item">
-		    <label class="layui-form-label">汇款日期：</label>
+		    <label class="layui-form-label"><span class="mustItem">*</span>汇款日期</label>
 		    <div class="layui-input-block" style="width:80.1%;">
 		    	<input type="text" id="backDateInp" placeholder="请选择汇款日期" autocomplete="off" class="layui-input">
 		    </div>
 		</div>
 		<div class="layui-form-item">
-		    <label class="layui-form-label">汇款类型：</label>
+		    <label class="layui-form-label"><span class="mustItem">*</span>汇款类型</label>
 		    <input type="hidden" id="backTypeInp"/>
 		    <div class="layui-input-block" style="width:80.1%;">
 		        <input type="radio" lay-filter="backTypeFilter" name="backFeeType" value="wx" title="微信转账"/>

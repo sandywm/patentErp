@@ -11,13 +11,13 @@
 <body style="background:#fff;">
 	<div class="layui-form">
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label">客户名称</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>客户名称</label>
 			<div class="layui-input-block">
 				<input type="text" name="cusName" required lay-verify="judgeName" placeholder="请输入客户姓名(4字以内)" maxlength="4" autocomplete="off" class="layui-input"/>
 			</div>				
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">客户类型</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>客户类型</label>
 			<input id="cusTypeInp" name="cusType" type="hidden" value="gr"/>
 			<div class="layui-input-block">
 				<input type="radio" name="cusTypeRad" lay-filter="cusTypeFilter" value="gr" title="个人" checked/>
@@ -28,19 +28,19 @@
 			</div>				
 		</div>
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label id="cusiCardLab" class="layui-form-label">个人身份证号</label>
+			<label id="cusiCardLab" class="layui-form-label"><span class="mustItem">*</span>个人身份证号</label>
 			<div class="layui-input-block">
 				<input type="text" name="cusiCard" required lay-verify="identity" placeholder="请输入身份证号" autocomplete="off" class="layui-input"/>
 			</div>				
 		</div>
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label">客户地址</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>客户地址</label>
 			<div class="layui-input-block">
 				<input type="text" name="cusAddress" required lay-verify="judegeAddress" placeholder="请输入客户地址(50字以内)" maxlength="50" autocomplete="off" class="layui-input"/>
 			</div>				
 		</div>
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label">邮政编码</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>邮政编码</label>
 			<div class="layui-input-block">
 				<input type="text" name="cusZip" required lay-verify="judegeCusZip" placeholder="请输入邮政编码" maxlength="6" autocomplete="off" class="layui-input"/>
 			</div>				

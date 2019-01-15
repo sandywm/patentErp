@@ -11,19 +11,19 @@
 <body style="background:#fff;">
 	<div id="lxrWrap" class="layui-form">
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label">联系人姓名</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>联系人姓名</label>
 			<div class="layui-input-block">
 				<input type="text" name="lxrName" required lay-verify="judgeName" placeholder="请输入联系人姓名(4字以内)" maxlength="4" autocomplete="off" class="layui-input"/>
 			</div>				
 		</div>
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label">联系人电话</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>联系人电话</label>
 			<div class="layui-input-block">
 				<input type="text" name="lxrTel" required lay-verify="judgePhoneNum" placeholder="请输入联系人手机号码" maxlength="11" autocomplete="off" class="layui-input"/>
 			</div>				
 		</div>
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label">联系人邮箱</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>联系人邮箱</label>
 			<div class="layui-input-block">
 				<input type="text" name="lxrEmail" required lay-verify="email" maxlength="30" placeholder="请输入联系人邮箱" autocomplete="off" class="layui-input"/>
 			</div>				
@@ -75,13 +75,13 @@
 				renderEditLxr : function(json){
 					var strHtml = '';
 					//联系人姓名
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">联系人姓名</label><div class="layui-input-block">';
+					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span class="mustItem">*</span>联系人姓名</label><div class="layui-input-block">';
 					strHtml += '<input type="text" name="lxrName" required lay-verify="judgeName" value="'+ json.lxrName +'" placeholder="请输入联系人姓名(4字以内)" maxlength="4" autocomplete="off" class="layui-input"/></div></div>';
 					//联系人电话
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">联系人电话</label><div class="layui-input-block">';
+					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span class="mustItem">*</span>联系人电话</label><div class="layui-input-block">';
 					strHtml += '<input type="text" name="lxrTel" required lay-verify="judgePhoneNum" value="'+ json.lxrTel +'" placeholder="请输入联系人手机号码" maxlength="11" autocomplete="off" class="layui-input"/></div></div>';
 					//联系人邮箱
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">联系人邮箱</label><div class="layui-input-block">';
+					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span class="mustItem">*</span>联系人邮箱</label><div class="layui-input-block">';
 					strHtml += '<input type="text" name="lxrEmail" required lay-verify="email" value="'+ json.lxrEmail +'" placeholder="请输入联系人邮箱" maxlengt="30" autocomplete="off" class="layui-input"/></div></div>';
 					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"></label><div class="layui-input-block">';
 					strHtml += '<button type="button" lay-submit lay-filter="setLxrInfo" class="layui-btn" style="width:120px;margin-left:50px;">保存信息</button></div></div>';

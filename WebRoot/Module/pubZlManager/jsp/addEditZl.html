@@ -11,13 +11,13 @@
 <body style="background:#fff;">
 	<div id="addNewZl" class="layui-form">
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label">专利名称</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>专利名称</label>
 			<div class="layui-input-inline">
-				<input id="zlTitleInp" type="text" name="zlTitle" placeholder="请输入专利名称(40字以内)" maxlength="40" autocomplete="off" class="layui-input"/>
+				<input id="zlTitleInp" type="text" name="zlTitle" maxlength="40" placeholder="请输入专利名称(40字以内)" maxlength="40" autocomplete="off" class="layui-input"/>
 			</div>				
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">专利类型</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>专利类型</label>
 			<input id="zlTypeInp" name="zlType" type="hidden" value="fm"/>
 			<div class="layui-input-block">
 				<input type="radio" name="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明" checked>
@@ -27,7 +27,7 @@
 			</div>				
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">专利描述</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>专利描述</label>
 			<div class="layui-input-block">
 				<textarea id="zlContent" name="zlContent" placeholder="请输入专利描述(280字以内)" class="layui-textarea" maxlength="280"></textarea>
 			</div>				

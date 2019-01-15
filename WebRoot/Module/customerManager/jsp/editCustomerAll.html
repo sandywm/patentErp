@@ -157,7 +157,7 @@
 				renderCust : function(json){
 					var strHtml = '';
 					//客户名称
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">客户名称</label><div class="layui-input-block">';
+					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span class="mustItem">*</span>客户名称</label><div class="layui-input-block">';
 					if(json.cusType == 'gr'){
 						strHtml += '<input type="text" name="cusName" required lay-verify="judgeName" value="'+ json.cusName +'" placeholder="请输入个人姓名(4字以内)" maxlength="4" autocomplete="off" class="layui-input"/></div></div>';
 					}else{
@@ -165,7 +165,7 @@
 					}
 					
 					//客户类型
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">客户类型</label>';
+					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span class="mustItem">*</span>客户类型</label>';
 					strHtml += '<input id="cusTypeInp" name="cusType" type="hidden" value="'+ json.cusType +'"/><div class="layui-input-block">';
 					if(json.cusType == 'gr'){
 						strHtml += '<input type="radio" name="cusTypeRad" lay-filter="cusTypeFilter" value="gr" title="个人" checked/>';
@@ -201,17 +201,17 @@
 					strHtml += '</div></div>';
 					//个人身份证号/公司组织机构代码
 					if(json.cusType == 'gr'){
-						strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label id="cusiCardLab" class="layui-form-label">个人身份证号</label><div class="layui-input-block">';
+						strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label id="cusiCardLab" class="layui-form-label"><span class="mustItem">*</span>个人身份证号</label><div class="layui-input-block">';
 						strHtml += '<input type="text" name="cusiCard" value="'+ json.cusiCard +'" required lay-verify="identity" placeholder="请输入身份证号" maxlength="18" autocomplete="off" class="layui-input"/></div></div>';
 					}else{
-						strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label id="cusiCardLab" class="layui-form-label">公司组织机构代码</label><div class="layui-input-block">';
+						strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label id="cusiCardLab" class="layui-form-label" style="width:122px;"><span class="mustItem">*</span>公司组织机构代码</label><div class="layui-input-block">';
 						strHtml += '<input type="text" name="cusiCard" value="'+ json.cusiCard +'" required lay-verify="judegeOrgCode" placeholder="请输入公司组织机构代码" autocomplete="off" class="layui-input"/></div></div>';
 					}
 					//客户地址
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">客户地址</label><div class="layui-input-block">';
+					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span class="mustItem">*</span>客户地址</label><div class="layui-input-block">';
 					strHtml += '<input type="text" name="cusAddress" value="'+ json.cusAddress +'" required lay-verify="judegeAddress" placeholder="请输入客户地址(50字以内)" maxlength="50" autocomplete="off" class="layui-input"/></div></div>';
 					//邮政编码
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label">邮政编码</label><div class="layui-input-block">';
+					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span class="mustItem">*</span>邮政编码</label><div class="layui-input-block">';
 					strHtml += '<input type="text" name="cusZip" value="'+ json.cusZip +'" required lay-verify="judegeCusZip" placeholder="请输入邮政编码" autocomplete="off" maxlength="6" class="layui-input"/></div></div>';
 					//保存按钮
 					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"></label><div class="layui-input-block">';
