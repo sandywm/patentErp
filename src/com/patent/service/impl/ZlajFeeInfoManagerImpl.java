@@ -554,4 +554,21 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			HibernateUtil.closeSession();
 		}
 	}
+
+	@Override
+	public List<ZlajFeeInfoTb> listSpecInfoByFeeIdArr(String feeIdStr)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fDao.findSpecInfoByFeeIdArr(sess, feeIdStr);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据组合的id获取所有的费用列表时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
 }

@@ -252,7 +252,7 @@ public class ReadExcelFile {
 //		System.out.println("删除文件："+FileOpration.deleteFile(filePath));
 		
 		
-//		String oldExcel = "d:\\feeOk3.xls";
+		String oldExcel = "d:\\feeOk.xls";
 		
 //		Sheet sheet;  
 //        Workbook book;  
@@ -275,11 +275,11 @@ public class ReadExcelFile {
 //    	String absoFilePath = "d:\\" +fileName;
 ////    	FileOpration.copyFile(oldExcel, absoFilePath);
 //    	
-//    	File f = new File(oldExcel);
-//    	InputStream inputStream = new FileInputStream(f);
-//    	HSSFWorkbook xssfWorkbook = new HSSFWorkbook(inputStream);
-//    	HSSFSheet sheet = xssfWorkbook.getSheetAt(6);
-//    	System.out.println(sheet.getLastRowNum());
+    	File f = new File(oldExcel);
+    	InputStream inputStream = new FileInputStream(f);
+    	HSSFWorkbook xssfWorkbook = new HSSFWorkbook(inputStream);
+    	HSSFSheet sheet1 = xssfWorkbook.getSheetAt(4);
+//    	System.out.println(sheet1.getLastRowNum());
 //    	HSSFCellStyle style = xssfWorkbook.createCellStyle();  
 //        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
 //        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
@@ -294,11 +294,14 @@ public class ReadExcelFile {
 ////    	cell_title.setCellValue("实际费用");//
 ////		
 //        
-//    	for (int i = 2; i < 4; i++) {
-//    		HSSFRow row = sheet.getRow(i);
-//    		if (null == row) {
-//    			continue;
-//			}else{
+    	for (int i = 0; i <= sheet1.getLastRowNum(); i++) {
+    		HSSFRow row = sheet1.getRow(i);
+    		if (null == row) {
+    			continue;
+			}else{
+				System.out.println(row.getCell(0));
+			}
+    	}
 //				
 ////				HSSFCell cell0 = row.getCell(0);//读取第几列
 ////				if(cell0 == null){

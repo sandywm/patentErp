@@ -371,4 +371,15 @@ public interface ZlajFeeInfoManager{
 	 * @param cusId 客户编号
 	 */
 	List<ZlajFeeInfoTb> listAllInfoByOpt(Integer cpyId,String zlNo,Integer cusId)throws WEBException ;
+	
+	/**
+	 * 根据组合的id获取所有的费用列表
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-15 下午03:39:02
+	 * @param feeIdStr 费用编号组合(###,###)
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajFeeInfoTb> listSpecInfoByFeeIdArr(String feeIdStr)throws WEBException ;
 }

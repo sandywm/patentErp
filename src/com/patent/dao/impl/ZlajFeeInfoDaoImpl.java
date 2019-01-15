@@ -256,4 +256,12 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<ZlajFeeInfoTb> findSpecInfoByFeeIdArr(Session sess,
+			String feeIdStr) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajFeeInfoTb as zlf where zlf.id in("+feeIdStr+")";
+		return sess.createQuery(hql).list();
+	}
+
 }

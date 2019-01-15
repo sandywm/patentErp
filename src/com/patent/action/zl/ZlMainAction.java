@@ -4264,23 +4264,25 @@ public class ZlMainAction extends DispatchAction {
 	 */
 	public ActionForward exportFeeInfoToExcel(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+//		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
-		Integer zlId = CommonTools.getFinalInteger("zlId", request);
-		Integer currLoginUserId = this.getLoginUserId(request);
-		Integer cpyId = 0;
+//		Integer zlId = CommonTools.getFinalInteger("zlId", request);
+//		Integer currLoginUserId = this.getLoginUserId(request);
+//		Integer cpyId = 0;
 		Double feeTotal = 0.00;//费用总计
 		Double djFeeTotal = 0.00;//代缴费用统计
 		Double backFeeTotal = 0.00;//已退费用统计
 		Double diffFeeTotal = 0.00;//未退费用总计
 		Double discountsFeeTotal = 0.00;//优惠费用总计
 		if(this.getLoginType(request).equals("cpyUser")){
-			cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();//当前登录人员所在的代理机构
-			String feeTypeStatus = CommonTools.getFinalStr("feeTypeStatus", request);//费用类型（gf,dlf,nf,jlj）
-			Integer djStatus_1 = CommonTools.getFinalInteger("djStatus", request);//代缴状态
-			Integer feeStatus_1 = CommonTools.getFinalInteger("feeStatus", request);//缴费状态
-			Integer backStatus_1 = CommonTools.getFinalInteger("backStatus", request);//退费状态
-			List<ZlajFeeInfoTb> feeList = fm.listAllFeeByOpt(zlId, feeTypeStatus, djStatus_1, feeStatus_1, backStatus_1, cpyId);
+//			cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();//当前登录人员所在的代理机构
+//			String feeTypeStatus = CommonTools.getFinalStr("feeTypeStatus", request);//费用类型（gf,dlf,nf,jlj）
+//			Integer djStatus_1 = CommonTools.getFinalInteger("djStatus", request);//代缴状态
+//			Integer feeStatus_1 = CommonTools.getFinalInteger("feeStatus", request);//缴费状态
+//			Integer backStatus_1 = CommonTools.getFinalInteger("backStatus", request);//退费状态
+//			List<ZlajFeeInfoTb> feeList = fm.listAllFeeByOpt(zlId, feeTypeStatus, djStatus_1, feeStatus_1, backStatus_1, cpyId);
+			String feeIdStr = CommonTools.getFinalStr("feeIdStr", request);//费用编号组合(##,##)
+			List<ZlajFeeInfoTb> feeList = fm.listSpecInfoByFeeIdArr(feeIdStr);
 			if(feeList.size() > 0){
 				ZlajMainInfoTb zl  = feeList.get(0).getZlajMainInfoTb();
 				String zlName = zl.getAjTitle();

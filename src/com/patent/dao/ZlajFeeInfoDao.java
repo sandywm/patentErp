@@ -240,4 +240,15 @@ public interface ZlajFeeInfoDao {
 	 * @return
 	 */
 	List<ZlajFeeInfoTb> findAllInfoByOpt(Session sess,Integer cpyId,String zlNo,Integer cusId);
+	
+	/**
+	 * 根据组合的id获取所有的费用列表
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-15 下午03:32:36
+	 * @param sess
+	 * @param feeIdStr 费用编号
+	 * @return
+	 */
+	List<ZlajFeeInfoTb> findSpecInfoByFeeIdArr(Session sess,String feeIdStr);
 }
