@@ -921,7 +921,7 @@ public class PubZlAction extends DispatchAction {
 						map.put("count", count);
 						map.put("code", 0);
 					}else{
-						msg = "noInfo";
+						msg = "暂无记录";
 					}
 				}else if(purpose.equals("simpleInfo")){//用于增加专利时显示用
 					//编辑时需要附带上该专利绑定的发布任务，增加时为0
@@ -1005,7 +1005,7 @@ public class PubZlAction extends DispatchAction {
 				}
 			}
 		}
-		map.put("result", msg);
+		map.put("msg", msg);
 		this.getJsonPkg(map, response);
 		return null;
 	}

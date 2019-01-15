@@ -4979,6 +4979,7 @@ public class ZlMainAction extends DispatchAction {
 													if(zlType.equals("fm")){
 														readResultChi += ",并手动增加实质审查费";
 													}
+													tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, readResultChi, cpyId,tzsType);
 									        	}else{
 									        		//如果是发明专利，还需要增加缴纳实质审查费的任务
 													if(zlType.equals("fm")){
