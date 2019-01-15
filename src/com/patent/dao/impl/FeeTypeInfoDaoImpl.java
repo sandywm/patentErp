@@ -38,4 +38,11 @@ public class FeeTypeInfoDaoImpl implements FeeTypeInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<FeeTypeInfoTb> findInfoByzlType(Session sess, String zlType) {
+		// TODO Auto-generated method stub
+		String hql = " from FeeTypeInfoTb as ft where FIND_IN_SET("+zlType+",ft.feeRange) > 0";
+		return sess.createQuery(hql).list();
+	}
+
 }

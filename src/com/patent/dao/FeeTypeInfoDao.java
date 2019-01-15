@@ -37,4 +37,15 @@ public interface FeeTypeInfoDao {
 	 * @return
 	 */
 	List<FeeTypeInfoTb> findInfoByName(Session sess,String feeName);
+	
+	/**
+	 * 根据专利类型获取专利费用信息列表
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-15 下午03:54:08
+	 * @param sess
+	 * @param zlType 专利类型(fm,xx,wg)
+	 * @return
+	 */
+	List<FeeTypeInfoTb> findInfoByzlType(Session sess,String zlType);
 }

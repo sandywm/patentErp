@@ -18,6 +18,7 @@ public class FeeTypeInfoTb implements java.io.Serializable {
 	private Integer id;
 	private String feeName;
 	private String feeStatus;
+	private String feeRange;
 	private Set<ZlajFeeInfoTb> zlajFeeInfoTbs = new HashSet<ZlajFeeInfoTb>();
 	private Set<ZlajFeeSubInfoTb> zlajFeeSubInfoTbs = new HashSet<ZlajFeeSubInfoTb>();
 
@@ -28,16 +29,18 @@ public class FeeTypeInfoTb implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public FeeTypeInfoTb(String feeName, String feeStatus) {
+	public FeeTypeInfoTb(String feeName, String feeStatus,String feeRange) {
 		this.feeName = feeName;
 		this.feeStatus = feeStatus;
+		this.feeRange = feeRange;
 	}
 
 	/** full constructor */
-	public FeeTypeInfoTb(Integer id,String feeName, String feeStatus) {
+	public FeeTypeInfoTb(Integer id,String feeName, String feeStatus,String feeRange) {
 		this.id = id;
 		this.feeName = feeName;
 		this.feeStatus = feeStatus;
+		this.feeRange = feeRange;
 	}
 
 	// Property accessors
@@ -80,6 +83,14 @@ public class FeeTypeInfoTb implements java.io.Serializable {
 
 	public void setZlajFeeSubInfoTbs(Set<ZlajFeeSubInfoTb> zlajFeeSubInfoTbs) {
 		this.zlajFeeSubInfoTbs = zlajFeeSubInfoTbs;
+	}
+
+	public String getFeeRange() {
+		return feeRange;
+	}
+
+	public void setFeeRange(String feeRange) {
+		this.feeRange = feeRange;
 	}
 
 }

@@ -232,52 +232,53 @@ public class ZlMainAction extends DispatchAction {
 			}else{
 				//获取当前用户是否有修改权限
 				if(Ability.checkAuthorization(this.getLoginRoleId(request), actNameEng)){
-					if(actNameEng.equals("dealZl")){//专利流程处理
-						//需要判断当前流程操作的人员是否和和原定的流程操作人员符合
-						CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
-						ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
-						String lcNameEng = CommonTools.getFinalStr("lcNameEng", request);//流程
-						Integer currLoginUserId = this.getLoginUserId(request);
-						Integer zlId = CommonTools.getFinalInteger("zlId", request);
-						Integer cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
-						List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
-						if(zlList.size() > 0){
-							ZlajMainInfoTb zl = zlList.get(0);
-							if(lcNameEng.equals("zx") && currLoginUserId.equals(zl.getZxUserId())){
-								msg = "ability";
-							}else if(lcNameEng.equals("sc") && currLoginUserId.equals(zl.getCheckUserId())){
-								msg = "ability";
-							}else if(lcNameEng.equals("cus") && currLoginUserId.equals(zl.getCusCheckUserId())){
-								msg = "ability";
-							}else if(lcNameEng.equals("dgtj") && currLoginUserId.equals(zl.getTjUserId())){
-								msg = "ability";
-							}else if(lcNameEng.equals("tzs")){//通知书可以多专利批量导入
-								if(zlm.listInfoByOpt(lcNameEng, currLoginUserId, cpyId).size() > 0){
-									msg = "ability";
-								}else{
-									msg = "noAbility";
-								}
-							}else if(lcNameEng.equals("fycj")){//费用催缴可以多专利同时增加
-								if(zlm.listInfoByOpt(lcNameEng, currLoginUserId, cpyId).size() > 0){
-									msg = "ability";
-								}else{
-									msg = "noAbility";
-								}
-							}else if(lcNameEng.equals("bz") && currLoginUserId.equals(zl.getBzUserId())){
-								msg = "ability";
-							}else if(lcNameEng.equals("bzsh") && currLoginUserId.equals(zl.getBzshUserId())){
-								msg = "ability";
-							}else if(lcNameEng.equals("bh") && currLoginUserId.equals(zl.getBhUserId())){
-								msg = "ability";
-							}else{
-								msg = "noAbility";
-							}
-						}else{
-							msg = "error";
-						}
-					}else{
-						msg = "ability";
-					}
+					msg = "ability";
+//					if(actNameEng.equals("dealZl")){//专利流程处理
+//						//需要判断当前流程操作的人员是否和和原定的流程操作人员符合
+//						CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+//						ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+//						String lcNameEng = CommonTools.getFinalStr("lcNameEng", request);//流程
+//						Integer currLoginUserId = this.getLoginUserId(request);
+//						Integer zlId = CommonTools.getFinalInteger("zlId", request);
+//						Integer cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
+//						List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
+//						if(zlList.size() > 0){
+//							ZlajMainInfoTb zl = zlList.get(0);
+//							if(lcNameEng.equals("zx") && currLoginUserId.equals(zl.getZxUserId())){
+//								msg = "ability";
+//							}else if(lcNameEng.equals("sc") && currLoginUserId.equals(zl.getCheckUserId())){
+//								msg = "ability";
+//							}else if(lcNameEng.equals("cus") && currLoginUserId.equals(zl.getCusCheckUserId())){
+//								msg = "ability";
+//							}else if(lcNameEng.equals("dgtj") && currLoginUserId.equals(zl.getTjUserId())){
+//								msg = "ability";
+//							}else if(lcNameEng.equals("tzs")){//通知书可以多专利批量导入
+//								if(zlm.listInfoByOpt(lcNameEng, currLoginUserId, cpyId).size() > 0){
+//									msg = "ability";
+//								}else{
+//									msg = "noAbility";
+//								}
+//							}else if(lcNameEng.equals("fycj")){//费用催缴可以多专利同时增加
+//								if(zlm.listInfoByOpt(lcNameEng, currLoginUserId, cpyId).size() > 0){
+//									msg = "ability";
+//								}else{
+//									msg = "noAbility";
+//								}
+//							}else if(lcNameEng.equals("bz") && currLoginUserId.equals(zl.getBzUserId())){
+//								msg = "ability";
+//							}else if(lcNameEng.equals("bzsh") && currLoginUserId.equals(zl.getBzshUserId())){
+//								msg = "ability";
+//							}else if(lcNameEng.equals("bh") && currLoginUserId.equals(zl.getBhUserId())){
+//								msg = "ability";
+//							}else{
+//								msg = "noAbility";
+//							}
+//						}else{
+//							msg = "error";
+//						}
+//					}else{
+//						msg = "ability";
+//					}
 				}else{
 					msg = "noAbility";
 				}
@@ -4555,7 +4556,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 缴纳所有费用(代理机构代缴)--暂时不用
+	 * 缴纳所有费用(代理机构代缴)--通知书中没有费用，或者中途转过来的专利，需要手动添加费用
 	 * @description
 	 * @author Administrator
 	 * @date 2018-10-11 上午10:07:53

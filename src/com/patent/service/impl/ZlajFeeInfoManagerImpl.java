@@ -571,4 +571,21 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			HibernateUtil.closeSession();
 		}
 	}
+
+	@Override
+	public List<FeeTypeInfoTb> listInfoByzlType(String zlType)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			ftDao = (FeeTypeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_FEE_TYPE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return ftDao.findInfoByzlType(sess, zlType);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据专利类型获取专利费用信息列表时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
 }

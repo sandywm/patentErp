@@ -382,4 +382,15 @@ public interface ZlajFeeInfoManager{
 	 * @throws WEBException
 	 */
 	List<ZlajFeeInfoTb> listSpecInfoByFeeIdArr(String feeIdStr)throws WEBException ;
+	
+	/**
+	 * 获取指定专利类型下的费用类型列表
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-15 下午04:01:56
+	 * @param zlType 专利类型(fm,xx,wg)
+	 * @return
+	 * @throws WEBException
+	 */
+	List<FeeTypeInfoTb> listInfoByzlType(String zlType)throws WEBException ;
 }
