@@ -1127,6 +1127,67 @@ public class CpyManagerAction extends DispatchAction {
 //		return null;
 //	}
 	
+	
+	
+	
+	/**
+	 * 获取当前代理机构能否再添加子公司
+	 * @description
+	 * @author wm
+	 * @date 2018-8-14 上午11:34:37
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getAddSubCpyAbility(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+		String msg = "";
+		Integer subCpyLen = 0;
+		Integer maxNum = 0;
+		Map<String,String> map = new HashMap<String,String>();
+		//先检查主公司是否是高级会员
+		if(cpy.getCpyLevel() > 0){
+			Integer diffDays = CurrentTime.compareDate(CurrentTime.getStringDate(), cpy.getEndDate());
+			if(diffDays > 0){//判断是否到期
+				if(cpy.getCpySubId().equals("")){//没有子公司
+					msg = "success";
+				}else{//存在有子公司
+					subCpyLen = cpy.getCpySubId().split(",").length;
+					if(cpy.getCpyLevel().equals(1)){//银牌
+						msg = "outNum";
+						maxNum = 1;
+					}else if(cpy.getCpyLevel().equals(2)){//金牌
+						maxNum = Constants.SUB_CPY_NUM_JP;
+						if(subCpyLen < Constants.SUB_CPY_NUM_JP){
+							msg = "success";
+						}else{
+							msg = "outNum";
+						}
+					}else if(cpy.getCpyLevel().equals(3)){//钻石
+						maxNum = Constants.SUB_CPY_NUM_ZS;
+						if(subCpyLen < Constants.SUB_CPY_NUM_ZS){
+							msg = "success";
+						}else{
+							msg = "outNum";
+						}
+					}
+				}
+			}
+		}else{
+			msg = "noAbility";
+		}
+		map.put("result", msg);
+		map.put("currNum", String.valueOf(subCpyLen));
+		map.put("maxNum", String.valueOf(maxNum));
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
 	/**
 	 * 添加子公司（手动增加、通过申请合并记录增加）
 	 * @description

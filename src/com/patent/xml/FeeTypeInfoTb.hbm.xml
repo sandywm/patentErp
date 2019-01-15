@@ -20,6 +20,11 @@
                 <comment>费用标记[gf(官费),dlf(代理费),nf(年费)]</comment>
             </column>
         </property>
+        <property name="feeRange" type="java.lang.String">
+            <column name="fee_range" length="20">
+                <comment>专利类型[fm,xx,wg]</comment>
+            </column>
+        </property>
         <set name="zlajFeeInfoTbs" inverse="true">
             <key>
                 <column name="fee_type_id" not-null="true">

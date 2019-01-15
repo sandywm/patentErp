@@ -98,11 +98,7 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		// TODO Auto-generated method stub
 		String hql = " from ZlajFeeInfoTb as zlf where zlf.zlajMainInfoTb.id = "+zlId + " and zlf.cpyInfoTb.id = "+cpyId;
 		if(!feeTypeStatus.equals("")){
-			if(feeTypeStatus.equals("nf")){
-				hql += " and zlf.feeTypeInfoTb.feeStatus like '%"+feeTypeStatus+"%'";
-			}else{
-				hql += " and zlf.feeTypeInfoTb.feeStatus = '"+feeTypeStatus+"'";
-			}
+			hql += " and zlf.feeTypeInfoTb.feeStatus = '"+feeTypeStatus+"'";
 		}
 		if(djStatus >= 0){
 			hql += " and zlf.djStatus = "+djStatus;
