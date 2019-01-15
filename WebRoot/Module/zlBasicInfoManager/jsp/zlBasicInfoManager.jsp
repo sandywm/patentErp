@@ -354,7 +354,6 @@
 						var field = {lqStatus:lqStatusVal,readStatus:readResVal,tzsType:tzsTypeVal};
 					}	
 				}
-				console.log(field)
 				if(opts == 'queryLoad'){
 					if($('#ajNoTitInp_ajNo').val() != '' && $('#ajNoTitInp_ajNo').val().length < 4){
 						layer.msg('案件编号必须4位以上', {icon:5,anim:6,time:1200});
@@ -535,7 +534,6 @@
 					});
 				}else if(lqStatusVal == 5){
 					//加载专利移交申请审核/专利移交申请记录
-					console.log(page.data.fpZlFlag)
 					table.render({
 						elem: '#zlBasicListTab_'+lqStatusVal,
 						height: 'full-200',

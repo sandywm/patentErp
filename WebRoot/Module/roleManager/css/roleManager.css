@@ -79,7 +79,7 @@
     color: #fff;
 }
 .addEditRole .comRoleDiv{
-	width:320px;
+	width:326px;
 	height:35px;
 	line-height:35px;
 	margin:30px auto 0;
@@ -94,7 +94,7 @@
 	margin-left:5px;
 }
 .addEditRoleCon .comRoleDiv:last-child span{
-	margin-left:-14px;
+	margin-left:-8px;
 }
 .layui-layer-btn .layui-layer-btn0{
 	background:#009688 !important;

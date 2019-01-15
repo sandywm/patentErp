@@ -347,13 +347,13 @@
 								if(d.diffDays_jj != undefined){
 									var strDiffDays_jj = d.diffDays_jj.toString();
 									if(strDiffDays_jj >= 20){
-										overdueSp = 'greenColor';
+										overdueSp = 'greenColor_fee';
 									}else if(strDiffDays_jj >= 10 && strDiffDays_jj < 20){
-										overdueSp = 'blueColor';
+										overdueSp = 'blueColor_fee';
 									}else if(strDiffDays_jj < 10 && strDiffDays_jj > 0){
-										overdueSp = 'yellowColor';
+										overdueSp = 'yellowColor_fee';
 									}else if(strDiffDays_jj < 0){
-										overdueSp = 'redColor';
+										overdueSp = 'redColor_fee';
 									}
 									if(strDiffDays_jj > 0){
 										return '<span class="'+ overdueSp +'">'+ strDiffDays_jj +'天后到期</span>';
@@ -375,13 +375,13 @@
 								if(d.diffDays_Gf != undefined){
 									var strDiffDays_Gf = d.diffDays_Gf.toString();
 									if(strDiffDays_Gf >= 20){
-										overdueSp = 'greenColor';
+										overdueSp = 'greenColor_fee';
 									}else if(strDiffDays_Gf >= 10 && strDiffDays_Gf < 20){
-										overdueSp = 'blueColor';
+										overdueSp = 'blueColor_fee';
 									}else if(strDiffDays_Gf < 10  && strDiffDays_Gf > 0){
-										overdueSp = 'yellowColor';
+										overdueSp = 'yellowColor_fee';
 									}else if(strDiffDays_Gf < 0){
-										overdueSp = 'redColor';
+										overdueSp = 'redColor_fee';
 									}
 									if(strDiffDays_Gf > 0){
 										return '<span class="'+ overdueSp +'">'+ strDiffDays_Gf +'天后到期</span>';

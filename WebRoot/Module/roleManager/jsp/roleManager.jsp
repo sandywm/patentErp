@@ -47,8 +47,7 @@
        			},
     			init : function(){
     				this.onLoad();
-    				this.bindEvent(),
-    				this.bindEvent_multi();
+    				this.bindEvent();
     			},
     			onLoad : function(){
     				//获取代理机构下角色列表
@@ -58,7 +57,6 @@
     			loadRoleList : function(){
         			$.ajax({
     					type:"post",
-    			        async:false,
     			        dataType:"json",
     			        url:"role.do?action=getRoleList",
     			        success:function (json){
@@ -77,7 +75,7 @@
         					globalOpts = $(this).attr("opts");
         					var addEditRoleCon = '';
         					addEditRoleCon += '<div class="addEditRoleCon">';
-            				addEditRoleCon += '<div class="comRoleDiv"><span class="fl">角色名：</span><input id="inpRoleName" type="text" placeholder="请输入角色名(6字以内)" maxlength="6"></div>';
+            				addEditRoleCon += '<div class="comRoleDiv"><span class="fl"><em style="color:#f00;font-style:normal;">*</em>角色名：</span><input id="inpRoleName" type="text" placeholder="请输入角色名称(6字以内)" maxlength="6"></div>';
             				addEditRoleCon += '<div class="comRoleDiv"><span class="fl">角色简介：</span><input id="roleProfile" type="text" placeholder="请输入角色简介(20字以内)" maxlength="20"></div>';
             				addEditRoleCon += '</div>';
             				_this.data.globalIndex = layer.open({
@@ -109,7 +107,7 @@
 						
         				addEditRoleCon += '<div class="addEditRoleCon">';
         				addEditRoleCon += '<input type="hidden" id="roleIdInp" value="'+ _this.data.roleId +'"/>';
-        				addEditRoleCon += '<div class="comRoleDiv"><span class="fl">角色名：</span><input id="inpRoleName" type="text" placeholder="请输入角色名(6字以内)" value="'+ _this.data.roleName +'" maxlength="6"></div>';
+        				addEditRoleCon += '<div class="comRoleDiv"><span class="fl"><em style="color:#f00;font-style:normal;">*</em>角色名：</span><input id="inpRoleName" type="text" placeholder="请输入角色名(6字以内)" value="'+ _this.data.roleName +'" maxlength="6"></div>';
         				addEditRoleCon += '<div class="comRoleDiv"><span class="fl">角色简介：</span><input id="roleProfile" type="text" placeholder="请输入角色简介(20字以内)" value="'+ _this.data.roleProfile +'" maxlength="20"></div>';
         				addEditRoleCon += '</div>';
     					if(upFlag == "true"){
@@ -194,7 +192,7 @@
 	        				}
 	        				$.ajax({
 	      						type:"post",
-	    				        async:false,
+	    				        /*async:false,*/
 	    				        dataType:"json",
 	    				        data :field,
 	    				        url:url,
@@ -242,6 +240,7 @@
     			}
     			strHtml += '</ul>';
     			$('#roleList').html(strHtml);
+    			page.bindEvent_multi();
     		}
     		$(function(){
     			page.init();

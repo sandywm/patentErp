@@ -1,10 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<!DOCTYPE html> 
 <html>
   <head>
     <title>专利管理系统技术领域管理</title>
 	<meta http-equiv="pragma" content="no-cache">
-	<meta http-equiv="cache-control" content="no-cache"> 
+	<meta http-equiv="cache-control" content="no-cache"/> 
 	<meta http-equiv="keywords" content="专利管理,技术领域,专业领域,增加专业领域"/>
 	<meta http-equiv="description" content="专利管理系统代理机构专业领域增加和编辑"/>
 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
@@ -50,7 +50,6 @@
     			init : function(){
     				this.onLoad();
     				this.bindEvent();
-    				this.bindEvent_multi();
     			},
     			onLoad : function(){
     				//获取代理机构下专业技术领域list
@@ -65,7 +64,7 @@
         					globalOpts = $(this).attr("opts");
         					var addEditRoleCon = '';
         					addEditRoleCon += '<div class="addEditRoleCon">';
-            				addEditRoleCon += '<div class="comRoleDiv"><span class="fl">专业名：</span><input id="inpRoleName" type="text" placeholder="请输入专业名(8字以内)" maxlength="8"></div>';
+            				addEditRoleCon += '<div class="comRoleDiv"><span class="fl"><em style="color:#f00;font-style:normal;">*</em>专业名：</span><input id="inpRoleName" type="text" placeholder="请输入专业名(8字以内)" maxlength="8"></div>';
             				addEditRoleCon += '<div class="comRoleDiv"><span class="fl">专业简介：</span><input id="roleProfile" type="text" placeholder="请输入专业简介(20字以内)" maxlength="20"></div>';
             				addEditRoleCon += '</div>';
             				_this.data.globalIndex = layer.open({
@@ -97,7 +96,7 @@
 						
         				addEditRoleCon += '<div class="addEditRoleCon">';
         				addEditRoleCon += '<input type="hidden" id="jfIdInp" value="'+ _this.data.jfId +'"/>';
-        				addEditRoleCon += '<div class="comRoleDiv"><span class="fl">专业名：</span><input id="inpRoleName" type="text" placeholder="请输入角色名(6字以内)" value="'+ _this.data.zyName +'" maxlength="6"></div>';
+        				addEditRoleCon += '<div class="comRoleDiv"><span class="fl"><em style="color:#f00;font-style:normal;">*</em>专业名：</span><input id="inpRoleName" type="text" placeholder="请输入角色名(6字以内)" value="'+ _this.data.zyName +'" maxlength="6"></div>';
         				addEditRoleCon += '<div class="comRoleDiv"><span class="fl">专业简介：</span><input id="roleProfile" type="text" placeholder="请输入角色简介(20字以内)" value="'+ _this.data.zyProfile +'" maxlength="20"></div>';
         				addEditRoleCon += '</div>';
     					if(upFlag == "true"){
@@ -161,7 +160,6 @@
     			loadTechFieldList : function(){
     				$.ajax({
   						type:"post",
-				        async:false,
 				        dataType:"json",
 				        url:"jfm.do?action=getJfData",
 				        success:function (json){
@@ -248,6 +246,7 @@
     			}
     			strHtml += '</ul>';
     			$('#fieldList').html(strHtml);
+    			page.bindEvent_multi();
     		}
     		$(function(){
     			page.init();

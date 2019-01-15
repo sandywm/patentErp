@@ -39,7 +39,7 @@
    				form = layui.form,
    				element = layui.element,
    				table = layui.table,
-   				address = layui.address(),
+   				//address = layui.address(),
    				rate = layui.rate;
    			element.on('tab(cpySetFilter)', function(data){
    				var goTarget = $(this).attr('goTarget'),pos = 0;
@@ -55,7 +55,7 @@
    				onLoad : function(){
    					//获取代理机构基本信息
   					layer.load("1");
-  					
+  					this.getCpyBasicInfo();
   					if(abilityFlag == "true"){
   						this.createTab();
   						for(var i=0;i<cpyInitInfo.length;i++){
@@ -64,13 +64,11 @@
   						this.workBonusSet();
   						this.bindEvent();
   					}
-  					this.getCpyBasicInfo();
    				},
    				getCpyInitSet : function(opt){
    					var _this = this;
    					$.ajax({
   						type:"post",
-				        async:false,
 				        dataType:"json",
 				        data : {opt : opt},
 				        url:"cpyManager.do?action=getCpyInitInfo",
@@ -89,107 +87,26 @@
    					var _this = this;
    					$.ajax({
   						type:"post",
-				        async:false,
 				        dataType:"json",
 				        url:"cpyManager.do?action=getCpyDetailInfo",
 				        success:function (json){
 				        	layer.closeAll("loading");
 				        	//回填基本信息
-				        	_this.getUserInfo(json);
+				        	if(json["result"] == "success"){
+		   	   					if(abilityFlag == "true"){
+		   	   		  				_this.renderForm(json);
+		   	   					}else{
+		   	   						$('.layui-fluid').css({'margin-top':'15px'});
+		   	   						_this.renderBasicInfo(json);
+		   	   					}
+		   	  				}else if(json["result"] == "error"){
+		   	  					$('#cpyInfo').html("<div class='noThisPeo'><i class='iconfont layui-extend-noData'></i><p>加载基本信息出错，请<a href='cpyManager.do?action=goCpyDetailPage'>刷新试下</a></p></div>");
+		   	  				}
 				        }
   					});
    				},
-   				getUserInfo : function(list){
-   					if(list["result"] == "success"){
-   	   					if(abilityFlag == "true"){
-   	   		  				this.renderForm(list);
-   	   					}else{
-   	   						$('.layui-fluid').css({'margin-top':'15px'});
-   	   						this.renderBasicInfo(list);
-   	   					}
-   	  				}else if(list["result"] == "error"){
-   	  					$('#cpyInfo').html("<div class='noThisPeo'><i class='iconfont layui-extend-noData'></i><p>加载基本信息出错，请<a href='cpyManager.do?action=goCpyDetailPage'>刷新试下</a></p></div>");
-   	  				}
-   				},
    				bindEvent : function(){
    					var _this = this;
-   					$('#fmDlFeeInp').on('keyup',function(){
-						_this.judgeBackFee('fmDlFeeInp');
-					});
-   					$('#fmDlFeeInp').on('blur',function(){
-						_this.judgeAgentFee_num('fmDlFeeInp');
-					});
-   					$('#wgDlFeeInp').on('keyup',function(){
-						_this.judgeBackFee('wgDlFeeInp');
-					});
-   					$('#wgDlFeeInp').on('blur',function(){
-						_this.judgeAgentFee_num('wgDlFeeInp');
-					});
-   					$('#xxDlFeeInp').on('keyup',function(){
-						_this.judgeBackFee('xxDlFeeInp');
-					});
-   					$('#xxDlFeeInp').on('blur',function(){
-						_this.judgeAgentFee_num('xxDlFeeInp');
-					});
-   					$('#saleBonusInp').on('keyup',function(){
-						_this.judgeBackFee('saleBonusInp');
-					});
-   					//保存专利代理费
-   					$('.saveDlFee').on('click',function(){
-   						var fmDlFeeInpVal = $.trim($('#fmDlFeeInp').val()),
-   							wgDlFeeInpVal = $.trim($('#wgDlFeeInp').val()),
-   							xxDlFeeInpVal = $.trim($('#xxDlFeeInp').val());
-   						if(fmDlFeeInpVal == ''){
-   							layer.msg('发明代理费初始值不能为空', {icon:5,anim:6,time:1000});
-   						}else if(wgDlFeeInpVal == ''){
-   							layer.msg('外观代理费初始值不能为空', {icon:5,anim:6,time:1000});
-   						}else if(xxDlFeeInpVal == ''){
-   							layer.msg('新型代理费初始值不能为空', {icon:5,anim:6,time:1000});
-   						}else{
-   							var field = {opt:'dlFee',dlFeeFm:fmDlFeeInpVal,dlFeeWg:wgDlFeeInpVal,dlFeeXx:xxDlFeeInpVal};
-							_this.commonSaveCpyInfo('dlFee',field);
-   						}
-   					});
-   					//保存银行账户信息
-   					$('.saveBankInfo').on('click',function(){
-   						var bankAccNameInpVal = $.trim($('.bankAccNameInp').val()),
-   							bankNameInpVal = $.trim($('.bankNameInp').val()),
-   							bankNumInpVal = $.trim($('.bankNumInp').val());
-   						if(bankAccNameInpVal == ''){
-   							layer.msg('银行账户名不能为空', {icon:5,anim:6,time:1000});
-   						}else if(bankNameInpVal == ''){
-   							layer.msg('开户行不能为空', {icon:5,anim:6,time:1000});
-   						}else if(bankNumInpVal == ''){
-   							layer.msg('银行卡号不能为空', {icon:5,anim:6,time:1000});
-   						}else if(bankNumInpVal.length < 16){
-							layer.msg('请输入正确的银行卡号', {icon:5,anim:6,time:1000});
-						}else{
-   							var regCHN = /^[\u4E00-\u9FA5]+$/; //检测是否中文
-   							if(!regCHN.test(bankAccNameInpVal)){
-   								layer.msg('银行账户名应为中文名', {icon:5,anim:6,time:1000});
-   							}else if(!regCHN.test(bankNameInpVal)){
-   								layer.msg('开户行名称应为中文名', {icon:5,anim:6,time:1000});
-   							}else{
-   								var field = {opt:'bankInfo',bankAccountName:bankAccNameInpVal,bankName:bankNameInpVal,bankNo:bankNumInpVal};
-   								_this.commonSaveCpyInfo('bankInfo',field);
-   							}
-   						}
-   					});
-   					//保存销售提成比例
-   					$('.saveSaleBonusBtn').on('click',function(){
-   						var saleBonusInpVal = $.trim($('#saleBonusInp').val());
-   						if(saleBonusInpVal == ''){
-   							layer.msg('销售提成比例不能为空', {icon:5,anim:6,time:1000});
-   						}else{
-   							if(saleBonusInpVal >= 100){
-   								layer.msg('销售提成比例应为1-99之间的正整数', {icon:5,anim:6,time:1000});
-   								$('#saleBonusInp').val('');
-   								return;
-   							}
-   							var field = {opt:'saleBonus',saleBonus:saleBonusInpVal};
-							_this.commonSaveCpyInfo('saleBonus',field);
-   						}
-   					});
    					//增加工作奖金
    					$('.addWorkBonusBtn').on('click',function(){
 						addWorkBonusFlag = false;
@@ -231,7 +148,6 @@
    					layer.load('1');
    					$.ajax({
   						type:'post',
-				        async:true,
 				        dataType:'json',
 				        data : field,
 				        url:'/cpyManager.do?action=updateCpyInitInfo',
@@ -339,6 +255,7 @@
    					strHtml += '<div class="layui-form-item"><label class="layui-form-label"></label><div class="layui-input-inline"><button class="layui-btn" lay-submit lay-filter="setCpyInfo">保存基本信息</button></div></div>';
    	  				$('#cpyInfo').html(strHtml);
    	  				form.render();
+   	  				layui.address();
    				},
    				//代理机构员工
    				renderBasicInfo : function(list){
@@ -404,6 +321,44 @@
    					strHtml += '<div class="layui-input-inline">';
    					strHtml += '<button class="layui-btn saveDlFee">保存专利代理费</button></div></div>';
    					$('#agentFeeSet').html(strHtml);
+   					this.bindEvent_DlFee();
+   				},
+   				bindEvent_DlFee : function(){
+   					var _this = this;
+   					$('#fmDlFeeInp').on('keyup',function(){
+						_this.judgeBackFee('fmDlFeeInp');
+					});
+   					$('#fmDlFeeInp').on('blur',function(){
+						_this.judgeAgentFee_num('fmDlFeeInp');
+					});
+   					$('#wgDlFeeInp').on('keyup',function(){
+						_this.judgeBackFee('wgDlFeeInp');
+					});
+   					$('#wgDlFeeInp').on('blur',function(){
+						_this.judgeAgentFee_num('wgDlFeeInp');
+					});
+   					$('#xxDlFeeInp').on('keyup',function(){
+						_this.judgeBackFee('xxDlFeeInp');
+					});
+   					$('#xxDlFeeInp').on('blur',function(){
+						_this.judgeAgentFee_num('xxDlFeeInp');
+					});
+   					//保存专利代理费
+   					$('.saveDlFee').on('click',function(){
+   						var fmDlFeeInpVal = $.trim($('#fmDlFeeInp').val()),
+   							wgDlFeeInpVal = $.trim($('#wgDlFeeInp').val()),
+   							xxDlFeeInpVal = $.trim($('#xxDlFeeInp').val());
+   						if(fmDlFeeInpVal == ''){
+   							layer.msg('发明代理费初始值不能为空', {icon:5,anim:6,time:1000});
+   						}else if(wgDlFeeInpVal == ''){
+   							layer.msg('外观代理费初始值不能为空', {icon:5,anim:6,time:1000});
+   						}else if(xxDlFeeInpVal == ''){
+   							layer.msg('新型代理费初始值不能为空', {icon:5,anim:6,time:1000});
+   						}else{
+   							var field = {opt:'dlFee',dlFeeFm:fmDlFeeInpVal,dlFeeWg:wgDlFeeInpVal,dlFeeXx:xxDlFeeInpVal};
+							_this.commonSaveCpyInfo('dlFee',field);
+   						}
+   					});
    				},
    				//银行账户信息设置
    				bankInfoSet : function(json){
@@ -427,7 +382,36 @@
    					strHtml += '<div class="layui-input-inline">';
    					strHtml += '<button class="layui-btn saveBankInfo">保存银行账户</button></div></div>';
    					$('#bankInfoSet').html(strHtml);
+   					this.bindEvent_bankAcc();
    					this.bankNumPattern();
+   				},
+   				bindEvent_bankAcc : function(){
+   					var _this = this;
+   					//保存银行账户信息
+   					$('.saveBankInfo').on('click',function(){
+   						var bankAccNameInpVal = $.trim($('.bankAccNameInp').val()),
+   							bankNameInpVal = $.trim($('.bankNameInp').val()),
+   							bankNumInpVal = $.trim($('.bankNumInp').val());
+   						if(bankAccNameInpVal == ''){
+   							layer.msg('银行账户名不能为空', {icon:5,anim:6,time:1000});
+   						}else if(bankNameInpVal == ''){
+   							layer.msg('开户行不能为空', {icon:5,anim:6,time:1000});
+   						}else if(bankNumInpVal == ''){
+   							layer.msg('银行卡号不能为空', {icon:5,anim:6,time:1000});
+   						}else if(bankNumInpVal.length < 16){
+							layer.msg('请输入正确的银行卡号', {icon:5,anim:6,time:1000});
+						}else{
+   							var regCHN = /^[\u4E00-\u9FA5]+$/; //检测是否中文
+   							if(!regCHN.test(bankAccNameInpVal)){
+   								layer.msg('银行账户名应为中文名', {icon:5,anim:6,time:1000});
+   							}else if(!regCHN.test(bankNameInpVal)){
+   								layer.msg('开户行名称应为中文名', {icon:5,anim:6,time:1000});
+   							}else{
+   								var field = {opt:'bankInfo',bankAccountName:bankAccNameInpVal,bankName:bankNameInpVal,bankNo:bankNumInpVal};
+   								_this.commonSaveCpyInfo('bankInfo',field);
+   							}
+   						}
+   					});
    				},
    				//银行账号格式化
    				bankNumPattern : function(){
@@ -473,6 +457,28 @@
    					strHtml += '<div class="layui-input-inline">';
    					strHtml += '<button class="layui-btn saveSaleBonusBtn">保存销售提成比例</button></div></div>';
    					$('#saleBonusSet').html(strHtml);
+   					this.bindEvent_saleBonus();
+   				},
+   				bindEvent_saleBonus : function(){
+   					var _this = this;
+   					$('#saleBonusInp').on('keyup',function(){
+						_this.judgeBackFee('saleBonusInp');
+					});
+   					//保存销售提成比例
+   					$('.saveSaleBonusBtn').on('click',function(){
+   						var saleBonusInpVal = $.trim($('#saleBonusInp').val());
+   						if(saleBonusInpVal == ''){
+   							layer.msg('销售提成比例不能为空', {icon:5,anim:6,time:1000});
+   						}else{
+   							if(saleBonusInpVal >= 100){
+   								layer.msg('销售提成比例应为1-99之间的正整数', {icon:5,anim:6,time:1000});
+   								$('#saleBonusInp').val('');
+   								return;
+   							}
+   							var field = {opt:'saleBonus',saleBonus:saleBonusInpVal};
+							_this.commonSaveCpyInfo('saleBonus',field);
+   						}
+   					});
    				},
    				//工作奖金设置
    				workBonusSet : function(){

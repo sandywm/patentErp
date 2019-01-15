@@ -52,7 +52,6 @@
   			//渲染form
   			function renderForm(list){
   				/*type: 个人/公司，代理机构员工（包括管理员） ，平台用户*/
-  				//console.log(list)
   				var roleName = parent.roleName,
   					loginType = parent.loginType,
   					strHtml = "",

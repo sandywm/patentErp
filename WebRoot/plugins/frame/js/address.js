@@ -2,7 +2,6 @@ layui.define(["layer","form","jquery"],function(exports){
     var form = layui.form,
     $ = layui.jquery,
     Address = function(){};
-
     Address.prototype.provinces = function() {
         //加载省数据
         var proHtml = '',that = this,isHasCityFlag = false;

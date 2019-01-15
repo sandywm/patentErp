@@ -201,7 +201,7 @@
 					$('#zlStatusSel').siblings('.layui-form-select').find('input').val('');
 					$('#pubDateInp').val('');
 					$('#zlNoInp').val('');
-					$('#zlTitleInp').val('')
+					$('#zlTitleInp').val('');
 				}
 			};
 			//获取已发布专利的list
@@ -233,7 +233,7 @@
 					limits:[10,20,30,40],
 					cols : [[
 						{field : '', title: '序号',type:'numbers', width:60, fixed: 'left' , align:'center'},
-						{field : 'title', title: '专利名称', width:220 , align:'center',fixed: 'left',templet:function(d){
+						{field : 'title', title: '专利名称', width:260 , align:'center',fixed: 'left',templet:function(d){
 							var strHtml = '';
 							if(d.zlCheckStatus == 0){//表示未审核
 								strHtml += '<span class="comCheckStatus notCheckStatus"></span>';
@@ -269,7 +269,7 @@
 						}},
 						{field : 'pubDate', title: '发布日期', width:180 , align:'center'},
 						{field : 'lqrName', title: '领取人', width:80 , align:'center'},
-						{field : 'lqrCpyName', title: '领取人所属公司', width:180 , align:'center'},
+						{field : 'lqrCpyName', title: '领取人所属公司', width:240 , align:'center'},
 						{field : 'lqDate', title: '领取日期', width:150 , align:'center'},
 						{field : 'pubInfo', title: '发布者', width:100 , align:'center'},
 						{field : '', title: '操作', fixed: 'right', width:200,align:'center',templet : function(d){

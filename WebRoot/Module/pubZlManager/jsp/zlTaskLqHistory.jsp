@@ -35,16 +35,19 @@
 		  								<input id="addStatusInp" type="hidden" value="0"/>
 		  								<select id="addStatusSel" lay-filter="addStatusSelFilter">
 									       	<option value="">请选择添加状态</option>
-									        <option value="0">未添加</option>
+									        <option value="0" selected>未添加</option>
 							    			<option value="1">已添加</option>
 									      </select>
 		  							</div>
 		  						</div>
 		  						<div class="itemDiv fl">
 		  							<div class="layui-input-inline">
-		  								<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search
-	 "></i></button>
+		  								<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search"></i></button>
 		  							</div>
+		  						</div>
+		  						<div class="itemDiv currStatusBox fl">
+		  							<p class="currStatusP"><span class="statusColSpan grayColor"></span>未添加</p>
+		  							<p class="currStatusP"><span class="statusColSpan greenColor"></span>已添加</p>
 		  						</div>
 	  						</div>
   						</div>
@@ -88,17 +91,19 @@
 			});      
 			form.on('select(addStatusSelFilter)', function(data){
 				var value = data.value;
-				value == '' ? $('#addStatusInp').val(0) : $('#addStatusInp').val(value);
+				//value == '' ? $('#addStatusInp').val(0) : $('#addStatusInp').val(value);
+				$('#addStatusInp').val(value);
+				if(value == ''){
+					layer.msg('请选择添加状态', {icon:5,anim:6,time:1500});
+					return;
+				}
+				loadZlLqHisList('queryLoad');
 			});	    
 			//获取已发布专利的list
 			function loadZlLqHisList(opts){
 				var option = $('#lqZlHisInp').val();
-				if(opts == 'initLoad'){//初始加载
-					var field = {addStatus : 0, option : option, purpose : 'allInfo'};
-				}else{//查询 queryLoad
-					var addStatusInp = $('#addStatusInp').val();
-					var field = {addStatus : addStatusInp, option : option, purpose : 'allInfo'};
-				}
+				var addStatusInp = $('#addStatusInp').val();
+				var field = {addStatus:addStatusInp,option:option,purpose:'allInfo'};
 				layer.load('1');
 				table.render({
 					elem: '#zlLqHisListTable',
@@ -110,11 +115,20 @@
 					even : true,
 					limit : 10,
 					limits:[10,20,30,40],
+					cellMinWidth:150,
 					cols : [[
 						{field : '', title: '序号',type:'numbers', width:60, fixed: 'left' , align:'center'},
-						{field : 'pzTitle', title: '专利名称', width:200 , align:'center',fixed: 'left'},
-						{field : 'zlTypeChi', title: '专利类型', width:150 , align:'center'},
-						{field : 'upCl', title: '是否有上传材料', width:140 , align:'center',templet:function(d){
+						{field : 'pzTitle', title: '专利名称', width:240 , align:'center',fixed: 'left',templet:function(d){
+							var strHtml = '';
+							if(addStatusInp == 0){//未添加
+								strHtml += '<span class="tabStatusSp grayColor"></span>';	
+							}else{
+								strHtml += '<span class="tabStatusSp greenColor"></span>';
+							}
+							return strHtml + d.pzTitle
+						}},
+						{field : 'zlTypeChi', title: '专利类型', align:'center'},
+						{field : 'upCl', title: '是否有上传材料',align:'center',templet:function(d){
 							if(d.upCl != ''){//表示有上传材料
 								return '<span class="hasFujianSpan">附有上传材料</span>';
 							}else{
@@ -122,9 +136,9 @@
 							}
 						}},
 						{field : 'addDate', title: '发布日期', width:180 , align:'center'},
-						{field : 'lqr', title: '领取人', width:80 , align:'center'},
+						{field : 'lqr', title: '领取人', align:'center'},
 						{field : 'lqDate', title: '领取日期', width:150 , align:'center'},
-						{field : '', title: '操作', fixed: 'right', width:globalWid,templet : function(d){
+						{field : '', title: '操作', fixed:'right',align:'center',width:globalWid,templet:function(d){
 							if(option == 'yg'){
 								return '<a class="btn layui-btn layui-btn-primary layui-btn-xs" lay-event="viewPubZlDetails" pubId="'+ d.pzId +'" taskTit="'+ d.pzTitle +'"><i class="layui-icon layui-icon-search"></i>查看详情</a> <a class="btn layui-btn layui-btn-danger layui-btn-xs" lay-event="receiveZlTask" zlTitle="'+ d.pzTitle +'" pubId="'+ d.pzId +'">撤销此任务</a>';
 							}else{
@@ -135,7 +149,7 @@
 					]],
 					done : function(res, curr, count){
 						layer.closeAll('loading');
-						if(res.result == 'error'){
+						if(res.msg == 'error'){
 							layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1500});
 						}
 					}

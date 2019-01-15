@@ -9,25 +9,25 @@
 <body style="background:#fff;">
 	<div id="addSubCpy" class="layui-form">
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label">子公司名字</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>子公司名字</label>
 			<div class="layui-input-inline">
 				<input type="text" name="name" required lay-verify="judegeCompName" placeholder="请输入子公司名字" autocomplete="off" class="layui-input" maxlength="25">
 			</div>				
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">子公司账号</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>子公司账号</label>
 			<div class="layui-input-inline">
 				<input type="text" name="account" required lay-verify="judegeAcc" placeholder="请输入子公司账号" autocomplete="off" class="layui-input" maxlength="12">
 			</div>				
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">子公司密码</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>子公司密码</label>
 			<div class="layui-input-inline">
 				<input type="text" name="password" required lay-verify="judgePass" placeholder="请输入子公司密码" autocomplete="off" class="layui-input" maxlength="16">
 			</div>				
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">所在地区</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>所在地区</label>
 			<div class="layui-input-inline">
 				<input id="provInp" name="prov" type="hidden" value=""/>
 				 <select id="cpyProvSel" name="cpyProvSel" lay-verify="judgeProv" lay-filter="province">
@@ -42,21 +42,21 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">联系人姓名</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>联系人姓名</label>
 			<div class="layui-input-inline">
 				<input type="text" name="lxr" required lay-verify="judgeName" placeholder="请输入联系人姓名" autocomplete="off" class="layui-input" maxlength="4">
 			</div>				
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">联系人电话</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>联系人电话</label>
 			<div class="layui-input-inline">
 				<input type="text" name="tel" required lay-verify="judgePhone" placeholder="请输入联系人手机号码" autocomplete="off" class="layui-input" maxlength="11"/>
 			</div>				
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">联系人邮箱</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>联系人邮箱</label>
 			<div class="layui-input-inline">
-				<input type="email" name="email" required lay-verify="email" placeholder="请输入联系人邮箱" autocomplete="off" class="layui-input"/>
+				<input type="email" name="email" required lay-verify="email" placeholder="请输入联系人邮箱" autocomplete="off" class="layui-input" maxlength="30"/>
 			</div>				
 		</div>
 		<div class="layui-form-item">
@@ -120,13 +120,13 @@
 				},
 				judgeProv : function(value){
 					var value = $("#provInp").val();
-					if(value == ''){
+					if(value == '' || value == '请选择省'){
 						return '请选择省';
 					}
 				},
 				judgeCity : function(){
 					var value = $("#cityInp").val();
-					if(value == ''){
+					if(value == '' || value == '请选择市'){
 						return '请选择市';
 					}
 				},

@@ -76,12 +76,10 @@
 					layer.load('1');
 					$.ajax({
 						type:'post',
-				        async:false,
 				        dataType:'json',
 				        data:{cusId : cusId,opt:globalOpts},
 				        url:'/customer.do?action=getCusDetailInfo',
 				        success:function (json){
-				        	console.log(json)
 				        	layer.closeAll('loading');
 				        	if(json['result'] == 'success'){
 				        		if(globalOpts == 'cus'){

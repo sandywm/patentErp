@@ -184,6 +184,7 @@
   					page.commonLoadZlInfo('fj','');
   				}else if(data.index == 5){
   					page.commonLoadZlInfo('fy','initLoad');
+  					page.data.globalFeeIdArray.length = 0;
   					$('#queryBtn').on('click',function(){
 						page.commonLoadZlInfo('fy','queryLoad');
 					});
@@ -194,11 +195,13 @@
  			form.on('select(feeType)', function(data){
 				var value = data.value;
 				value == '' ? $('#feeTypeInp').val('') : $('#feeTypeInp').val(value);
+				page.commonLoadZlInfo('fy','queryLoad');
 			});
 			//缴费状态
 			form.on('select(feeStatusSel)', function(data){
 				var value = data.value;
 				value == '' ? $('#feeStatusInp').val(-1) : $('#feeStatusInp').val(value);
+				page.commonLoadZlInfo('fy','queryLoad');
 			});
 			//是否代缴
 			form.on('select(isDjStatusSel)', function(data){
@@ -208,12 +211,14 @@
 					$('#isBackStatusBox').show();
 				}else{
 					$('#isBackStatusBox').hide();
+					page.commonLoadZlInfo('fy','queryLoad');
 				}
 			});
 			//是否退换  当时代缴情况下显示 其他隐藏
 			form.on('select(isBackStatusSel)', function(data){
 				var value = data.value;
 				value == '' ? $('#isBackStatusInp').val(-1) : $('#isBackStatusInp').val(value);
+				page.commonLoadZlInfo('fy','queryLoad');
 			});
 			var page = {
 				data : {
@@ -221,6 +226,7 @@
 					fpZlFlag : false,
 					actGetMxFlag : false,
 					ajStatus : 0,
+					globalFeeIdArray:[],
 					nowLcStr : '<i class="iconfont layui-extend-jinhangzhong ingTaskIcon"></i><span class="ingTaskSp">任务正在进行中<span class="dotting"></span></span>',
 					otherLcStr : '<i class="iconfont layui-extend-jinhangzhong"></i><span>任务等待中<span class="dotting"></span></span>',
 					hasCompLcStr : '<i class="layui-icon layui-icon-ok statusIcon_com"></i><span class="hasComSp">任务已完成</span>',
@@ -228,7 +234,6 @@
 				},
 				init : function(){
 					this.onLoad();
-					this.bindEvent();
 				},
 				onLoad : function(){
 					this.data.upZlFlag = common.getPermission('upZl','',0);
@@ -254,17 +259,17 @@
 					}
 					$.ajax({
   						type:'post',
-				        async:false,
 				        dataType:'json',
 				        data : field,
 				        url:'/zlm.do?action=getZlDetail',
 				        success:function (json){
 				        	layer.closeAll('loading');
-				        	//console.log(json)
+				        	console.log(json)
 				        	if(json['result'] == 'success'){
 				        		if(opts == 'basic'){//获取基本信息
 				        			zlId = json.ajId;
 		   			        		_this.renderZlBasicInfo(json);
+		   			        		_this.bindEvent();
 				        		}else if(opts == 'lcfz'){//获取流程分配人员
 				        			_this.data.ajStatus = parseFloat(json.ajStatus);
 				        			_this.renderLcFpPeo(json);
@@ -275,13 +280,14 @@
 				        		}else if(opts == 'fj'){
 				        			_this.renderFjDetail(json);
 				        		}else if(opts == 'fy'){
+				        			_this.data.globalFeeIdArray.length = 0;
 				        			$('#noData').hide().html('');
 				        			$('.layui-table-view').show();
 				        			var feeInfo = json.feeInfo;
 				        			_this.renderFyDetail(feeInfo);
 				        			$('.totalInfo').show().html('<p>根据系统结算，当前的专利费用总计为<span>'+ json.feeTotal +'元</span>，代缴费用总计为<span>'+ json.djFeeTotal +'元</span>，优惠费用总计为<span>'+ json.discountsFeeTotal +'元</span>，退换费用总计为<span>'+ json.backFeeTotal +'元</span>，未退费用总计为<span>'+ json.diffFeeTotal +'元</span></p>');
 				        		}
-				        	}else if(json['result'] == 'noInfo'){
+				        	}else if(json['result'] == 'noInfo' || json['result'] == '暂无记录'){
 				        		if(opts == 'basic'){
 				        			$('#addNewZl').html(noData);
 				        		}else if(opts == 'lcfz'){
@@ -443,6 +449,12 @@
 			   				});
 						}
 					});
+					//费用导出
+					$('.daochuExcelBtn').on('click',function(){
+						var url = '/zlm.do?action=exportFeeInfoToExcel';
+						feeIdStr = _this.data.globalFeeIdArray.join(',');
+						common.commonExportFun(url,'feeIdStr',feeIdStr);
+					});
 				},
 				//流程的事件绑定
 				bindEvent_lc : function(){
@@ -500,7 +512,6 @@
 				},
 				//编辑时渲染结构
 				renderZlBasicInfo : function(json){
-					//console.log(json)
 					var strHtml = '',isReadFlag = true;
 					if(!this.data.upZlFlag){
 						//表示不具有编辑权限
@@ -1245,6 +1256,7 @@
 							{field : 'feeName', title: '费用名称', width:200, fixed: 'left', align:'center'},
 							{field : 'applyUserName', title: '操作人', width:100, align:'center'},
 							{field : 'feePrice', title: '费用金额', width:100, align:'center',templet : function(d){
+								_this.data.globalFeeIdArray.push(d.feeId);
 								return '<span class="hasSubPrice">'+ d.feePrice +'</span>';
 							}},
 							{field : 'jnDate', title: '缴费时间', width:120, align:'center'},

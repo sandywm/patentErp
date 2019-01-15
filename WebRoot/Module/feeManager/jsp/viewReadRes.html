@@ -49,7 +49,6 @@
 					$('#fileNameP').html('[<span class="fileNameSp">' + parent.globalFileName + '</span>]的读取结果');
 					$.ajax({
 	   					type:'post',
-	   			        async:false,
 	   			        dataType:'json',
 	   			        data:{firId:firId},
 	   			        url : '/fee.do?action=getFidrDetail',

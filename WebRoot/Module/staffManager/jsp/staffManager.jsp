@@ -99,12 +99,17 @@
 				addFlag = "${ requestScope.addFlag }",
 				loadFlag = false,
 				upRoleList = [],upRoleIndex = 0,upRoleListName=[],globalUserId=0;
-			layui.use(['layer','jquery','table','form','laydate'],function(){
+			layui.config({
+				base: '/plugins/frame/js/'
+			}).extend({ //设定组件别名
+			    common: 'common'// 表示模块文件的名字
+			}).use(['layer','jquery','table','form','laydate','common'],function(){
 				var layer = layui.layer,
 					$ = layui.jquery,
 					table = layui.table,
 					form = layui.form,
-					laydate = layui.laydate;
+					laydate = layui.laydate,
+					common = layui.common;
 				var page = {
 					init : function(){
 						this.onLoad();
@@ -115,12 +120,11 @@
 						$("#addRole").on("click",function(){
 							if(addFlag == "true"){
 								loadFlag = false;
-								layer.open({
+								var fullIndex = layer.open({
 									title:'添加员工',
 									type: 2,
 								  	area: ['750px', '500px'],
 								  	fixed: false, //不固定
-								  	maxmin: true,
 								  	shadeClose :false,
 								  	content: "/Module/staffManager/jsp/addStaffInfo.html",
 								  	end:function(){
@@ -129,6 +133,7 @@
 								  		}
 								  	}
 								});	
+								layer.full(fullIndex);
 							}else{
 								layer.msg("抱歉，您暂无权限添加员工",{icon:5,anim:6,time:1000});
 							}
@@ -208,11 +213,19 @@
 						cols : [[
 							{field : '', title: '序号', type:'numbers',fixed: 'left' , align:'center'},
 							{field : 'name', title: '姓名', align:'center',fixed: 'left' },
-							{field : 'account', title: '用户名',align:'center',style:'color:#01AAED;'},
-							{field : 'namePy', title: '用户拼音', align:'center'},
-							{field : 'roleName', title: '用户身份',width:150 , align:'center',style:'background-color: #eee;'},
+							{field : 'account', title: '账号',align:'center',style:'color:#01AAED;'},
+							{field : 'namePy', title: '姓名拼音首字母',width:150, align:'center'},
+							{field : 'roleName', title: '角色身份',width:260 , align:'center',templet:function(d){
+								return common.switchToArray(d.roleName.split(','));
+							}},
 							{field : 'sex', title: '性别', width:60 , align:'center',templet: '#sexTpl'},
-							{field : 'scFiledName', title: '擅长领域',width:150 , align:'center',style:'background-color: #eee;'},
+							{field : 'scFiledName', title: '擅长领域',width:150 , align:'center',style:'background-color: #eee;',templet:function(d){
+								if(d.scFiledName != ''){
+									return common.switchToArray(d.scFiledName.split(','));
+								}else{
+									return '';
+								}
+							}},
 							{field : 'inDate', title: '入职时间', width:120 ,align:'center'},
 							{field : 'yxStatus', title: '账号状态',  align:'center', templet: '#isAccYxTpl'},
 							{field : 'lzStatus', title: '离职状态',  align:'center',templet: '#isLzTpl'},
@@ -352,7 +365,6 @@
 							layer.load("1");
 							$.ajax({
 		    					type:"post",
-		    			        async:false,
 		    			        dataType:"json",
 		    			        data : {userId : userId},
 		    			        url:"user.do?action=getUserRoleData",
@@ -383,7 +395,6 @@
 								layer.load("1");
 								$.ajax({
 			    					type:"post",
-			    			        async:false,
 			    			        dataType:"json",
 			    			        data : {userId : userId},
 			    			        url:"user.do?action=initUserPass",

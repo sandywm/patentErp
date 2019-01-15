@@ -103,10 +103,13 @@
 						$('#zlTypeListSel').attr('disabled','disabled');
 						if(zlType == 'fm'){
 							$('#zlTypeListSel').html('<option value="fm">发明</option>');
+							$('#zlTypeInp').val('fm');
 						}else if(zlType == 'wg'){
 							$('#zlTypeListSel').html('<option value="wg">外观</option>');
+							$('#zlTypeInp').val('wg');
 						}else if(zlType == 'syxx'){
 							$('#zlTypeListSel').html('<option value="syxx">实用新型</option>');
+							$('#zlTypeInp').val('syxx');
 						}
 						form.render();
 					}

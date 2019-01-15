@@ -212,7 +212,7 @@
   					}
   				},
   				//初始化邮件列表
-  				loadEmailList : function(opts,mailType){ 
+  				loadEmailList : function(opts,mailType){
   					layer.load('1');
   					var _this = this,limit = 10,currPage=1,noData='<div class="noData"><i class="iconfont layui-extend-noData"></i><p>暂无邮件记录<p></div>';
   					if(opts == 'initLoad'){

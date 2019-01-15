@@ -64,20 +64,34 @@
 					var _this = this;
 					$('#addSubCpyBtn').on('click',function(){
 						if(addFlag == 'true'){
-							layer.open({
-								title:'添加子公司',
-								type: 2,
-							  	area: ['700px', '500px'],
-							  	fixed: true, //不固定
-							  	maxmin: true,
-							  	shadeClose :false,
-							  	content: '/Module/subParCpyManager/jsp/addSubCpy.html',
-							  	end:function(){
-							  		if(loadFlag){
-							  			_this.initLoad();
-							  		}
-							  	}
-							});
+							$.ajax({
+			   					type:'post',
+			   			        dataType:'json',
+			   			        url:'cpyManager.do?action=getAddSubCpyAbility',
+			   			        success:function (json){
+			   			        	if(json['result'] == 'success'){
+			   			        		loadFlag = false;
+										layer.open({
+											title:'添加子公司',
+											type: 2,
+										  	area: ['700px', '500px'],
+										  	fixed: true, //不固定
+										  	maxmin: false,
+										  	shadeClose :false,
+										  	content: '/Module/subParCpyManager/jsp/addSubCpy.html',
+										  	end:function(){
+										  		if(loadFlag){
+										  			_this.initLoad();
+										  		}
+										  	}
+										});
+			   			        	}else if(json['result'] == 'noAbility'){
+			   			        		layer.msg('抱歉，银牌以上会员才有权限添加子公司',{icon:5,anim:6,time:1500});
+			   			        	}else if(json['result'] == 'outNum'){
+			   			        		layer.msg('当前拥有的子公司数量已是最大数量！',{icon:5,anim:6,time:1500});
+			   			        	}
+			   			        }
+			   				});
 						}else{
 							layer.msg('抱歉，您暂无权限添加子公司',{icon:5,anim:6,time:1000});
 						}

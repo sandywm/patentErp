@@ -1,0 +1,17 @@
+@import url("../../../css/common.css");
+.layui-form-label{
+	color:#666;
+}
+.addRoleFieldBox{
+	margin-top:20px;
+}
+.addRoleFieldBox input{
+	width:90%;
+}
+.hasAlign{
+	text-align:center;
+}
+.hasAlign button{
+	width:120px;
+	display:inline-block;
+}

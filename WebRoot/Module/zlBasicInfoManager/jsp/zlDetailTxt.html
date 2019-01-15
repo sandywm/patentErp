@@ -32,7 +32,6 @@
 					layer.load('1');
 					$.ajax({
   						type:'post',
-				        async:false,
 				        dataType:'json',
 				        data : {zlId : parent.globalZlId,opt:'basic'},
 				        url:'/zlm.do?action=getZlDetail',
@@ -52,7 +51,6 @@
   					});
 				},
 				renderZlBasicInfo : function(json){
-					console.log(json)
 					var strHtml = '';
 					strHtml += '<ul>';
 					strHtml += '<li class="oneWidLi hasAlign"><strong>'+ json.ajTitle +'</strong></li>';

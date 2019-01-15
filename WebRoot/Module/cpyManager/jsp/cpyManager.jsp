@@ -150,8 +150,8 @@
 					limits:[10,20,30,40],
 					cols : [[
 						{field : 'id', title: 'ID', width:60, fixed: 'left' , align:'center'},
-						{field : 'cpyName', title: '代理机构名称', width:180 , align:'center',fixed: 'left' },
-						{field : 'cpyNamePy', title: '拼音简写', width:100 , align:'center'},
+						{field : 'cpyName', title: '代理机构名称', width:240 , align:'center',fixed: 'left' },
+						{field : 'cpyNamePy', title: '拼音简写', width:120 , align:'center'},
 						{field : 'cpyFr', title: '法人姓名', width:100 , align:'center'},
 						{field : 'hotStatus', title: '公司热度', width:100 , align:'center',style:'color:#f00;',sort:true},
 						{field : 'levelNum', title: '会员等级', width:90 , align:'center',templet:function(d){
@@ -165,12 +165,12 @@
 								return '<svg class="icon-svg specSvg" aria-hidden="true"><use xlink:href="#icon-svg-zuanshi"></use></svg><span>钻石</span>';
 							}  							 
 						}},
-						{field : 'endDate', title: '会员到期时间', width:120 , align:'center',style:'color:#01AAED;'},
+						{field : 'endDate', title: '会员到期时间', width:120 , align:'center',style:'color:#F47837;'},
 						{field : 'cpyYyzz', title: '组织机构代码', width:120 , align:'center'},
 						{field : 'cpyLxr', title: '联系人', width:80 , align:'center'},
-						{field : 'lxrTel', title: '联系人电话', width:120 , align:'center'},
-						{field : 'lxrEmail', title: '联系人邮箱', width:160 , align:'center'},
-						{field : 'cpyUrl', title: '网址', width:180 , align:'center'},
+						{field : 'lxrTel', title: '联系人电话', width:150 , align:'center'},
+						{field : 'lxrEmail', title: '联系人邮箱', width:180 , align:'center'},
+						{field : 'cpyUrl', title: '网址', width:200 , align:'center'},
 						{field : 'signDate', title: '注册日期', width:110 , align:'center'},
 						{field : '', title: '操作', width:180 , fixed: 'right', align:'center',templet : function(d){
 							if(loginType == 'spUser'){
@@ -274,10 +274,12 @@
 			form.on('select(accStatusSel)', function(data){
 				var value = data.value;
 				value == '' ? $('#accStatusInp').val(-1) : $('#accStatusInp').val(value);
+				loadQueryCpyList('queryLoad');
 			});
 			form.on('select(levelSel)', function(data){
 				var value = data.value;
 				value == '' ? $('#levelSelInp').val(-1) : $('#levelSelInp').val(value);
+				loadQueryCpyList('queryLoad');
 			});
 			//根据动态改变的levelNum动态显示对的图标
   			function renderLevelShow(levelNum){

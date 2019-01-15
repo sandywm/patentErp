@@ -114,9 +114,10 @@
 	        		if(roleName == '管理员'){
 	        			liItem += '<li class="layui-nav-item navLi goSetCpy"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="3"><i class="iconfont layui-extend-xiugai"></i><cite>代理机构信息管理</cite></a></li>';
 		        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)"><i class="iconfont layui-extend-guanli"></i>代理机构管理</a>';
-		        		liItem += '<dl class="layui-nav-child"><dd class="navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="7">代理机构角色权限管理</a></dd>';
-		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="user.do?action=goUserPage" tab-id="4">代理机构员工管理</a></dd>';
+		        		liItem += '<dl class="layui-nav-child">';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="role.do?action=goRolePage" tab-id="5">代理机构角色管理</a></dd>';
+		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="user.do?action=goUserPage" tab-id="4">代理机构员工管理</a></dd>';
+		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="modM.do?action=goModulePage" tab-id="7">代理机构角色权限管理</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="jfm.do?action=goJfPage" tab-id="6">技术领域管理</a></dd>';
 		        		liItem += '<dd class="navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goSubParCpyPage" tab-id="8">代理机构主/子公司</a></dd></dl></li>';
 		        		liItem += '<li class="layui-nav-item"><a href="javascript:void(0)"><i class="layui-icon layui-icon-form" style="font-size:16px;margin-right:5px;"></i>专利任务管理</a>';
@@ -162,14 +163,13 @@
 	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="6"><i class="iconfont layui-extend-feiyong"></i>费用列表</a></li>';
 	        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="8" path="zlyq.do?action=goZlyqPage"><i class="layui-icon layui-icon-tree" style="font-size:18px;margin-right:5px;"></i>专利额外要求管理</a></li>';
 	        	}
-	        	
 	        	$("#leftSideNav").html(liItem);
 	        	element.init(); 
 	        }
 	        function getNoReadStatusNum(){
 				$.ajax({
 					type:'post',
-			        async:false,
+			        /*async:false,*/
 			        dataType:'json',
 			        url:'mail.do?action=getNoReadInfo',
 			        success:function (json){

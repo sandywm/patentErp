@@ -76,26 +76,21 @@ body{
 .overdueSp{
 	color:#FF5722;
 }
-.greenColor{
+.greenColor_fee{
 	color:#5FB878;
 }
-.blueColor{
+.blueColor_fee{
 	color:#009688;
 }
-.yellowColor{
+.yellowColor_fee{
 	color:#a38434;
 }
-.redColor{
+.redColor_fee{
 	color:#F00;
 }
 .blockSpan{
-	display:inline-block;
-	height:22px;
-	line-height:22px;
-	padding:0 5px;
 	background:#14c5b5;
 	color:#fff;
-	margin-right:5px;
 	font-size:12px;
 }
 .hasPadBot{

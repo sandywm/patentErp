@@ -53,10 +53,6 @@ body{
 	width:136px;
 	padding:9px 10px;
 }
-.layui-form-label span{
-	color:red;
-	margin-right:2px;
-}
 .layui-form-radio{
 	padding-right:4px;
 }
@@ -666,9 +662,6 @@ body{
 }
 .layui-extend-bangzhu{
 	font-size:18px;
-	/*position:absolute;
-	right:-10px;
-	top:0px;*/
 	float:left;
 	z-index:10;
 	cursor:pointer;
@@ -680,13 +673,8 @@ body{
 	color:#F47837;
 }
 .blockSpan{
-	display:inline-block;
-	height:22px;
-	line-height:22px;
-	padding:0 5px;
 	background:#009688;
 	color:#fff;
-	margin-right:5px;
 	font-size:12px;
 }
 /* 使用说明 */

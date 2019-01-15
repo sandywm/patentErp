@@ -15,7 +15,7 @@
 	</div>
 	<div id="addNewZl" class="layui-form">
 		<div class="layui-form-item">
-			<label class="layui-form-label"><span>*</span>案件标题</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>案件标题</label>
 			<div class="layui-input-block">
 				<input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)" maxlength="40" autocomplete="off" class="layui-input"/>
 			</div>				
@@ -36,7 +36,7 @@
 		</div>
 		<div class="layui-form-item clearfix">
 			<div class="itemDiv">
-				<label class="layui-form-label"><span>*</span>专利类型</label>
+				<label class="layui-form-label"><span class="mustItem">*</span>专利类型</label>
 				<input id="zlTypeInp" name="ajType" type="hidden" value=""/>
 				<div class="layui-input-inline">
 					<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>
@@ -58,7 +58,7 @@
 		<div class="layui-form-item">
 			<div class="itemDiv agentFeeDiv">
 				<div class="comAgentDiv oneAgentDiv twoWid fl">
-					<label class="layui-form-label"><span>*</span><i class="agentTit">专利代理费</i></label>
+					<label class="layui-form-label"><span class="mustItem">*</span><i class="agentTit">专利代理费</i></label>
 					<div class="layui-input-inline">
 						<em class="moneyDec">¥</em>
 						<input id="zlAgentFeeInp" type="text" placeholder="请输入代理费" autocomplete="off" class="layui-input agentInp"/>
@@ -66,7 +66,7 @@
 					<span class="tipsInfo">请先选择专利类型</span>
 				</div>
 				<div class="comAgentDiv twoAgentDiv twoWid fl">
-					<label class="layui-form-label sepcialLab"><span>*</span><i class="agentTit"></i></label>
+					<label class="layui-form-label sepcialLab"><span class="mustItem">*</span><i class="agentTit"></i></label>
 					<div class="layui-input-inline sepcialInline">
 						<em class="moneyDec">¥</em>
 						<input id="xxAgentFeeInp" type="text" placeholder="请输入代理费" autocomplete="off" class="layui-input agentInp"/>
@@ -75,7 +75,7 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label"><span>*</span>案件技术领域</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>案件技术领域</label>
 			<div class="layui-input-block fixHeiDiv clearfix">
 				<input id="ajFieldId" type="hidden" name="ajFieldId"/>
 				<div id="fieldBox" class="multiBox fl"></div>
@@ -83,7 +83,7 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label"><span>*</span>案件申请地区</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>案件申请地区</label>
 			<input id="ajSqAddress" type="hidden" name="ajSqAddress"/>
 			<div class="layui-input-block fixHeiDiv clearfix">
 				<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国" title="中国[CN]"/>
@@ -94,7 +94,7 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label"><span>*</span>申请人</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>申请人</label>
 			<input id="sqrIdInp" type="hidden"/>
 			<div class="layui-input-block fixHeiDiv clearfix">
 				<input id="ajSqrId" type="hidden" name="ajSqrId"/>
@@ -123,7 +123,7 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label"><span>*</span>技术联系人</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>技术联系人</label>
 			<div class="layui-input-block fixHeiDiv clearfix">
 				<input id="jsLxrIdInp" type="hidden" name="jsLxrIdInp"/>
 				<div class="multiBox fl" style="width:100%;">
@@ -155,7 +155,7 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label"><span>*</span>定稿提交截止时间</label>
+			<label class="layui-form-label"><span class="mustItem">*</span>定稿提交截止时间</label>
 			<div class="layui-input-inline">
 				<input type="text" class="layui-input" id="cpyDateInp" name="cpyDate"/>
 			</div>
@@ -252,7 +252,6 @@
 			var page = {
 				init : function(){
 					this.onLoad();
-					this.bindEvent();
 				},
 				onLoad : function(){
 					if(addEditZlOpts == 'editZlOpts'){//表示编辑
@@ -260,16 +259,15 @@
 						layer.load('1');
 						$.ajax({
 		   					type:'post',
-		   			        async:false,
 		   			        dataType:'json',
 		   			        data:{zlId : parent.globalZlId,opt:'basic'},
 		   			        url:'/zlm.do?action=getZlDetail',
 		   			        success:function (json){
 		   			        	layer.closeAll('loading');
 		   			        	if(json['result'] == 'success'){
-		   			        		console.log(json)
 		   			        		zlId = json.ajId;
 		   			        		_this.renderZlBasicInfo(json);
+		   			        		_this.bindEvent();
 		   			        		$('#titSpan').html('编辑专利[<em style="color:#F47837;font-style:normal;">'+ json.ajTitle +'</em>]');
 		   			        	}else if(json['result'] == 'error'){
 		   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
@@ -281,6 +279,7 @@
 		   			        }
 		   				});
 					}else{//表示增加 onload直接调用上传这个方法
+						this.bindEvent();
 						$('#titSpan').html('增加新专利');
 						zlInfoMethod.selectFileUpload();
 						zlInfoMethod.getCpyDate();
@@ -473,7 +472,7 @@
 					//console.log(json)
 					var strHtml = '',isReadFlag = true;
 					//案件标题
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>案件标题</label><div class="layui-input-block">';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>案件标题</label><div class="layui-input-block">';
 					strHtml += '<input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)" maxlength="40" value="'+ json.ajTitle +'" autocomplete="off" class="layui-input"/></div></div>';
 					//案件编号 && 案件申请号/专利号
 					strHtml += '<div class="layui-form-item clearfix"><div class="itemDiv"><label class="layui-form-label">案件编号</label><div class="layui-input-inline">';
@@ -482,7 +481,7 @@
 					strHtml += '<input id="ajSqZlNum" type="text" name="ajSqZlNum" disabled autocomplete="off" value="'+ json.ajNoGf +'" class="layui-input"/></div></div></div>';
 					//专利类型 && 已领取专利任务
 					strHtml += '<div class="layui-form-item clearfix">';
-					strHtml += '<div class="itemDiv"><label class="layui-form-label"><span>*</span>专利类型</label><input id="zlTypeInp" name="ajType" type="hidden" value="'+ json.ajType +'"/><div class="layui-input-inline">';
+					strHtml += '<div class="itemDiv"><label class="layui-form-label"><span class="mustItem">*</span>专利类型</label><input id="zlTypeInp" name="ajType" type="hidden" value="'+ json.ajType +'"/><div class="layui-input-inline">';
 					if(json.ajType == 'fm'){
 						strHtml += '<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明" checked/>';
 						strHtml += '<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型"/>';
@@ -514,7 +513,7 @@
 					strHtml += '<div class="layui-input-inline"><em class="moneyDec" style="display:block;">¥</em><input id="zlAgentFeeInp" type="text" value="'+ json.dlFee +'" style="display:block;" placeholder="请输入代理费" autocomplete="off" class="layui-input agentInp"/></div></div></div>';
 					strHtml += '</div>';
 					//案件技术领域
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>案件技术领域</label><div class="layui-input-block fixHeiDiv clearfix">';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>案件技术领域</label><div class="layui-input-block fixHeiDiv clearfix">';
 					strHtml += '<div id="fieldBox" class="multiBox fl">';
 					//var strJsId = '';
 					for(var i=0;i<json.jsFieldInfo.length;i++){
@@ -526,7 +525,7 @@
 					strHtml += '<input id="ajFieldId" type="hidden" name="ajFieldId"/></div>';
 					strHtml += '<span id="addFieldBtn" class="addSpan fl">添加技术领域</span></div></div>';
 					//案件申请地区
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>案件申请地区</label>';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>案件申请地区</label>';
 					strHtml += '<input id="ajSqAddress" type="hidden" name="ajSqAddress" value="'+ json.ajAddress +'"/><div class="layui-input-block fixHeiDiv clearfix">';
 					if(json.ajAddress == '中国'){
 						strHtml += '<input type="radio" name="ajSqRad" lay-filter="ajSqAreaFilter" value="中国" title="中国[CN]" checked/>';
@@ -561,7 +560,7 @@
 					}
 					strHtml += '</div></div>';
 					//申请人
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>申请人</label><input id="sqrIdInp" type="hidden"/>';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>申请人</label><input id="sqrIdInp" type="hidden"/>';
 					strHtml += '<div class="layui-input-block fixHeiDiv clearfix"><input id="ajSqrId" type="hidden" value="'+ json.sqrId +'" name="ajSqrId"/>'; 
 					strHtml += '<div id="sqrBox" class="multiBox fl">';
 					var tmpArraySqrId = json.sqrId.split(',');
@@ -607,7 +606,7 @@
 					strHtml += '</div><span id="addFmrBtn" opts="addFmrOpts" class="addSpan fl">添加/编辑发明人</span></div>';
 					strHtml += '</div></div>';
 					//技术联系人
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>技术联系人</label><div class="layui-input-block fixHeiDiv clearfix">';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>技术联系人</label><div class="layui-input-block fixHeiDiv clearfix">';
 					strHtml += '<input id="jsLxrIdInp" type="hidden" value="'+ json.jsLxrId +'" name="jsLxrIdInp"/><div class="multiBox fl" style="width:100%;">';
 					strHtml += '<div id="techLxrBox" class="multiBox fl">';
 					if(json.jsLxrId != ''){
@@ -698,7 +697,7 @@
 					strHtml += '<textarea id="ajRemark" name="ajRemark" placeholder="请输入案件备注(80字以内)" class="layui-textarea" maxlength="80">'+ json.ajRemark +'</textarea>';
 					strHtml += '</div></div>';
 					//定稿提交截至时间
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>定稿提交截止时间</label><div class="layui-input-inline">';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>定稿提交截止时间</label><div class="layui-input-inline">';
 					strHtml += '<input type="text" class="layui-input" id="cpyDateInp" value="'+ json.cpyDate +'" name="cpyDate"/></div><div class="layui-form-mid layui-word-aux">(系统默认一个月)</div></div>';
 					//案件附件
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label">案件附件</label><div class="layui-input-block">';

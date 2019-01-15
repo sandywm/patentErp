@@ -54,38 +54,6 @@ body{
 input[type="text"]:disabled{
 	background:#f1f1f1;
 }
-/* 添加角色 */
-.addConLayer{
-	width:100%;
-	height:100%;
-	background:rgba(255,255,255,0.9);
-	position:absolute;
-	left:0;
-	top:-100%;
-	display:none;
-}
-.innerAddCon{
-	width: 320px;
-    height:40px;
-    line-height: 40px;
-    margin: 30px auto 0;
-}
-.innerAddCon:first-child{
-	margin-top:100px;
-}
-.innerAddCon input{
-	width: 245px;
-    height: 39px;
-    border: none;
-    border-bottom: 1px solid #ccc;
-    float: left;
-    line-height: 40px;
-    margin-left: 5px;
-}
-#addRoleLayer,
-#addFieldLayer{
-	display:none;
-}
 .layui-btn-danger{
 	background:#ff774d;
 }
@@ -179,4 +147,17 @@ input[type="text"]:disabled{
 .femaleB{
 	color:#F581B1;
 	font-weight:normal;
+}
+.comAddBtns{
+	display:block;
+	margin-top:10px;
+	color:#009688;
+	cursor:pointer;
+}
+.tipTxtNoField{
+	color:#009688;
+}
+.comAddBtns:hover,
+.tipTxtNoField:hover{
+	color:#F47837
 }
