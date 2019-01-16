@@ -167,6 +167,10 @@
 				        	}else{
 				        		$('#hasNoReadNum_buy').html('');
 				        	}
+				        	if(json['result_b'] == 0 && json['result_e'] == 0 && json['result_t'] == 0){
+				        		parent.$('#hasNoReadNum').hide().removeClass('hasBlink');
+				        		parent.$('.layui-extend-youxiang').removeClass('hasBlink');
+				        	}
 				        }
 					});
   				},

@@ -169,14 +169,16 @@
 	        function getNoReadStatusNum(){
 				$.ajax({
 					type:'post',
-			        /*async:false,*/
+			        async:true,
 			        dataType:'json',
 			        url:'mail.do?action=getNoReadInfo',
 			        success:function (json){
-			        	if(json['result'] > 0){
-			        		$('#hasNoReadNum').show();
+			        	if(json['result_b'] > 0 || json['result_e'] > 0 || json['result_t'] > 0){
+			        		$('#hasNoReadNum').show().addClass('hasBlink');
+			        		$('.layui-extend-youxiang').addClass('hasBlink');
 			        	}else{
-			        		$('#hasNoReadNum').hide();
+			        		$('#hasNoReadNum').hide().removeClass('hasBlink');
+			        		$('.layui-extend-youxiang').removeClass('hasBlink');
 			        	}
 			        }
 				});
