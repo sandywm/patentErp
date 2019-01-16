@@ -17,12 +17,15 @@ public interface ZlajLcYjInfoManager {
 	 * @param lcName 流程任务
 	 * @param applyCause 申请原因
 	 * @param checkUserId 审核人员
+	 * @param checkStauts 审核状态
+	 * @param checkDate 审核时间
 	 * @param cpyId 代理机构编号
 	 * @param yjType 移交类型(0：临时移交[只移交当前任务]，1：永久移交[移交该流程负责人])
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addYj(Integer lcmxId,Integer applyUserId,String lcName,String applyCause,Integer checkUserId,Integer cpyId,Integer yjType)throws WEBException;
+	Integer addYj(Integer lcmxId,Integer applyUserId,String lcName,String applyCause,Integer checkStatus, String checkDate,
+			Integer checkUserId,Integer cpyId,Integer yjType)throws WEBException;
 	
 	/**
 	 * 审核指定申请的信息

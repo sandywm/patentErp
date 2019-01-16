@@ -57,6 +57,7 @@ public class MailInfoDaoImpl implements MailInfoDao{
 		if(!readStatus.equals(-1)){
 			hql += " and m.readStatus = "+readStatus;
 		}
+		hql += " order by m.id desc";
 		int offset = (pageNo - 1) * pageSize;
 		if (offset < 0) {
 			offset = 0;
