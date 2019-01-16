@@ -55,5 +55,10 @@
                 <comment>审核人员</comment>
             </column>
         </property>
+        <property name="yjType" type="java.lang.Integer">
+            <column name="yj_type">
+                <comment>移交类型(0：临时移交[只移交当前任务]，1：永久移交[移交该流程负责人])</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

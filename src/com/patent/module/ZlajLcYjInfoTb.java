@@ -22,6 +22,7 @@ public class ZlajLcYjInfoTb implements java.io.Serializable {
 	private Integer checkStatus;
 	private String checkDate;
 	private Integer checkUserId;
+	private Integer yjType;
 
 	// Constructors
 
@@ -34,7 +35,7 @@ public class ZlajLcYjInfoTb implements java.io.Serializable {
 	/** minimal constructor */
 	public ZlajLcYjInfoTb(ZlajLcMxInfoTb lcmx, CpyUserInfo user,
 			CpyInfoTb cpy, String lcName, String applyDate, String applyCause,
-			Integer checkStatus, String checkDate, Integer checkUserId) {
+			Integer checkStatus, String checkDate, Integer checkUserId,Integer yjType) {
 		this.lcmx = lcmx;
 		this.user = user;
 		this.cpy = cpy;
@@ -44,12 +45,13 @@ public class ZlajLcYjInfoTb implements java.io.Serializable {
 		this.checkStatus = checkStatus;
 		this.checkDate = checkDate;
 		this.checkUserId = checkUserId;
+		this.yjType = yjType;
 	}
 
 	/** full constructor */
 	public ZlajLcYjInfoTb(Integer id, ZlajLcMxInfoTb lcmx, CpyUserInfo user,
 			CpyInfoTb cpy, String lcName,String applyDate, String applyCause,
-			Integer checkStatus, String checkDate, Integer checkUserId) {
+			Integer checkStatus, String checkDate, Integer checkUserId,Integer yjType) {
 		this.id = id;
 		this.lcmx = lcmx;
 		this.user = user;
@@ -60,6 +62,7 @@ public class ZlajLcYjInfoTb implements java.io.Serializable {
 		this.checkStatus = checkStatus;
 		this.checkDate = checkDate;
 		this.checkUserId = checkUserId;
+		this.yjType = yjType;
 	}
 
 	// Property accessors
@@ -154,6 +157,12 @@ public class ZlajLcYjInfoTb implements java.io.Serializable {
 	}
 	public void setLcName(String lcName) {
 		this.lcName = lcName;
+	}
+	public Integer getYjType() {
+		return yjType;
+	}
+	public void setYjType(Integer yjType) {
+		this.yjType = yjType;
 	}
 
 }

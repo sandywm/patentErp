@@ -728,6 +728,7 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("checkUserName", checkUserName);
 						map_d.put("checkDate", checkDate);
 						map_d.put("lcNo", mx.getLcMxNo());
+						map_d.put("yjType", yj.getYjType());
 						list_d.add(map_d);
 					}
 					map.put("msg", "success");
@@ -5358,6 +5359,7 @@ public class ZlMainAction extends DispatchAction {
 		String msg = "error";
 		Integer lcmxId = CommonTools.getFinalInteger("lcmxId", request);//流程明细编号
 		String applyCause = Transcode.unescape_new1("applyCause", request);//申请原因
+		Integer yjType = CommonTools.getFinalInteger("yjType", request);//移交类型(0：临时移交[只移交当前任务]，1：永久移交[移交该流程负责人])
 		if(this.getLoginType(request).equals("cpyUser")){
 			Integer cpyId = cum.getEntityById(currUserId).getCpyInfoTb().getId();
 			boolean lcfpFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "fpZl");//只有具有专利流程分配的人员
@@ -5384,7 +5386,7 @@ public class ZlMainAction extends DispatchAction {
 							if(yjList.size() > 0){
 								msg = "existInfo";//存在未审核的申请
 							}else{
-								Integer yjId = lcyjm.addYj(lcmxId, currUserId, lcTask, applyCause, 0, cpyId);
+								Integer yjId = lcyjm.addYj(lcmxId, currUserId, lcTask, applyCause, 0, cpyId,yjType);
 								if(yjId > 0){
 									mxm.updateYjCheckStatus(lcmxId, 0);
 									msg = "success";//成功
@@ -5450,46 +5452,59 @@ public class ZlMainAction extends DispatchAction {
 							if(checkStatus.equals(1)){//审核通过
 								checkStatusChi = "审核已通过";
 								//需要给指定的流程赋予新的流程负责人员
-//								Integer zlId = zl.getId();
-								
+								Integer zlId = zl.getId();
 								//一旦当前流程被其他人完成（管理员完成的情况下就不修改）
 								if(mx.getLcMxEDate().equals("")){
 									mxm.updateEdateById(mxId, newFzUserId, "", -1, "", "", "", "", "", -1);	
-//									String lcTask = lcyj.getLcName();
-									//(zx-专利撰写,sc-专利审核,cus-客户确认,dgtj-定稿提交,tzs-导入通知书,fycj-费用催缴,bz-专利补正,bzsh-补正审核,bh-专利驳回)
-									//修改专利表中的负责人(必须要知道当前想移交的是那个流程)
-//									Integer checkUserId = -1;
-//									Integer cusCheckUserId = -1;
-//									Integer zxUserId = -1;
-//									Integer tjUserId = -1;
-//									Integer tzsUserId = -1;
-//									Integer feeUserId = -1;
-//									Integer bzUserId = -1;
-//									Integer bzshUserId = -1;
-//									Integer bhUserId = -1;
-//									if(lcTask.equals("新申请撰稿") || lcTask.equals("撰稿修改")){
-//										zxUserId = newFzUserId;
-//									}else if(lcTask.equals("专利审核")){
-//										checkUserId = newFzUserId;
-//									}else if(lcTask.equals("客户确认")){
-//										cusCheckUserId = newFzUserId;
-//									}else if(lcTask.equals("定稿提交")){
-//										tjUserId = newFzUserId;
-//									}else if(lcTask.equals("导入通知书")){
-//										tzsUserId = newFzUserId;
-//									}else if(lcTask.equals("费用催缴")){
-//										feeUserId = newFzUserId;
-//									}else if(lcTask.equals("专利补正")){
-//										bzUserId = newFzUserId;
-//									}else if(lcTask.equals("补正审核")){
-//										bzshUserId = newFzUserId;
-//									}else if(lcTask.equals("专利驳回")){
-//										bhUserId = newFzUserId;
-//									}
-//									zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId, 
-//											tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
-									//给新分配的人员发送邮件
-									mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, newFzUserId, "cpyUser", "流程任务分配", "您已被分配为专利["+zl.getAjTitle()+"]中的"+mx.getLcMxName()+"]流程任务的负责人,请随时关注任务进度");
+									if(lcyj.getYjType().equals(1)){//永久移交
+										//需要将该流程的所有任务归入新的员工并且修改流程负责人
+										//step1:修改移交申请人当前流程下所有未完成的任务
+										String lcTask = lcyj.getLcName();
+										List<ZlajLcMxInfoTb>  mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, lcTask);
+										if(mxList_bz.size() > 0){
+											for(Iterator<ZlajLcMxInfoTb> it = mxList_bz.iterator() ; it.hasNext();){
+												ZlajLcMxInfoTb lcmx = it.next();
+												if(lcmx.getLcMxEDate().equals("")){//需要修改未完成的
+													mxm.updateFzrInfoById(lcmx.getId(), newFzUserId,"");
+												}
+											}
+										}
+										//step2:修改流程负责人
+//										(zx-专利撰写,sc-专利审核,cus-客户确认,dgtj-定稿提交,tzs-导入通知书,fycj-费用催缴,bz-专利补正,bzsh-补正审核,bh-专利驳回)
+//										修改专利表中的负责人(必须要知道当前想移交的是那个流程)
+										Integer checkUserId = -1;
+										Integer cusCheckUserId = -1;
+										Integer zxUserId = -1;
+										Integer tjUserId = -1;
+										Integer tzsUserId = -1;
+										Integer feeUserId = -1;
+										Integer bzUserId = -1;
+										Integer bzshUserId = -1;
+										Integer bhUserId = -1;
+										if(lcTask.equals("新申请撰稿") || lcTask.equals("撰稿修改")){
+											zxUserId = newFzUserId;
+										}else if(lcTask.equals("专利审核")){
+											checkUserId = newFzUserId;
+										}else if(lcTask.equals("客户确认")){
+											cusCheckUserId = newFzUserId;
+										}else if(lcTask.equals("定稿提交")){
+											tjUserId = newFzUserId;
+										}else if(lcTask.equals("导入通知书")){
+											tzsUserId = newFzUserId;
+										}else if(lcTask.equals("费用催缴")){
+											feeUserId = newFzUserId;
+										}else if(lcTask.equals("专利补正") || lcTask.equals("补正修改")){
+											bzUserId = newFzUserId;
+										}else if(lcTask.equals("补正审核")){
+											bzshUserId = newFzUserId;
+										}else if(lcTask.equals("专利驳回")){
+											bhUserId = newFzUserId;
+										}
+										zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId, 
+												tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+										//给新分配的人员发送邮件
+										mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, newFzUserId, "cpyUser", "流程任务分配", "您已被分配为专利["+zl.getAjTitle()+"]中的"+mx.getLcMxName()+"]流程任务的负责人,请随时关注任务进度");
+									}
 								}
 							}
 							msg = "success";
