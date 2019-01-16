@@ -619,6 +619,7 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("mxId", mx.getId());
 						map_d.put("taskName", mx.getLcMxName());//任务名称
 						map_d.put("fzUserId", mx.getLcFzUserId());//流程负责人员
+						map_d.put("fzUserName", cum.getEntityById(mx.getLcFzUserId()).getUserName());//任务负责人
 						String comDate = mx.getLcMxEDate();
 						String lcCpyDate = lc.getLcCpyDate();
 						String lcGfDate = lc.getLcGfDate();
