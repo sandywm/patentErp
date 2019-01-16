@@ -104,3 +104,9 @@
 	z-index:100;
 	background:transparent;
 }
+.layui-layer-orange .layui-layer-title{background:#F47837; color:#fff; border: none;}
+.layui-layer-orange .layui-layer-btn a{background:#F47837;border:1px solid #F47837;}
+.layui-layer-orange .layui-layer-btn .layui-layer-btn1{background:#fff;border:1px solid #ccc;}
+.layui-layer-orange{
+
+}
