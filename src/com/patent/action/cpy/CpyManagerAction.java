@@ -886,6 +886,22 @@ public class CpyManagerAction extends DispatchAction {
 		List<CpyInfoTb> cpyList = new ArrayList<CpyInfoTb>();
 		Map<String,Object> map = new HashMap<String,Object>();
 		List<Object> list_d = new ArrayList<Object>();
+		Integer selfCpyLevel = cpy.getCpyLevel();
+		String selfCpyLevelChi = "";
+		Integer maxSubCpy = 0;
+		if(selfCpyLevel.equals(0)){
+			selfCpyLevelChi = "铜牌";
+		}else if(selfCpyLevel.equals(1)){
+			selfCpyLevelChi = "银牌";
+			maxSubCpy = 1;
+		}else if(selfCpyLevel.equals(2)){
+			selfCpyLevelChi = "金牌";
+			maxSubCpy = 3;
+		}else if(selfCpyLevel.equals(3)){
+			selfCpyLevelChi = "钻石";
+			maxSubCpy = 5;
+		}
+		map.put("selfCpyLevelChi", selfCpyLevelChi);
 		if(parId.equals(0)){//没有主公司
 			if(!subIdStr.equals("")){//存在子公司
 				cpyList = cm.listParSubCpyInfo(subIdStr, "sub");
@@ -894,6 +910,7 @@ public class CpyManagerAction extends DispatchAction {
 			}else{
 				map.put("result", "noInfo");
 			}
+			map.put("maxSubCpy", maxSubCpy);
 		}else{//存在主公司-说明自己是子公司
 			cpyList = cm.listParSubCpyInfo(parId+"", "par");
 			map.put("result", "existInfo");
