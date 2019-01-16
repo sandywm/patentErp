@@ -9,7 +9,6 @@
 	color:#F47837;
 	font-weight:normal;
 	border-bottom:1px solid #e6e6e6;
-	margin-bottom:10px;
 	position:relative;
 }
 .titStrong i{
@@ -17,6 +16,9 @@
 	position:absolute;
 	left:-25px;
 	top:0;
+}
+.titStrong.smFont i{
+	font-size:20px;
 }
 .hasPos{
 	position:relative;
@@ -35,4 +37,10 @@
 .subBtn{
 	width:100px;
 	display:inline-block;
+}
+.layui-form-item.transformItem{
+	margin-bottom:8px;
+}
+.layui-form-item.noMargBot{
+	margin-bottom:5px;
 }

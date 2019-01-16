@@ -7,27 +7,39 @@
   	<link href="/Module/zlBasicInfoManager/css/transformApply.css" rel="stylesheet" type="text/css"/>
 </head>
 <body style="background:#fff;padding:0 10px;">
-	<strong class="titStrong"><i class="iconfont layui-extend-yijiao"></i>请选择任务移交原因</strong>
-	<div class="causeBox layui-form">
-		<input type="hidden" id="causeInp"/>
-		<div class="layui-form-item">
-			<input type="radio" name="applyCauseInp" lay-filter="causeApplyFilter" value="不想做了" title="不想做了">
+	<div class="transWrap">
+		<strong class="titStrong smFont"><i class="layui-icon layui-icon-app"></i>请选择移交类型</strong>
+		<div class="layui-form">
+			<input type="hidden" id="yjTypeInp"/>
+			<div class="layui-form-item noMargBot">
+				<input type="radio" name="yjTypeName" lay-filter="yjTypeFilter" value="0" title="临时移交(只移交当前任务)"/>
+				<input type="radio" name="yjTypeName" lay-filter="yjTypeFilter" value="1" title="永久移交(移交流程负责人) 慎选!"/>
+			</div>
 		</div>
-		<div class="layui-form-item">
-			<input type="radio" name="applyCauseInp" lay-filter="causeApplyFilter" value="有其他工作" title="有其他工作">
-		</div>
-		<div class="layui-form-item">
-			<input type="radio" name="applyCauseInp" lay-filter="causeApplyFilter" value="不合适" title="不合适">
-		</div>
-		<div class="layui-form-item">
-			<input type="radio" name="applyCauseInp" lay-filter="causeApplyFilter" value="个人离职" title="个人离职">
-		</div>
-		<div class="layui-form-item hasPos">
-			<input type="radio" name="applyCauseInp" lay-filter="causeApplyFilter" value="4" title="其他">
-			<input type="text" class="layui-input diyInp" placeholder="请输入移交原因(20个字以内)" maxlength=20/>
-		</div>
-		<div class="layui-form-item hasAlign">
-			<button class="layui-btn subBtn" >提交</button>
+	</div>
+	<div class="transWrap">
+		<strong class="titStrong"><i class="iconfont layui-extend-yijiao"></i>请选择任务移交原因</strong>
+		<div class="layui-form">
+			<input type="hidden" id="causeInp"/>
+			<div class="layui-form-item transformItem">
+				<input type="radio" name="applyCauseInp" lay-filter="causeApplyFilter" value="不想做了" title="不想做了">
+			</div>
+			<div class="layui-form-item transformItem">
+				<input type="radio" name="applyCauseInp" lay-filter="causeApplyFilter" value="有其他工作" title="有其他工作">
+			</div>
+			<div class="layui-form-item transformItem">
+				<input type="radio" name="applyCauseInp" lay-filter="causeApplyFilter" value="不合适" title="不合适">
+			</div>
+			<div class="layui-form-item transformItem">
+				<input type="radio" name="applyCauseInp" lay-filter="causeApplyFilter" value="个人离职" title="个人离职">
+			</div>
+			<div class="layui-form-item transformItem hasPos">
+				<input type="radio" name="applyCauseInp" lay-filter="causeApplyFilter" value="4" title="其他">
+				<input type="text" class="layui-input diyInp" placeholder="请输入移交原因(20个字以内)" maxlength=20/>
+			</div>
+			<div class="layui-form-item hasAlign">
+				<button class="layui-btn subBtn" >提交</button>
+			</div>
 		</div>
 	</div>
    	<script src="/plugins/layui/layui.js"></script>
@@ -37,6 +49,9 @@
    			var layer = layui.layer,
    				form = layui.form,
    				$ = layui.jquery;
+   			form.on('radio(yjTypeFilter)', function(data){
+				$('#yjTypeInp').val(data.value);
+			});
    			//form 监听选择移交原因
 			form.on('radio(causeApplyFilter)', function(data){
 				$('#causeInp').val(data.value);
@@ -49,8 +64,10 @@
    			var page = {
    				bindEvent : function(){
    					$('.subBtn').on('click',function(){
-   						var causeVal = $('#causeInp').val(),diyInpVal = $('.diyInp').val();
-   						if(causeVal == ''){
+   						var yjTypeInpVal = $('#yjTypeInp').val(),causeVal = $('#causeInp').val(),diyInpVal = $('.diyInp').val();
+   						if(yjTypeInpVal == ''){
+   							layer.msg('请选择移交类型',{icon:5,anim:6,time:1000});
+   						}else if(causeVal == ''){
    							layer.msg('请选择移交原因',{icon:5,anim:6,time:1000});
    						}else if(causeVal == 4 && diyInpVal == ''){
    							layer.msg('请填写您要移交的原因',{icon:5,anim:6,time:1000});
@@ -64,7 +81,7 @@
    						        async:false,
    						        dataType:'json',
    						        url:'/zlm.do?action=applyYjInfo',
-   						        data:{lcmxId : lcMxId,applyCause:escape($('#causeInp').val())},
+   						        data:{lcmxId:lcMxId,yjType:yjTypeInpVal,applyCause:escape($('#causeInp').val())},
    						        success:function (json){
    						        	layer.closeAll('loading');
    						        	if(json['result'] == 'success'){

@@ -35,7 +35,7 @@
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
     	var loginType=parent.loginType,roleName=parent.roleName,hasReadFlag=false,tmpAddBackFee='';
-		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,applyCause:'',applyName:'',yjId:0,zlType:'',tzsId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
+		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,yjTypeTxt:'',applyCause:'',applyName:'',yjId:0,zlType:'',tzsId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -407,9 +407,9 @@
 								}
 								return strHtml + d.ajTitle;
 							}},
-							{field : 'ajNo', title: '案件编号', width:180, align:'center'},
-							{field : 'ajNoGf', title: '案件申请/专利号', width:150, align:'center'},
-							{field : 'ajType', title: '案件类型', width:150, align:'center'},
+							{field : 'ajNo', title: '案件编号', width:170, align:'center'},
+							{field : 'ajNoGf', title: '案件申请/专利号', width:140, align:'center'},
+							{field : 'ajType', title: '案件类型', width:140, align:'center'},
 							{field : 'ajFieldName', title: '案件涉及领域', width:150, align:'center',templet:function(d){
 								if(d.ajFieldName != ''){
 									return common.switchToArray(d.ajFieldName.split(','));
@@ -484,14 +484,13 @@
 						limit : 10,
 						limits:[10,20,30,40],
 						cols:[[
-							{field : '', title: '序号',type:'numbers', width:60, fixed: 'left' , align:'center'},
-							{field : 'zlTitle', title: '案件标题', width:220, fixed: 'left' , align:'center'},
-							{field : 'zlNoQt', title: '案件编号', width:180, align:'center'},
-							{field : 'zlNo', title: '专利/申请号', width:150, align:'center'},
-							{field : 'zlType', title: '专利类型', width:150, align:'center'},
-							{field : 'taskName', title: '任务名称', width:180, align:'center'},
-							{field : 'taskSdate', title: '任务开始日期', width:200, align:'center'},
-							{field : 'taskComDate', title: '任务完成日期', width:200, align:'center'},
+							{field : '', title: '序号',type:'numbers', width:50, fixed: 'left' , align:'center'},
+							{field : 'zlTitle', title: '案件标题', width:200, fixed: 'left' , align:'center'},
+							{field : 'zlNoQt', title: '案件编号', width:170, align:'center'},
+							{field : 'zlNo', title: '专利/申请号', width:140, align:'center'},
+							{field : 'fzUserName', title: '流程负责人', width:120, align:'center'},
+							{field : 'taskName', title: '任务名称', width:140, align:'center'},
+							{field : 'zlType', title: '专利类型', width:120, align:'center'},
 							{field : 'taskEdateCpy', title: '任务完成期限(机构)', width:220, align:'center',templet:function(d){
 								if(d.diffDaysCpy < 0 && d.taskEdateCpy != ''){
 									var strDiffDays_Cpy = d.diffDaysCpy.toString();
@@ -508,6 +507,8 @@
 									return d.taskEdateGf;
 								}
 							}},
+							{field : 'taskSdate', title: '任务开始日期', width:150, align:'center'},
+							{field : 'taskComDate', title: '任务完成日期', width:150, align:'center'},
 							{field : 'sets', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
 								if(taskStaVal == 0){
 									var strHtml = '';
@@ -568,7 +569,7 @@
 							{field : 'checkDate', title: '审核时间', width:200, align:'center'},
 							{field : 'set', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
 								if(roleName == '管理员' || page.data.fpZlFlag == true){
-									return '<a lay-event="verifyFun" class="layui-btn layui-btn-xs" zlId="'+ d.zlId +'" yjId="'+ d.yjId +'" applyUserName="'+ d.applyUserName +'" applyCause="'+ d.applyCause +'" taskOpts="1" ajTitle="'+ d.zlTitle +'" lcTask="'+ d.taskName +'" fzUserId="'+ d.applyUserId +'"><i class="layui-icon layui-icon-vercode"></i>审核</a>';
+									return '<a lay-event="verifyFun" class="layui-btn layui-btn-xs" yjType="'+ d.yjType +'" zlId="'+ d.zlId +'" yjId="'+ d.yjId +'" applyUserName="'+ d.applyUserName +'" applyCause="'+ d.applyCause +'" taskOpts="1" ajTitle="'+ d.zlTitle +'" lcTask="'+ d.taskName +'" fzUserId="'+ d.applyUserId +'"><i class="layui-icon layui-icon-vercode"></i>审核</a>';
 								}else{
 									return '';
 								}
@@ -851,7 +852,7 @@
 						layer.open({
 							title:'关于专利['+ ajTitle +']任务['+ lcTask +']的移交申请',
 							type: 2,
-						  	area: ['600px', '400px'],
+						  	area: ['600px', '420px'],
 						  	fixed: true, //不固定
 						  	maxmin: false,
 						  	shadeClose :false,
@@ -866,7 +867,12 @@
 				}else if(obj.event == 'verifyFun'){//管理员 流程分配人员审核
 					page.data.fpZlFlag = common.getPermission('fpZl','',0);
 					if(page.data.fpZlFlag){
-						var ajTitle = $(this).attr('ajTitle'),applyUserName = $(this).attr('applyUserName'),lcTask = $(this).attr('lctask');
+						var yjType = $(this).attr('yjType'),ajTitle = $(this).attr('ajTitle'),applyUserName = $(this).attr('applyUserName'),lcTask = $(this).attr('lctask');
+						if(yjType == 0){
+							globalTaskOpts.yjTypeTxt = '临时移交';
+						}else{
+							globalTaskOpts.yjTypeTxt = '永久移交';
+						}
 						globalZlId = $(this).attr('zlId');
 						globalTaskOpts.taskOpts = $(this).attr('taskOpts');
 						globalTaskOpts.applyCause = $(this).attr('applyCause');

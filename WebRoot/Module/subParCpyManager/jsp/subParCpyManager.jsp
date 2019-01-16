@@ -24,7 +24,7 @@
   						<span>代理机构主/子公司管理</span>
   						<a id="addSubCpyBtn" class="posAbs newAddBtn" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加子公司</a>
   					</div>
-  					<div class="layui-card-body" pad15>
+  					<div class="layui-card-body">
   						<div id="subParList"></div>
 	  				</div>
   				</div>
@@ -41,7 +41,6 @@
 			var page = {
 				init : function(){
 					this.onLoad();
-					this.bindEvent();
 				},
 				onLoad : function(){
 					this.initLoad();
@@ -51,12 +50,33 @@
 					layer.load('1');
 					$.ajax({
 	   					type:'post',
-	   			        async:false,
 	   			        dataType:'json',
 	   			        url:'cpyManager.do?action=getSubParCpyData',
 	   			        success:function (json){
 	   			        	layer.closeAll('loading');
-	   			        	_this.renderData(json);
+	   						if(json['result'] == 'existInfo'){//表示存在数据
+	   							var type = '',selfCpyLevelChi='',maxSubNum=0;
+	   			        		if(json['psInfo'] == 'sub'){//表示存在子公司
+	   			        			//按钮只有在主公司、子公司都没数据，或者在主公司没数据时候才能存在
+	   			        			$('#addSubCpyBtn').show();
+	   			        			type = 'sub';
+	   			        			selfCpyLevelChi = json.selfCpyLevelChi;
+	   			        			maxSubNum = json.maxSubCpy;
+	   			        		}else if(json['psInfo'] == 'par'){//表示存在主公司
+	   			        			//我的主公司存在数据表示当前账号没有增加子公司的权限了
+	   			        			$('#addSubCpyBtn').remove();
+	   			        			type = 'par';
+	   			        			selfCpyLevelChi = '';
+	   			        			maxSubNum = 0;
+	   			        		}
+	   			        		
+	   			        		var cpyInfo = json.cpyInfo;
+	   							_this.renderHtml(cpyInfo,type,selfCpyLevelChi,maxSubNum);
+	   			        	}else if(json['result'] == 'noInfo'){//表示没有数据
+	   			        		$('#addSubCpyBtn').show();
+	   			        		$('#subParList').css({'padding-bottom':'10px'}).html('<div class="noDataList"><i class="iconfont layui-extend-noData"></i><p>暂无主/子公司，如有需要，请添加子公司</p></div>');
+	   			        		_this.bindEvent();
+	   			        	}
 	   			        }
 	   				});
 				},
@@ -102,7 +122,6 @@
 						layer.load('1');
 						$.ajax({
 		   					type:'post',
-		   			        async:false,
 		   			        dataType:'json',
 		   			        data:{cpySubId:cpySubId},
 		   			        url:'cpyManager.do?action=getSubCpyDetail',
@@ -115,13 +134,8 @@
 									type : 1, 
 									content:strHtml, 
 									area: ['700px', '450px'],
-									shadeClose :true,
-									btn : ['确定'],
 									success : function(){
 										_this.renderParCpyBasicInfo(list,'clickload');
-									},
-									yes: function(index, layero){
-										layer.close(index);
 									}
 								});
 		   	  					layer.full(fullScreenIndex);
@@ -129,29 +143,13 @@
 		   				});
 					});
 				},
-				renderData : function(json){
-					if(json['result'] == 'existInfo'){//表示存在数据
-						var type = 'sub';
-		        		if(json['psInfo'] == 'sub'){//表示存在子公司
-		        			//按钮只有在主公司、子公司都没数据，或者在主公司没数据时候才能存在
-		        			$('#addSubCpyBtn').show();
-		        			type = 'sub';
-		        		}else if(json['psInfo'] == 'par'){//表示存在主公司
-		        			//我的主公司存在数据表示当前账号没有增加子公司的权限了
-		        			$('#addSubCpyBtn').hide();
-		        			type = 'par';
-		        		}
-		        		var cpyInfo = json.cpyInfo;
-						this.renderHtml(cpyInfo,type);
-		        	}else if(json['result'] == 'noInfo'){//表示没有数据
-		        		$('#addSubCpyBtn').show();
-		        		$('#subParList').html('<div class="noDataList"><i class="iconfont layui-extend-noData"></i><p>暂无主/子公司，如有需要，请添加子公司</p></div>');
-		        	}
-				},
 				//根据不同情况渲染不同的tab
-				renderHtml : function(cpyInfo,type){
+				renderHtml : function(cpyInfo,type,selfCpyLevelChi,maxSubNum){
 					var strHtml = '';
 					strHtml += '<div id="subParCpyWrap" class="layui-tab layui-tab-brief">';
+					if(selfCpyLevelChi != ''){
+						strHtml += '<p class="createSubNunTips"><i class="layui-icon layui-icon-tips"></i>您当前是'+ selfCpyLevelChi +'用户,最多可以创建'+ maxSubNum +'个子公司</p>';
+					}
 					//头部导航
 					strHtml += '<ul class="layui-tab-title">';
 					if(type == 'sub'){
@@ -174,6 +172,7 @@
 					}else if(type == 'par'){
 						this.renderParCpyBasicInfo(cpyInfo,'initLoad');
 					}
+					this.bindEvent();
 				},
 				//渲染子公司列表数据
 				renderSubCpyBasicInfo : function(cpyInfo){

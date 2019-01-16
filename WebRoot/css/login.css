@@ -3,3 +3,8 @@
  .layui-layer-molv .layui-layer-btn .layui-layer-btn1{
 	background:#fff !important;
 }
+#account,#inputCode{color:#34495e;font-weight:600;}
+#account::-webkit-input-placeholder,#inputCode::-webkit-input-placeholder{font-weight:normal;},
+#account::-moz-input-placeholder,#inputCode::-moz-input-placeholder{font-weight:normal;}
+#account::-ms-input-placeholder,#inputCode::-ms-input-placeholder{font-weight:normal;}
+#account::input-placeholder,#inputCode::input-placeholder{font-weight:normal5;}
