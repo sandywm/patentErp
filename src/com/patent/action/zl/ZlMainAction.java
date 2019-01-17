@@ -4667,7 +4667,7 @@ public class ZlMainAction extends DispatchAction {
 					Integer feeTypeId  = CommonTools.getFinalInteger("feeTypeId", request);//费用类型
 					String feeTypeName = Transcode.unescape_new("feeTypeName", request);
 					Double feePrice = CommonTools.getFinalDouble("feePrice", request);//缴费金额
-					Double fjRate = CommonTools.getFinalDouble("fjRate", request);
+					Double fjRate = CommonTools.getFinalDouble("fjRate", request);//费减
 					String feeEndDateGf = CommonTools.getFinalStr("feeEndDateGf", request);//官方绝限
 					String feeEndDateCpy = CommonTools.getFinalStr("feeEndDateCpy", request);//代理及机构期限
 					String feeRemark = Transcode.unescape_new("feeRemark", request);
@@ -4690,9 +4690,25 @@ public class ZlMainAction extends DispatchAction {
 						fpDate = CommonTools.getFinalStr("fpDate", request);
 						fpNo = CommonTools.getFinalStr("fpNo", request);
 					}
-					fm.addZLFee(zlId, currUserId, feeTypeId, feePrice, fjRate, feeEndDateCpy, 
-	    					feeEndDateGf, feeRemark, feeStatus, cpyId, 1, feeJnDate,feeUpZd, 
-	    					"手动增加", yearFeeNo, "", 0, "", feeBatchNo, bankSerialNo,fpDate,fpNo);
+					List<ZlajMainInfoTb>  zlList = zlm.listSpecInfoById(zlId, cpyId);
+					if(zlList.size() > 0){
+						ZlajMainInfoTb zl = zlList.get(0);
+						String zlType = zl.getAjType();
+						Double fjRate_db = zl.getAjFjInfo();
+						String applyDate = zl.getAjApplyDate();
+						if(fm.listInfoByName(feeTypeName).size() == 0){
+							fm.addZLFee(zlId, currUserId, feeTypeId, feePrice, fjRate, feeEndDateCpy, 
+			    					feeEndDateGf, feeRemark, feeStatus, cpyId, 1, feeJnDate,feeUpZd, 
+			    					"手动增加", yearFeeNo, "", 0, "", feeBatchNo, bankSerialNo,fpDate,fpNo);
+							if(feeTypeName.contains("年费") && zlType.equals("fm")){
+								
+							}
+						}else{
+							msg = "existInfo";//存在该费用
+						}
+						
+					}
+					
 				}
 				
 				
@@ -5903,6 +5919,47 @@ public class ZlMainAction extends DispatchAction {
 		}
 		map.put("result", msg);
 		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取专利类型，专利费减，专利申请日
+	 * @author  Administrator
+	 * @ModifiedBy  
+	 * @date  2019-1-17 下午09:19:32
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getZlBasicData(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		Integer zlId = CommonTools.getFinalInteger("zlId", request);
+		Integer feeTypeId = CommonTools.getFinalInteger("feeTypeId", request);
+		String feeTypeName = Transcode.unescape_new("feeTypeName", request);
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(zlId > 0){
+			List<ZlajMainInfoTb>  zlList = zlm.listSpecInfoById(zlId, cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb().getId());
+			if(zlList.size() > 0){
+				ZlajMainInfoTb zl = zlList.get(0);
+				map.put("result", "success");
+				String zlType = zl.getAjType();
+				map.put("zlType", zlType);//案件类型
+				map.put("fjRate", zl.getAjFjInfo());//案件费减
+				String applyDate = zl.getAjApplyDate();
+				map.put("applyDate", applyDate);//案件申请日
+				if(!applyDate.equals("")){
+					
+				}
+			}else{
+				map.put("result", "noInfo");
+			}
+		}
 		return null;
 	}
 }

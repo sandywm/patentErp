@@ -29,13 +29,8 @@ import org.apache.struts.actions.DispatchAction;
 
 import com.alibaba.fastjson.JSON;
 import com.patent.factory.AppFactory;
-import com.patent.module.ZlajFeeInfoTb;
-import com.patent.module.ZlajFjInfoTb;
 import com.patent.service.CpyUserInfoManager;
-import com.patent.service.ZlajFeeInfoManager;
-import com.patent.service.ZlajFjInfoManager;
 import com.patent.service.ZlajMainInfoManager;
-import com.patent.service.ZlajTzsInfoManager;
 import com.patent.tools.CheckImage;
 import com.patent.tools.CommonTools;
 import com.patent.tools.CurrentTime;
@@ -151,6 +146,7 @@ public class UploadAction extends DispatchAction {
 					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addFee");//增加费用权限
 					cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
 				}else if(fileType.equals("tzs")){
+					cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
 					if(zlm.listInfoByOpt("tzs", currLoginUserId, cpyId).size() > 0){
 						abilityFlag = true;
 					}
