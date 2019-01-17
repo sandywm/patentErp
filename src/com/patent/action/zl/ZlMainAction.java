@@ -306,14 +306,26 @@ public class ZlMainAction extends DispatchAction {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		String loginType = this.getLoginType(request);
 		boolean fpZlFlag = false;//任务分配
 		boolean lqzLFlag = false;//专利任务领取
 		boolean dealZlFlag = false;//专利流程处理
+		boolean zlTagShowFlag = false;
+		Integer currUsreId = this.getLoginUserId(request);
 		if(loginType.equals("cpyUser")){//代理机构下
-			CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
+			CpyUserInfo cpyUser = cum.getEntityById(currUsreId);
 			Integer roleId = this.getLoginRoleId(request);
 			if(cpyUser != null){
+				//获取是否具有我的专利标签
+				//如果没有增加专利的数据（1：有增加专利权限就显示，没有权限就不显示）
+				//如果有自己增加专利的数据，不管有没有增加专利的权限都能显示。
+				boolean addZlFlag = fpZlFlag = Ability.checkAuthorization(roleId, "addZl");
+				if(addZlFlag){
+					zlTagShowFlag = true;
+				}else if(zlm.getCountByAddUserId(currUsreId) > 0){
+					zlTagShowFlag = true;
+				}
 				if(this.getLoginRoleName(request).equals("管理员")){
 					fpZlFlag = true;
 					lqzLFlag = true;
@@ -328,6 +340,7 @@ public class ZlMainAction extends DispatchAction {
 		request.setAttribute("fpZlFlag", fpZlFlag);
 		request.setAttribute("lqzLFlag", lqzLFlag);
 		request.setAttribute("dealZlFlag", dealZlFlag);
+		request.setAttribute("zlTagShowFlag", zlTagShowFlag);
 		return mapping.findForward("zlPage");
 	}
 	
@@ -3397,7 +3410,6 @@ public class ZlMainAction extends DispatchAction {
 							
 							String lastBzFile = "";//上一次补正的文件
 							String lastBzScFile = "";//上一次补正审核的文件
-//							String lastBzScRemark = "";//上一次补正审核的备注
 							if(lcmxName.equals("专利补正")){
 								remark = zl.getAjRemark();
 							}else if(lcmxName.equals("补正修改")){
@@ -3420,37 +3432,6 @@ public class ZlMainAction extends DispatchAction {
 								}
 								remark = lcmx.getLastBzScRemark();
 							}
-							
-							
-							//补正这需要直接获取lc_mx_upSize内容就是布阵/审核提交的文件
-							//专利补正、补正修改
-//							if(lcmxName.equals("补正修改") || lcmxName.equals("补正审核")){//获取最后一次的补正文件
-//								List<ZlajLcMxInfoTb> mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "补正修改");
-//								Integer lcmxLen = mxList_bz.size();
-//								if(lcmxLen.equals(0)){
-//									mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "专利补正");
-//									lcmxLen = mxList_bz.size();
-//								}
-//								if(lcmxLen > 0){
-//									ZlajLcMxInfoTb lcmx_curr = mxList_bz.get(lcmxLen - 1);//获取最近一次的专利补正
-//									filePath += ":" + lcmx_curr.getLcMxUpFile();
-//									fileType += ":补正文件";
-//									upUser += ":"+cum.getEntityById(lcmx_curr.getLcMxUpUserId()).getUserName();
-//								}
-//								//是否增加通知书内容
-//								//还需要获取最近一次的补正审核的意见和附件
-//								List<ZlajLcMxInfoTb> mxList_bzsc = mxm.listSpecInfoInfoByOpt(zlId, "补正审核");
-//								Integer lcmxLen_sc = mxList_bzsc.size();
-//								if(lcmxLen_sc > 0){
-//									ZlajLcMxInfoTb lcmx_curr = mxList_bzsc.get(lcmxLen_sc - 1);//获取最近一次的补正审查
-//									if(!lcmx_curr.getId().equals(lcmxId)){//如果最近一次的补正审查是当前就没有
-//										filePath += ":" + lcmx_curr.getLcMxUpFile();
-//										fileType += ":补正审核";
-//										upUser += ":"+cum.getEntityById(lcmx_curr.getLcMxUpUserId()).getUserName();
-//										remark = lcmx_curr.getLcMxRemark();
-//									}
-//								}
-//							}
 						}
 						List<Object> list_d = new ArrayList<Object>();
 						if(!filePath.equals("")){
@@ -3882,7 +3863,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 手动提交（补正、申请等）--下版本增加
+	 * 手动提交（补正、申请等）--未完待续
 	 * @author  Administrator
 	 * @ModifiedBy  
 	 * @date  2018-11-20 下午08:57:00
@@ -4619,7 +4600,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 缴纳所有费用(代理机构代缴)--通知书中没有费用，或者中途转过来的专利，需要手动添加费用
+	 * 缴纳所有费用(代理机构代缴)--通知书中没有费用，或者中途转过来的专利，需要手动添加费用(未完待续)
 	 * @description
 	 * @author Administrator
 	 * @date 2018-10-11 上午10:07:53

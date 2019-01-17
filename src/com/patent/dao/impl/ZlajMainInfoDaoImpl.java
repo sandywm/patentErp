@@ -194,4 +194,12 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public Integer getCountByAddUserId(Session sess, Integer addUserId) {
+		// TODO Auto-generated method stub
+		String hql = "select count(zl.id) from ZlajMainInfoTb as zl where zl.ajAddUserId = "+addUserId;
+		Object count_obj = sess.createQuery(hql).uniqueResult();
+		return CommonTools.longToInt(count_obj);
+	}
+
 }

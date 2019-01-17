@@ -155,4 +155,15 @@ public interface ZlajMainInfoDao {
 	 * @return
 	 */
 	List<ZlajMainInfoTb> findInfoByOpt_1(Session sess,String zlNo,Integer cusId,Integer cpyId);
+	
+	/**
+	 * 获取指定专利人员的添加的专利数量
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-17 下午03:53:03
+	 * @param sess
+	 * @param addUserId 专利人员
+	 * @return
+	 */
+	Integer getCountByAddUserId(Session sess,Integer addUserId);
 }

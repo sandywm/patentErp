@@ -336,4 +336,15 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajMainInfoTb> listInfoByOpt_1(String zlNo,Integer cusId,Integer cpyId) throws WEBException;
+	
+	/**
+	 * 获取指定专利人员的添加的专利数量
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-17 下午03:54:52
+	 * @param addUserId 专利人员
+	 * @return
+	 * @throws WEBException
+	 */
+	Integer getCountByAddUserId(Integer addUserId) throws WEBException;
 }
