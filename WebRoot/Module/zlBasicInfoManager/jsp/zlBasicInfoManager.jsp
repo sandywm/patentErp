@@ -515,7 +515,7 @@
 									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" lcNo="'+ d.lcNo +'" zlId="'+ d.zlId +'" mxId = "'+ d.mxId +'" zlType="'+ d.zlType +'" ajTitle="'+ d.zlTitle +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
 									if(roleName == '管理员' || page.data.fpZlFlag == true){
 										if(d.applyFlag){
-											strHtml += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="lcfpFun" zlId="'+ d.zlId +'" ajTitle="'+ d.zlTitle +'" taskOpts="1" fzUserId="'+ d.fzUserId +'" currLcNo="'+ d.lcNo +'"><i class="iconfont layui-extend-yijiao"></i>任务移交</a>';
+											strHtml += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="tranformFun" lcMxId="'+ d.mxId +'" lcTask="'+ d.taskName +'" ajTitle="'+ d.zlTitle +'" fzUserId="'+ d.fzUserId +'" applyUserName="'+ d.fzUserName +'"><i class="iconfont layui-extend-yijiao"></i>任务移交</a>';
 										}
 									}else{
 										strHtml += '<a lay-event="transferFun" class="layui-btn layui-btn-danger layui-btn-xs" ajTitle="'+ d.zlTitle +'" lcMxId="'+ d.mxId +'" lcTask="'+ d.taskName +'"><i class="iconfont layui-extend-yijiao"></i>移交申请</a>';
@@ -558,7 +558,7 @@
 								}
 								return strHtml + d.zlTitle;
 							}},
-							{field : 'zlNoQt', title: '案件编号', width:150, align:'center'},
+							{field : 'zlNoQt', title: '案件编号', width:180, align:'center'},
 							{field : 'zlNo', title: '专利/申请号', width:180, align:'center'},
 							{field : 'zlType', title: '专利类型', width:150, align:'center'},
 							{field : 'taskName', title: '任务名称', width:180, align:'center'},
@@ -839,24 +839,38 @@
 					}else{
 						layer.msg('抱歉，您暂无处理该任务的权限', {icon:5,anim:6,time:1000});
 					}
-				}else if(obj.event == 'transferFun'){
+				}else if(obj.event == 'transferFun' || obj.event == 'tranformFun'){//员工下的移交申请以及管理员下任务移交
 					globalTaskOpts.globalLcMxId = $(this).attr('lcmxid');
+					globalTaskOpts.applyName = $(this).attr('applyUserName');
 					var ajTitle = $(this).attr('ajTitle'),lcTask = $(this).attr('lctask');
+					var url = '',title = '',height = '';
+					if(obj.event == 'transferFun'){
+						url = '/Module/zlBasicInfoManager/jsp/taskTransformApply.html';
+						title = '任务移交申请提醒';
+						height = '420px';
+					}else{
+						url = '/Module/zlBasicInfoManager/jsp/changePeoByAdmin.html';
+						title = '任务移交';
+						height = '280px';
+						globalTaskOpts.fzUserId = $(this).attr('fzUserId');
+						globalTaskOpts.taskOpts = 1;
+					}
 					layer.confirm('确定要移交申请专利[<span style="color:#F47837;">'+ ajTitle +'</span>]的任务[<span style="color:#F47837;">'+ lcTask +'</span>]吗？',{
-						title:'任务移交申请提醒',
+						title:title,
 					  	skin: 'layui-layer-molv',
 					  	btn: ['确定','取消'] //按钮
 					},function(index){
 						addZlFlag = false;
 						layer.close(index);
-						layer.open({
-							title:'关于专利['+ ajTitle +']任务['+ lcTask +']的移交申请',
+						globalIndex = layer.open({
+							title:'<span title="关于专利['+ ajTitle +']任务['+ lcTask +']的移交申请">关于专利['+ ajTitle +']任务['+ lcTask +']的移交申请</span>',
 							type: 2,
-						  	area: ['600px', '420px'],
+						  	area: ['600px', height],
 						  	fixed: true, //不固定
 						  	maxmin: false,
 						  	shadeClose :false,
-						  	content: '/Module/zlBasicInfoManager/jsp/taskTransformApply.html',
+						  	move : false,
+						  	content: url,
 						  	end:function(){
 						  		if(addZlFlag){
 						  			loadZlInfoList('initLoad');
@@ -899,7 +913,7 @@
 					}else{
 						layer.msg('抱歉，您暂无权限进行流程分配', {icon:5,anim:6,time:1000});
 					}
-				}else if(obj.event == 'viewTzsResDetail'){
+				}else if(obj.event == 'viewTzsResDetail'){//查看电子回执单
 					globalTaskOpts.tzsId = $(this).attr('tzsId');
 					var tzsType = $(this).attr('tzsType');
 					if(tzsType == 'sqd'){//查看电子回执单

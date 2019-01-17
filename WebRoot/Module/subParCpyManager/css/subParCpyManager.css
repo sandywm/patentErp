@@ -99,7 +99,7 @@ body{
 }
 .noDataList{
 	width:300px;
-	margin:80px auto;
+	margin:80px auto 0;
 	text-align:center;
 	color:#999;
 }
@@ -132,4 +132,8 @@ body{
 	position:absolute;
 	left:0;
 	top:0px;
+}
+.noAbilityTxt{
+	text-align:center;
+	color:#999;
 }

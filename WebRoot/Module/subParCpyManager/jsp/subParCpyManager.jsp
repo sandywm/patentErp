@@ -53,6 +53,7 @@
 	   			        dataType:'json',
 	   			        url:'cpyManager.do?action=getSubParCpyData',
 	   			        success:function (json){
+	   			        	console.log(json)
 	   			        	layer.closeAll('loading');
 	   						if(json['result'] == 'existInfo'){//表示存在数据
 	   							var type = '',selfCpyLevelChi='',maxSubNum=0;
@@ -69,13 +70,20 @@
 	   			        			selfCpyLevelChi = '';
 	   			        			maxSubNum = 0;
 	   			        		}
-	   			        		
 	   			        		var cpyInfo = json.cpyInfo;
 	   							_this.renderHtml(cpyInfo,type,selfCpyLevelChi,maxSubNum);
 	   			        	}else if(json['result'] == 'noInfo'){//表示没有数据
-	   			        		$('#addSubCpyBtn').show();
-	   			        		$('#subParList').css({'padding-bottom':'10px'}).html('<div class="noDataList"><i class="iconfont layui-extend-noData"></i><p>暂无主/子公司，如有需要，请添加子公司</p></div>');
-	   			        		_this.bindEvent();
+	   			        		var strHtml = '<div class="noDataList"><i class="iconfont layui-extend-noData"></i><p>暂无主/子公司，如有需要，请添加子公司</p></div>';
+	   			        		var strHtmlTong = '<p class="noAbilityTxt">您是铜牌用户，暂无权限添加子公司。如需添加，请先升级会员！</p>';
+	   			        		$('#subParList').css({'padding-bottom':'10px'}).html(strHtml);
+	   			        		if(json.selfCpyLevelChi == '铜牌'){
+	   			        			$('#addSubCpyBtn').remove();
+	   			        			$('#subParList').css({'padding-bottom':'10px'}).html(strHtml + strHtmlTong);
+	   			        		}else{
+	   			        			$('#addSubCpyBtn').show();
+	   			        			_this.bindEvent();
+	   			        		}
+	   			        		
 	   			        	}
 	   			        }
 	   				});
@@ -148,7 +156,7 @@
 					var strHtml = '';
 					strHtml += '<div id="subParCpyWrap" class="layui-tab layui-tab-brief">';
 					if(selfCpyLevelChi != ''){
-						strHtml += '<p class="createSubNunTips"><i class="layui-icon layui-icon-tips"></i>您当前是'+ selfCpyLevelChi +'用户,最多可以创建'+ maxSubNum +'个子公司</p>';
+						strHtml += '<p class="createSubNunTips"><i class="layui-icon layui-icon-tips"></i>您当前是'+ selfCpyLevelChi +'用户,最多可以创建'+ maxSubNum +'个子公司,如需创建更多,请升级会员！</p>';
 					}
 					//头部导航
 					strHtml += '<ul class="layui-tab-title">';

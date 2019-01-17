@@ -1,0 +1,71 @@
+@import url("../../../css/common.css");
+@import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
+.transWrap{
+	color:#333;
+}
+.titStrong{
+	width:100%;
+	height:35px;
+	line-height:35px;
+	display:block;
+	text-indent:25px;
+	font-size:15px;
+	color:#F47837;
+	font-weight:normal;
+	border-bottom:1px solid #e6e6e6;
+	position:relative;
+}
+.titStrong i{
+	font-size:22px;
+	position:absolute;
+	left:-25px;
+	top:0;
+}
+.titStrong.smFont i{
+	font-size:20px;
+}
+.changePeo{
+	color:#666;
+	height:26px;
+	line-height:26px;
+	margin-top:15px;
+}
+.changePeo span{
+	float:left;
+	display:inline-block;
+	padding:0px 6px;
+}
+.changePeo span.currPeo{
+	color:#20a0ff;
+	border:1px solid rgba(32,160,255,.2);
+	background:rgba(32,160,255,.1);
+	opacity:.7;
+	filter:alpha(opacity=70)
+}
+.changePeo span.ingChangePeo{
+	border:1px dashed rgba(32,160,255,.6);
+	background:rgba(32,160,255,.1);
+	height:24px;
+	color:#20a0ff;
+}
+.changePeo i.layui-extend-zhuanyi{
+	font-size:18px;
+	float:left;
+	margin:0 3px;
+}
+.changePeo a{
+	float:left;
+	margin-left:10px;
+	color:#20a0ff;
+}
+.changePeo a:hover{
+	color:#FF5722;
+}
+.btnWrap{
+	text-align:center;
+	margin-top:10px;
+}
+.saveBtns{
+	width:100px;
+	display:inline-block;
+}

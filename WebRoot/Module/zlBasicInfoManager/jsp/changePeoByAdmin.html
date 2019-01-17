@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlBasicInfoManager/css/changePeoByAdmin.css" rel="stylesheet" type="text/css"/>
+  	<title>管理员任务移交</title>
+</head>
+<body style="background:#fff;padding:0 10px;">
+	<div class="transWrap">
+		<strong class="titStrong smFont"><i class="layui-icon layui-icon-app"></i>请选择移交类型</strong>
+		<div class="layui-form">
+			<input type="hidden" id="yjTypeInp"/>
+			<div class="layui-form-item noMargBot">
+				<input type="radio" name="yjTypeName" lay-filter="yjTypeFilter" value="0" title="临时移交(只移交当前任务)"/>
+				<input type="radio" name="yjTypeName" lay-filter="yjTypeFilter" value="1" title="永久移交(移交流程负责人) 慎选!"/>
+			</div>
+		</div>
+	</div>
+	<div class="transWrap">
+		<strong class="titStrong"><i class="iconfont layui-extend-yijiao"></i>更换人员</strong>
+		<input type="hidden" id="newFzUserId"/>
+		<div class="changePeo">
+			<span class="currPeo"></span>
+			<i class="iconfont layui-extend-zhuanyi"></i>
+			<span id="ingChangePeo" class="ingChangePeo"><i class="layui-icon layui-icon-help hasBlink"></i></span>
+			<a href="javascript:void(0)" class="changePeoBtn">更换人员</a>
+		</div>
+	</div>
+	<div class="btnWrap">
+		<button class="layui-btn layui-btn-normal saveBtns">保存</button>
+	</div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		var lcMxId = parent.globalTaskOpts.globalLcMxId,applyName = parent.globalTaskOpts.applyName;
+		layui.use(['layer','jquery','form'],function(){
+			var layer = layui.layer,
+				form = layui.form,
+				$ = layui.jquery;
+			form.on('radio(yjTypeFilter)', function(data){
+				$('#yjTypeInp').val(data.value);
+			});
+			var page = {
+				init : function(){
+					$('.currPeo').html(applyName);
+					this.bindEvent();
+				},
+				bindEvent : function(){
+					$('.changePeoBtn').on('click',function(){
+						parent.clickOptsFlag = true;
+						parent.layer.open({
+							title:'更换人员',
+							type: 2,
+						  	area: ['900px', '510px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	content: '/Module/zlBasicInfoManager/jsp/selectLcFpStaff.html'
+						});	
+					});
+					$('.saveBtns').on('click',function(){
+						var yjTypeVal = $('#yjTypeInp').val(),newFzUserIdVal = $('#newFzUserId').val();
+						if(yjTypeVal == ''){
+							layer.msg('请选择移交类型', {icon:5,anim:6,time:1200});
+						}else if(newFzUserIdVal == ''){
+							layer.msg('请选择一个要移交更换的人员', {icon:5,anim:6,time:1200});
+						}else{
+							layer.load('1');
+							$.ajax({
+		  						type:'post',
+						        async:false,
+						        dataType:'json',
+						        data : {lcmxId:lcMxId,yjType:yjTypeVal,newFzUserId:newFzUserIdVal},
+						        url:'/zlm.do?action=dealYjInfo',
+						        success:function (json){
+						        	layer.closeAll('loading');
+						        	if(json['result'] == 'success'){
+						        		layer.msg('专利移交成功',{icon:1,time:1000},function(){
+						        			var index= parent.layer.getFrameIndex(window.name);
+						        			parent.addZlFlag = true;
+						        			parent.layer.close(index);
+						        		});
+						        	}else if(json['result'] == 'noAbility'){
+						        		layer.msg('抱歉，您暂无任务移交更换人员的权限', {icon:5,anim:6,time:1500});
+						        	}
+						        }
+		  					});
+						}
+					});
+				}
+			};
+			$(function(){
+				page.init();
+			});
+		});
+	</script>
+</body> 
+</html>
