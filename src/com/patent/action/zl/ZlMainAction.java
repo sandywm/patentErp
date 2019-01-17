@@ -312,6 +312,7 @@ public class ZlMainAction extends DispatchAction {
 		boolean lqzLFlag = false;//专利任务领取
 		boolean dealZlFlag = false;//专利流程处理
 		boolean zlTagShowFlag = false;
+		boolean tzsShowFlag = false;
 		Integer currUsreId = this.getLoginUserId(request);
 		if(loginType.equals("cpyUser")){//代理机构下
 			CpyUserInfo cpyUser = cum.getEntityById(currUsreId);
@@ -320,7 +321,7 @@ public class ZlMainAction extends DispatchAction {
 				//获取是否具有我的专利标签
 				//如果没有增加专利的数据（1：有增加专利权限就显示，没有权限就不显示）
 				//如果有自己增加专利的数据，不管有没有增加专利的权限都能显示。
-				boolean addZlFlag = fpZlFlag = Ability.checkAuthorization(roleId, "addZl");
+				boolean addZlFlag = Ability.checkAuthorization(roleId, "addZl");
 				if(addZlFlag){
 					zlTagShowFlag = true;
 				}else if(zlm.getCountByAddUserId(currUsreId) > 0){
@@ -334,6 +335,9 @@ public class ZlMainAction extends DispatchAction {
 					fpZlFlag = Ability.checkAuthorization(roleId, "fpZl");
 					lqzLFlag = Ability.checkAuthorization(roleId, "lqZl");
 					dealZlFlag = Ability.checkAuthorization(roleId, "dealZl");
+					if(zlm.listInfoByOpt("tzs", currUsreId, cpyUser.getCpyInfoTb().getId()).size() > 0){
+						tzsShowFlag = true;
+					}
 				}
 			}
 		}
@@ -341,6 +345,7 @@ public class ZlMainAction extends DispatchAction {
 		request.setAttribute("lqzLFlag", lqzLFlag);
 		request.setAttribute("dealZlFlag", dealZlFlag);
 		request.setAttribute("zlTagShowFlag", zlTagShowFlag);
+		request.setAttribute("tzsShowFlag", tzsShowFlag);
 		return mapping.findForward("zlPage");
 	}
 	
@@ -388,7 +393,7 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
-	 * 获取当前用户有没有我的专利权限
+	 * 获取当前用户有没有我的专利权限，通知书批量导入权限
 	 * @description
 	 * @author Administrator
 	 * @date 2019-1-16 下午04:19:19
@@ -399,20 +404,40 @@ public class ZlMainAction extends DispatchAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public ActionForward getMyZlModAbility(ActionMapping mapping, ActionForm form,
+	public ActionForward getModTagAbility(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
 		String loginType = this.getLoginType(request);
+		String opt = CommonTools.getFinalStr("opt", request);//opt:3,6
+		String tagShowStatus = "noAbility";
+		Integer currUsreId = this.getLoginUserId(request);
 		if(loginType.equals("cpyUser")){//代理机构下
 			CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
 			Integer roleId = this.getLoginRoleId(request);
 			if(cpyUser != null){
 				if(this.getLoginRoleName(request).equals("管理员")){
-					
+					tagShowStatus = "success";
+				}else{
+					if(opt.equals("3")){
+						boolean addZlFlag = Ability.checkAuthorization(roleId, "addZl");
+						if(addZlFlag){
+							tagShowStatus = "success";
+						}else if(zlm.getCountByAddUserId(currUsreId) > 0){
+							tagShowStatus = "success";
+						}
+					}else if(opt.equals("6")){
+						if(zlm.listInfoByOpt("tzs", currUsreId, cpyUser.getCpyInfoTb().getId()).size() > 0){//判断有无通知书的权限
+							tagShowStatus = "success";
+						}
+					}
 				}
 			}
 		}
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("result", tagShowStatus);
+		this.getJsonPkg(map, response);
 		return null;
 	}
 	
@@ -853,9 +878,7 @@ public class ZlMainAction extends DispatchAction {
 				}else{
 					map.put("msg", "暂无记录");
 				}
-				
 			}
-				
 		}
 		this.getJsonPkg(map, response);
 		return null;
@@ -4669,7 +4692,7 @@ public class ZlMainAction extends DispatchAction {
 					}
 					fm.addZLFee(zlId, currUserId, feeTypeId, feePrice, fjRate, feeEndDateCpy, 
 	    					feeEndDateGf, feeRemark, feeStatus, cpyId, 1, feeJnDate,feeUpZd, 
-	    					"手动增加", yearFeeNo, "", 0, "", "", "","","");
+	    					"手动增加", yearFeeNo, "", 0, "", feeBatchNo, bankSerialNo,fpDate,fpNo);
 				}
 				
 				
