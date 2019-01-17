@@ -646,10 +646,41 @@ public class ZlMainAction extends DispatchAction {
 						ZlajLcInfoTb lc = mx.getZlajLcInfoTb();
 						ZlajMainInfoTb zl = lc.getZlajMainInfoTb();
 						Map<String,Object> map_d = new HashMap<String,Object>();
+						Integer lcFzrId = mx.getLcFzUserId();
+						Integer lcFzrId_zlMain = 0;
+						String lcTask = mx.getLcMxName();
 						map_d.put("mxId", mx.getId());
-						map_d.put("taskName", mx.getLcMxName());//任务名称
-						map_d.put("fzUserId", mx.getLcFzUserId());//流程负责人员
-						map_d.put("fzUserName", cum.getEntityById(mx.getLcFzUserId()).getUserName());//任务负责人
+						map_d.put("taskName", lcTask);//任务名称
+						map_d.put("fzUserId", lcFzrId);//流程负责人员
+						boolean yjFzrFlag = false;//永久负责人标记
+						if(lcFzrId > 0){
+							map_d.put("fzUserName", cum.getEntityById(lcFzrId).getUserName());//任务负责人
+							if(lcTask.equals("新申请撰稿") || lcTask.equals("撰稿修改")){
+								lcFzrId_zlMain = zl.getZxUserId();
+							}else if(lcTask.equals("专利审核")){
+								lcFzrId_zlMain = zl.getCheckUserId();
+							}else if(lcTask.equals("客户确认")){
+								lcFzrId_zlMain = zl.getCusCheckUserId();
+							}else if(lcTask.equals("定稿提交")){
+								lcFzrId_zlMain = zl.getTjUserId();
+							}else if(lcTask.equals("导入通知书")){
+								lcFzrId_zlMain = zl.getTzsUserId();
+							}else if(lcTask.equals("费用催缴")){
+								lcFzrId_zlMain = zl.getFeeUserId();
+							}else if(lcTask.equals("专利补正") || lcTask.equals("补正修改")){
+								lcFzrId_zlMain = zl.getBzUserId();
+							}else if(lcTask.equals("补正审核")){
+								lcFzrId_zlMain = zl.getBzshUserId();
+							}else if(lcTask.equals("专利驳回")){
+								lcFzrId_zlMain = zl.getBhUserId();
+							}
+							if(lcFzrId.equals(lcFzrId_zlMain)){//说明自己是该流程的永久负责人
+								yjFzrFlag = true;
+							}
+						}else{
+							map_d.put("fzUserName", "");//任务负责人
+						}
+						map_d.put("yjFzrFlag", yjFzrFlag);
 						String comDate = mx.getLcMxEDate();
 						String lcCpyDate = lc.getLcCpyDate();
 						String lcGfDate = lc.getLcGfDate();
@@ -5483,12 +5514,34 @@ public class ZlMainAction extends DispatchAction {
 						String lcTask = mx.getLcMxName();
 						ZlajMainInfoTb zl  = mx.getZlajLcInfoTb().getZlajMainInfoTb();
 						Integer zlId = zl.getId();
-						List<ZlajLcMxInfoTb>  mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, lcTask);
-						if(mxList_bz.size() > 0){
-							for(Iterator<ZlajLcMxInfoTb> it = mxList_bz.iterator() ; it.hasNext();){
-								ZlajLcMxInfoTb lcmx = it.next();
-								if(lcmx.getLcMxEDate().equals("")){//需要修改未完成的
-									mxm.updateFzrInfoById(lcmx.getId(), newFzUserId,"");
+						List<ZlajLcMxInfoTb>  mxList_bz = new ArrayList<ZlajLcMxInfoTb>();
+						if(lcTask.equals("专利补正") || lcTask.equals("补正修改")){
+							mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "补正修改");
+							if(mxList_bz.size() > 0){
+								for(Iterator<ZlajLcMxInfoTb> it = mxList_bz.iterator() ; it.hasNext();){
+									ZlajLcMxInfoTb lcmx = it.next();
+									if(lcmx.getLcMxEDate().equals("")){//需要修改未完成的
+										mxm.updateFzrInfoById(lcmx.getId(), newFzUserId,"");
+									}
+								}
+							}
+							mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "专利补正");
+							if(mxList_bz.size() > 0){
+								for(Iterator<ZlajLcMxInfoTb> it = mxList_bz.iterator() ; it.hasNext();){
+									ZlajLcMxInfoTb lcmx = it.next();
+									if(lcmx.getLcMxEDate().equals("")){//需要修改未完成的
+										mxm.updateFzrInfoById(lcmx.getId(), newFzUserId,"");
+									}
+								}
+							}
+						}else{
+							mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, lcTask);
+							if(mxList_bz.size() > 0){
+								for(Iterator<ZlajLcMxInfoTb> it = mxList_bz.iterator() ; it.hasNext();){
+									ZlajLcMxInfoTb lcmx = it.next();
+									if(lcmx.getLcMxEDate().equals("")){//需要修改未完成的
+										mxm.updateFzrInfoById(lcmx.getId(), newFzUserId,"");
+									}
 								}
 							}
 						}
@@ -5594,12 +5647,34 @@ public class ZlMainAction extends DispatchAction {
 										//需要将该流程的所有任务归入新的员工并且修改流程负责人
 										//step1:修改移交申请人当前流程下所有未完成的任务
 										String lcTask = lcyj.getLcName();
-										List<ZlajLcMxInfoTb>  mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, lcTask);
-										if(mxList_bz.size() > 0){
-											for(Iterator<ZlajLcMxInfoTb> it = mxList_bz.iterator() ; it.hasNext();){
-												ZlajLcMxInfoTb lcmx = it.next();
-												if(lcmx.getLcMxEDate().equals("")){//需要修改未完成的
-													mxm.updateFzrInfoById(lcmx.getId(), newFzUserId,"");
+										List<ZlajLcMxInfoTb>  mxList_bz = new ArrayList<ZlajLcMxInfoTb>();
+										if(lcTask.equals("专利补正") || lcTask.equals("补正修改")){
+											mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "补正修改");
+											if(mxList_bz.size() > 0){
+												for(Iterator<ZlajLcMxInfoTb> it = mxList_bz.iterator() ; it.hasNext();){
+													ZlajLcMxInfoTb lcmx = it.next();
+													if(lcmx.getLcMxEDate().equals("")){//需要修改未完成的
+														mxm.updateFzrInfoById(lcmx.getId(), newFzUserId,"");
+													}
+												}
+											}
+											mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, "专利补正");
+											if(mxList_bz.size() > 0){
+												for(Iterator<ZlajLcMxInfoTb> it = mxList_bz.iterator() ; it.hasNext();){
+													ZlajLcMxInfoTb lcmx = it.next();
+													if(lcmx.getLcMxEDate().equals("")){//需要修改未完成的
+														mxm.updateFzrInfoById(lcmx.getId(), newFzUserId,"");
+													}
+												}
+											}
+										}else{
+											mxList_bz = mxm.listSpecInfoInfoByOpt(zlId, lcTask);
+											if(mxList_bz.size() > 0){
+												for(Iterator<ZlajLcMxInfoTb> it = mxList_bz.iterator() ; it.hasNext();){
+													ZlajLcMxInfoTb lcmx = it.next();
+													if(lcmx.getLcMxEDate().equals("")){//需要修改未完成的
+														mxm.updateFzrInfoById(lcmx.getId(), newFzUserId,"");
+													}
 												}
 											}
 										}
