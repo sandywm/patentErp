@@ -9,7 +9,7 @@ body{
 	margin-top:20px;
 }
 #addSubCpyBtn{display:none;}
-#subParCpyWrap{
+#subParCpyWrap{ 
 	width:100%;
 	position:static;
 }
