@@ -35,6 +35,7 @@
     <script type="text/javascript">
     	var loginType=parent.loginType,roleName=parent.roleName,hasReadFlag=false,tmpAddBackFee='';
 		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',yjFzrFlag:false,currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,yjTypeTxt:'',applyCause:'',applyName:'',yjId:0,zlType:'',tzsId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
+		var zlShowTagFlag = '${requestScope.zlTagShowFlag}';
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -218,7 +219,9 @@
 						if(this.data.lqZlFlag == true){
 							strHtmlTit += ' <li zlSearchOpts="rwlqOpt" lqStatus="2">撰写任务领取</li>';
 						}
-						strHtmlTit += ' <li zlSearchOpts="myZlOpt" lqStatus="3">我的专利</li>';
+						if(zlShowTagFlag == 'true'){
+							strHtmlTit += ' <li zlSearchOpts="myZlOpt" lqStatus="3">我的专利</li>';
+						}
 						if(roleName == '管理员'){//查看机构下所有员工的任务
 							strHtmlTit += ' <li zlSearchOpts="myTaskOpt" lqStatus="4">专利任务</li>';
 						}else{
@@ -252,8 +255,10 @@
 							strHtmlCon += '<table id="zlBasicListTab_2" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 						}
 						//我的专利对应内容
-						strHtmlCon += '<div class="layui-tab-item">';
-						strHtmlCon += '<table id="zlBasicListTab_3" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
+						if(zlShowTagFlag == 'true'){
+							strHtmlCon += '<div class="layui-tab-item">';
+							strHtmlCon += '<table id="zlBasicListTab_3" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
+						}
 						//我的任务对应内容 
 						strHtmlCon += '<div class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="taskStaInp" type="hidden" value="0"/>';
 						strHtmlCon += '<input type="radio" name="taskStatusInp" lay-filter="taskStatusFilter" value="0" title="未完成" checked/>';
