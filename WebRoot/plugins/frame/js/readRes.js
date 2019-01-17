@@ -50,7 +50,10 @@ layui.define(['jquery','table'],function(exports){
 					    		 return '<span class="readStaAlarm">'+ d.readResultChi +'</span>';
 					    	 }
 					     }},
-					]]
+					]],
+					done : function(){
+						$('#isHasReadInp').val(1);//用这个隐藏变量来判断当前读取是否是第一次读取 1：不是第一次 0 第一次
+					}
     			});
     		}
     		parent.hasReadFlag = true;

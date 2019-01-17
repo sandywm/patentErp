@@ -65,10 +65,13 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 				  ,choose: function(obj){
 				  	  var that = this,zlTypeTxt='';
 				      //读取本地文件
-				  	  if($('.commonResCon li').length > 0){//通知书/缴费单据批量导入第二次
+				  	  if($('.commonResCon li').length > 0 && opts == 'batchImp_fee'){//通知书/缴费单据批量导入第二次
 				  		$('.importCon').show();
 				  		$('.readResWrap').hide();
 				  		$('.commonResCon').html('');
+				  	  }else if(opts == 'batchImp_tzs' && $('#isHasReadInp').val() == 1){
+				  		  $('.importCon').show();
+				  		  $('.readResWrap').hide();
 				  	  }
 				  	  if(opts == 'zlTaskOpts'){
 				  		zlTypeTxt = parent.globalTaskOpts.zlType;
@@ -255,7 +258,6 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 				success:function(json){
 					console.log(json)
 					if(json['result'] == 'success'){
-						//console.log(json.readInfo)
 						parent.parent.$('body').find('.loadingWrap').html(_this.data.readSuccTips);
 						_this.showTime(3,parent.parent.$('body').find('#countNum'),_this.data.globalOpts,json.readInfo,true);
 					}else if(json['result'] == 'error'){

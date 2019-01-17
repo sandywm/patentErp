@@ -12,8 +12,8 @@
 		<div class="layui-form">
 			<input type="hidden" id="yjTypeInp"/>
 			<div class="layui-form-item noMargBot">
-				<input type="radio" name="yjTypeName" lay-filter="yjTypeFilter" value="0" title="临时移交(只移交当前任务)"/>
-				<input type="radio" name="yjTypeName" lay-filter="yjTypeFilter" value="1" title="永久移交(移交流程负责人) 慎选!"/>
+				<input type="radio" id="tmpTrasInp" name="yjTypeName" lay-filter="yjTypeFilter" value="0" title="临时移交(只移交当前任务)"/>
+				<input type="radio" id="everTransInp" name="yjTypeName" lay-filter="yjTypeFilter" value="1" title="永久移交(移交流程负责人) 慎选!"/>
 			</div>
 		</div>
 	</div>
@@ -44,7 +44,7 @@
 	</div>
    	<script src="/plugins/layui/layui.js"></script>
    	<script type="text/javascript">
-   		var lcMxId = parent.globalTaskOpts.globalLcMxId;
+   		var lcMxId = parent.globalTaskOpts.globalLcMxId,yjFzrFlag = parent.globalTaskOpts.yjFzrFlag;
    		layui.use(['form','layer','jquery'],function(){  			
    			var layer = layui.layer,
    				form = layui.form,
@@ -63,6 +63,12 @@
 			});
    			var page = {
    				bindEvent : function(){
+   					if(yjFzrFlag == 'false'){//临时性移交 永久性移交不能选择
+						$('#tmpTrasInp').attr('checked',true);
+						$('#everTransInp').attr('disabled','disabled');
+						$('#yjTypeInp').val(0);
+						form.render();
+					}
    					$('.subBtn').on('click',function(){
    						var yjTypeInpVal = $('#yjTypeInp').val(),causeVal = $('#causeInp').val(),diyInpVal = $('.diyInp').val();
    						if(yjTypeInpVal == ''){

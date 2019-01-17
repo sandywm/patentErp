@@ -34,7 +34,7 @@
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
     	var loginType=parent.loginType,roleName=parent.roleName,hasReadFlag=false,tmpAddBackFee='';
-		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,yjTypeTxt:'',applyCause:'',applyName:'',yjId:0,zlType:'',tzsId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
+		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',yjFzrFlag:false,currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,yjTypeTxt:'',applyCause:'',applyName:'',yjId:0,zlType:'',tzsId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -509,15 +509,16 @@
 							{field : 'taskSdate', title: '任务开始日期', width:150, align:'center'},
 							{field : 'taskComDate', title: '任务完成日期', width:150, align:'center'},
 							{field : 'sets', title: '操作', width:globalWid, fixed: 'right', align:'center',templet:function(d){
+								//console.log(typeof d.yjFzrFlag)
 								if(taskStaVal == 0){
 									var strHtml = '';
 									strHtml += '<a class="layui-btn layui-btn-xs" lay-event="goCompleteTask" lcNo="'+ d.lcNo +'" zlId="'+ d.zlId +'" mxId = "'+ d.mxId +'" zlType="'+ d.zlType +'" ajTitle="'+ d.zlTitle +'"><i class="layui-icon layui-icon-edit"></i>去完成</a>';
 									if(roleName == '管理员' || page.data.fpZlFlag == true){
 										if(d.applyFlag){
-											strHtml += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="tranformFun" lcMxId="'+ d.mxId +'" lcTask="'+ d.taskName +'" ajTitle="'+ d.zlTitle +'" fzUserId="'+ d.fzUserId +'" applyUserName="'+ d.fzUserName +'"><i class="iconfont layui-extend-yijiao"></i>任务移交</a>';
+											strHtml += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="tranformFun" yjFzrFlag="'+ d.yjFzrFlag +'" lcMxId="'+ d.mxId +'" lcTask="'+ d.taskName +'" ajTitle="'+ d.zlTitle +'" fzUserId="'+ d.fzUserId +'" applyUserName="'+ d.fzUserName +'"><i class="iconfont layui-extend-yijiao"></i>任务移交</a>';
 										}
 									}else{
-										strHtml += '<a lay-event="transferFun" class="layui-btn layui-btn-danger layui-btn-xs" ajTitle="'+ d.zlTitle +'" lcMxId="'+ d.mxId +'" lcTask="'+ d.taskName +'"><i class="iconfont layui-extend-yijiao"></i>移交申请</a>';
+										strHtml += '<a lay-event="transferFun" class="layui-btn layui-btn-danger layui-btn-xs" ajTitle="'+ d.zlTitle +'" yjFzrFlag="'+ d.yjFzrFlag +'" lcMxId="'+ d.mxId +'" lcTask="'+ d.taskName +'"><i class="iconfont layui-extend-yijiao"></i>移交申请</a>';
 									}
 									return strHtml;
 								}else{//表示当前任务已完成
@@ -841,6 +842,7 @@
 				}else if(obj.event == 'transferFun' || obj.event == 'tranformFun'){//员工下的移交申请以及管理员下任务移交
 					globalTaskOpts.globalLcMxId = $(this).attr('lcmxid');
 					globalTaskOpts.applyName = $(this).attr('applyUserName');
+					globalTaskOpts.yjFzrFlag = $(this).attr('yjfzrflag');
 					var ajTitle = $(this).attr('ajTitle'),lcTask = $(this).attr('lctask');
 					var url = '',title = '',height = '';
 					if(obj.event == 'transferFun'){
