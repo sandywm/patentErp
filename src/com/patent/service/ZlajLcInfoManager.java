@@ -68,7 +68,7 @@ public interface ZlajLcInfoManager {
 	List<ZlajLcInfoTb> listLcInfoById(Integer id) throws WEBException;
 	
 	/**
-	 * 根据案件编号获取该案件所有的流程列表（流程号降序排列）
+	 * 根据案件编号获取该案件所有的流程列表（id号降序排列）
 	 * @description
 	 * @author wm
 	 * @date 2018-8-31 上午10:49:21

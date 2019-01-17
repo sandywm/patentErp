@@ -374,6 +374,34 @@ public class ZlMainAction extends DispatchAction {
 		return null;
 	}
 	
+	/**
+	 * 获取当前用户有没有我的专利权限
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-16 下午04:19:19
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getMyZlModAbility(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
+		String loginType = this.getLoginType(request);
+		if(loginType.equals("cpyUser")){//代理机构下
+			CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
+			Integer roleId = this.getLoginRoleId(request);
+			if(cpyUser != null){
+				if(this.getLoginRoleName(request).equals("管理员")){
+					
+				}
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * 根据条件分页获取专利信息列表(只对代理机构和平台用户开放)
@@ -577,6 +605,8 @@ public class ZlMainAction extends DispatchAction {
 									}else if(diffDays > 1){
 										zlStatusInfo = "outDate_zc";//正常
 									}
+								}else{
+									zlStatusInfo = "outDate_zc";//正常
 								}
 							}
 						}else{
