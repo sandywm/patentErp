@@ -276,17 +276,19 @@
 						strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="1" title="审核通过"/>';
 						strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="2" title="审核未通过"/></div>';
 						strHtmlCon += '<table id="zlBasicListTab_5" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
-						//通知书批量导入
-						strHtmlCon += '<div class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="readResInp" type="hidden" value="2"/><input id="tzsTypeInp" type="hidden" value=""/>';
-						strHtmlCon += '<div class="verifyTxt" style="left:475px;"><p><span class="noPasVerifySpan"></span>读取失败</p><p><span class="pasVerifySpan"></span>读取成功</p></div>';
-						strHtmlCon += '<div class="" style="float:left;margin-right:10px;"><div class="layui-input-inline">';
-						strHtmlCon += '<select lay-filter="tzsTypeSelFilter"><option value="">请选择通知书类型(全部)</option>';
-						strHtmlCon += '<option value="tzs">通知书</option><option value="sqd">电子回执单</option>';
-						strHtmlCon += '</select></div></div>';
-						strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="2" title="全部" checked/>';
-						strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="1" title="读取成功"/>';
-						strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="0" title="读取失败"/></div>';
-						strHtmlCon += '<table id="zlBasicListTab_6" class="layui-table" lay-filter="zlInfoListTable"></table>';
+						if(roleName == '管理员' || this.data.fpZlFlag == true){
+							//通知书批量导入
+							strHtmlCon += '<div class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="readResInp" type="hidden" value="2"/><input id="tzsTypeInp" type="hidden" value=""/>';
+							strHtmlCon += '<div class="verifyTxt" style="left:475px;"><p><span class="noPasVerifySpan"></span>读取失败</p><p><span class="pasVerifySpan"></span>读取成功</p></div>';
+							strHtmlCon += '<div class="" style="float:left;margin-right:10px;"><div class="layui-input-inline">';
+							strHtmlCon += '<select lay-filter="tzsTypeSelFilter"><option value="">请选择通知书类型(全部)</option>';
+							strHtmlCon += '<option value="tzs">通知书</option><option value="sqd">电子回执单</option>';
+							strHtmlCon += '</select></div></div>';
+							strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="2" title="全部" checked/>';
+							strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="1" title="读取成功"/>';
+							strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="0" title="读取失败"/></div>';
+							strHtmlCon += '<table id="zlBasicListTab_6" class="layui-table" lay-filter="zlInfoListTable"></table>';
+						}
 					}
 					strHtmlCon += '</div>';
 					$('#layuiTab').append(strHtmlTit + strHtmlCon);
