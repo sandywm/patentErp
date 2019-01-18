@@ -60,14 +60,14 @@
 					this.bindEvent();
 				},
 				onLoad : function(){
-					this.loadSqrList('initLoad');
+					this.loadSqrList();
 					$('.addSqrWrap').height($(window).height());
 					this.getSqrList();
 				},
 				bindEvent : function(){
 					var _this = this;
 					$('#queryBtn').on('click',function(){
-						_this.loadSqrList('queryLoad');
+						_this.loadSqrList();
 					});
 					$('.addCusBtn').on('click',function(){
 						parent.addCustFlag = false;
@@ -82,7 +82,7 @@
 						  	end:function(){
 						  		if(parent.addCustFlag){
 						  			_this.data.isClickInpFlag = true;
-						  			_this.loadSqrList('initLoad');
+						  			_this.loadSqrList();
 						  		}
 						  	}
 						});	
@@ -188,14 +188,9 @@
 						_this.sqrOrder();
 					});
 				},
-				loadSqrList : function(opts){
-					var _this = this;
-					if(opts == 'initLoad'){
-						var field = {cusName : ''};
-					}else{
-						var custNameInpVal = $.trim($('#custNameInp').val());
-						var field = {cusName : custNameInpVal};
-					}
+				loadSqrList : function(){
+					var _this = this,custNameInpVal = $.trim($('#custNameInp').val());
+					var field = {cusName : custNameInpVal,opt:'dealZl'};
 					layer.load('1');
 					table.render({
 						elem: '#sqrListTable',
