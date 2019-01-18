@@ -145,12 +145,17 @@ public class CustomerAction extends DispatchAction {
 		Map<String,Object> map = new HashMap<String,Object>();
 		List<Object> list_d = new ArrayList<Object>();
 		boolean abilityFlag = false;
+		String opt = CommonTools.getFinalStr("opt", request);//opt:dealZl。当有值的时候就不需要判断权限(增加专利时)
 		if(this.getLoginType(request).equals("cpyUser")){
-			if(this.getLoginRoleName(request).equals("管理员")){
+			if(opt.equals("dealZl")){
 				abilityFlag = true;
 			}else{
-				//需要查看当前用户有无增加权限111
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listCus");
+				if(this.getLoginRoleName(request).equals("管理员")){
+					abilityFlag = true;
+				}else{
+					//需要查看当前用户有无增加权限
+					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "listCus");
+				}
 			}
 			if(abilityFlag){
 				CpyUserInfo cUser = cum.getEntityById(currLoginUserId);
@@ -191,7 +196,7 @@ public class CustomerAction extends DispatchAction {
 					map.put("msg", "暂无记录");
 				}
 			}else{
-				map.put("msg", "noAbility");
+				map.put("msg", "暂无权限");
 			}
 			
 		}else{
