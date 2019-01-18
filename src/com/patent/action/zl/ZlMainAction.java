@@ -337,13 +337,9 @@ public class ZlMainAction extends DispatchAction {
 					fpZlFlag = Ability.checkAuthorization(roleId, "fpZl");
 					lqzLFlag = Ability.checkAuthorization(roleId, "lqZl");
 					dealZlFlag = Ability.checkAuthorization(roleId, "dealZl");
-					if(fpZlFlag){//流程分配人员本身就可以导入通知书
-						zlTagShowFlag = true;
+					zlTagShowFlag = Ability.checkAuthorization(roleId, "addZl");
+					if(zlm.listInfoByOpt("tzs", currUsreId, cpyUser.getCpyInfoTb().getId()).size() > 0){
 						tzsShowFlag = true;
-					}else{
-						if(zlm.listInfoByOpt("tzs", currUsreId, cpyUser.getCpyInfoTb().getId()).size() > 0){
-							tzsShowFlag = true;
-						}
 					}
 				}
 			}
