@@ -35,7 +35,7 @@
     <script type="text/javascript">
     	var loginType=parent.loginType,roleName=parent.roleName,hasReadFlag=false,tmpAddBackFee='';
 		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',yjFzrFlag:false,currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,yjTypeTxt:'',applyCause:'',applyName:'',yjId:0,zlType:'',tzsId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
-		var zlShowTagFlag = '${requestScope.zlTagShowFlag}';
+		var zlShowTagFlag = '${requestScope.zlTagShowFlag}',tzsShowFlag = '${requestScope.tzsShowFlag}';
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -80,6 +80,11 @@
   				}else{
   					$('#importBtn').hide();
   				}
+  				if(lqStatus == 3 && !page.isHasAbility_zlTzs(3)){// 我的专利
+  					layer.msg('抱歉，您暂无权限', {icon:5,anim:6,time:1500});
+  				}else if(lqStatus == 6 && !page.isHasAbility_zlTzs(6)){
+  					layer.msg('抱歉，您暂无通知书批量操作的权限', {icon:5,anim:6,time:1500});
+  				}
   				page.queryFun();
   				loadZlInfoList('initLoad');
  			});
@@ -102,6 +107,26 @@
 					this.createTab();
 					this.bindEvent();
 					
+				},
+				isHasAbility_zlTzs : function(opts){
+					var isHasAbilityFlag = false;
+					layer.load('1');
+					$.ajax({
+  						type:'post',
+  						async:false,
+				        dataType:'json',
+				        data : {opt : opts},
+				        url:'/zlm.do?action=getModTagAbility',
+				        success:function (json){
+				        	layer.closeAll('loading');
+				        	if(json['result'] == 'success'){
+				        		isHasAbilityFlag = true;
+				        	}else if(json['result'] == 'noAbility'){
+				        		isHasAbilityFlag = false;
+				        	}
+				        }
+  					});
+					return isHasAbilityFlag;
 				},
 				bindEvent : function(){
 					var _this = this;
@@ -145,7 +170,8 @@
 					});
 					//批量导入
 					$('#importBtn').on('click',function(){
-						if(_this.data.dealZlFlag){
+						var isHasAbilityFlag =  page.isHasAbility_zlTzs(6);
+						if(isHasAbilityFlag){
 							hasReadFlag = false;
 							var fullScreenIndex = layer.open({
 								title:'',
@@ -230,9 +256,12 @@
 						//管理员下增加个移交申请审核
 						if(roleName == '管理员' || this.data.fpZlFlag == true){
 							strHtmlTit += ' <li zlSearchOpts="shenheOpt" lqStatus="5">任务移交审核</li>';
-							strHtmlTit += ' <li zlSearchOpts="" lqStatus="6">通知书批量导入</li>';
+							
 						}else{
 							strHtmlTit += ' <li zlSearchOpts="shenheOpt" lqStatus="5">任务移交记录</li>';
+						}
+						if(tzsShowFlag == 'true'){
+							strHtmlTit += ' <li zlSearchOpts="" lqStatus="6">通知书批量导入</li>';
 						}
 					}
 					strHtmlTit += '</ul>';
@@ -276,7 +305,7 @@
 						strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="1" title="审核通过"/>';
 						strHtmlCon += '<input type="radio" name="tranStatus" lay-filter="tranStatusFilter" value="2" title="审核未通过"/></div>';
 						strHtmlCon += '<table id="zlBasicListTab_5" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
-						if(roleName == '管理员' || this.data.fpZlFlag == true){
+						if(tzsShowFlag == 'true'){
 							//通知书批量导入
 							strHtmlCon += '<div class="layui-tab-item"><div class="taskStatusBox layui-form"><input id="readResInp" type="hidden" value="2"/><input id="tzsTypeInp" type="hidden" value=""/>';
 							strHtmlCon += '<div class="verifyTxt" style="left:475px;"><p><span class="noPasVerifySpan"></span>读取失败</p><p><span class="pasVerifySpan"></span>读取成功</p></div>';

@@ -200,6 +200,9 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 				    }else if(res.msg == 'suffixError'){
 						layer.msg('上传异常或选中文件不包括支持的格式！请稍后重试',{icon:5,anim:6,time:1500});
 						errorTypeFlag = true;
+					}else if(res.msg == 'noAbility'){
+						layer.msg('抱歉，您暂无权限上传文件',{icon:5,anim:6,time:1500});
+						errorTypeFlag = true;
 					}
 				    this.error(index, upload);
 				  }
