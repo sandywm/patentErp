@@ -19,11 +19,11 @@
 	<div class="addJfFieldBox">
 		<div id="addFieldLayer">
 			<div class="innerAddCon">
-				<span class="fl">专业名：</span>
+				<span class="fl"><b style="color:#f00;font-weight:normal;">*</b>专业名：</span>
 				<input type="text" id="zyNameInp" class="fl" placeholder="请输入专业名(8字以内)" autocomplete="off" maxlength="8"/>
 			</div>
 			<div class="innerAddCon">
-				<span class="fl" style="margin-left:-15px;">专业简介：</span>
+				<span class="fl" style="margin-left:-8px;">专业简介：</span>
 				<input type="text" id="zyProfile" class="fl" placeholder="请输入专业简介(20字以内)" autocomplete="off" maxlength="20"/>
 			</div>
 			<div class="innerAddCon" style="text-align:center;">
@@ -35,24 +35,37 @@
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		var noDataFlag = false,tmpJfFieldId=[],tmpJfFiedlTxt=[];
-		layui.use(['layer','form','jquery'],function(){
+		layui.config({
+			base: '/plugins/frame/js/'
+		}).extend({ //设定组件别名
+			common: 'common'// 表示模块文件的名字
+		}).use(['layer','form','common','jquery'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
-				form = layui.form;
+				form = layui.form,
+				common = layui.common;
 			var page = {
+				data : {
+					addJfFlag : false
+				},
 				init : function(){
 					this.onLoad();
 					this.bindEvent();
 					this.inpFieldClick();
 				},
 				onLoad : function(){
+					this.data.addJfFlag = common.getPermission('addJf','',0);
 					this.loadZyFieldList();
 				},
 				bindEvent : function(){
 					var _this = this;
 					//不存在技术领域时候的添加
 					$('.addFieldBtn').on('click',function(){
-						_this.showAddField();
+						if(_this.data.addJfFlag){
+							_this.showAddField();
+						}else{
+							layer.msg('抱歉，您暂无增加技术领域的权限', {icon:5,anim:6,time:2000});
+						}
 					});
 					$('#cancel_field').on('click',function(){
 						_this.hideField();
