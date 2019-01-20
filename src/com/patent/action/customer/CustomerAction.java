@@ -795,6 +795,7 @@ public class CustomerAction extends DispatchAction {
 									Map<String,Object> map_d = new HashMap<String,Object>();
 									map_d.put("fmrId", fmr.getId());
 									map_d.put("fmrName", fmr.getCusFmrName());
+									map_d.put("fmrIdCard", fmr.getCusFmrICard());
 									list_d.add(map_d);
 								}
 								map_a.put("result", "success");
