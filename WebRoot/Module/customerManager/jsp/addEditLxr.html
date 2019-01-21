@@ -11,21 +11,21 @@
 <body style="background:#fff;">
 	<div id="lxrWrap" class="layui-form">
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label"><span class="mustItem">*</span>联系人姓名</label>
+			<label class="layui-form-label lxrLableWid"><span class="mustItem">*</span>联系人姓名</label>
 			<div class="layui-input-block">
-				<input type="text" name="lxrName" required lay-verify="judgeName" placeholder="请输入联系人姓名(4字以内)" maxlength="4" autocomplete="off" class="layui-input"/>
+				<input type="text" name="lxrName" required lay-verify="judgeName" placeholder="请输入联系人姓名(30字以内)" maxlength="30" autocomplete="off" class="layui-input"/>
 			</div>				
 		</div>
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label"><span class="mustItem">*</span>联系人电话</label>
+			<label class="layui-form-label lxrLableWid"><span class="mustItem">*</span>联系人电话</label>
 			<div class="layui-input-block">
 				<input type="text" name="lxrTel" required lay-verify="judgePhoneNum" placeholder="请输入联系人手机号码" maxlength="11" autocomplete="off" class="layui-input"/>
 			</div>				
 		</div>
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label"><span class="mustItem">*</span>联系人邮箱</label>
+			<label class="layui-form-label lxrLableWid">联系人邮箱</label>
 			<div class="layui-input-block">
-				<input type="text" name="lxrEmail" required lay-verify="email" maxlength="30" placeholder="请输入联系人邮箱" autocomplete="off" class="layui-input"/>
+				<input type="text" name="lxrEmail" lay-verify="judgeEmail" maxlength="30" placeholder="请输入联系人邮箱" autocomplete="off" class="layui-input"/>
 			</div>				
 		</div>
 		<div class="layui-form-item">
@@ -61,7 +61,9 @@
 		   			        success:function (json){
 		   			        	layer.closeAll('loading');
 		   			        	if(json['result'] == 'success'){
-		   			        		_this.renderEditLxr(json);
+		   			        		$('input[name=lxrName]').val(json.lxrName);
+		   			        		$('input[name=lxrTel]').val(json.lxrTel);
+		   			        		$('input[name=lxrEmail]').val(json.lxrEmail);
 		   			        	}else if(json['result'] == 'error'){
 		   			        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1000});
 		   			        	}else if(json['result'] == 'noInfo'){
@@ -70,23 +72,6 @@
 		   			        }
 		   				});
 					}
-				},
-				//编辑时渲染结构
-				renderEditLxr : function(json){
-					var strHtml = '';
-					//联系人姓名
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span class="mustItem">*</span>联系人姓名</label><div class="layui-input-block">';
-					strHtml += '<input type="text" name="lxrName" required lay-verify="judgeName" value="'+ json.lxrName +'" placeholder="请输入联系人姓名(4字以内)" maxlength="4" autocomplete="off" class="layui-input"/></div></div>';
-					//联系人电话
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span class="mustItem">*</span>联系人电话</label><div class="layui-input-block">';
-					strHtml += '<input type="text" name="lxrTel" required lay-verify="judgePhoneNum" value="'+ json.lxrTel +'" placeholder="请输入联系人手机号码" maxlength="11" autocomplete="off" class="layui-input"/></div></div>';
-					//联系人邮箱
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span class="mustItem">*</span>联系人邮箱</label><div class="layui-input-block">';
-					strHtml += '<input type="text" name="lxrEmail" required lay-verify="email" value="'+ json.lxrEmail +'" placeholder="请输入联系人邮箱" maxlengt="30" autocomplete="off" class="layui-input"/></div></div>';
-					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"></label><div class="layui-input-block">';
-					strHtml += '<button type="button" lay-submit lay-filter="setLxrInfo" class="layui-btn" style="width:120px;margin-left:50px;">保存信息</button></div></div>';
-					
-					$('#lxrWrap').html(strHtml);
 				}
 			};
 			//自定义表单验证
@@ -97,8 +82,8 @@
 						return '联系人姓名不能为空';
 					}else if(!reg.test(value)){
 				      return '联系人姓名应为汉字';
-				    }else if(value.length < 2 || value.length > 4){
-				    	 return '联系人户姓名最少应为2个字符最多为4个字符';
+				    }else if(value.length < 2 || value.length > 30){
+				    	 return '联系人姓名最少应为2个字符最多为30个字符';
 				    }
   				},
   				judgePhoneNum : function(value){
@@ -106,10 +91,16 @@
 					if(v!='' && v.length == 11){
 						var reg = /^1[3|4|5|7|8][0-9]\d{4,8}$/;
 						if(!reg.test(value)){
-							return '联系人手机号码格式不对,请从新输入';
+							return '手机号码格式不对,请从新输入';
 						}
 					}else{
-						return '联系人手机号码格式不对,请从新输入';
+						return '手机号码码格式不对，请从新输入';
+					}
+				},
+				judgeEmail : function(value){
+					var reg = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+					if(value !== '' && !reg.test(value)){
+						return '邮箱格式不正确,请从新输入';
 					}
 				}
   			});

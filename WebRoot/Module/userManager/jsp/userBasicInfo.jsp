@@ -3,9 +3,9 @@
 <html>
   <head>
     <title>个人资料设置</title>
-	<meta http-equiv="cache-control" content="no-cache">  
-	<meta http-equiv="keywords" content="用户信息修改,编辑，保存">
-	<meta http-equiv="description" content="个人信息修改">
+	<meta http-equiv="cache-control" content="no-cache"/>  
+	<meta http-equiv="keywords" content="用户信息修改,编辑，保存"/>
+	<meta http-equiv="description" content="个人信息修改"/>
 	<link href="/Module/userManager/css/formInp.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/layui/css/modules/layui-icon-extend/iconfont.css" rel="stylesheet" type="text/css"/>
@@ -87,15 +87,15 @@
   				if(loginType == 'cpyUser' || loginType == 'spUser'){
   					//管理员姓名
   					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>个人姓名</label>';
-  					strHtml += '<div class="layui-input-inline"><input type="text" name="name" value="'+ list.name +'" class="layui-input" placeholder="请输入您的真实姓名" lay-verify="judegeName" autocomplete="off" maxlength="4"></div></div>';
+  					strHtml += '<div class="layui-input-inline"><input type="text" name="name" value="'+ list.name +'" class="layui-input" placeholder="请输入您的真实姓名" lay-verify="judegeName" autocomplete="off" maxlength="30"></div></div>';
   				}else{
   					if(list.roleName != '个人'){
   						strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>公司名称</label>';
-  						strHtml += '<div class="layui-input-inline"><input type="text" name="name" value="'+ list.name +'" class="layui-input" lay-verify="judegeCompName" placeholder="请输入公司名称" autocomplete="off" maxlength="20"></div></div>';
+  						strHtml += '<div class="layui-input-inline"><input type="text" name="name" value="'+ list.name +'" class="layui-input" lay-verify="judegeCompName" placeholder="请输入公司名称" autocomplete="off" maxlength="30"></div></div>';
   					}else{
   						//个人 、 代理机构下员工的个人姓名
   						strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>个人姓名</label>';
-  						strHtml += '<div class="layui-input-inline"><input type="text" name="name" value="'+ list.name +'" class="layui-input" lay-verify="judegeName" placeholder="请输入您的真实姓名" autocomplete="off" maxlength="4"></div></div>';
+  						strHtml += '<div class="layui-input-inline"><input type="text" name="name" value="'+ list.name +'" class="layui-input" lay-verify="judegeName" placeholder="请输入您的真实姓名" autocomplete="off" maxlength="30"></div></div>';
   					}
   				}
   				//appICard 电话 邮箱
@@ -103,7 +103,7 @@
   					//var cnName = '';
   					if(list.roleName == '个人'){
   						strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>个人身份证号码</label>';
-  						strHtml += '<div class="layui-input-inline"><input type="text" name="appiCard" value="'+ list.appICard +'" required placeholder="请输入个人身份证号码" lay-verify="identity" autocomplete="off" class="layui-input"></div></div>';
+  						strHtml += '<div class="layui-input-inline"><input type="text" name="appiCard" value="'+ list.appICard +'" required placeholder="请输入个人身份证号码" lay-verify="identity" autocomplete="off" class="layui-input" maxlength="18"/></div></div>';
   					}else{
   						cnName = '联系人';
   						strHtml += '<div class="layui-form-item"><label class="layui-form-label">公司组织机构代码</label>';
@@ -111,21 +111,21 @@
   					}
   					//联系人姓名
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>联系人姓名</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" name="lxr" value="'+ list.appLxr +'" required placeholder="请输入联系人姓名" lay-verify="judegeName" autocomplete="off" class="layui-input" maxlength="4"></div></div>';
+					strHtml += '<div class="layui-input-inline"><input type="text" name="lxr" value="'+ list.appLxr +'" required placeholder="请输入联系人姓名" lay-verify="judegeName" autocomplete="off" class="layui-input" maxlength="30"></div></div>';
 					//联系人地址
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>'+ cnName +'地址</label>';
-					strHtml += '<div class="layui-input-inline"><input type="text" name="address" value="'+ list.appAddress +'" required placeholder="请输入'+ cnName +'地址" lay-verify="judegeAddress" autocomplete="off" class="layui-input"></div></div>';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'地址</label>';
+					strHtml += '<div class="layui-input-inline"><input type="text" name="address" value="'+ list.appAddress +'" placeholder="请输入'+ cnName +'地址" lay-verify="judegeAddress" maxlength="30" autocomplete="off" class="layui-input"></div></div>';
 					//联系人QQ	
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>'+ cnName +'QQ</label>';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'QQ</label>';
 					if(list.qq == '' || list.qq == undefined){
 						list.qq = '';
 					}
-					strHtml += '<div class="layui-input-inline"><input type="text" name="qq" value="'+ list.qq +'" required placeholder="请输入'+ cnName +'QQ" lay-verify="judegeQQ" autocomplete="off" class="layui-input"></div></div>';
+					strHtml += '<div class="layui-input-inline"><input type="text" name="qq" value="'+ list.qq +'" placeholder="请输入'+ cnName +'QQ" lay-verify="judegeQQ" autocomplete="off" class="layui-input"></div></div>';
   				}else if(loginType == 'cpyUser'){
   					cnName = '';
   					if(roleName != '管理员'){//表示是代理机构下的员工用户
   						//技术领域
-  						strHtml += '<div class="layui-form-item"><label class="layui-form-label">'+ cnName +'技术领域</label>';
+  						strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>'+ cnName +'技术领域</label>';
   						list.scFiled == 'null' ? list.scFiled = '' :  list.scFiled;
   						strHtml += '<input type="hidden" name="userScFiledIdStr" value="'+ list.scFiled +'"/>';
   						strHtml += '<div class="layui-input-block">';
@@ -208,8 +208,8 @@
 						return '个人姓名不能为空';
 					}else if(!reg.test(value)){
 				      return '个人姓名应为汉字';
-				    }else if(value.length < 2 || value.length > 4){
-				    	 return '个人姓名最少应为2个字符最多为4个字符';
+				    }else if(value.length < 2 || value.length > 30){
+				    	 return '个人姓名最少应为2个字符最多为30个字符';
 				    }
 				},
 				judegeCompName : function(value){
@@ -218,8 +218,8 @@
 						return '公司名称不能为空';
 					}else if(!reg.test(value)){
 				      return '公司名称应为汉字';
-				    }else if(value.length < 4 || value.length > 20){
-				    	 return '公司名称最少为4个字符最多为20个字符';
+				    }else if(value.length < 4 || value.length > 30){
+				    	 return '公司名称最少为4个字符最多为30个字符';
 				    }
 				},
 				phoneNum : function(value){
@@ -234,23 +234,15 @@
 					}
 				},
 				judegeAddress : function(value){
-					if(value == ''){
-						return '地址不能为空';
-					}else{
-						if(value.length < 4){
-							return '请如实填写地址';
-						}
+					if(value != '' && value.length < 4){
+						return '请如实填写地址';
 					}
 				},
 				judegeQQ : function(value){
 					var v= value.replace(/ /g,""),
 						regQQ=/^[0-9][0-9]{4,}$/;
-					if(v == ''){
-						return 'QQ号不能为空';
-					}else{
-						if(!regQQ.test(v)){
-							return 'QQ号格式不正确，请从新输入';
-						}
+					if(v != '' && !regQQ.test(v)){
+						return 'QQ号格式不正确，请从新输入';
 					}
 				},
 				judegeOrgCode : function(code){

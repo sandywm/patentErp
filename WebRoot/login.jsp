@@ -32,17 +32,17 @@
 	      	</div>
 	        <div class="layui-form-item">
 	          <label class="layadmin-user-login-icon iconfont layui-extend-wode"></label>
-	          <input type="text" id="account" placeholder="请输入账号" autocomplete="off" class="layui-input">
+	          <input type="text" id="account" placeholder="请输入账号" maxlength="12" autocomplete="off" class="layui-input">
 	        </div>
 	        <div class="layui-form-item">
 	          <label class="layadmin-user-login-icon iconfont layui-extend-mima" for="LAY-user-login-password"></label>
-	          <input type="password" id="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
+	          <input type="password" id="password" placeholder="请输入密码" maxlength="16" autocomplete="off" class="layui-input">
 	        </div>
 	        <div class="layui-form-item">
 	          <div class="layui-row">
 	            <div class="layui-col-xs7">
 	              <label class="layadmin-user-login-icon iconfont layui-extend-vercode" for="LAY-user-login-vercode"></label>
-	              <input type="text" id="inputCode" placeholder="请输入图形验证码" autocomplete="off" class="layui-input">
+	              <input type="text" id="inputCode" maxlength="4" placeholder="请输入图形验证码" autocomplete="off" class="layui-input">
 	            </div>
 	            <div class="layui-col-xs5">
 	              <div style="margin-left: 10px;">

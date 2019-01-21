@@ -287,9 +287,9 @@ body{
 .commonListBox_field{
 	height:190px;
 }
-.commonListBox_lxFmr{
+/*.commonListBox_lxFmr{
 	height:260px;
-}
+}*/
 .lxrListBox,
 .hasSelLxrFmrList{
 	overflow:hidden;
@@ -324,13 +324,13 @@ body{
 	margin:0 auto;
 }
 .lxrListBox{
-	width:480px;
-	height:260px;
+	width:450px;
+	height:335px;
 	border-right:1px solid #ccc;
 }
 .hasSelLxrFmrList{
-	width:200px;
-	height:260px;
+	width:360px;
+	height:335px;
 	position:relative;
 }
 .hasSelSqrList p.listP,
@@ -339,6 +339,7 @@ body{
 	line-height:35px;
 	border-bottom:1px dashed #ccc;
 	position:relative;
+	margin-bottom:3px;
 }
 .hasSelSqrList p.listP strong,
 .hasSelLxrFmrList p.listP strong{
@@ -347,13 +348,42 @@ body{
 	font-weight:normal;
 	float:left;
 }
+.idCardIcon{
+	font-weight:normal;
+	float:left;
+}
+.fmrNoteTxt{
+	font-style:normal;
+	color:#F47837;
+	float:left;
+}
 .hasSelSqrList p.listP strong{
 	width:74%;
 	max-width:74%;
 }
 .hasSelLxrFmrList p.listP strong{
-	width:60%;
-	max-width:60%;
+	width:80%;
+	max-width:80%;
+}
+.hasSelLxrFmrList p.listP strong.specWid{
+	width:70%;
+	max-width:70%;
+}
+.layui-extend-noIdCard,
+.layui-extend-idCard{
+	width:10%;
+	height:100%;
+	float:left;
+	cursor:pointer;
+}
+.layui-extend-noIdCard{
+	font-size:30px;
+	color:#ff7878;
+}
+.layui-extend-idCard{
+	font-size:26px;
+	margin-top:3px;
+	color:#009688;
 }
 .hasSelSqrList div.tipInfo,
 .hasSelLxrFmrList div.tipInfo{
@@ -382,7 +412,7 @@ body{
 	width:18%;
 }
 .hasSelLxrFmrList p.listP a{
-	width:30%;
+	width:14%;
 }
 .hasSelSqrList p.listP span.topTriSpan,
 .hasSelLxrFmrList p.listP span.topTriSpan{
@@ -547,7 +577,7 @@ body{
 	color:#999;
 }
 .addNewBtn{
-	width:78px;
+	/*width:78px;*/
 	height:30px;
 	line-height:30px;
 	position:absolute;
@@ -883,6 +913,18 @@ body{
 	left:0;
 	top:11px;
 }
+.zlStatusInfoBox p.myZlAbilityTxt{
+	color:#f00;
+	margin-left:-20px;
+}
+.zlStatusInfoBox p.myZlAbilityTxt i,
+.zlStatusInfoBox p.myZlAbilityTxt em{
+	float:left;
+	font-style:normal;
+}
+.zlStatusInfoBox p.myZlAbilityTxt em{
+	margin-left:5px;
+}
 .commonStaSp{
 	left:5px;
 	top:10px;
@@ -959,4 +1001,22 @@ body{
 }
 .resetBtn i{
 	margin-right:5px;
+}
+/* 添加编辑第一发明人身份证号 */
+.firstFmrWrap{
+	width:100%;
+	height:100%;
+	position:absolute;
+	left:0;
+	top:0;
+	background:rgba(255,255,255,.9);
+	z-index:100;
+	display:none;
+}
+.innerFmrInfo{
+	padding:0 15px;
+}
+.innerFmrInfo legend{
+	font-size:16px;
+	color:#F47837;
 }

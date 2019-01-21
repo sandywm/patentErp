@@ -24,12 +24,40 @@
 			<!--  button type="button" class="layui-btn layui-btn-normal addLxrFmrBtn">增加新联系人</button-->
 		</div>
 	</div>
+	<div class="firstFmrWrap">
+		<div class="innerFmrInfo">
+			<fieldset class="layui-elem-field layui-field-title">
+				<legend>设置第一发明人信息</legend>
+			</fieldset>
+			<div class="layui-form">
+				<div class="layui-form-item">
+					<label class="layui-form-label"><span class="mustItem">*</span>发明人姓名</label>
+					<div class="layui-input-block">
+						<input type="text" name="fmrName" disabled placeholder="请输入发明人姓名(30字以内)" maxlength="30" autocomplete="off" class="layui-input"/>
+					</div>				
+				</div>
+				<div class="layui-form-item" style="margin-top:15px;">
+					<label id="cusiCardLab" class="layui-form-label"><span class="mustItem">*</span>发明人身份证号</label>
+					<div class="layui-input-block">
+						<input type="text" name="fmriCard" lay-verify="judegeIdentity" placeholder="请输入发明人身份证号" maxlength="18" autocomplete="off" class="layui-input"/>
+					</div>				
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label"></label>
+					<div class="layui-input-block" style="text-align:center;">
+						<button type="button" id="cancelFmrInfoBtn" class="layui-btn layui-btn-primary" style="width:80px;display:inline-block;margin-left:-100px;">取消</button>
+						<button type="button" id="saveFmrInfoBtn" onclick="saveFmrInfo()" class="layui-btn" style="width:120px;display:inline-block;">保存信息</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var tmpLxrFmrId=[],tmpLxrFmrTxt=[],tmpLxrFmrOpts = parent.tmpLxrFmrOpts,lxrFmrText='';
-		layui.use(['layer','form','jquery'],function(){
+		var tmpLxrFmrId=[],tmpLxrFmrTxt=[],tmpLxrFmrOpts = parent.tmpLxrFmrOpts,lxrFmrText='',globalPage = {};
+		layui.use(['layer','form'],function(){
 			var layer = layui.layer,
-				$ = layui.jquery,
 				form = layui.form;
 			var page = {
 				data : {
@@ -45,6 +73,7 @@
 				bindEvent : function(){
 					var _this = this;
 					var sqrLxrFmrName = '',lxrFmrTxt='';
+					this.cancelSaveFmrInfo();
 					if(tmpLxrFmrOpts == 'addLxrOpts'){
 						//表示添加联系人
 						sqrLxrFmrName = 'sqrLxr';
@@ -90,7 +119,7 @@
 							parent.$('#lxrBox').html(strHtml);
 							parent.delHasAddMethod('delLxrBtn','delLxrOpt');
 						}else{
-							var tmpFmrJslxrIdArray = [],tmpFmrJsLxrIdNum = [],delNameBtn='';
+							var tmpFmrJslxrIdArray = [],tmpFmrJsLxrIdNum = [],delNameBtn='',firstFmrId = $('#firstFmrId').attr('fmridcard');
 							if(tmpLxrFmrOpts == 'addFmrOpts'){//发明人
 								tmpFmrJslxrIdArray = parent.fmrIdArray;
 								tmpFmrJsLxrIdNum = parent.fmrIdNum;
@@ -119,12 +148,18 @@
 								tmpFmrJslxrIdArray.push('fmrId_'+$('.listP').eq(i).attr('lxrFmrId'));
 								tmpFmrJsLxrIdNum.push($('.listP').eq(i).attr('lxrFmrId'));
 							});
+							
 							for(var i=0;i<tmpFmrTxtArray.length;i++){
 								strHtml += '<p id="fmrId_'+ tmpFmrIdArray[i] +'" fmrIdAttr="'+ tmpFmrIdArray[i] +'" sqrIds="'+ tmpSqrId[i].split('_')[1] +'" class="lxFmTag '+ delNameBtn +'"><input type="hidden" class="lxrFmrInpHid" name="'+ tmpSqrId[i] +'"/><span>'+ tmpFmrTxtArray[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 							}
 							if(tmpLxrFmrOpts == 'addFmrOpts'){//发明人
-								parent.$('#fmrBox').html(strHtml);
-								parent.delHasAddMethod('delFmrBtn','delFmrOpt');
+								if(firstFmrId != 0){
+									parent.$('#fmrBox').html(strHtml);
+									parent.delHasAddMethod('delFmrBtn','delFmrOpt');
+								}else{
+									layer.msg('第一发明人身份证号不能为空，请添加', {icon:5,anim:6,time:2000});
+									return;
+								}
 							}else if(tmpLxrFmrOpts == 'addJsLxrOpts'){
 								parent.$('#techLxrBox').html(strHtml);
 								parent.delHasAddMethod('delJsLxrBtn','delJsLxrOpt');
@@ -146,17 +181,22 @@
 						lxrFmrTxt = '发明人/技术联系人';
 					}
 					$('input[name='+ sqrLxrFmrName +']').on('click',function(){
-						var lxrFmrName = '',strHtml = '';
+						var lxrFmrName = '',strHtml = '',fmridcard='';
 						var checkStatus = this.checked,hasCheckId = $(this).val(),sqrId = $(this).attr('sqrId');
 						if(tmpLxrFmrOpts == 'addLxrOpts'){
 							lxrFmrName = $(this).attr('lxrName');
 						}else{
+							fmridcard = $(this).attr('fmridcard');
 							lxrFmrName = $(this).attr('fmrName');
 						}
 						if(checkStatus){
 							$('.tipInfo').hide();
 							$(this).prev().addClass('hasActive');
-							strHtml += '<p id="hasSelP_'+ hasCheckId +'" lxrFmrId="'+ hasCheckId +'" parSqrId="myParSqr_'+ sqrId +'" class="listP"><strong class="ellip">'+ lxrFmrName +'</strong>';
+							if(tmpLxrFmrOpts == 'addLxrOpts' || tmpLxrFmrOpts == 'addJsLxrOpts'){
+								strHtml += '<p id="hasSelP_'+ hasCheckId +'" lxrFmrId="'+ hasCheckId +'" parSqrId="myParSqr_'+ sqrId +'" class="listP"><strong class="ellip">'+ lxrFmrName +'</strong>';
+							}else{
+								strHtml += '<p id="hasSelP_'+ hasCheckId +'" lxrFmrId="'+ hasCheckId +'" parSqrId="myParSqr_'+ sqrId +'" class="listP"><b class="iconfont idCardIcon" onclick="editFmrCardInfo()"></b><strong class="ellip"><em fmridcard="'+ fmridcard +'" lxrFmrName="'+ lxrFmrName +'" lxrFmrId="'+ hasCheckId +'" class="firstNoteTxt"></em>'+ lxrFmrName +'</strong>';
+							}
 							strHtml += '<a class="moveUpDown fl"></a>';
 							strHtml += '<i id="'+ hasCheckId +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
 							$('.hasSelLxrFmrList').append(strHtml);
@@ -188,6 +228,20 @@
 					});
 					_this.lxrFmrMoveDown();
 					_this.lxrFmrMoveUp();
+					if(tmpLxrFmrOpts == 'addFmrOpts'){
+						var tmpFmrIdCard = $('.firstNoteTxt').eq(0).attr('fmridcard');
+						$('.idCardIcon').removeClass('layui-extend-noIdCard layui-extend-idCard');
+						if(tmpFmrIdCard == 0){
+							$('.idCardIcon').eq(0).addClass('firstCardIcon layui-extend-noIdCard').attr('title','无身份证号码，请点击添加');
+							$('.firstNoteTxt').removeClass('fmrNoteTxt').html('').eq(0).addClass('fmrNoteTxt').html('[第一发明人]');	
+						}else{
+							$('.idCardIcon').eq(0).addClass('firstCardIcon layui-extend-idCard').attr('title','身份证号');
+							$('.firstNoteTxt').removeClass('fmrNoteTxt').html('').eq(0).addClass('fmrNoteTxt').html('[第一发明人]');
+						}
+						$('.firstNoteTxt').parent().removeClass('specWid');
+						$('.firstNoteTxt').eq(0).parent().addClass('specWid');
+						$('.firstNoteTxt').attr('id','').eq(0).attr('id','firstFmrId');
+					}
 				},
 				//联系人发明人降序排列
 				lxrFmrMoveDown : function(){
@@ -195,7 +249,7 @@
 					$('.moveDown').on('click',function(){
 						var currSqr = $(this).parents('.listP');
 						if($(currSqr).index() == $('.listP').last().index()) {
-							return ;
+							return;
 						}
 						var next = $(this).parents('.listP').next();
 						$(currSqr).before(next);
@@ -220,7 +274,6 @@
 					var _this = this;
 					$('.delSelBtn').on('click',function(){
 						var id = $(this).attr('id');
-						//alert(id)
 						$('#hasSelP_'+id).remove();
 						if(tmpLxrFmrOpts == 'addLxrOpts'){
 							$('#lxrId_'+id).attr('checked',false);
@@ -241,7 +294,6 @@
 				},
 				loadLxrFmrList : function(){
 					var _this = this;
-					//alert(parent.sqrIdArray)
 					var cusIdStr = parent.sqrIdArray.join(','),option = '';
 					if(tmpLxrFmrOpts == 'addLxrOpts'){//添加联系人
 						option = 'lxr'; 
@@ -269,11 +321,11 @@
 						strHtml += '<div class="lxFmrBox">';
 						if(tmpLxrFmrOpts == 'addLxrOpts'){
 							strHtml += '<strong class="titleStrong">['+ listData[i].sqrName +']的联系人<span class="addNewBtn" sqrId="'+ listData[i].sqrId +'" opts="addLxrBtnOpts" addFmrLxrOpt="addLxrOpts"><i class="layui-icon layui-icon-add-1"></i>增加联系人</span></strong>';
-						}else if(tmpLxrFmrOpts == 'addFmrOpts' || tmpLxrFmrOpts == 'addJsLxrOpts'){
+						}else if(tmpLxrFmrOpts == 'addFmrOpts'){
 							strHtml += '<strong class="titleStrong">['+ listData[i].sqrName +']的发明人<span class="addNewBtn" sqrId="'+ listData[i].sqrId +'" opts="addFmrBtnOpts" addFmrLxrOpt="addFmrOpts"><i class="layui-icon layui-icon-add-1"></i>增加发明人</span></strong>';
-						}/*else if(tmpLxrFmrOpts == 'addJsLxrOpts'){
-							strHtml += '<strong class="titleStrong">['+ listData[i].sqrName +']的发明人<span class="addNewBtn" sqrId="'+ listData[i].sqrId +'" opts="addFmrBtnOpts" addFmrLxrOpt="addFmrOpts"><i class="layui-icon layui-icon-add-1"></i>增加技术联系人</span></strong>';
-						}*/
+						}else if(tmpLxrFmrOpts == 'addJsLxrOpts'){
+							strHtml += '<strong class="titleStrong">['+ listData[i].sqrName +']的技术联系人<span class="addNewBtn" sqrId="'+ listData[i].sqrId +'" opts="addjsLxBtnOpts" addFmrLxrOpt="addFmrOpts"><i class="layui-icon layui-icon-add-1"></i>增加技术联系人</span></strong>';
+						}
 						strHtml += '<div id="sqr_'+ listData[i].sqrId +'" hasCheckedLen="0" class="innerLxFmrBox clearfix">';
 						if(tmpLxrFmrOpts == 'addLxrOpts'){
 							if(listData[i].lxrInfo != undefined){
@@ -289,7 +341,12 @@
 							if(listData[i].fmrInfo != undefined){
 								for(var j=0;j<listData[i].fmrInfo.length;j++){
 									strHtml += '<label class="labelMod"><span class="likeCheckSpan"><b class="layui-icon layui-icon-ok"></b></span>';
-									strHtml += '<input type="checkbox" name="sqrFmr" sqrId="'+ listData[i].sqrId +'" class="inpRadCheck comCheckInp fmrInp" fmrName="'+ listData[i].fmrInfo[j].fmrName +'" id="fmrId_'+ listData[i].fmrInfo[j].fmrId +'" value="'+ listData[i].fmrInfo[j].fmrId +'">';
+									if(tmpLxrFmrOpts == 'addJsLxrOpts'){
+										strHtml += '<input type="checkbox" name="sqrFmr" sqrId="'+ listData[i].sqrId +'" class="inpRadCheck comCheckInp fmrInp" fmrName="'+ listData[i].fmrInfo[j].fmrName +'" id="fmrId_'+ listData[i].fmrInfo[j].fmrId +'" value="'+ listData[i].fmrInfo[j].fmrId +'">';	
+									}else{//发明人 增加发明人idCard
+										listData[i].fmrInfo[j].fmrIdCard == '' ? listData[i].fmrInfo[j].fmrIdCard = 0 : listData[i].fmrInfo[j].fmrIdCard;
+										strHtml += '<input type="checkbox" name="sqrFmr" sqrId="'+ listData[i].sqrId +'" fmrIdCard="'+ listData[i].fmrInfo[j].fmrIdCard +'" class="inpRadCheck comCheckInp fmrInp" fmrName="'+ listData[i].fmrInfo[j].fmrName +'" id="fmrId_'+ listData[i].fmrInfo[j].fmrId +'" value="'+ listData[i].fmrInfo[j].fmrId +'">';
+									}
 									strHtml += '<strong>'+ listData[i].fmrInfo[j].fmrName +'</strong></label>';
 								}
 							}else{
@@ -350,7 +407,7 @@
 						if(tmpFmrJslxrIdArray.length != 0 && this.data.isClickInpFlag == false){//表示之前已经添加了部分发明人或技术联系人
 							//进行匹配
 							var strHtmlHasSel = '';
-							var tmpSqrIdArray=[],tmpFmrName=[];
+							var tmpSqrIdArray=[],tmpFmrName=[],tmpFmrIdCard = [];
 							$('.tipInfo').hide();
 							for(var j=0;j<tmpFmrJslxrIdArray.length;j++){
 								$('.fmrInp').each(function(i){
@@ -359,14 +416,22 @@
 										$('.fmrInp').eq(i).prev().addClass('hasActive');
 										tmpFmrName.push($('.fmrInp').eq(i).attr('fmrName'));
 										tmpSqrIdArray.push($('.fmrInp').eq(i).attr('sqrId'));
+										tmpFmrIdCard.push($('.fmrInp').eq(i).attr('fmrIdCard'));
 										return false;
 									}
 								});
-								strHtmlHasSel += '<p id="hasSelP_'+ tmpFmrJsLxrIdNum[j] +'" lxrFmrId="'+ tmpFmrJsLxrIdNum[j] +'" parSqrId="myParSqr_'+ tmpSqrIdArray[j] +'" class="listP"><strong class="ellip">'+ tmpFmrName[j] +'</strong>';
+								if(tmpLxrFmrOpts == 'addJsLxrOpts'){
+									strHtmlHasSel += '<p id="hasSelP_'+ tmpFmrJsLxrIdNum[j] +'" lxrFmrId="'+ tmpFmrJsLxrIdNum[j] +'" parSqrId="myParSqr_'+ tmpSqrIdArray[j] +'" class="listP"><strong class="ellip">'+ tmpFmrName[j] +'</strong>';	
+								}else{
+									strHtmlHasSel += '<p id="hasSelP_'+ tmpFmrJsLxrIdNum[j] +'" lxrFmrId="'+ tmpFmrJsLxrIdNum[j] +'" parSqrId="myParSqr_'+ tmpSqrIdArray[j] +'" class="listP"><b class="iconfont idCardIcon"  onclick="editFmrCardInfo()"></b><strong class="ellip"><em fmridcard="'+ tmpFmrIdCard[j] +'" lxrFmrName="'+ tmpFmrName[j] +'" lxrFmrId="'+ tmpFmrJsLxrIdNum[j] +'" class="firstNoteTxt"></em> '+ tmpFmrName[j] +'</strong>';
+								}
 								strHtmlHasSel += '<a class="moveUpDown fl"></a>';
 								strHtmlHasSel += '<i id="'+ tmpFmrJsLxrIdNum[j] +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
 							}
 							$('.hasSelLxrFmrList').append(strHtmlHasSel);
+							if(tmpLxrFmrOpts == 'addFmrOpts'){
+								$('.firstNoteTxt').eq(0).addClass('fmrNoteTxt').html('[第一发明人] ');
+							}
 							this.lxrFmrOrder();
 							this.delSelLxrFmr();
 						}else{
@@ -398,9 +463,12 @@
 						if(addBtnOpts == 'addLxrBtnOpts'){//表示添加新联系人
 							url = '/Module/customerManager/jsp/addEditLxr.html';
 							var height = '300px',title='添加新联系人';
-						}else{
+						}else if(addBtnOpts == 'addFmrBtnOpts'){
 							url = '/Module/customerManager/jsp/addEditFmr.html';
 							var height = '350px',title='添加新发明人';
+						}else if(addBtnOpts == 'addjsLxBtnOpts'){
+							url = '/Module/customerManager/jsp/addEditFmr.html';
+							var height = '350px',title='添加新技术联系人';
 						}
 						parent.layer.open({
 							title:title,
@@ -419,12 +487,71 @@
 						});
 					});
 					this.inputClickEvent();
+				},
+				cancelSaveFmrInfo : function(){
+					$('#cancelFmrInfoBtn').on('click',function(){
+						$('.firstFmrWrap').hide();
+					});
 				}
 			};
 			$(function(){
-				page.init();				
+				page.init();
 			});
 		});
+		//编辑第一发明人信息
+		function editFmrCardInfo(){
+			$('input[name=fmrName]').val('');
+			$('input[name=fmriCard]').val('');
+			$('.firstFmrWrap').show();
+			$('input[name=fmrName]').val($('#firstFmrId').attr('lxrfmrname'));
+			$('input[name=fmriCard]').val($('#firstFmrId').attr('fmridcard') == 0 ? '' : $('#firstFmrId').attr('fmridcard'));			
+		}
+		//保存第一发明人身份信息
+		function saveFmrInfo(){
+			var fmrName = $('input[name=fmrName]').val(),
+				fmrId = $('#firstFmrId').attr('lxrfmrid'),
+				fmrIdCard = $.trim($('input[name=fmriCard]').val());
+			if(fmrIdCard == ''){
+				layer.msg('第一发明人身份证号不能为空', {icon:5,anim:6,time:2000});
+			}else{
+				var regIcard = /(^\d{15}$)|(^\d{17}(x|X|\d)$)/;
+				if(!regIcard.test(fmrIdCard)){
+					layer.msg('第一发明人身份证号码格式不正确，请重新输入', {icon:5,anim:6,time:2000});
+					}else{
+						var field = {fmrName:fmrName,fmrTel:'',fmrEmail:'',fmriCard:fmrIdCard},
+					url = '/customer.do?action=upFmrData&fmrId=' + fmrId;
+					layer.load('1');
+					$.ajax({
+			    		type:"post",
+				        async:false,
+				        dataType:"json",
+				        url:url,
+				        data:field,
+				        success:function (json){
+				        	layer.closeAll('loading');
+				        	if(json["result"] == 'success'){
+				        		layer.msg('编辑第一发明人信息成功',{icon:1,time:1500},function(){
+				        			var tmpFmridcard = $('#firstFmrId').attr('fmridcard');
+				        			$('.firstFmrWrap').hide();
+			        				if(tmpFmridcard == 0){
+				        				$('#firstFmrId').parent().prev().removeClass('layui-extend-noIdCard').addClass('layui-extend-idCard');
+				        			}
+				        			$('#fmrId_' + fmrId).attr('fmridcard',fmrIdCard);//更新input的value
+				        			$('#firstFmrId').attr('fmridcard',fmrIdCard);//更新当前第一发明人身份证
+				        			return;
+   			        			});
+				        	}else if(json["result"] == 'noInfo'){
+				        		layer.msg("暂无此信息，请重试！",{icon:5,anim:6,time:1000});
+				        	}else if(json["result"] == 'error'){
+				        		layer.msg("保存失败，请重试！",{icon:5,anim:6,time:1000});
+				        	}else if(json["result"] == 'noAbility'){
+				        		layer.msg("抱歉，您暂无权限对发明人信息进行编辑！",{icon:5,anim:6,time:2500});
+				        	}
+				        }
+		    		});	
+				}
+			}
+		}
 	</script>
 </body> 
 </html>

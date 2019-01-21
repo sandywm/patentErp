@@ -408,6 +408,10 @@
 									}
 								}
 							}
+							if($('#fmrBox p').length > 0 && $('#firstFmrId').length == 0){
+								layer.msg('请给当前已选择发明人指定一个第一发明人',{icon:5,anim:6,time:2000});
+								return;
+							}
 							if(addEditZlOpts == 'editZlOpts'){
 								url = '/zlm.do?action=updateZlBasicInfo&zlId=' + zlId;
 							}else{
@@ -600,7 +604,12 @@
 						var tmpArraySqrFmrId = json.sqrFmrId.split(',');
 						fmrIdNum = tmpArrayFmrId;
 						for(var i=0;i<tmpArrayFmrName.length;i++){
-							strHtml += '<p id="fmrId_'+ tmpArrayFmrId[i] +'" fmridattr="'+ tmpArrayFmrId[i] +'" sqrids="'+ tmpArraySqrFmrId[i] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrFmrId[i] +'"><span>'+ tmpArrayFmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+							strHtml += '<p id="fmrId_'+ tmpArrayFmrId[i] +'" fmridattr="'+ tmpArrayFmrId[i] +'" sqrids="'+ tmpArraySqrFmrId[i] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrFmrId[i] +'">';
+							if(i == 0){//指定第一发明人
+								strHtml += '<span><em class="firstNoteTxt fmrNoteTxt">[第一发明人]</em>'+ tmpArrayFmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+							}else{
+								strHtml += '<span>'+ tmpArrayFmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+							}
 						}	
 					}
 					strHtml += '</div><span id="addFmrBtn" opts="addFmrOpts" class="addSpan fl">添加/编辑发明人</span></div>';

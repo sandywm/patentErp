@@ -259,7 +259,6 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 				data:{filePath:filePath},
 				url:tmpUrl,
 				success:function(json){
-					console.log(json)
 					if(json['result'] == 'success'){
 						parent.parent.$('body').find('.loadingWrap').html(_this.data.readSuccTips);
 						_this.showTime(3,parent.parent.$('body').find('#countNum'),_this.data.globalOpts,json.readInfo,true);

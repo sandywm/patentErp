@@ -81,7 +81,7 @@
   					$('#importBtn').hide();
   				}
   				if(lqStatus == 3 && !page.isHasAbility_zlTzs(3)){// 我的专利
-  					layer.msg('抱歉，您暂无权限', {icon:5,anim:6,time:1500});
+  					$('.myZlAbilityTxt').html('<i class="layui-icon layui-icon-tips"></i><em>抱歉，系统检测到您暂无权限进行专利的添加和编辑!</em>');
   				}else if(lqStatus == 6 && !page.isHasAbility_zlTzs(6)){
   					layer.msg('抱歉，您暂无通知书批量操作的权限', {icon:5,anim:6,time:1500});
   				}
@@ -233,7 +233,7 @@
 				//创建tab
 				createTab : function(){
 					var strHtmlTit = '',strHtmlCon = '',strZlStatusTxt = '';
-					var strZlStatusTxt = '<div class="zlStatusInfoBox"><p><span class="zlStaColor_zc"></span>正常</p><p><span class="zlStaColor_jj"></span>即将过期</p><p><span class="zlStaColor_gq"></span>已过期</p><p><span class="zlStaColor_zz"></span>案件终止</p></div>';
+					var strZlStatusTxt = '<div class="zlStatusInfoBox"><p><span class="zlStaColor_zc"></span>正常</p><p><span class="zlStaColor_jj"></span>即将过期</p><p><span class="zlStaColor_gq"></span>已过期</p><p><span class="zlStaColor_zz"></span>案件终止</p><p class="myZlAbilityTxt"></p></div>';
 					strHtmlTit += '<ul class="layui-tab-title">';
 					if(loginType == 'spUser'){
 						strHtmlTit += '<li class="layui-this" zlSearchOpts="zlGlOpt" lqStatus="1">专利</li>';
@@ -648,7 +648,7 @@
 								}
 								return strHtml + d.zlName;
 							}},
-							{field : 'zlNo', title: '案件编号', width:180, align:'center'},
+							{field : 'zlNo', title: '专利编号', width:180, align:'center'},
 							{field : 'tzsName', title: '通知书名称', width:260, align:'center'},
 							{field : 'readDetail', title: '读取结果', width:280, align:'center',templet : function(d){
 								if(d.readStatus== 0){//失败

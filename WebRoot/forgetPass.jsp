@@ -3,9 +3,9 @@
 <html>
   <head>
     <title>专利管理系统--忘记密码找回密码</title>
-	<meta http-equiv="cache-control" content="no-cache">  
-	<meta http-equiv="keywords" content="申请专利,忘记密码,找回密码">
-	<meta http-equiv="description" content="专利申请系统忘记密码找回密码">
+	<meta http-equiv="cache-control" content="no-cache"/>  
+	<meta http-equiv="keywords" content="申请专利,忘记密码,找回密码"/>
+	<meta http-equiv="description" content="专利申请系统忘记密码找回密码"/>
 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/layui/css/modules/layui-icon-extend/iconfont.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
@@ -31,13 +31,13 @@
 	      	<div class="step-con step-username">
 	      		<div class="layui-form-item">
 		          <label class="layadmin-user-login-icon iconfont layui-extend-wode"></label>
-		          <input type="text" id="account" placeholder="请输入账号" autocomplete="off" class="layui-input">
+		          <input type="text" id="account" placeholder="请输入账号" maxlength="12" autocomplete="off" class="layui-input"/>
 		        </div>
 		        <div class="layui-form-item">
 		          <div class="layui-row">
 		            <div class="layui-col-xs7">
 		              <label class="layadmin-user-login-icon iconfont layui-extend-vercode" for="LAY-user-login-vercode"></label>
-		              <input type="text" id="inputCode" placeholder="请输入图形验证码" autocomplete="off" class="layui-input">
+		              <input type="text" id="inputCode" maxlength="4" placeholder="请输入图形验证码" autocomplete="off" class="layui-input"/>
 		            </div>
 		            <div class="layui-col-xs5">
 		              <div style="margin-left: 10px;">
@@ -54,17 +54,17 @@
 	        <div class="step-con step-email">
 	        	 <div class="layui-form-item">
 	        	 	<label class="layadmin-user-login-icon iconfont layui-extend-wode"></label>
-		          	<input type="text" id="userType" value="" disabled autocomplete="off" class="layui-input">
+		          	<input type="text" id="userType" value="" disabled autocomplete="off" class="layui-input"/>
 	        	 </div>
 	        	 <div class="layui-form-item">
 	        	 	<label class="layadmin-user-login-icon iconfont layui-extend-youxiang"></label>
-		          	<input type="text" id="email" value="" disabled autocomplete="off" class="layui-input">
+		          	<input type="text" id="email" value="" disabled autocomplete="off" class="layui-input"/>
 	        	 </div>
 	        	 <div class="layui-form-item">
 		          <div class="layui-row">
 		            <div class="layui-col-xs7">
 		              <label class="layadmin-user-login-icon iconfont layui-extend-vercode" for="LAY-user-login-vercode"></label>
-		              <input type="text" id="emailCodeInp" placeholder="请输入邮箱验证码" autocomplete="off" class="layui-input">
+		              <input type="text" id="emailCodeInp" maxlength="8" placeholder="请输入邮箱验证码" autocomplete="off" class="layui-input"/>
 		            </div>
 		            <div class="layui-col-xs5">
 		              <div style="margin-left: 10px;">

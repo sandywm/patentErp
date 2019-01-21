@@ -118,15 +118,15 @@
 	  			if(signType == 'appUser'){
 	  				//申请人名字(默认) 另一种就是公司名字
 	  	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label canChange_name">申请人姓名</label>';
-	  	  			strHtml += '<div class="layui-input-inline"><input id="applyerName" type="text" name="name" required  lay-verify="judegeName" placeholder="请输入申请人姓名" autocomplete="off" class="layui-input" maxlength="4"></div></div>';
+	  	  			strHtml += '<div class="layui-input-inline"><input id="applyerName" type="text" name="name" required  lay-verify="judegeName" placeholder="请输入申请人姓名" autocomplete="off" class="layui-input" maxlength="30"></div></div>';
 	  			}else if(signType == 'cpyUser'){
 	  				//代理机构名称
 	  	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label canChange_name">代理机构名称</label>';
-	  	  			strHtml += '<div class="layui-input-inline"><input type="text" name="name" required  lay-verify="judegeCompName" placeholder="请输入代理机构名称" autocomplete="off" class="layui-input" maxlength="20"></div></div>';
+	  	  			strHtml += '<div class="layui-input-inline"><input type="text" name="name" required  lay-verify="judegeCompName" placeholder="请输入代理机构名称" autocomplete="off" class="layui-input" maxlength="30"></div></div>';
 	  			}
 	  			//联系人
 	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label">联系人</label>';
-	  			strHtml += '<div class="layui-input-inline"><input type="text" name="lxr" required  lay-verify="judegeName" placeholder="请输入联系人姓名" autocomplete="off" class="layui-input" maxlength="4"></div></div>';
+	  			strHtml += '<div class="layui-input-inline"><input type="text" name="lxr" required  lay-verify="judegeName" placeholder="请输入联系人姓名" autocomplete="off" class="layui-input" maxlength="30"></div></div>';
 	  			//联系人电话
 	  			strHtml += '<div class="layui-form-item"><label class="layui-form-label canChange_tel">联系人电话</label>';
 	  			strHtml += '<div class="layui-input-inline"><input type="tel" name="tel" lay-verify="phoneNum" placeholder="请输入联系人手机号" autocomplete="off" class="layui-input" maxlength="11"></div></div>';
@@ -139,10 +139,10 @@
 				var value = data.value;
 				if(value != 'gr'){
 					$('.canChange_name').html('公司名称');
-					$('input[name="name"]').val('').attr('placeholder','请输入公司名称').attr('lay-verify','judegeCompName').attr('maxlength','20');
+					$('input[name="name"]').val('').attr('placeholder','请输入公司名称').attr('lay-verify','judegeCompName').attr('maxlength','30');
 				}else{
 					$('.canChange_name').html('申请人姓名');
-					$('input[name="name"]').val('').attr('placeholder','请输入申请人姓名').attr('lay-verify','judegeName').attr('maxlength','4');
+					$('input[name="name"]').val('').attr('placeholder','请输入申请人姓名').attr('lay-verify','judegeName').attr('maxlength','30');
 				}
 				showRolePicName();
 			});
@@ -196,7 +196,7 @@
 		  				$("#canChange_dz").val("dzyx").html("大专院校");
 		  				$(".layui-select-title input").val("个人");
 		  				$(".canChange_name").html("申请人姓名");
-						$("input[name='name']").attr("placeholder","请输入申请人姓名").attr("lay-verify","judegeName").attr("maxlength","4");
+						$("input[name='name']").attr("placeholder","请输入申请人姓名").attr("lay-verify","judegeName").attr("maxlength","30");
 		  				$(".rolePart").find("i").addClass("layui-extend-geren").removeClass("layui-extend-company layui-extend-jigou");
 	  					$(".rolePart").find("p").html("当前选择用户：个人用户");
 	  					
@@ -205,7 +205,7 @@
 		  				$("#canChange_dz").val("gr").html("个人");
 		  				$(".layui-select-title input").val("大专院校");
 		  				$(".canChange_name").html("公司名称");
-						$("input[name='name']").attr("placeholder","请输入公司名称").attr("lay-verify","judegeCompName").attr("maxlength","20");
+						$("input[name='name']").attr("placeholder","请输入公司名称").attr("lay-verify","judegeCompName").attr("maxlength","30");
 		  				$(".rolePart").find("i").addClass("layui-extend-company").removeClass("layui-extend-geren layui-extend-jigou");
 	  					$(".rolePart").find("p").html("当前选择用户：公司用户");
 		  			}
@@ -248,8 +248,8 @@
 						return '联系人姓名不能为空';
 					}else if(!reg.test(value)){
 				      return '联系人应为汉字';
-				    }else if(value.length < 2 || value.length > 4){
-				    	 return '联系人姓名最少应为2个字符最多为4个字符';
+				    }else if(value.length < 2 || value.length > 30){
+				    	 return '联系人姓名最少应为2个字符最多为30个字符';
 				    }
 				},
 				judegeCompName : function(value){
@@ -258,8 +258,8 @@
 						return comName + '名称不能为空';
 					}else if(!reg.test(value)){
 				      return comName + '名称应为汉字';
-				    }else if(value.length < 4 || value.length > 20){
-				    	 return comName + '名称最少为4个字符最多为20个字符';
+				    }else if(value.length < 4 || value.length > 30){
+				    	 return comName + '名称最少为4个字符最多为30个字符';
 				    }
 				},
 				phoneNum : function(value){

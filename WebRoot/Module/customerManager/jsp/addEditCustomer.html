@@ -13,7 +13,7 @@
 		<div class="layui-form-item" style="margin-top:15px;">
 			<label class="layui-form-label"><span class="mustItem">*</span>客户名称</label>
 			<div class="layui-input-block">
-				<input type="text" name="cusName" required lay-verify="judgeName" placeholder="请输入客户姓名(4字以内)" maxlength="4" autocomplete="off" class="layui-input"/>
+				<input type="text" name="cusName" required lay-verify="judgeName" placeholder="请输入客户姓名(30字以内)" maxlength="30" autocomplete="off" class="layui-input"/>
 			</div>				
 		</div>
 		<div class="layui-form-item">
@@ -28,19 +28,19 @@
 			</div>				
 		</div>
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label id="cusiCardLab" class="layui-form-label"><span class="mustItem">*</span>个人身份证号</label>
+			<label id="cusiCardLab" class="layui-form-label">个人身份证号</label>
 			<div class="layui-input-block">
-				<input type="text" name="cusiCard" required lay-verify="identity" placeholder="请输入身份证号" autocomplete="off" class="layui-input"/>
+				<input type="text" name="cusiCard" lay-verify="judegeIdentity" placeholder="请输入身份证号" maxlength="18" autocomplete="off" class="layui-input"/>
 			</div>				
 		</div>
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label"><span class="mustItem">*</span>客户地址</label>
+			<label class="layui-form-label">客户地址</label>
 			<div class="layui-input-block">
 				<input type="text" name="cusAddress" required lay-verify="judegeAddress" placeholder="请输入客户地址(50字以内)" maxlength="50" autocomplete="off" class="layui-input"/>
 			</div>				
 		</div>
 		<div class="layui-form-item" style="margin-top:15px;">
-			<label class="layui-form-label"><span class="mustItem">*</span>邮政编码</label>
+			<label class="layui-form-label">邮政编码</label>
 			<div class="layui-input-block">
 				<input type="text" name="cusZip" required lay-verify="judegeCusZip" placeholder="请输入邮政编码" maxlength="6" autocomplete="off" class="layui-input"/>
 			</div>				
@@ -66,19 +66,20 @@
 				var value = data.value;
 				$('#cusTypeInp').val(value);
 				if(value == 'gr'){
-					$('input[name=cusName]').attr('placeholder','请输入客户姓名(4字以内)').attr('maxlength','4');
+					$('input[name=cusName]').attr('placeholder','请输入客户姓名(30字以内)');
 					$('input[name=cusName]').attr('lay-verify','judgeName');
 					$('#cusiCardLab').html('个人身份证号');
 					$('input[name=cusiCard]').attr('placeholder','请输入个人身份证号');
 					$('input[name=cusiCard]').attr('lay-verify','identity');
 				}else{
-					$('input[name=cusName]').attr('placeholder','请输入客户名称(25字以内)').attr('maxlength','25');
+					$('input[name=cusName]').attr('placeholder','请输入客户名称(30字以内)');
 					$('input[name=cusName]').attr('lay-verify','judgeCompName');
 					$('#cusiCardLab').html('公司组织机构代码');
 					$('input[name=cusiCard]').attr('placeholder','请输入公司组织机构代码').attr('maxlength','40');
 					$('input[name=cusiCard]').attr('lay-verify','judegeOrgCode');
 				}
 			});
+			//
 			//自定义表单验证
   			form.verify({
   				judgeName : function(value){
@@ -87,47 +88,39 @@
 						return '客户姓名不能为空';
 					}else if(!reg.test(value)){
 				      return '客户姓名应为汉字';
-				    }else if(value.length < 2 || value.length > 4){
-				    	 return '客户姓名最少应为2个字符最多为4个字符';
+				    }else if(value.length < 2 || value.length > 30){
+				    	 return '客户姓名最少应为2个字符最多为30个字符';
 				    }
+  				},
+  				judegeIdentity : function(value){
+  					var reg = /(^\d{15}$)|(^\d{17}(x|X|\d)$)/;
+  					if(value != '' && !reg.test(value)){
+  						return '身份证号码格式不正确，请重新输入';
+  					}
   				},
   				judgeCompName : function(value){
 					var reg = /^[\u4E00-\u9FA5]+$/; 
-					if(value == ''){
-						return '客户名称不能为空';
-					}else if(!reg.test(value)){
+					if(!reg.test(value)){
 				      return '客户名称应为汉字';
-				    }else if(value.length < 4 || value.length > 25){
-				    	 return '客户名称最少为4个字符最多为25个字符';
+				    }else if(value.length < 4 || value.length > 30){
+				    	 return '客户名称最少为4个字符最多为30个字符';
 				    }
   				},
   				judegeAddress : function(value){
-					if(value == ''){
-						return '地址不能为空';
-					}else{
-						if(value.length < 4){
-							return '请如实填写地址';
-						}
+  					if(value != '' && value.length < 4){
+						return '请如实填写客户地址';
 					}
 				},
 				judegeOrgCode : function(value){
-					if(value == ''){
-						return '请填写公司组织机构代码';
-					}else{
-						var reg = /^[a-zA-Z\d]*([a-zA-Z\d]+-?)*[a-zA-Z\d]+$/;
-						if(!reg.test(value)){
-							return '请填写正确的公司组织机构代码';
-						}
+					var reg = /^[a-zA-Z\d]*([a-zA-Z\d]+-?)*[a-zA-Z\d]+$/;
+					if(value != '' && !reg.test(value)){
+						return '请填写正确的公司组织机构代码';
 					}
 				},
 				judegeCusZip : function(value){
-					if(value == ''){
-						return '邮政编码不能为空';
-					}else{
-						var reg = /^[1-9][0-9]{5}$/;
-						if(!reg.test(value)){
-							return '邮政编码格式不正确';
-						}
+					var reg = /^[1-9][0-9]{5}$/;
+					if(value != '' && !reg.test(value)){
+						return '邮政编码格式不正确';
 					}
 				}
   			});

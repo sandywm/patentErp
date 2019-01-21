@@ -304,7 +304,7 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 			layer.open({
 				title:title,
 				type: 2,
-			  	area: ['720px', '380px'],
+			  	area: ['850px', '450px'],
 			  	fixed: true, //不固定
 			  	maxmin: false,
 			  	shadeClose :false,

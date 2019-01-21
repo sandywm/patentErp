@@ -41,7 +41,7 @@ layui.define(['jquery','table'],function(exports){
 					cols : [[
 					     {field : '', title: '序号',type:'numbers', width:50, align:'center'},
 					     {field : 'ajTitle', title: '案件名称', width:240, align:'center'},
-					     {field : 'ajNoGf', title: '案件编号', width:180, align:'center'},
+					     {field : 'ajNoGf', title: '专利号', width:180, align:'center'},
 					     {field : 'tzsName', title: '通知书名称', width:240, align:'center'},
 					     {field : 'readResultChi', title: '读取结果', align:'center',templet:function(d){
 					    	 if(d.result == 'success'){
