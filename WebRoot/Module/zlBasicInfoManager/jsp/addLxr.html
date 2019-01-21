@@ -90,11 +90,11 @@
 						var index= parent.layer.getFrameIndex(window.name);
 						for(var i=0;i<sqrIdArray.length;i++){
 							$('#sqr_'+sqrIdArray[i]).attr('hasCheckedLen',$('#sqr_'+sqrIdArray[i]).find('input[name='+ sqrLxrFmrName +']:checked').length);
-							var hasCheckedLen = parseInt($('#sqr_'+sqrIdArray[i]).attr('hasCheckedLen'));
+							//var hasCheckedLen = parseInt($('#sqr_'+sqrIdArray[i]).attr('hasCheckedLen'));
 							/*if(hasCheckedLen == 0){
 								layer.msg('申请人(公司)下的' + lxrFmrText + '不能为空', {icon:5,anim:6,time:2000});
 								return;
-							}else */if(hasCheckedLen > 10){
+							}else */if($('.listP').length > 10){
 								layer.msg('抱歉，每个申请人(公司)下的'+ lxrFmrTxt +'最多可以选择10个', {icon:5,anim:6,time:2000});
 								return;
 							}

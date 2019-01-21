@@ -287,9 +287,6 @@ body{
 .commonListBox_field{
 	height:190px;
 }
-/*.commonListBox_lxFmr{
-	height:260px;
-}*/
 .lxrListBox,
 .hasSelLxrFmrList{
 	overflow:hidden;
@@ -319,18 +316,22 @@ body{
 	top:50%;
 	margin-top:-70px;
 }
+.hasSelLxrFmrList .tipInfo{
+	top:50%;
+	margin-top:-43px;
+}
 .hasSelSqrList p.listP{
 	width:90%;
 	margin:0 auto;
 }
 .lxrListBox{
 	width:450px;
-	height:335px;
+	height:395px;
 	border-right:1px solid #ccc;
 }
 .hasSelLxrFmrList{
 	width:360px;
-	height:335px;
+	height:395px;
 	position:relative;
 }
 .hasSelSqrList p.listP,
