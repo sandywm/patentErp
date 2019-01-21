@@ -255,7 +255,12 @@
 							var tmpArraySqrFmrId = zlInfo[0].sqrFmrId.split(',');
 							fmrIdNum = tmpArrayFmrId;
 							for(var i=0;i<fmrName.length;i++){
-								nowHtml_sub += '<p id="fmrId_'+ tmpArrayFmrId[i] +'" fmridattr="'+ tmpArrayFmrId[i] +'" sqrids="'+ tmpArraySqrFmrId[i] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrFmrId[i] +'"><span>'+ fmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+								nowHtml_sub += '<p id="fmrId_'+ tmpArrayFmrId[i] +'" fmridattr="'+ tmpArrayFmrId[i] +'" sqrids="'+ tmpArraySqrFmrId[i] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrFmrId[i] +'">';
+								if(i == 0){//指定第一发明人
+									nowHtml_sub += '<span><em class="firstNoteTxt fmrNoteTxt">[第一发明人]</em>'+ fmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+								}else{
+									nowHtml_sub += '<span>'+ fmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+								}
 							}
 						}
 						nowHtml_sub += '</div>';
@@ -505,6 +510,10 @@
 								return;
 							}else if(rateInpVal == ''){
 								layer.msg('请选择是否要费减', {icon:5,anim:6,time:1000});
+								return;
+							}
+							if($('#fmrBox p').length > 0 && $('#firstFmrId').length == 0){
+								layer.msg('请给当前已选择发明人指定一个第一发明人',{icon:5,anim:6,time:2000});
 								return;
 							}
 							//alert(globalZlId + "--" + ajTitleVal + "--" + ajSqrIdVal + "--" + sqrName + "--" + ajLxrIdVal + "=----" + ajFmrIdVal + "--" + rateInpVal + "--" + $('#fujianInp').val())

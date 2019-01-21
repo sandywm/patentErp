@@ -476,3 +476,26 @@ body{
 .hasMinHei{
 	min-height:100px;
 }
+/* 添加编辑第一发明人身份证号 */
+.fmrNoteTxt{
+	font-style:normal;
+	color:#F47837;
+	float:left;
+}
+.firstFmrWrap{
+	width:100%;
+	height:100%;
+	position:absolute;
+	left:0;
+	top:0;
+	background:rgba(255,255,255,.9);
+	z-index:100;
+	display:none;
+}
+.innerFmrInfo{
+	padding:0 15px;
+}
+.innerFmrInfo legend{
+	font-size:16px;
+	color:#F47837;
+}
