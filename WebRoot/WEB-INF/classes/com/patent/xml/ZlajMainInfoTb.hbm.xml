@@ -37,7 +37,12 @@
         </property>
         <property name="ajType" type="java.lang.String">
             <column name="aj_type" not-null="true">
-                <comment>案件类型(fm:发明、syxx:实用新型、wg:外观、fmxx:发明+新型)</comment>
+                <comment>专利类型(fm:发明、syxx:实用新型、wg:外观、fmxx:发明+新型)</comment>
+            </column>
+        </property>
+         <property name="ajType1" type="java.lang.String">
+            <column name="aj_type1">
+                <comment>案件类型(new:新案，old:旧案)</comment>
             </column>
         </property>
         <property name="ajFieldId" type="java.lang.String">
@@ -88,6 +93,16 @@
         <property name="ajUpload" type="java.lang.String">
             <column name="aj_upload" length="500">
                 <comment>案卷附件(多个逗号隔开)</comment>
+            </column>
+        </property>
+        <property name="ajUploadDg" type="java.lang.String">
+            <column name="aj_upload_dg" length="500">
+                <comment>定稿文件(多个逗号隔开)</comment>
+            </column>
+        </property>
+        <property name="ajUploadHt" type="java.lang.String">
+            <column name="aj_upload_ht" length="500">
+                <comment>合同文件(多个逗号隔开)</comment>
             </column>
         </property>
         <property name="ajRemark" type="java.lang.String">

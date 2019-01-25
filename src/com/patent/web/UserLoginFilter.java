@@ -140,7 +140,7 @@ public class UserLoginFilter implements Filter{
 			}
 			if(!loginFlag.equals(loginFlag_dataBase)){
 				session.invalidate();
-				String url = "window.location.href='login.do?action=loginOut'";
+				String url = "window.top.location.href='login.do?action=loginOut'";
 				String authorizeScript = "该账号已经在别处登录，系统已强制您下线，请重新登录！";
 				Ability.PrintAuthorizeScript(url,authorizeScript, httpServletResponse);
 			}else{

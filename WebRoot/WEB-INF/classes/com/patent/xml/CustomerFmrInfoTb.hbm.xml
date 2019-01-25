@@ -16,7 +16,7 @@
             </column>
         </many-to-one>
         <property name="cusFmrName" type="java.lang.String">
-            <column name="cus_fmr_name" length="20" not-null="true">
+            <column name="cus_fmr_name" length="50" not-null="true">
                 <comment>发明人名称</comment>
             </column>
         </property>

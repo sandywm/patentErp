@@ -41,6 +41,8 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 	private String bankSerialNo;
 	private String fpDate;
 	private String fpNo;
+	private Integer feeTxType;
+	private String tzsTx;
 	private Set<ZlajFeeSubInfoTb> zlajFeeSubInfoTbs = new HashSet<ZlajFeeSubInfoTb>();
 	private Set<CusPzInfo> cpyPzInfos = new HashSet<CusPzInfo>();
 
@@ -55,7 +57,8 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
 			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus,
-			String backDate,Double backFee,Integer backStatus,Double discountsFee,String feeBatchNo,String bankSerialNo,String fpDate,String fpNo) {
+			String backDate,Double backFee,Integer backStatus,Double discountsFee,String feeBatchNo,String bankSerialNo,String fpDate,String fpNo,
+			Integer feeTxType,String tzsTx) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -81,6 +84,8 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.bankSerialNo = bankSerialNo;
 		this.fpDate = fpDate;
 		this.fpNo = fpNo;
+		this.feeTxType = feeTxType;
+		this.tzsTx = tzsTx;
 	}
 
 	/** full constructor */
@@ -88,7 +93,8 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 			CpyInfoTb cpyInfoTb, ZlajMainInfoTb zlajMainInfoTb,Double feePrice, Double feeRate,String feeEndDateJj,
 			String feeEndDateGf, String feeRemark, Integer feeStatus,
 			Integer djStatus, String feeJnDate, String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,Integer addStatus,
-			String backDate,Double backFee,Integer backStatus,Double discountsFee,String feeBatchNo,String bankSerialNo,String fpDate,String fpNo) {
+			String backDate,Double backFee,Integer backStatus,Double discountsFee,String feeBatchNo,String bankSerialNo,String fpDate,String fpNo,
+			Integer feeTxType,String tzsTx) {
 		this.feeTypeInfoTb = feeTypeInfoTb;
 		this.cpyUserInfo = cpyUserInfo;
 		this.cpyInfoTb = cpyInfoTb;
@@ -114,6 +120,8 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 		this.bankSerialNo = bankSerialNo;
 		this.fpDate = fpDate;
 		this.fpNo = fpNo;
+		this.feeTxType = feeTxType;
+		this.tzsTx = tzsTx;
 	}
 
 	// Property accessors
@@ -340,6 +348,22 @@ public class ZlajFeeInfoTb implements java.io.Serializable {
 
 	public void setCpyPzInfos(Set<CusPzInfo> cpyPzInfos) {
 		this.cpyPzInfos = cpyPzInfos;
+	}
+
+	public Integer getFeeTxType() {
+		return feeTxType;
+	}
+
+	public void setFeeTxType(Integer feeTxType) {
+		this.feeTxType = feeTxType;
+	}
+
+	public String getTzsTx() {
+		return tzsTx;
+	}
+
+	public void setTzsTx(String tzsTx) {
+		this.tzsTx = tzsTx;
 	}
 
 }

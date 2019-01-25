@@ -1319,13 +1319,13 @@ public class FeeAction extends DispatchAction {
 		        	            					}
 		        	            				}
 		        	            				if(!flag){//不存在指定年度的年费滞纳金
-		        	            					fm.addZLFee(zlId, currUserId, feeTypeId, feePrice, 0.0, "", "", "第"+yearNo+"年年费滞纳金", 1, cpyId, 1, jfDate, "", "缴费通知书", yearNo, "", 0, "", feeBatchNo, bankSerialNo, fpDate, fpNo);
+		        	            					fm.addZLFee(zlId, currUserId, feeTypeId, feePrice, 0.0, "", "", "第"+yearNo+"年年费滞纳金", 1, cpyId, 1, jfDate, "", "缴费通知书", yearNo, "", 0, "", feeBatchNo, bankSerialNo, fpDate, fpNo,0,"");
 		        	    	            			dealStatus = "succ";
 		        		            				dealResult = "专利号："+zlNo+"的["+feeName+"]缴费成功";
 		        		            				dealResult_1 = "缴费成功";
 		        	            				}
 		        	            			}else{//不存在年费滞纳金
-		        	            				fm.addZLFee(zlId, currUserId, feeTypeId, feePrice, 0.0, "", "", "第"+yearNo+"年年费滞纳金", 1, cpyId, 1, jfDate, "", "缴费通知书", yearNo, "", 0, "", feeBatchNo, bankSerialNo, fpDate, fpNo);
+		        	            				fm.addZLFee(zlId, currUserId, feeTypeId, feePrice, 0.0, "", "", "第"+yearNo+"年年费滞纳金", 1, cpyId, 1, jfDate, "", "缴费通知书", yearNo, "", 0, "", feeBatchNo, bankSerialNo, fpDate, fpNo,0,"");
 		    	    	            			dealStatus = "succ";
 		    		            				dealResult = "专利号："+zlNo+"的["+feeName+"]缴费成功";
 		    		            				dealResult_1 = "缴费成功";

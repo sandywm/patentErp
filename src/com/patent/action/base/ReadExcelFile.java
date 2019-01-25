@@ -115,6 +115,8 @@ public class ReadExcelFile {
 	}
 	
 	public static void main(String[] args) throws IOException{
+		String aa = "2018-09-01";
+		System.out.println(CurrentTime.getFinalDate_2(aa, 2));
 		//ReadExcelFile.readExcel();
 //		String aa = "2017-04-01 00:00:01";
 //		System.out.print(CurrentTime.stringConvertToTimestamp(aa));
@@ -252,7 +254,7 @@ public class ReadExcelFile {
 //		System.out.println("删除文件："+FileOpration.deleteFile(filePath));
 		
 		
-		String oldExcel = "d:\\feeOk.xls";
+//		String oldExcel = "d:\\feeOk.xls";
 		
 //		Sheet sheet;  
 //        Workbook book;  
@@ -275,10 +277,10 @@ public class ReadExcelFile {
 //    	String absoFilePath = "d:\\" +fileName;
 ////    	FileOpration.copyFile(oldExcel, absoFilePath);
 //    	
-    	File f = new File(oldExcel);
-    	InputStream inputStream = new FileInputStream(f);
-    	HSSFWorkbook xssfWorkbook = new HSSFWorkbook(inputStream);
-    	HSSFSheet sheet1 = xssfWorkbook.getSheetAt(4);
+//    	File f = new File(oldExcel);
+//    	InputStream inputStream = new FileInputStream(f);
+//    	HSSFWorkbook xssfWorkbook = new HSSFWorkbook(inputStream);
+//    	HSSFSheet sheet1 = xssfWorkbook.getSheetAt(4);
 //    	System.out.println(sheet1.getLastRowNum());
 //    	HSSFCellStyle style = xssfWorkbook.createCellStyle();  
 //        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
@@ -294,14 +296,14 @@ public class ReadExcelFile {
 ////    	cell_title.setCellValue("实际费用");//
 ////		
 //        
-    	for (int i = 0; i <= sheet1.getLastRowNum(); i++) {
-    		HSSFRow row = sheet1.getRow(i);
-    		if (null == row) {
-    			continue;
-			}else{
-				System.out.println(row.getCell(0));
-			}
-    	}
+//    	for (int i = 0; i <= sheet1.getLastRowNum(); i++) {
+//    		HSSFRow row = sheet1.getRow(i);
+//    		if (null == row) {
+//    			continue;
+//			}else{
+//				System.out.println(row.getCell(0));
+//			}
+//    	}
 //				
 ////				HSSFCell cell0 = row.getCell(0);//读取第几列
 ////				if(cell0 == null){
@@ -393,77 +395,77 @@ public class ReadExcelFile {
 //    	}
 		
 		
-		// 第一步，创建一个webbook，对应一个Excel文件  
-        HSSFWorkbook wb = new HSSFWorkbook();  
-        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
-        HSSFSheet sheet = wb.createSheet("费用清单");  
-        //设置横向打印
-        sheet.getPrintSetup().setLandscape(true);
-        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
-        HSSFRow row = sheet.createRow(0);  
-        // 第四步，创建单元格，并设置值表头 设置表头居中  
-        HSSFCellStyle style = wb.createCellStyle();  
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN); //下边框    
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);//左边框    
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);//上边框    
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);//右边框 
-        
-        row = sheet.createRow(0);
-        HSSFCell cell = row.createCell(0); 
-        cell.setCellStyle(style);  
-        cell.setCellValue("账户名"); 
-        ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 0, 0, 0, 1, sheet, wb);
-        
-        cell = row.createCell(2); 
-        cell.setCellStyle(style);  
-        cell.setCellValue("王传明"); 
-        ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 0, 0, 2, 7, sheet, wb);
-       
-        
-        row = sheet.createRow(1);
-        cell = row.createCell(0); 
-        cell.setCellStyle(style);  
-        cell.setCellValue("开户行"); 
-        ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 1, 1, 0, 1, sheet, wb);
-        
-        cell = row.createCell(2); 
-        cell.setCellStyle(style);  
-        cell.setCellValue("濮阳市工商银行"); 
-        ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 1, 1, 2, 7, sheet, wb);
-        
-        row = sheet.createRow(2);
-        cell = row.createCell(0); 
-        cell.setCellStyle(style);  
-        cell.setCellValue("账号"); 
-        ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 2, 2, 0, 1, sheet, wb);
-        
-        cell = row.createCell(2); 
-        cell.setCellStyle(style);  
-        cell.setCellValue("2321321321321321321"); 
-        ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 2, 2, 2, 7, sheet, wb);
-        
-		row = sheet.createRow(3);
-		
-        List<String> list_head = new ArrayList<String>();
-        list_head.add("序号");
-        list_head.add("申请号");
-        list_head.add("专利名称");
-        list_head.add("申请日");
-        list_head.add("申请人");
-        list_head.add("官方费用");
-        list_head.add("缴费截止日");
-        list_head.add("服务费");
-        ReadExcelFile fa = new ReadExcelFile();
-        fa.addCellData(list_head, row, style);
-        FileOutputStream fout = new FileOutputStream("d:\\feeCus.xls");  
-        try {
-			wb.write(fout);
-			 fout.close();  
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}  
+//		// 第一步，创建一个webbook，对应一个Excel文件  
+//        HSSFWorkbook wb = new HSSFWorkbook();  
+//        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
+//        HSSFSheet sheet = wb.createSheet("费用清单");  
+//        //设置横向打印
+//        sheet.getPrintSetup().setLandscape(true);
+//        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
+//        HSSFRow row = sheet.createRow(0);  
+//        // 第四步，创建单元格，并设置值表头 设置表头居中  
+//        HSSFCellStyle style = wb.createCellStyle();  
+//        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式  
+//        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);  
+//        style.setBorderBottom(HSSFCellStyle.BORDER_THIN); //下边框    
+//        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);//左边框    
+//        style.setBorderTop(HSSFCellStyle.BORDER_THIN);//上边框    
+//        style.setBorderRight(HSSFCellStyle.BORDER_THIN);//右边框 
+//        
+//        row = sheet.createRow(0);
+//        HSSFCell cell = row.createCell(0); 
+//        cell.setCellStyle(style);  
+//        cell.setCellValue("账户名"); 
+//        ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 0, 0, 0, 1, sheet, wb);
+//        
+//        cell = row.createCell(2); 
+//        cell.setCellStyle(style);  
+//        cell.setCellValue("王传明"); 
+//        ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 0, 0, 2, 7, sheet, wb);
+//       
+//        
+//        row = sheet.createRow(1);
+//        cell = row.createCell(0); 
+//        cell.setCellStyle(style);  
+//        cell.setCellValue("开户行"); 
+//        ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 1, 1, 0, 1, sheet, wb);
+//        
+//        cell = row.createCell(2); 
+//        cell.setCellStyle(style);  
+//        cell.setCellValue("濮阳市工商银行"); 
+//        ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 1, 1, 2, 7, sheet, wb);
+//        
+//        row = sheet.createRow(2);
+//        cell = row.createCell(0); 
+//        cell.setCellStyle(style);  
+//        cell.setCellValue("账号"); 
+//        ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 2, 2, 0, 1, sheet, wb);
+//        
+//        cell = row.createCell(2); 
+//        cell.setCellStyle(style);  
+//        cell.setCellValue("2321321321321321321"); 
+//        ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, 2, 2, 2, 7, sheet, wb);
+//        
+//		row = sheet.createRow(3);
+//		
+//        List<String> list_head = new ArrayList<String>();
+//        list_head.add("序号");
+//        list_head.add("申请号");
+//        list_head.add("专利名称");
+//        list_head.add("申请日");
+//        list_head.add("申请人");
+//        list_head.add("官方费用");
+//        list_head.add("缴费截止日");
+//        list_head.add("服务费");
+//        ReadExcelFile fa = new ReadExcelFile();
+//        fa.addCellData(list_head, row, style);
+//        FileOutputStream fout = new FileOutputStream("d:\\feeCus.xls");  
+//        try {
+//			wb.write(fout);
+//			 fout.close();  
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}  
 	}
 }

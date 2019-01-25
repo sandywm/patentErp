@@ -55,6 +55,9 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private String ajAddDate;
 	private Integer ajAddUserId;
 	private Integer zlLevel;
+	private String ajType1;
+	private String ajUploadDg;
+	private String ajUploadHt;
 	private Set<ZlajLcInfoTb> zlajLcInfoTbs = new HashSet<ZlajLcInfoTb>();
 	private Set<ZlajFjInfoTb> zlajFjInfoTbs = new HashSet<ZlajFjInfoTb>();
 	private Set<ZlajFeeInfoTb> zlajFeeInfoTbs = new HashSet<ZlajFeeInfoTb>();
@@ -72,7 +75,8 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, String ajStatusChi,Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
 			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
-			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer ajAddUserId,Integer zlLevel) {
+			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer ajAddUserId,Integer zlLevel,
+			String ajType1,String ajUploadDg,String ajUploadHt) {
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
 		this.ajNoQt = ajNoQt;
@@ -112,6 +116,10 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.bhUserId = bhUserId;
 		this.ajAddUserId = ajAddUserId;
 		this.zlLevel = zlLevel;
+		this.ajType1 = ajType1;
+		this.ajUploadDg = ajUploadDg;
+		this.ajUploadHt = ajUploadHt;
+		
 	}
 
 	/** full constructor */
@@ -121,7 +129,8 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus, String ajStatusChi,Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
 			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
-			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer ajAddUserId,Integer zlLevel) {
+			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer ajAddUserId,Integer zlLevel,
+			String ajType1,String ajUploadDg,String ajUploadHt) {
 		this.id = id;
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
@@ -162,6 +171,9 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.bhUserId = bhUserId;
 		this.ajAddUserId = ajAddUserId;
 		this.zlLevel = zlLevel;
+		this.ajType1 = ajType1;
+		this.ajUploadDg = ajUploadDg;
+		this.ajUploadHt = ajUploadHt;
 	}
 
 	// Property accessors
@@ -508,6 +520,30 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 
 	public void setZlLevel(Integer zlLevel) {
 		this.zlLevel = zlLevel;
+	}
+
+	public String getAjType1() {
+		return ajType1;
+	}
+
+	public void setAjType1(String ajType1) {
+		this.ajType1 = ajType1;
+	}
+
+	public String getAjUploadDg() {
+		return ajUploadDg;
+	}
+
+	public void setAjUploadDg(String ajUploadDg) {
+		this.ajUploadDg = ajUploadDg;
+	}
+
+	public String getAjUploadHt() {
+		return ajUploadHt;
+	}
+
+	public void setAjUploadHt(String ajUploadHt) {
+		this.ajUploadHt = ajUploadHt;
 	}
 
 

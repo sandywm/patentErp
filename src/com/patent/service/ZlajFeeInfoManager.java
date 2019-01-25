@@ -96,12 +96,14 @@ public interface ZlajFeeInfoManager{
 	 * @param bankSerialNo 银行缴费流水号
 	 * @param fpDate 开发票时间
 	 * @param fpNo 票号
+	 * @param feeTxType 费用提醒方式0(默认：时间提醒),1(事务提醒)
+	 * @param tzsTx 票号
 	 * @return
 	 * @throws WEBException
 	 */
 	Integer addZLFee(Integer zlId,Integer appUserId,Integer geeTypeId,Double feePrice,Double feeRate,String feeEndDateCpy,String feeEndDateGf,String feeRemark,Integer feeStatus,
 			Integer cpyId,Integer djStatus,String feeJnDate,String feeUpZd,String tzsArea,Integer yearFeeNo,String feeRange,
-			Integer addStatus,String backDate,String feeBatchNo,String bankSerialNo,String fpDate,String fpNo) throws WEBException;
+			Integer addStatus,String backDate,String feeBatchNo,String bankSerialNo,String fpDate,String fpNo,Integer feeTxType,String tzsTx) throws WEBException;
 	
 	/**
 	 * 修改缴费信息

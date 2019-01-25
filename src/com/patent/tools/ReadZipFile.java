@@ -130,6 +130,7 @@ public class ReadZipFile {
 	        			if(l1 != null){//读取到数据文件（不判断直接存）
 	        				tzsName = l1.getTextTrim();//通知书名称
 	        				ajNoGf = root.element("application_number").getTextTrim();//申请号或专利号
+	        				ajNoGf = ajNoGf.replace(".", "");//统一去掉专利号带点的
 	        				if(ajNoGf.length() == 13){
             					String zlTypeNo = ajNoGf.substring(4, 5);
             					if(zlTypeNo.equals("1")){
@@ -245,6 +246,7 @@ public class ReadZipFile {
 	        				Element l_sqh = root.element("SHENQINGH");
 	        				if(l_sqh != null){//存在申请号
 	        					ajNoGf = l_sqh.getTextTrim().replace("申请号：", "");
+	        					ajNoGf = ajNoGf.replace(".", "");//统一去掉专利号带点的
 	        					fwDate = root.element("QIANMINGSJC").getTextTrim().substring(0, 10);
 	        					for(@SuppressWarnings("unchecked")
 	        						Iterator<Element> it = root.elementIterator("SHOUDAOWJ") ; it.hasNext();){
@@ -265,6 +267,7 @@ public class ReadZipFile {
 	        						ajNoGf = l2.elementText("SHENQINGH");
 	        						Element l3 = root.element("FAWENXLH");
 	        						if(l3 != null){
+	        							ajNoGf = ajNoGf.replace(".", "");//统一去掉专利号带点的
 	        							fwSerial = l3.getTextTrim();
 	        							boolean readFlag = false;
 		        						//需要判断之前的list_sub_d中是否已经读取过
@@ -289,7 +292,9 @@ public class ReadZipFile {
 		                    					zlType = "wg";
 		                    				}
 		        							fwDate = CurrentTime.convertFormatDate(l2.elementText("FAWENR"));
-			        						feeEdate = CurrentTime.getFinalDate(fwDate, (60+Constants.TD_RECEIVE_DAYS));
+		        							feeEdate = CurrentTime.getFinalDate(fwDate, Constants.TD_RECEIVE_DAYS);
+		        							feeEdate = CurrentTime.getFinalDate_1(feeEdate, 2);
+//			        						feeEdate = CurrentTime.getFinalDate(fwDate, (60+Constants.TD_RECEIVE_DAYS));
 			    			            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, sqrName, applyDate,
 			    			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath,"listXml"));
 		        						}

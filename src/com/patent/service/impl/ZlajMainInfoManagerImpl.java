@@ -26,7 +26,8 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			String ajFmrId, String ajLxrId, String jsLxrId,Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId, Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
-			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId,Integer zlLevel)
+			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId,Integer zlLevel,
+			String ajType1,String ajUploadDg,String ajUploadHt)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -37,7 +38,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			ZlajMainInfoTb zl = new ZlajMainInfoTb(cDao.get(sess, cpyId), ajNo, ajNoQt, ajNoGf,
 					ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, ajYxqDetail,
 					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, ajStatusChi, 0,0,pubZlId,"","","",CurrentTime.getStringDate(),checkUserId,zxUserId,cusCheckUserId,
-					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId,zlLevel);
+					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId,zlLevel,ajType1,ajUploadDg,ajUploadHt);
 			zlDao.save(sess, zl);
 			tran.commit();
 			return zl.getId();
@@ -176,7 +177,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			String zlNoQt,Integer pubId,String sqAddress, String zlType,
 			String ajFieldId, String ajSqrId,String sqrName, String fmrId, String lxrId,String jsLxrId,Double ajFjInfo,
 			String yxqDetail, String upFile, String remark, String ewyq,
-			String applyDate, Integer faId) throws WEBException {
+			String applyDate, Integer faId,String upFileDg,String upFileHt) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
@@ -209,6 +210,8 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 				if(faId > 0){
 					zl.setAjFaId(faId);
 				}
+				zl.setAjUploadDg(upFileDg);
+				zl.setAjUploadHt(upFileHt);
 				zlDao.update(sess, zl);
 				tran.commit();
 				return true;
@@ -536,6 +539,61 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("获取指定专利人员的添加的专利数量时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateFjFileById(Integer zlId, String dgFile,String htFile)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajMainInfoTb zl = zlDao.get(sess, zlId);
+			if(zl != null){
+				if(!dgFile.equals("")){
+					zl.setAjUploadDg(dgFile);
+				}
+				if(!htFile.equals("")){
+					zl.setAjUploadHt(htFile);
+				}
+				zlDao.update(sess, zl);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键修改指定专利的定稿文件、合同文件时(定稿提交)出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateZlFaInfoById(Integer zlId, Integer faId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajMainInfoTb zl = zlDao.get(sess, zlId);
+			if(zl != null){
+				zl.setAjFaId(faId);
+				zlDao.update(sess, zl);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键修改案件分案信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

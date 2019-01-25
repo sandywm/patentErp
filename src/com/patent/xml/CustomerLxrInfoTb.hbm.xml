@@ -16,7 +16,7 @@
             </column>
         </many-to-one>
         <property name="cusLxrName" type="java.lang.String">
-            <column name="cus_lxr_name" length="20" not-null="true">
+            <column name="cus_lxr_name" length="50" not-null="true">
                 <comment>联系人名称</comment>
             </column>
         </property>

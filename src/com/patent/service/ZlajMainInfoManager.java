@@ -46,6 +46,9 @@ public interface ZlajMainInfoManager {
 	 * @param bhUserId 案件驳回人员
 	 * @param ajAddUserId 案件录入人员
 	 * @param zlLevel 专利难易度
+	 * @param ajType1 案件类型一
+	 * @param ajUploadDg 定稿文件(多个逗号隔开)
+	 * @param ajUploadHt 合同文件(多个逗号隔开)
 	 * @return
 	 * @throws WEBException
 	 */
@@ -54,7 +57,8 @@ public interface ZlajMainInfoManager {
 			String ajFmrId, String ajLxrId, String jsLxrId,Double ajFjInfo,String ajSqAddress, String ajYxqDetail,
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
-			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId,Integer zlLevel) throws WEBException;
+			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId,Integer zlLevel,
+			String ajType1,String ajUploadDg,String ajUploadHt) throws WEBException;
 	
 	/**
 	 * 根据条件分页获取专利列表(ID降序)
@@ -180,11 +184,14 @@ public interface ZlajMainInfoManager {
 	 * @param ewyq 额外要求
 	 * @param applyDate 申请日期
 	 * @param faId 分案编号（0不修改）
+	 * @param ajUploadDg 定稿文件(多个逗号隔开)
+	 * @param ajUploadHt 合同文件(多个逗号隔开)
 	 * @return
 	 * @throws WEBException
 	 */
 	boolean updateBasicInfoById(Integer zlId,String zlTitle,String zlNo,String zlNoQt,Integer pubId, String sqAddress,String zlType,String ajFieldId,
-			String sqrId,String sqrName,String fmrId,String lxrId,String jsLxrId,Double ajFjInfo,String yxqDetail,String upFile,String remark,String ewyq,String applyDate,Integer faId) throws WEBException;
+			String sqrId,String sqrName,String fmrId,String lxrId,String jsLxrId,Double ajFjInfo,String yxqDetail,String upFile,String remark,String ewyq,
+			String applyDate,Integer faId,String upFileDg,String upFileHt) throws WEBException;
 	
 	/**
 	 * 更新专利申请/专利号
@@ -347,4 +354,29 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	Integer getCountByAddUserId(Integer addUserId) throws WEBException;
+	
+	/**
+	 * 修改指定专利的定稿文件（定稿时修改）
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-21 上午10:32:26
+	 * @param zlId 专利编号
+	 * @param dgFile 定稿文件
+	 * @param htFile 合同文件
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateFjFileById(Integer zlId, String dgFile,String htFile) throws WEBException;
+	
+	/**
+	 * 修改指定专利的分案id
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-25 下午03:14:04
+	 * @param zlId 专利编号
+	 * @param faId 分案编号
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateZlFaInfoById(Integer zlId,Integer faId)throws WEBException;
 }

@@ -41,12 +41,12 @@
             </column>
         </property>
         <property name="feeEndDateJj" type="java.lang.String">
-            <column name="fee_endDate_jj" length="30" not-null="true">
+            <column name="fee_endDate_jj" length="30" >
                 <comment>费用期限(机构)</comment>
             </column>
         </property>
         <property name="feeEndDateGf" type="java.lang.String">
-            <column name="fee_endDate_gf" length="30" not-null="true">
+            <column name="fee_endDate_gf" length="30" >
                 <comment>官方期限</comment>
             </column>
         </property>
@@ -133,6 +133,16 @@
          <property name="fpNo" type="java.lang.String">
             <column name="fp_no" length="50">
                 <comment>票号</comment>
+            </column>
+        </property>
+        <property name="feeTxType" type="java.lang.Integer">
+            <column name="fee_tx_type">
+                <comment>费用提醒方式0(默认：时间提醒),1(事务提醒)</comment>
+            </column>
+        </property>
+        <property name="tzsTx" type="java.lang.String">
+            <column name="tzs_tx" length="20">
+                <comment>通知书提醒催缴费用(sl,gb,sc,sq)</comment>
             </column>
         </property>
         <set name="zlajFeeSubInfoTbs" inverse="true">
