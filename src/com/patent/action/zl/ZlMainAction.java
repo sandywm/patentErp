@@ -2380,7 +2380,7 @@ public class ZlMainAction extends DispatchAction {
 						String cpyDate = CommonTools.getFinalStr("cpyDate", request);//内部期限(前期资料提交完成时间)
 						String sDate = CurrentTime.getStringDate();//开始日期
 						Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减（不建议填写,最好是导入受理通知书）
-						String dlFee = CommonTools.getFinalStr("dlFee", request);//代理费情况（时间,费用:时间,费用）或者是通知书名称,费用：通知书名称,费用
+						String dlFee = CommonTools.getFinalStr("dlFee", request);//代理费情况（时间,时间:费用,费用）或者是通知书名称,通知书名称:费用,费用
 						Double feeRate = CommonTools.getFinalDouble("feeRate", request);//费减-旧案才有
 						Integer zlLevel = CommonTools.getFinalInteger("zlLevel", request);//1,2,3
 						String ajType1 = CommonTools.getFinalStr("ajType1", request);//案件类型(new:新案,old:旧案)
@@ -2461,17 +2461,18 @@ public class ZlMainAction extends DispatchAction {
 										}
 										//增加代理费用（id=90）
 										String[] dlFeeArr = dlFee.split(":");
-										String jfDate = CurrentTime.getFinalDate(sDate, Constants.DL_FEE_DAYS);
+//										String jfDate = CurrentTime.getFinalDate(sDate, Constants.DL_FEE_DAYS);
 										if(feeTxType.equals(0)){//时间段提醒
-											for(int j = 0 ; j < dlFeeArr.length ; j++){
-												jfDate = dlFeeArr[j].split(",")[0];
-												fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(dlFeeArr[j].split(",")[1]), feeRate, jfDate, jfDate, "", 1, 
+											String[] jfDateArr = dlFeeArr[0].split(",");
+											String[] feeArr = dlFeeArr[1].split(",");
+											for(int j = 0 ; j < jfDateArr.length ; j++){
+												fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(feeArr[j]), feeRate, jfDateArr[j], jfDateArr[j], "", 1, 
 														cpyId, 1, sDate, "", "", 0, "", 0, "", "", "", "", "",feeTxType,"");
 											}
 										}else{//事务提醒
 											for(int j = 0 ; j < dlFeeArr.length ; j++){
-												String tzsTx = dlFeeArr[j].split(",")[0];
-												fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(dlFeeArr[j].split(",")[1]), feeRate, "", "", "", 1, 
+												String tzsTx = dlFeeArr[0].split(",")[j];
+												fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(dlFeeArr[1].split(",")[j]), feeRate, "", "", "", 1, 
 														cpyId, 1, sDate, "", "", 0, "", 0, "", "", "", "", "",feeTxType,tzsTx);
 											}
 										}
@@ -2924,6 +2925,7 @@ public class ZlMainAction extends DispatchAction {
 							}
 							zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt, pubId, ajSqAddress, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, 
 									jsLxrId,ajFjInfo,yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0,ajUploadDg,ajUploadHt);
+							//修改代理费用和类型
 							List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "专利案件录入");
 							if(mxList.size() > 0){
 								ZlajLcMxInfoTb mx = mxList.get(0);
@@ -3037,40 +3039,40 @@ public class ZlMainAction extends DispatchAction {
 										}
 									}
 								}
-								List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(zlId, 90);
-								if(feeList.size() > 0){//存在代理费用(id=90)
-									ZlajFeeInfoTb fee = feeList.get(0);
-									Double dlFee_db = fee.getFeePrice();
-									Pattern pattern = Pattern.compile("[0-9]*");
-									boolean flag = pattern.matcher(dlFee_inp).matches();
-									if(flag){
-										Double deFee = Double.parseDouble(dlFee_inp);
-										if(deFee >= 100 && deFee <= 100000){
-											if(!dlFee_db.equals(deFee)){
-												if(fee.getBackStatus().equals(1)){//客户已交完代理费就不能再修改
-													flag = false;
-												}else{//未交完，但是修改的费用不能小于客户实交费用
-													Double backFee = fee.getBackFee();
-													if(deFee < backFee){
-														flag = false;
-													}else{
-														Integer feeId = fee.getId();
-														fm.updateFeePriceById(feeId, deFee);
-														if(deFee.equals(backFee)){//新修改的费用和客户已交费用相同，说明这笔费用就交完了
-															//如果相等--修改客户已交完代理费
-															fm.updateBackFeeInfoById(feeId, fee.getBackDate(), backFee, 1, 0d);
-														}
-													}
-												}
-											}
-										}
-									}
-								}else{//没有就增加代理费
-									//增加代理费用（id=90）
-									String jfDate = CurrentTime.getFinalDate(zl.getAjAddDate(), Constants.DL_FEE_DAYS);
-									fm.addZLFee(zlId, currUserId, 90, Double.parseDouble(dlFee_inp), 0.0, jfDate, jfDate, "", 0, 
-											cpyId, 1, "", "", "", 0, "", 0, "", "", "", "", "",0,"");
-								}
+//								List<ZlajFeeInfoTb> feeList = fm.listInfoByOpt(zlId, 90);
+//								if(feeList.size() > 0){//存在代理费用(id=90)
+//									ZlajFeeInfoTb fee = feeList.get(0);
+//									Double dlFee_db = fee.getFeePrice();
+//									Pattern pattern = Pattern.compile("[0-9]*");
+//									boolean flag = pattern.matcher(dlFee_inp).matches();
+//									if(flag){
+//										Double deFee = Double.parseDouble(dlFee_inp);
+//										if(deFee >= 100 && deFee <= 100000){
+//											if(!dlFee_db.equals(deFee)){
+//												if(fee.getBackStatus().equals(1)){//客户已交完代理费就不能再修改
+//													flag = false;
+//												}else{//未交完，但是修改的费用不能小于客户实交费用
+//													Double backFee = fee.getBackFee();
+//													if(deFee < backFee){
+//														flag = false;
+//													}else{
+//														Integer feeId = fee.getId();
+//														fm.updateFeePriceById(feeId, deFee);
+//														if(deFee.equals(backFee)){//新修改的费用和客户已交费用相同，说明这笔费用就交完了
+//															//如果相等--修改客户已交完代理费
+//															fm.updateBackFeeInfoById(feeId, fee.getBackDate(), backFee, 1, 0d);
+//														}
+//													}
+//												}
+//											}
+//										}
+//									}
+//								}else{//没有就增加代理费
+//									//增加代理费用（id=90）
+//									String jfDate = CurrentTime.getFinalDate(zl.getAjAddDate(), Constants.DL_FEE_DAYS);
+//									fm.addZLFee(zlId, currUserId, 90, Double.parseDouble(dlFee_inp), 0.0, jfDate, jfDate, "", 0, 
+//											cpyId, 1, "", "", "", 0, "", 0, "", "", "", "", "",0,"");
+//								}
 							}
 						}
 					}
