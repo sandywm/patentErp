@@ -351,92 +351,96 @@ public class CpyManagerAction extends DispatchAction {
 		Integer userId = this.getLoginUserId(request);
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		CpyBonusInfoManager cbm = (CpyBonusInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_BONUS_INFO);
-		CpyUserInfo cpyUser = cum.getEntityById(userId);
-		String opt = CommonTools.getFinalStr("opt", request);
+		boolean comFlag = false;
 		Map<String,Object> map = new HashMap<String,Object>();
-		if(cpyUser != null){
-			CpyInfoTb cpy = cpyUser.getCpyInfoTb();
-			Integer cpyId = cpy.getId();
-			map.put("cpyId", cpyId);
-			if(opt.equals("bankInfo")){//银行信息
-				map.put("bankAccountName", cpy.getBankAccountName());
-				map.put("bankName", cpy.getBankName());
-				map.put("bankNo", cpy.getBankNo());
-			}else if(opt.equals("saleBonus")){//销售提成
-				map.put("saleBonus", cpy.getSaleBonus());
-			}else if(opt.equals("dlFee")){//代理费
-				map.put("dlFeeFm", cpy.getDlFeeFm());
-				map.put("dlFeeXx", cpy.getDlFeeXx());
-				map.put("dlFeeWg", cpy.getDlFeeWg());
-			}else if(opt.equals("workBonus")){//工作奖金（专利撰写-zx、专利审核-sc）
-				String zlType = CommonTools.getFinalStr("zlType", request);
-				String workType = CommonTools.getFinalStr("workPosition", request);//工作种类(zx,sc)
-				Integer zlLevel = CommonTools.getFinalInteger("zlLevel", request);//专利难易度1-3
-				Integer count = cbm.getCountByOpt(workType, zlType, zlLevel, cpyId);
-				List<Object> list_d = new ArrayList<Object>();
-				if(count > 0){
-					Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
-					Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
-					List<CpyBonusInfo>  cbList = cbm.listPageInfoByOpt(workType, zlType, zlLevel, cpyId, pageNo, pageSize);
-					for(Iterator<CpyBonusInfo> it = cbList.iterator() ; it.hasNext() ;){
-						CpyBonusInfo cb = it.next();
-						Map<String,Object> map_d = new HashMap<String,Object>();
-						map_d.put("cbId", cb.getId());
-						String wordPosition_db = cb.getWorkPosition();
-						String wordPositionChi = "";
-						if(wordPosition_db.equals("zx")){
-							wordPositionChi = "专利撰写";
-						}else if(wordPosition_db.equals("sc")){
-							wordPositionChi = "专利审核";
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo cpyUser = cum.getEntityById(userId);
+			String opt = CommonTools.getFinalStr("opt", request);
+			if(cpyUser != null){
+				CpyInfoTb cpy = cpyUser.getCpyInfoTb();
+				Integer cpyId = cpy.getId();
+				map.put("cpyId", cpyId);
+				if(opt.equals("bankInfo")){//银行信息
+					map.put("bankAccountName", cpy.getBankAccountName());
+					map.put("bankName", cpy.getBankName());
+					map.put("bankNo", cpy.getBankNo());
+				}else if(opt.equals("saleBonus")){//销售提成
+					map.put("saleBonus", cpy.getSaleBonus());
+				}else if(opt.equals("dlFee")){//代理费
+					map.put("dlFeeFm", cpy.getDlFeeFm());
+					map.put("dlFeeXx", cpy.getDlFeeXx());
+					map.put("dlFeeWg", cpy.getDlFeeWg());
+				}else if(opt.equals("workBonus")){//工作奖金（专利撰写-zx、专利审核-sc）
+					String zlType = CommonTools.getFinalStr("zlType", request);
+					String workType = CommonTools.getFinalStr("workPosition", request);//工作种类(zx,sc)
+					Integer zlLevel = CommonTools.getFinalInteger("zlLevel", request);//专利难易度1-3
+					Integer count = cbm.getCountByOpt(workType, zlType, zlLevel, cpyId);
+					List<Object> list_d = new ArrayList<Object>();
+					if(count > 0){
+						Integer pageSize = PageConst.getPageSize(String.valueOf(request.getParameter("limit")), 10);//等同于pageSize
+						Integer pageNo = CommonTools.getFinalInteger("page", request);//等同于pageNo
+						List<CpyBonusInfo>  cbList = cbm.listPageInfoByOpt(workType, zlType, zlLevel, cpyId, pageNo, pageSize);
+						for(Iterator<CpyBonusInfo> it = cbList.iterator() ; it.hasNext() ;){
+							CpyBonusInfo cb = it.next();
+							Map<String,Object> map_d = new HashMap<String,Object>();
+							map_d.put("cbId", cb.getId());
+							String wordPosition_db = cb.getWorkPosition();
+							String wordPositionChi = "";
+							if(wordPosition_db.equals("zx")){
+								wordPositionChi = "专利撰写";
+							}else if(wordPosition_db.equals("sc")){
+								wordPositionChi = "专利审核";
+							}
+							map_d.put("workPosition", wordPositionChi);
+							String zlType_db = cb.getZlType();
+							String zlTypeChi = "";
+							if(zlType_db.equals("fm")){
+								zlTypeChi = "发明";
+							}else if(zlType_db.equals("syxx")){
+								zlTypeChi = "实用新型";
+							}else if(zlType_db.equals("wg")){
+								zlTypeChi = "外观";
+							}
+							map_d.put("zlType", zlTypeChi);//专利类型
+							map_d.put("zlLevel", cb.getZlLevel());
+							map_d.put("bonusFee", cb.getBonusFee());
+							list_d.add(map_d);
 						}
-						map_d.put("workPosition", wordPositionChi);
-						String zlType_db = cb.getZlType();
-						String zlTypeChi = "";
-						if(zlType_db.equals("fm")){
-							zlTypeChi = "发明";
-						}else if(zlType_db.equals("syxx")){
-							zlTypeChi = "实用新型";
-						}else if(zlType_db.equals("wg")){
-							zlTypeChi = "外观";
-						}
-						map_d.put("zlType", zlTypeChi);//专利类型
-						map_d.put("zlLevel", cb.getZlLevel());
-						map_d.put("bonusFee", cb.getBonusFee());
-						list_d.add(map_d);
+						map.put("data", list_d);
+						map.put("code", 0);
 					}
-					map.put("data", list_d);
-					map.put("code", 0);
+					map.put("count", count);
+				}else if(opt.equals("comInfo")){//检查公司初始信息完整度
+					String bankNo = cpy.getBankNo();
+					String saleBonus = cpy.getSaleBonus();
+					String dlFeeFm  = cpy.getDlFeeFm();
+					String dlFeeXx  = cpy.getDlFeeXx();
+					String dlFeeWg  = cpy.getDlFeeWg();
+					boolean bankFlag = false;
+					boolean saleFlag = false;
+					boolean dlFeeFlag = false;
+					boolean workFlag = false;
+					if(!bankNo.equals("")){
+						bankFlag = true;
+					}
+					if(!saleBonus.equals("")){
+						saleFlag = true;
+					}
+					if(!dlFeeFm.equals("") && !dlFeeXx.equals("") && !dlFeeWg.equals("") ){
+						dlFeeFlag = true;
+					}
+					Integer count = cbm.getCountByOpt("", "", 0, cpyId);
+					if(count.equals(Constants.WORK_BONUS_COUNT)){
+						workFlag = true;
+					}
+					if(bankFlag && saleFlag && dlFeeFlag && workFlag){
+						comFlag = true;
+					}
+					map.put("comFlag", comFlag);
 				}
-				map.put("count", count);
-			}else if(opt.equals("comInfo")){//检查公司初始信息完整度
-				String bankNo = cpy.getBankNo();
-				String saleBonus = cpy.getSaleBonus();
-				String dlFeeFm  = cpy.getDlFeeFm();
-				String dlFeeXx  = cpy.getDlFeeXx();
-				String dlFeeWg  = cpy.getDlFeeWg();
-				boolean comFlag = false;
-				boolean bankFlag = false;
-				boolean saleFlag = false;
-				boolean dlFeeFlag = false;
-				boolean workFlag = false;
-				if(!bankNo.equals("")){
-					bankFlag = true;
-				}
-				if(!saleBonus.equals("")){
-					saleFlag = true;
-				}
-				if(!dlFeeFm.equals("") && !dlFeeXx.equals("") && !dlFeeWg.equals("") ){
-					dlFeeFlag = true;
-				}
-				Integer count = cbm.getCountByOpt("", "", 0, cpyId);
-				if(count.equals(Constants.WORK_BONUS_COUNT)){
-					workFlag = true;
-				}
-				if(bankFlag && saleFlag && dlFeeFlag && workFlag){
-					comFlag = true;
-				}
-				map.put("comFlag", comFlag);
 			}
+		}else{
+			map.put("comFlag", true);
 		}
 		this.getJsonPkg(map, response);
 		return null;
