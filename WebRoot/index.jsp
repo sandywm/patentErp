@@ -14,7 +14,6 @@
 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
 	<script src="/plugins/pace/pace.min.js"></script>
 	<script type="text/javascript">
-		var txt = 'alla的 lla';
 		var testIndex = 0;
 		var roleName = "${sessionScope.login_user_role_name}",
 			loginType = "${sessionScope.login_type}";
@@ -84,7 +83,7 @@
 	            </ul>
 	            <div class="layui-tab-content">
 	                <div class="layui-tab-item layui-show">
-	                    <iframe id="mainIframe" src="user.do?action=goWelcomePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
+	                    <iframe id="mainIframe" src="zlm.do?action=goZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
 	                </div>
 	            </div>
 	        </div>
@@ -192,7 +191,9 @@
 	        		$('#mailNavLi').remove();
 	        	}
 	        	common.getUserBasicInfo('mine');
-	        	createSetInfoLayer();	        	
+	        	if(loginType == 'cpyUser' && roleName == '管理员'){
+	        		createSetInfoLayer();
+	        	}	        	
 	        });
 	        function createSetInfoLayer(){
 	        	var setInfoTxt = '',fullLayer = '<div class="indexLayer"></div>';
