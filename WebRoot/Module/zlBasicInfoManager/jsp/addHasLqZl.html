@@ -129,12 +129,12 @@
 				        url:'/pubZl.do?action=getLqPzListData',
 				        success:function (json){
 				        	layer.closeAll('loading');
-				        	if(json['result'] == 'success'){
+				        	if(json['msg'] == 'success'){
 				        		console.log(json)
 				        		$('.botSaveBox').show();
 				        		var listData = json.data; 
 				        		_this.renderLqZlTaskList(listData);
-				        	}else if(json['result'] == 'noInfo'){
+				        	}else if(json['msg'] == 'noInfo'){
 				        		$('.lqZlTaskCon ul').html(noData);
 				        		$('.botSaveBox').hide();
 				        		$('#scrollParent').remove();
@@ -142,7 +142,7 @@
 								common.getId('lqZlTaskPar').onmousewheel = function(){
 									return false;
 								};
-				        	}else if(json['result'] == 'error'){
+				        	}else if(json['msg'] == 'error'){
 				        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1500});
 				        		$('.botSaveBox').hide();
 				        		$('#scrollParent').remove();

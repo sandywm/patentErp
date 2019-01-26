@@ -191,9 +191,7 @@
 	        		$('#mailNavLi').remove();
 	        	}
 	        	common.getUserBasicInfo('mine');
-	        	if(loginType == 'cpyUser' && roleName == '管理员'){
-	        		createSetInfoLayer();
-	        	}	        	
+	        	createSetInfoLayer();        	
 	        });
 	        function createSetInfoLayer(){
 	        	var setInfoTxt = '',fullLayer = '<div class="indexLayer"></div>';
