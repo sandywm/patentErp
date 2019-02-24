@@ -1183,7 +1183,7 @@ public class ZlMainAction extends DispatchAction {
 								map_file.put("fileName", upFileName);
 								map_file.put("fileSize", upSize);
 								map_file.put("downFilePath", upFileArr[i]);
-								list_file_ht.add(list_file_ht);
+								list_file_ht.add(map_file);
 							}
 							map.put("upFileHt", list_file_ht);
 						}
