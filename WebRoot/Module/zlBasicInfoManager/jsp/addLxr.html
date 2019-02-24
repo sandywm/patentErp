@@ -15,7 +15,7 @@
 			<div class="hasSelLxrFmrList fr">
 				<div class="tipInfo">
 					<i class="layui-icon layui-icon-list"></i>
-					<p class="tipInfoSpan">点击左侧选择联系人/发明人</p>
+					<p class="tipInfoSpan">点击左侧选择事务联系人/发明人</p>
 				</div>
 			</div>
 		</div>
@@ -77,7 +77,7 @@
 					if(tmpLxrFmrOpts == 'addLxrOpts'){
 						//表示添加联系人
 						sqrLxrFmrName = 'sqrLxr';
-						lxrFmrTxt = '联系人';
+						lxrFmrTxt = '事务联系人';
 					}else if(tmpLxrFmrOpts == 'addFmrOpts' || tmpLxrFmrOpts == 'addJsLxrOpts'){
 						//表示添加发明人
 						sqrLxrFmrName = 'sqrFmr';
@@ -174,7 +174,7 @@
 					if(tmpLxrFmrOpts == 'addLxrOpts'){
 						//表示添加联系人
 						sqrLxrFmrName = 'sqrLxr';
-						lxrFmrTxt = '联系人';
+						lxrFmrTxt = '事务联系人';
 					}else{
 						//表示添加发明人
 						sqrLxrFmrName = 'sqrFmr';
@@ -320,7 +320,7 @@
 					for(var i=0;i<listData.length;i++){
 						strHtml += '<div class="lxFmrBox">';
 						if(tmpLxrFmrOpts == 'addLxrOpts'){
-							strHtml += '<strong class="titleStrong">['+ listData[i].sqrName +']的联系人<span class="addNewBtn" sqrId="'+ listData[i].sqrId +'" opts="addLxrBtnOpts" addFmrLxrOpt="addLxrOpts"><i class="layui-icon layui-icon-add-1"></i>增加联系人</span></strong>';
+							strHtml += '<strong class="titleStrong">['+ listData[i].sqrName +']的事务联系人<span class="addNewBtn" sqrId="'+ listData[i].sqrId +'" opts="addLxrBtnOpts" addFmrLxrOpt="addLxrOpts"><i class="layui-icon layui-icon-add-1"></i>增加事务联系人</span></strong>';
 						}else if(tmpLxrFmrOpts == 'addFmrOpts'){
 							strHtml += '<strong class="titleStrong">['+ listData[i].sqrName +']的发明人<span class="addNewBtn" sqrId="'+ listData[i].sqrId +'" opts="addFmrBtnOpts" addFmrLxrOpt="addFmrOpts"><i class="layui-icon layui-icon-add-1"></i>增加发明人</span></strong>';
 						}else if(tmpLxrFmrOpts == 'addJsLxrOpts'){
@@ -335,7 +335,7 @@
 									strHtml += '<strong>'+ listData[i].lxrInfo[j].lxrName +'</strong></label>';
 								}
 							}else{
-								strHtml += '<span class="noAddInfo"><i class="layui-icon layui-icon-face-cry"></i>该申请人(公司)暂未添加联系人！</span>';
+								strHtml += '<span class="noAddInfo"><i class="layui-icon layui-icon-face-cry"></i>该申请人(公司)暂未添加事务联系人！</span>';
 							}
 						}else{
 							if(listData[i].fmrInfo != undefined){

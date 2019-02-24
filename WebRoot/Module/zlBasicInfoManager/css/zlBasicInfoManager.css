@@ -36,6 +36,9 @@ body{
 .closeBtns:hover i{
 	color:red;
 }
+.feeDiv{
+	display:none;
+}
 #addZlBtn,
 #importBtn{
 	height:40px;
@@ -68,6 +71,29 @@ body{
 	float:left;
 	position:relative;
 }
+.zlNumBox{
+	line-height:39px;
+	float:left;
+}
+.zlNumBox{
+	margin-left:27px;
+}
+.zlNumBox.hasMargLeft{
+	margin-left:10px;
+}
+.zlNumBox span{
+	color:#f00;
+	margin-right:2px;
+}
+.zlNumBox input{
+	width:175px;
+	margin-left:5px;
+}
+.zlNumBox span,
+.zlNumBox p,
+.zlNumBox input{
+	float:left;
+}
 .sepcialLab{
 	text-align:left;
 	width:108px;
@@ -76,7 +102,8 @@ body{
 	width:70.5%;
 	position:relative;
 }
-.itemDiv .layui-input-inline em.moneyDec{
+.layui-input-inline em.moneyDec,
+.dlFeeNumBox em.moneyDec{
 	font-style:normal;
 	position:absolute;
 	left:6px;
@@ -84,45 +111,107 @@ body{
 	font-size:18px;
 	color:#F47837;
 }
-.itemDiv.agentFeeDiv,
+.dlFeeNumBox em.moneyDec{
+	top:8px;
+	display:block;
+}
+.dlFeeNumBox em.moneyDec + input::-webkit-input-placeholder{
+	font-weight:normal;
+}
+.dlFeeNumBox em.moneyDec + input{
+	padding-left:18px;
+	font-weight:600;
+	color:#666;
+}
 .hasLine{
 	height:39px;
 	line-height:39px;
 }
-.diffDiv.oneWid, 
-.comAgentDiv.oneWid{
-	width:100%;
-}
-.comAgentDiv.twoWid{
-	width:50%;
-}
-.twoAgentDiv,
-.diffDiv.twoWid,
-.moneyDec{
+.agentBox{
 	display:none;
 }
-.itemDiv.agentFeeDiv .agentTit,
+.initDlFeeBox{
+	height:30px;
+	line-height:30px;
+}
+.initFeeTxt {
+	margin-top:4px;
+	margin-left:10px;
+	color:#999;
+	position:relative;
+	padding-left:20px;
+}
+.initFeeTxt .layui-icon{
+	font-size:18px;
+	position:absolute;
+	left:0;
+	top:0;
+}
+.initFeeTxt .secInitDlFee{
+	margin-left:10px;
+}
+.getTypeTxt{
+	margin:4px 10px 0 0px;	
+}
+.addDlFeeBox.fmxxDlFee{
+	width:50%;
+}
+.dlFeeList{
+	margin-top:10px;
+}
+.remindDateInp,
+.remDateInp_multi,
+.shiwuSel,
+.dlFeeNumBox,
+.delDlFee{
+	float:left;
+	position:relative;
+}
+.remindDateInp,
+.remDateInp_multi{
+	width:150px !important;
+	margin-right:15px;
+}
+.shiwuSel{
+	margin-right:10px;
+}
+.dlFeeNumBox{
+	width:208px;
+	margin-right:2px;
+}
+.delDlFee{
+	font-size: 24px;
+    margin-top: 5px;
+    cursor: pointer;
+    color: red;
+    opacity: .8;
+}
+.diffDiv.oneWid,
+.initDlFeeBox,
+.addDlFeeBox{
+	width:100%;
+}
+.diffDiv.twoWid,
+.moneyDec,
+.fmxxDlFee_xx{
+	display:none;
+}
 .diffTit{
 	font-style:normal;
 }
-.itemDiv.agentFeeDiv .agentInp{
+.agentFeeDiv .agentInp{
 	display:none;
 	padding-left:20px;
 	font-weight:600;
 	color:#666;
 }
-.itemDiv.agentFeeDiv .agentInp::-webkit-input-placeholder {
+.agentFeeDiv .agentInp::-webkit-input-placeholder {
 	font-weight:normal;
-}
-.comAgentDiv.twoWid .layui-input-inline{
-	width:40%;
-	margin-right:0px;
-}
-.comAgentDiv.twoWid .layui-input-inline.sepcialInline{
-	width:50%;
 }
 .tipsInfo{
 	color:#999;
+	float:left;
+	margin-top:9px;
 }
 .selZlTaskSp{
 	position:absolute;
@@ -183,14 +272,20 @@ body{
 .fixHeiDiv .multiBox p:last-child{
 	margin-right:0px;
 }
-.fixHeiDiv .addSpan{
+.fixHeiDiv .addSpan,
+.addDlFeeBox .addSpan{
 	cursor:pointer;
 	color:#009688;
-	/*line-height:38px;*/
-	margin-top:9px;
 	display:block;
 }
-.fixHeiDiv .addSpan:hover{
+.fixHeiDiv .addSpan{
+	margin-top:9px;
+}
+.addDlFeeBox .addSpan{
+	margin-top:12px;
+}
+.fixHeiDiv .addSpan:hover,
+.addDlFeeBox .addSpan:hover{
 	color:#F47837;
 }
 .blockDiv{
@@ -857,7 +952,8 @@ body{
 .succTxt{
 	color:#5FB878;
 }
-.selZlType + .layui-form-select{
+.selZlType + .layui-form-select,
+.selAjType + .layui-form-select{
 	width:146px;
 	margin-right:-40px;
 }
@@ -1020,4 +1116,14 @@ body{
 .innerFmrInfo legend{
 	font-size:16px;
 	color:#F47837;
+}
+.tabParents{
+	width:95%;
+	margin:0 auto;
+}
+.noZlTypeTxt{
+	color:#999;
+}
+#selFileBtn{
+	display:none;
 }

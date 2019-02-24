@@ -13,13 +13,13 @@ body{
 }
 .layui-form-label.lxrLableWid,
 .layui-form-label.fmrLableWid{
-	width:100px;
+	width:110px;
+}
+.layui-form-label.cusWid{
+	width:120px;
 }
 .layui-form-label.jsLxrLableWid{
 	width:126px;
-}
-.layui-form-label{
-	/*width:126px;*/
 }
 .layui-input{
 	width:84%;

@@ -130,7 +130,6 @@
 				        success:function (json){
 				        	layer.closeAll('loading');
 				        	if(json['msg'] == 'success'){
-				        		console.log(json)
 				        		$('.botSaveBox').show();
 				        		var listData = json.data; 
 				        		_this.renderLqZlTaskList(listData);

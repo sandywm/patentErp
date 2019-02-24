@@ -98,7 +98,7 @@
     			layer.load('1');
     			table.render({
     				elem: '#cusListTable',
-					height: 'full-200',
+					height: 'full-150',
 					url : 'customer.do?action=getCusPageInfo',
 					method : 'post',
 					where:field,

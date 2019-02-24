@@ -28,6 +28,16 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 			}
 			return zlTypeCHN;
 		},
+		switchZlAjNewOrOld : function(zlAjType){
+			var zlAjTypeStr = '';
+			zlAjTypeStr += '<select class="selAjType" lay-filter="selAjTypeFilter"><option value="">请选择附件类型</option>';
+			zlAjTypeStr += '<option value="js">技术底稿</option><option value="ht">合同文件</option>';
+			if(zlAjType == 'old'){//旧案
+				zlAjTypeStr += '<option value="dg">定稿文件</option>';
+			}
+			zlAjTypeStr += '</select><input class="ajFjTypeInp" type="hidden"/>';
+			return zlAjTypeStr;
+		},
 		uploadFiles : function(url,maxNumber,fileType,opts){
 			this.data.globalOpts = opts;
 			var imageListView = $('#upLoadFileList')
@@ -50,7 +60,7 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 				  	layer.msg(content, {icon: 2, shift: 6});
 				  }
 				  ,before : function(obj){
-					  var that = this;
+					  var that = this,isFmxxTmpFlag = true;;
 					  //假如用户分了两次或者多次上传若个干文件，那么，用已经上传的文件和当前已经选中的文件的数量相加和maxNum做比较
 					  $('#upListAction').hide();
 					  var hasUpDoneLen = $('.hasUpDone').length;
@@ -63,7 +73,7 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 					  }
 				  }
 				  ,choose: function(obj){
-				  	  var that = this,zlTypeTxt='';
+				  	  var that = this,zlTypeTxt='',zlAjTypeStr='';
 				      //读取本地文件
 				  	  if($('.commonResCon li').length > 0 && opts == 'batchImp_fee'){//通知书/缴费单据批量导入第二次
 				  		$('.importCon').show();
@@ -73,12 +83,15 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 				  		  $('.importCon').show();
 				  		  $('.readResWrap').hide();
 				  	  }
-				  	  if(opts == 'zlTaskOpts'){
+				  	  if(opts == 'addEditZlOpts'){//添加附件类型 专利添加编辑&&任务这块的专利补正需要
+				  		zlAjTypeStr = _this.switchZlAjNewOrOld($('#anjianType').val());
+				  	  }
+				  	  if(opts == 'zlTaskOpts'){//从去完成任务里面进来
 				  		zlTypeTxt = parent.globalTaskOpts.zlType;
 				  	  }else{
 				  		zlTypeTxt = _this.switchZlTypeCHN($('#zlTypeInp').val());
 				  	  }
-				      obj.preview(function(index, file, result){
+				      obj.preview(function(index, file, result){ 
 				      	var files = that.files = obj.pushFile(); //将每次选择的文件追加到文件队列
 				      	var fileNames = file.name.split('.')[0]; 
 						var fileType = file.name.substr(file.name.lastIndexOf('.'));
@@ -102,6 +115,7 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 			    		}
 				       var tr = $(['<tr class="hasSelTr noUpDone" id="upload-'+ index +'">',
 						'<td>'+ file.name +'</td>',
+						opts == 'addEditZlOpts' ? '<td><div class="ajFjTypeTxt layui-form">'+ zlAjTypeStr +'</div></td>' : '',
 						opts == 'batchImp_tzs' || opts == 'batchImp_fee' ? '' : '<td><div class="zlTypeTxt layui-form">'+ zlTypeTxt +'</div></td>',
 						'<td>'+ (file.size/1014).toFixed(1) +'kb</td>',
 						'<td>等待上传</td>',
@@ -159,18 +173,74 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 				       form.render();
 				  	});
 				     if(opts != 'batchImp_tzs' || opts != 'zlTaskOpts' || opts == 'batchImp_fee'){
-				    	 form.on('select(selZlTypeTxt)', function(data){
-				    		 var value = data.value,parent = $(this).parent().parent().parent(),topParent = $(this).parents('tr');
-				    		 parent.find('.zlTypeInpTarg').val(value);
-				    		 if(value == 'fm'){
-				    			 topParent.find('.uploadInpHid').removeClass('xxPathInp').addClass('fmPathInp');
-				    		 }else if(value == 'xx'){
-				    			 topParent.find('.uploadInpHid').removeClass('fmPathInp').addClass('xxPathInp');
+				    	 form.on('select(selAjTypeFilter)', function(data){//选择附件类型
+				    		 var value = data.value,tmpAjTypeVal = $('#anjianType').val(),tmpZlTypeVal = $('#zlTypeInp').val(),parent = $(this).parent().parent().parent();
+				    		 var parentNextEle = $(this).parents('tr').find('.zlTypeTxt'),topParent = $(this).parents('tr');
+				    		 parent.find('.ajFjTypeInp').val(value);
+				    		 if(value == ''){
+				    			 topParent.find('.uploadInpHid').removeClass('ajHtPathInp ajJsPathInp ajDgPathInp fmPathInp xxPathInp xxPathInp_dg fmPathInp_dg');
+				    		 }else if(value == 'ht'){//当附件类型是合同文件/*并且专利类型是发明+新型时无需指派专利类型*/
+				    			 parentNextEle.html('<p class="noZlTypeTxt">无需指派专利类型</p>');
+				    			 topParent.find('.uploadInpHid').removeClass('ajJsPathInp ajDgPathInp fmPathInp xxPathInp xxPathInp_dg fmPathInp_dg').addClass('ajHtPathInp');
 				    		 }else{
-				    			 topParent.find('.uploadInpHid').removeClass('fmPathInp xxPathInp');
+				    			 //必须指定了专利类型才能重新创建
+				    			 if(tmpZlTypeVal != ''){
+				    				 var zlTypeTxt = _this.switchZlTypeCHN(tmpZlTypeVal);
+					    			 parentNextEle.html(zlTypeTxt);
+				    				 form.render();
+				    				 /*if(tmpZlTypeVal == 'fmxx'){
+				    					 //01：新案时 技术底稿采用fmPath和xxPath 合同类型不变
+				    					 //02：旧案时：技术底稿采用fmPath和xxPath 合同不变  定稿文件采用ajUploadDg_fm ajUploadDg_xx
+				    					
+				    					 if(tmpAjTypeVal == 'new'){
+				    						 alert("nihao")
+				    						 topParent.find('.uploadInpHid').removeClass('ajHtPathInp ajDgPathInp ajJsPathInp');
+				    					 }
+				    				 }else{
+				    					 
+				    				 }*/
+				    				 if(value == 'js'){//技术底稿
+				    					 topParent.find('.uploadInpHid').removeClass('ajHtPathInp ajDgPathInp xxPathInp_dg fmPathInp_dg').addClass('ajJsPathInp');
+					    			 }else{//定稿文件(旧案)
+					    				 topParent.find('.uploadInpHid').removeClass('ajHtPathInp ajJsPathInp xxPathInp fmPathInp').addClass('ajDgPathInp');
+					    			 } 
+				    				 
+				    			 }else{
+				    				 parentNextEle.html('');
+				    				 if(value == 'js'){
+				    					 topParent.find('.uploadInpHid').removeClass('ajHtPathInp ajDgPathInp').addClass('ajJsPathInp');
+				    				 }else if(value == 'dg'){
+				    					 topParent.find('.uploadInpHid').removeClass('ajHtPathInp ajJsPathInp').addClass('ajDgPathInp');
+				    				 }else if(value == ''){
+				    					 topParent.find('.uploadInpHid').removeClass('ajHtPathInp ajJsPathInp ajDgPathInp');
+				    				 }
+				    			 }
 				    		 }
 				    	 });
-				     } 
+				    	 form.on('select(selZlTypeTxt)', function(data){//根据专利类型发明+新型进行专利指派
+				    		 var value = data.value,parent = $(this).parent().parent().parent(),topParent = $(this).parents('tr');
+				    		 parent.find('.zlTypeInpTarg').val(value);
+				    		 var prevAjTypeInp = $(this).parents('tr').find('.ajFjTypeInp');
+				    		 //alert(prevAjTypeInp.val())
+				    		 if(prevAjTypeInp.val() != 'dg'){
+				    			 if(value == 'fm'){
+					    			 topParent.find('.uploadInpHid').removeClass('xxPathInp').addClass('fmPathInp');
+					    		 }else if(value == 'xx'){
+					    			 topParent.find('.uploadInpHid').removeClass('fmPathInp').addClass('xxPathInp');
+					    		 }else{
+					    			 topParent.find('.uploadInpHid').removeClass('fmPathInp xxPathInp');
+					    		 } 
+				    		 }else{//旧案下定稿文件
+				    			 if(value == 'fm'){
+					    			 topParent.find('.uploadInpHid').removeClass('xxPathInp_dg').addClass('fmPathInp_dg');
+					    		 }else if(value == 'xx'){
+					    			 topParent.find('.uploadInpHid').removeClass('fmPathInp_dg').addClass('xxPathInp_dg');
+					    		 }else{
+					    			 topParent.find('.uploadInpHid').removeClass('fmPathInp_dg xxPathInp_dg');
+					    		 } 
+				    		 }
+				    	 });
+				     }
 				  }
 				  ,done: function(res, index, upload){
 					layer.closeAll('loading');
@@ -191,6 +261,10 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 							  parent.parent.$('body').find('.loadingWrap').html(_this.data.upSuccTips);
 							  _this.showTime(3,parent.parent.$('body').find('#countNum_up'),opts,'',false);
 						  }
+				      }else if(opts == 'addEditZlOpts'){//增加 编辑专利下增加附件类型
+				    	  tds.eq(4).html('<span style="color: #5FB878;">上传成功</span>');
+					      tds.eq(6).find('.uploadInpHid').attr('name','hasUpSuccInp');
+					      tds.eq(6).find('.uploadInpHid').val(res.data[0].src);
 				      }else{
 				    	  tds.eq(3).html('<span style="color: #5FB878;">上传成功</span>');
 					      tds.eq(5).find('.uploadInpHid').attr('name','hasUpSuccInp');
