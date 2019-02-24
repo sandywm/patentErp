@@ -74,11 +74,11 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and SUBSTR(zl.ajAddDate,1,7) >= '"+sDate+"' and SUBSTR(zl.ajAddDate,1,7) <= '"+eDate+"'";
 		}
 		if(lqStatus.equals(0)){
-			hql += " and zl.zxUserId = 0";
+			hql += " and (zl.zxUserId = 0 and zl.ajType1 = 'new') or (zl.tzsUserId = 0 and zl.ajType1 = 'old')";//可能是新案，也可能是旧案
 		}else if(lqStatus.equals(1)){
-			hql += " and zl.zxUserId > 0";
-		}else if(lqStatus.equals(2)){
-			hql += " and zl.zxUserId = 0 and zl.tzsUserId > 0";
+			hql += " and zl.zxUserId > 0 and zl.ajStatus >= 3.0";//新案的话3.0时流程分配完成，旧案时是7.0
+		}else if(lqStatus.equals(2)){//撰写任务领取只针对新案
+			hql += " and zl.zxUserId = 0 and zl.tzsUserId > 0 and zl.ajType1 = 'new'";
 		}else if(lqStatus.equals(3)){
 			hql += " and zl.ajAddUserId = "+ajAddUserId;
 		}
@@ -121,11 +121,11 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and SUBSTR(zl.ajAddDate,1,7) >= '"+sDate+"' and SUBSTR(zl.ajAddDate,1,7) <= '"+eDate+"'";
 		}
 		if(lqStatus.equals(0)){
-			hql += " and zl.zxUserId = 0";
+			hql += " and (zl.zxUserId = 0 and zl.ajType1 = 'new') or (zl.tzsUserId = 0 and zl.ajType1 = 'old')";//可能是新案，也可能是旧案
 		}else if(lqStatus.equals(1)){
-			hql += " and zl.zxUserId > 0";
-		}else if(lqStatus.equals(2)){
-			hql += " and zl.zxUserId = 0 and zl.tzsUserId > 0";
+			hql += " and zl.zxUserId > 0 and zl.ajStatus >= 3.0";//新案的话3.0时流程分配完成，旧案时是7.0
+		}else if(lqStatus.equals(2)){//撰写任务领取只针对新案
+			hql += " and zl.zxUserId = 0 and zl.tzsUserId > 0 and zl.ajType1 = 'new'";
 		}else if(lqStatus.equals(3)){
 			hql += " and zl.ajAddUserId = "+ajAddUserId;
 		}else if(lqStatus.equals(4)){
