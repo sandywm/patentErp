@@ -1185,7 +1185,7 @@ public class ZlMainAction extends DispatchAction {
 								map_file.put("downFilePath", upFileArr[i]);
 								list_file_ht.add(list_file_ht);
 							}
-							map.put("upFileHt", list_file_dg);
+							map.put("upFileHt", list_file_ht);
 						}
 						List<ZlajFeeInfoTb> fList = zfm.listInfoByOpt(zlId, 90);//代理费
 						if(fList.size() > 0){
