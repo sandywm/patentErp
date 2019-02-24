@@ -539,6 +539,7 @@
 								var dlFeeListDivLen = $('#dlFeeListWrap div').length,
 									dlFeeList_xxLen = $('#dlFeeListWrap_xx div').length,
 									isDlFeeRightFlag = false;//检测代理费是否填写正确
+									fmxxZlNumStr = fmZlNumInpVal + ',' + xxZlNumInpVal;
 								if(remindInpVal == ''){
 									layer.msg('请选择提醒方式', {icon:5,anim:6,time:1500});
 								}else if(dlFeeListDivLen == 0 && zlTypeInpVal != 'fmxx'){
@@ -728,7 +729,7 @@
 															ajDgPathVal = tmpAjDgPath.join(',');
 															//旧案下单个类型 ajUpload ajUploadHt ajUploadDg
 															var field = {ajTitle:escape(ajTitleVal),
-																	ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,feeRate:rateInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+																	ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,feeRate:rateInpVal,zlNoGf:ajSqZlNumVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 																	ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 																	yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 																	ajUpload:ajJsPathVal,ajUploadHt:ajHtPathVal,ajUploadDg:ajDgPathVal,cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee:globalDlFee};
@@ -773,7 +774,7 @@
 																xxPathVal = tmpXxPath.join(',');
 																console.log("旧案下发明+新型++==")
 																var field = {ajTitle:escape(ajTitleVal),
-																	ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,feeRate:rateInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+																	ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,feeRate:rateInpVal,ajFieldId:ajFieldIdVal,zlNoGf:fmxxZlNumStr,ajSqAddress:escape(ajSqAddressVal),
 																	ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 																	yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 																	fmPath:fmPathVal,xxPath:xxPathVal,ajUploadHt:ajHtPathVal,ajUploadDg_fm:ajDgPathVal_fm,ajUploadDg_xx:ajDgPathVal_xx,cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee_fm:globalDlFee_fm,dlFee_xx:globalDlFee_xx};
