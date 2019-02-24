@@ -1190,6 +1190,7 @@ public class ZlMainAction extends DispatchAction {
 						List<ZlajFeeInfoTb> fList = zfm.listInfoByOpt(zlId, 90);//代理费
 						if(fList.size() > 0){
 							Integer feeTxType = fList.get(0).getFeeTxType();
+							Integer payStatus = 0;//0:未交，1：已交包括未交完
 							List<Object> list_dlf = new ArrayList<Object>();
 							for(Iterator<ZlajFeeInfoTb> it = fList.iterator() ; it.hasNext();){
 								ZlajFeeInfoTb fee = it.next();
@@ -1201,10 +1202,18 @@ public class ZlMainAction extends DispatchAction {
 									map_dlf.put("feeTxOpt", fee.getTzsTx());
 								}
 								map_dlf.put("feePrice", fee.getFeePrice());
+								if(fee.getBackFee() > 0){
+									payStatus++;
+								}
 								list_dlf.add(map_dlf);
 							}
 							map.put("feeTxType", feeTxType);
 							map.put("feeTxInfo", list_dlf);
+							if(payStatus.equals(1)){
+								map.put("feeTxFlag", true);
+							}else{
+								map.put("feeTxFlag", false);
+							}
 						}
 					}else if(opt.equals("lcfz")){//流程负责人信息
 						map = new HashMap<String,Object>();
@@ -2975,7 +2984,7 @@ public class ZlMainAction extends DispatchAction {
 						String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
 						String cpyDate = CommonTools.getFinalStr("cpyDate", request);//代理机构从分配到定稿提交的期限(修改定稿提交之前的最后一个未完成流程的期限)
 						Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减（不建议填写,最好是导入受理通知书）
-						String dlFee_inp = CommonTools.getFinalStr("dlFee", request);//代理费（时间,费用:时间,费用）或者是通知书名称,费用：通知书名称,费用
+						String dlFee_inp = CommonTools.getFinalStr("dlFee", request);//代理费（时间,时间:费用,费用）或者是通知书名称,费用：通知书名称,通知书名称:费用,费用
 						String ajType1 = CommonTools.getFinalStr("ajType1", request);//案件类型(new:新案,old:旧案)
 						String zlNoGf = "";
 						if(ajType1.equals("old")){//只有旧案的时候才能编辑专利号
