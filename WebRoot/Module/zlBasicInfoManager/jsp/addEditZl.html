@@ -607,13 +607,13 @@
 											if($('.deleteBtn').length == 0){//未传附件
 												if(zlTypeInpVal != 'fmxx'){
 													var field = {ajTitle:escape(ajTitleVal),
-															ajType:zlTypeInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+															ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 															ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 															yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 															ajUpload:'',ajUploadHt:'',cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee:globalDlFee};
 												}else{//发明+新型
 													var field = {ajTitle:escape(ajTitleVal),
-															ajType:zlTypeInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+															ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 															ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 															yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),           
 															fmPath:'',xxPath:'',ajUploadHt:'',cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee_fm:globalDlFee_fm,dlFee_xx:globalDlFee_xx};
@@ -686,7 +686,7 @@
 														//新案下单个类型 ajUpload ajUploadHt
 														//var field = {ajUpload:ajJsPathVal,ajUploadHt:ajHtPathVal};
 														var field = {ajTitle:escape(ajTitleVal),
-															ajType:zlTypeInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+															ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 															ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 															yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 															ajUpload:ajJsPathVal,ajUploadHt:ajHtPathVal,cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee:globalDlFee};
@@ -705,7 +705,7 @@
 															});
 															xxPathVal = tmpXxPath.join(',');
 															var field = {ajTitle:escape(ajTitleVal),
-																	ajType:zlTypeInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+																	ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 																	ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 																	yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 																	fmPath:fmPathVal,xxPath:xxPathVal,ajUploadHt:ajHtPathVal,cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee_fm:globalDlFee_fm,dlFee_xx:globalDlFee_xx};
@@ -728,7 +728,7 @@
 															ajDgPathVal = tmpAjDgPath.join(',');
 															//旧案下单个类型 ajUpload ajUploadHt ajUploadDg
 															var field = {ajTitle:escape(ajTitleVal),
-																	ajType:zlTypeInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+																	ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 																	ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 																	yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 																	ajUpload:ajJsPathVal,ajUploadHt:ajHtPathVal,ajUploadDg:ajDgPathVal,cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee:globalDlFee};
@@ -773,7 +773,7 @@
 																xxPathVal = tmpXxPath.join(',');
 																console.log("旧案下发明+新型++==")
 																var field = {ajTitle:escape(ajTitleVal),
-																	ajType:zlTypeInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+																	ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 																	ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 																	yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 																	fmPath:fmPathVal,xxPath:xxPathVal,ajUploadHt:ajHtPathVal,ajUploadDg_fm:ajDgPathVal_fm,ajUploadDg_xx:ajDgPathVal_xx,cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee_fm:globalDlFee_fm,dlFee_xx:globalDlFee_xx};
