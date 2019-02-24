@@ -49,6 +49,7 @@ public interface ZlajMainInfoManager {
 	 * @param ajType1 案件类型一
 	 * @param ajUploadDg 定稿文件(多个逗号隔开)
 	 * @param ajUploadHt 合同文件(多个逗号隔开)
+	 * @param payUserInfo 付款方
 	 * @return
 	 * @throws WEBException
 	 */
@@ -58,7 +59,7 @@ public interface ZlajMainInfoManager {
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId,Integer zlLevel,
-			String ajType1,String ajUploadDg,String ajUploadHt) throws WEBException;
+			String ajType1,String ajUploadDg,String ajUploadHt,String payUserInfo) throws WEBException;
 	
 	/**
 	 * 根据条件分页获取专利列表(ID降序)

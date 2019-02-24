@@ -221,6 +221,11 @@
                 <comment>专利难易度（1:简单,2:困难,3：很难）</comment>
             </column>
         </property>
+        <property name="payUserInfo" type="java.lang.String">
+            <column name="pay_user_info" length="50">
+                <comment>付款方</comment>
+            </column>
+        </property>
         <set name="zlajLcInfoTbs" inverse="true">
             <key>
                 <column name="aj_id" not-null="true">

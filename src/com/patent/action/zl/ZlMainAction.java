@@ -1067,7 +1067,7 @@ public class ZlMainAction extends DispatchAction {
 							}
 						}
 						map.put("pubZlName", pubZlName);//增加的领取的专利任务名称
-						map.put("ajFjInfo", zl.getAjFjInfo());
+						map.put("ajFjInfo", zl.getAjFjInfo());//费减
 						map.put("ajYxqDetail", zl.getAjYxqDetail());//格式为申请专利号,申请地区,申请日期:申请专利号,申请地区,申请日期........
 						//获取当前专利类型的额外要求
 						String yqIdStr = zl.getAjEwyqId();
@@ -1152,6 +1152,59 @@ public class ZlMainAction extends DispatchAction {
 							map.put("dlFee", dlfList.get(0).getFeePrice());
 						}else{
 							map.put("dlFee", 0);
+						}
+						map.put("ajType1", zl.getAjType1());
+						map.put("payUserInfo", zl.getPayUserInfo());
+						String upFileDg = zl.getAjUploadDg();
+						String upFileHt = zl.getAjUploadHt();
+						List<Object> list_file_dg = new ArrayList<Object>();
+						if(!upFileDg.equals("")){
+							String[] upFileArr = upFileDg.split(",");
+							for(Integer i = 0 ; i < upFileArr.length ; i++){
+								upFileName = upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
+								upSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upFileArr[i]);
+								Map<String,String> map_file = new HashMap<String,String>();
+								map_file.put("upPath", upFileArr[i]);
+								map_file.put("fileName", upFileName);
+								map_file.put("fileSize", upSize);
+								map_file.put("downFilePath", upFileArr[i]);
+								list_file_dg.add(map_file);
+							}
+							map.put("upFileDg", list_file_dg);
+						}
+						List<Object> list_file_ht = new ArrayList<Object>();
+						if(!upFileHt.equals("")){
+							String[] upFileArr = upFileHt.split(",");
+							for(Integer i = 0 ; i < upFileArr.length ; i++){
+								upFileName = upFileArr[i].substring((upFileArr[i].lastIndexOf("\\") + 1));
+								upSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upFileArr[i]);
+								Map<String,String> map_file = new HashMap<String,String>();
+								map_file.put("upPath", upFileArr[i]);
+								map_file.put("fileName", upFileName);
+								map_file.put("fileSize", upSize);
+								map_file.put("downFilePath", upFileArr[i]);
+								list_file_ht.add(list_file_ht);
+							}
+							map.put("upFileHt", list_file_dg);
+						}
+						List<ZlajFeeInfoTb> fList = zfm.listInfoByOpt(zlId, 90);//代理费
+						if(fList.size() > 0){
+							Integer feeTxType = fList.get(0).getFeeTxType();
+							List<Object> list_dlf = new ArrayList<Object>();
+							for(Iterator<ZlajFeeInfoTb> it = fList.iterator() ; it.hasNext();){
+								ZlajFeeInfoTb fee = it.next();
+								Map<String,Object> map_dlf = new HashMap<String,Object>();
+								map_dlf.put("dlfId", fee.getId());
+								if(feeTxType.equals(0)){
+									map_dlf.put("feeTxOpt", fee.getFeeEndDateGf());
+								}else{
+									map_dlf.put("feeTxOpt", fee.getTzsTx());
+								}
+								map_dlf.put("feePrice", fee.getFeePrice());
+								list_dlf.add(map_dlf);
+							}
+							map.put("feeTxType", feeTxType);
+							map.put("feeTxInfo", list_dlf);
 						}
 					}else if(opt.equals("lcfz")){//流程负责人信息
 						map = new HashMap<String,Object>();
@@ -2392,6 +2445,7 @@ public class ZlMainAction extends DispatchAction {
 						Integer feeTxType = CommonTools.getFinalInteger("feeTxType", request);//费用提醒方式(0:时间提醒,1:事务提醒)--针对代理费
 						String ajUploadDg = CommonTools.getFinalStr("ajUploadDg", request);//定稿文件
 						String ajUploadHt = CommonTools.getFinalStr("ajUploadHt", request);//合同文件(公用)
+						String payUserInfo = Transcode.unescape_new("payUserInfo", request);//付款方
 						String zlNo = "2.0";
 						String zlStatusChi = "流程人员分配";
 						String zlNoFm = "";
@@ -2464,7 +2518,7 @@ public class ZlMainAction extends DispatchAction {
 									}
 									Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf_curr, ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, 
 											yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, zlNo, zlStatusChi, 0,0,pubZlId,0,0,0,0,0,0,0,cpyId,
-											currLoginUserId,zlLevel,ajType1,ajUploadDg,ajUploadHt);
+											currLoginUserId,zlLevel,ajType1,ajUploadDg,ajUploadHt,payUserInfo);
 									if(zlId > 0){
 										if(ajTypeArr.length == 2){
 											if(zlId_1.equals(0)){

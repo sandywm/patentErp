@@ -58,6 +58,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 	private String ajType1;
 	private String ajUploadDg;
 	private String ajUploadHt;
+	private String payUserInfo;
 	private Set<ZlajLcInfoTb> zlajLcInfoTbs = new HashSet<ZlajLcInfoTb>();
 	private Set<ZlajFjInfoTb> zlajFjInfoTbs = new HashSet<ZlajFjInfoTb>();
 	private Set<ZlajFeeInfoTb> zlajFeeInfoTbs = new HashSet<ZlajFeeInfoTb>();
@@ -76,7 +77,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajApplyDate, String ajStatus, String ajStatusChi,Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
 			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer ajAddUserId,Integer zlLevel,
-			String ajType1,String ajUploadDg,String ajUploadHt) {
+			String ajType1,String ajUploadDg,String ajUploadHt,String payUserInfo) {
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
 		this.ajNoQt = ajNoQt;
@@ -119,7 +120,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajType1 = ajType1;
 		this.ajUploadDg = ajUploadDg;
 		this.ajUploadHt = ajUploadHt;
-		
+		this.payUserInfo = payUserInfo;
 	}
 
 	/** full constructor */
@@ -130,7 +131,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 			String ajApplyDate, String ajStatus, String ajStatusChi,Integer ajFaId,Integer ajStopStatus,Integer pubZlId,String ajStopDate,
 			String ajStopUserType,String ajStopUser,String ajAddDate,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer ajAddUserId,Integer zlLevel,
-			String ajType1,String ajUploadDg,String ajUploadHt) {
+			String ajType1,String ajUploadDg,String ajUploadHt,String payUserInfo) {
 		this.id = id;
 		this.cpyInfoTb = cpyInfoTb;
 		this.ajNo = ajNo;
@@ -174,6 +175,7 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajType1 = ajType1;
 		this.ajUploadDg = ajUploadDg;
 		this.ajUploadHt = ajUploadHt;
+		this.payUserInfo = payUserInfo;
 	}
 
 	// Property accessors
@@ -546,5 +548,12 @@ public class ZlajMainInfoTb implements java.io.Serializable {
 		this.ajUploadHt = ajUploadHt;
 	}
 
+	public String getPayUserInfo() {
+		return payUserInfo;
+	}
+
+	public void setPayUserInfo(String payUserInfo) {
+		this.payUserInfo = payUserInfo;
+	}
 
 }

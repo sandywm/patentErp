@@ -426,13 +426,13 @@ public class ReadZipFile {
 //		readZipFile_new("d:\\tzs.zip","","");
 //		ReadZipFile.exportExcel();
 //		ReadZipFile.readXml("");
-		String aa = "2018-12-12";
-		String bb = CurrentTime.getFinalDate(aa,15);
-		String cc = CurrentTime.getFinalDate_1(bb, 2);
-		String bbb = CurrentTime.getFinalDate_1(aa, 2);
-		String ccc = CurrentTime.getFinalDate(bbb,15);
-		System.out.println(bb+"     "+cc);
-		System.out.println(bbb+"     "+ccc);
+		String aa = "201721484432X";
+//		String bb = CurrentTime.getFinalDate(aa,15);
+//		String cc = CurrentTime.getFinalDate_1(bb, 2);
+//		String bbb = CurrentTime.getFinalDate_1(aa, 2);
+//		String ccc = CurrentTime.getFinalDate(bbb,15);
+		
+		System.out.println(aa.substring(4, 5));
 	}
 
 	public static void readXml(String filePath){

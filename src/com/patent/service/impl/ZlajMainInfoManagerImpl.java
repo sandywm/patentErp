@@ -27,7 +27,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId, Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId,Integer zlLevel,
-			String ajType1,String ajUploadDg,String ajUploadHt)
+			String ajType1,String ajUploadDg,String ajUploadHt,String payUserInfo)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -38,7 +38,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			ZlajMainInfoTb zl = new ZlajMainInfoTb(cDao.get(sess, cpyId), ajNo, ajNoQt, ajNoGf,
 					ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, ajYxqDetail,
 					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, ajStatusChi, 0,0,pubZlId,"","","",CurrentTime.getStringDate(),checkUserId,zxUserId,cusCheckUserId,
-					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId,zlLevel,ajType1,ajUploadDg,ajUploadHt);
+					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId,zlLevel,ajType1,ajUploadDg,ajUploadHt,payUserInfo);
 			zlDao.save(sess, zl);
 			tran.commit();
 			return zl.getId();
