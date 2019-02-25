@@ -2549,9 +2549,10 @@ public class ZlMainAction extends DispatchAction {
 															cpyId, 1, sDate, "", "", 0, "", 0, "", "", "", "", "",feeTxType,"");
 												}
 											}else{//事务提醒
-												for(int j = 0 ; j < dlFeeArr.length ; j++){
+												String[] feeArr = dlFeeArr[1].split(",");
+												for(int j = 0 ; j < feeArr.length ; j++){
 													String tzsTx = dlFeeArr[0].split(",")[j];
-													fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(dlFeeArr[1].split(",")[j]), ajFjInfo, "", "", "", 1, 
+													fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(feeArr[j]), ajFjInfo, "", "", "", 1, 
 															cpyId, 1, sDate, "", "", 0, "", 0, "", "", "", "", "",feeTxType,tzsTx);
 												}
 											}
