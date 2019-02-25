@@ -2985,7 +2985,7 @@ public class ZlMainAction extends DispatchAction {
 						String ajRemark = Transcode.unescape_new("ajRemark", request);
 						String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
 						String cpyDate = CommonTools.getFinalStr("cpyDate", request);//代理机构从分配到定稿提交的期限(修改定稿提交之前的最后一个未完成流程的期限)
-						Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减（不建议填写,最好是导入受理通知书）
+						Double ajFjInfo = CommonTools.getFinalDouble("feeRate", request);//费减（不建议填写,最好是导入受理通知书）
 						String dlFee_inp = CommonTools.getFinalStr("dlFee", request);//代理费（时间,时间:费用,费用）或者是通知书名称,费用：通知书名称,通知书名称:费用,费用
 						String ajType1 = CommonTools.getFinalStr("ajType1", request);//案件类型(new:新案,old:旧案)
 						Integer feeTxType = CommonTools.getFinalInteger("feeTxType", request);//费用提醒方式(0:时间提醒,1:事务提醒)--针对代理费
