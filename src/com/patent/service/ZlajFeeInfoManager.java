@@ -395,4 +395,14 @@ public interface ZlajFeeInfoManager{
 	 * @throws WEBException
 	 */
 	List<FeeTypeInfoTb> listInfoByzlType(String zlType)throws WEBException ;
+	
+	/**
+	 * 删除指定专利的所有代理费用
+	 * @description
+	 * @author Administrator
+	 * @date 2019-2-24 下午03:24:59
+	 * @param feeIdArr
+	 * @throws WEBException
+	 */
+	void delAllDlfeeByFeeIdArr(String feeIdArr)throws WEBException ;
 }

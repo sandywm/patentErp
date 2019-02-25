@@ -2446,9 +2446,8 @@ public class ZlMainAction extends DispatchAction {
 						String ajEwyqId = CommonTools.getFinalStr("ajEwyqId", request);
 						String cpyDate = CommonTools.getFinalStr("cpyDate", request);//内部期限(前期资料提交完成时间)
 						String sDate = CurrentTime.getStringDate();//开始日期
-						Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减（不建议填写,最好是导入受理通知书）
+						Double ajFjInfo = CommonTools.getFinalDouble("feeRate", request);//费减（不建议填写,最好是导入受理通知书）
 						String dlFee = CommonTools.getFinalStr("dlFee", request);//代理费情况（时间,时间:费用,费用）或者是通知书名称,通知书名称:费用,费用
-						Double feeRate = CommonTools.getFinalDouble("feeRate", request);//费减-旧案才有
 						Integer zlLevel = CommonTools.getFinalInteger("zlLevel", request);//1,2,3
 						String ajType1 = CommonTools.getFinalStr("ajType1", request);//案件类型(new:新案,old:旧案)
 						Integer feeTxType = CommonTools.getFinalInteger("feeTxType", request);//费用提醒方式(0:时间提醒,1:事务提醒)--针对代理费
@@ -2477,6 +2476,8 @@ public class ZlMainAction extends DispatchAction {
 									}
 								}
 							}else{
+								zlNoFm = zlNoGf;
+								zlNoXx = zlNoGf;
 								if(zlm.listSpecInfoByZlNo(zlNoGf).size() > 0){
 									msg = "exist";
 								}else{
@@ -2489,7 +2490,7 @@ public class ZlMainAction extends DispatchAction {
 							Integer zlId_2 = 0;
 							String ajApplyDate = "";
 							String[] ajTypeArr = ajType.split(",");
-							String zlNoGf_curr = "";
+							String zlNoGf_curr = zlNoGf;
 							for(Integer i = 0 ; i < ajTypeArr.length ; i++){
 								ajType = ajTypeArr[i];
 								if(cpyId > 0 && !ajType.equals("")){
@@ -2544,13 +2545,13 @@ public class ZlMainAction extends DispatchAction {
 												String[] jfDateArr = dlFeeArr[0].split(",");
 												String[] feeArr = dlFeeArr[1].split(",");
 												for(int j = 0 ; j < jfDateArr.length ; j++){
-													fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(feeArr[j]), feeRate, jfDateArr[j], jfDateArr[j], "", 1, 
+													fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(feeArr[j]), ajFjInfo, jfDateArr[j], jfDateArr[j], "", 1, 
 															cpyId, 1, sDate, "", "", 0, "", 0, "", "", "", "", "",feeTxType,"");
 												}
 											}else{//事务提醒
 												for(int j = 0 ; j < dlFeeArr.length ; j++){
 													String tzsTx = dlFeeArr[0].split(",")[j];
-													fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(dlFeeArr[1].split(",")[j]), feeRate, "", "", "", 1, 
+													fm.addZLFee(zlId, currLoginUserId, 90, Double.parseDouble(dlFeeArr[1].split(",")[j]), ajFjInfo, "", "", "", 1, 
 															cpyId, 1, sDate, "", "", 0, "", 0, "", "", "", "", "",feeTxType,tzsTx);
 												}
 											}
@@ -2826,6 +2827,7 @@ public class ZlMainAction extends DispatchAction {
 		Integer currUserId = this.getLoginUserId(request);
 		String ajNoQt = "",ajNo = "";
 		Integer pubId = CommonTools.getFinalInteger("pubZlId", request);
+		String currDate = CurrentTime.getStringDate();
 		if(this.getLoginType(request).equals("cpyUser")){
 			//判断权限
 			//获取当前用户是否有修改权限
@@ -2986,6 +2988,8 @@ public class ZlMainAction extends DispatchAction {
 						Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减（不建议填写,最好是导入受理通知书）
 						String dlFee_inp = CommonTools.getFinalStr("dlFee", request);//代理费（时间,时间:费用,费用）或者是通知书名称,费用：通知书名称,通知书名称:费用,费用
 						String ajType1 = CommonTools.getFinalStr("ajType1", request);//案件类型(new:新案,old:旧案)
+						Integer feeTxType = CommonTools.getFinalInteger("feeTxType", request);//费用提醒方式(0:时间提醒,1:事务提醒)--针对代理费
+						String payUserInfo = Transcode.unescape_new("payUserInfo", request);//付款方
 						String zlNoGf = "";
 						if(ajType1.equals("old")){//只有旧案的时候才能编辑专利号
 							zlNoGf = CommonTools.getFinalStr("zlNoGf", request).replace(".", "");//统一去掉专利号带点的
@@ -3002,9 +3006,39 @@ public class ZlMainAction extends DispatchAction {
 								upUserId = currUserId;
 								upFileDate = CurrentTime.getStringDate();
 							}
-							zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt, pubId, ajSqAddress, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, 
-									jsLxrId,ajFjInfo,yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0,ajUploadDg,ajUploadHt);
+							zlm.updateBasicInfoById(zlId, ajTitle, ajNo, ajNoQt,zlNoGf, pubId, ajSqAddress, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, 
+									jsLxrId,ajFjInfo,yxqDetail, ajUpload, ajRemark, ajEwyqId, "", 0,ajUploadDg,ajUploadHt,payUserInfo);
 							//修改代理费用和类型
+							//先删除代理费用
+							List<ZlajFeeInfoTb> dlfList =  fm.listInfoByOpt(zlId, 90);
+							if(dlfList.size() > 0){
+								String dlfeeArr = "";
+								for(Iterator<ZlajFeeInfoTb> it = dlfList.iterator() ; it.hasNext();){
+									ZlajFeeInfoTb dlf = it.next();
+									dlfeeArr += dlf.getId() + ",";
+								}
+								if(!dlfeeArr.equals("")){
+									dlfeeArr = dlfeeArr.substring(0, dlfeeArr.length() - 1);
+									fm.delAllDlfeeByFeeIdArr(dlfeeArr);
+								}
+							}
+							String[] dlFeeArr = dlFee_inp.split(":");
+							if(dlFeeArr.length == 2){
+								if(feeTxType.equals(0)){//时间段提醒
+									String[] jfDateArr = dlFeeArr[0].split(",");
+									String[] feeArr = dlFeeArr[1].split(",");
+									for(int j = 0 ; j < jfDateArr.length ; j++){
+										fm.addZLFee(zlId, currUserId, 90, Double.parseDouble(feeArr[j]), 0.0, jfDateArr[j], jfDateArr[j], "", 1, 
+												cpyId, 1, currDate, "", "", 0, "", 0, "", "", "", "", "",feeTxType,"");
+									}
+								}else{//事务提醒
+									for(int j = 0 ; j < dlFeeArr.length ; j++){
+										String tzsTx = dlFeeArr[0].split(",")[j];
+										fm.addZLFee(zlId, currUserId, 90, Double.parseDouble(dlFeeArr[1].split(",")[j]), 0.0, "", "", "", 1, 
+												cpyId, 1, currDate, "", "", 0, "", 0, "", "", "", "", "",feeTxType,tzsTx);
+									}
+								}
+							}
 							List<ZlajLcMxInfoTb> mxList = mxm.listSpecInfoInfoByOpt(zlId, "专利案件录入");
 							if(mxList.size() > 0){
 								ZlajLcMxInfoTb mx = mxList.get(0);

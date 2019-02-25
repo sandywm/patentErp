@@ -588,4 +588,29 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			HibernateUtil.closeSession();
 		}
 	}
+
+	@Override
+	public void delAllDlfeeByFeeIdArr(String feeIdArr)throws WEBException{
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			if(!feeIdArr.equals("")){
+				Session sess = HibernateUtil.currentSession();
+				tran = sess.beginTransaction();
+				String[] feeIdArray = feeIdArr.split(",");
+				for(int i = 0 ; i < feeIdArray.length ; i++){
+					fDao.delete(sess, Integer.parseInt(feeIdArray[i]));
+				}
+				sess.flush();
+				sess.clear();
+				tran.commit();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("删除指定专利下的所有代理费用时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
 }

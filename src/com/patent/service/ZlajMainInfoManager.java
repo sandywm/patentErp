@@ -187,12 +187,13 @@ public interface ZlajMainInfoManager {
 	 * @param faId 分案编号（0不修改）
 	 * @param ajUploadDg 定稿文件(多个逗号隔开)
 	 * @param ajUploadHt 合同文件(多个逗号隔开)
+	 * @param payUserInfo 付款方
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateBasicInfoById(Integer zlId,String zlTitle,String zlNo,String zlNoQt,Integer pubId, String sqAddress,String zlType,String ajFieldId,
+	boolean updateBasicInfoById(Integer zlId,String zlTitle,String zlNo,String zlNoQt,String zlNoGf,Integer pubId, String sqAddress,String zlType,String ajFieldId,
 			String sqrId,String sqrName,String fmrId,String lxrId,String jsLxrId,Double ajFjInfo,String yxqDetail,String upFile,String remark,String ewyq,
-			String applyDate,Integer faId,String upFileDg,String upFileHt) throws WEBException;
+			String applyDate,Integer faId,String upFileDg,String upFileHt,String payUserInfo) throws WEBException;
 	
 	/**
 	 * 更新专利申请/专利号

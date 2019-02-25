@@ -174,10 +174,10 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 
 	@Override
 	public boolean updateBasicInfoById(Integer zlId, String zlTitle,String zlNo,
-			String zlNoQt,Integer pubId,String sqAddress, String zlType,
+			String zlNoQt,String zlNoGf,Integer pubId,String sqAddress, String zlType,
 			String ajFieldId, String ajSqrId,String sqrName, String fmrId, String lxrId,String jsLxrId,Double ajFjInfo,
 			String yxqDetail, String upFile, String remark, String ewyq,
-			String applyDate, Integer faId,String upFileDg,String upFileHt) throws WEBException {
+			String applyDate, Integer faId,String upFileDg,String upFileHt,String payUserInfo) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
@@ -191,6 +191,9 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 				}
 				if(!zlNoQt.equals("")){
 					zl.setAjNoQt(zlNoQt);
+				}
+				if(!zlNoGf.equals("")){
+					zl.setAjNoGf(zlNoGf);
 				}
 				zl.setAjSqAddress(sqAddress);
 				zl.setAjType(zlType);
@@ -212,6 +215,9 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 				}
 				zl.setAjUploadDg(upFileDg);
 				zl.setAjUploadHt(upFileHt);
+				if(!payUserInfo.equals("")){
+					zl.setPayUserInfo(payUserInfo);
+				}
 				zlDao.update(sess, zl);
 				tran.commit();
 				return true;
