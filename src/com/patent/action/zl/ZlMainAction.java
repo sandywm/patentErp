@@ -3032,7 +3032,7 @@ public class ZlMainAction extends DispatchAction {
 										fm.addZLFee(zlId, currUserId, 90, Double.parseDouble(feeArr[j]), 0.0, jfDateArr[j], jfDateArr[j], "", 1, 
 												cpyId, 1, currDate, "", "", 0, "", 0, "", "", "", "", "",feeTxType,"");
 									}
-								}else{//事务提醒
+								}else{//事务提醒(修改)
 									String[] tzsTxArr = dlFeeArr[0].split(",");
 									for(int j = 0 ; j < tzsTxArr.length ; j++){
 										String tzsTx = tzsTxArr[j];
