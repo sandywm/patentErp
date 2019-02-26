@@ -3033,8 +3033,9 @@ public class ZlMainAction extends DispatchAction {
 												cpyId, 1, currDate, "", "", 0, "", 0, "", "", "", "", "",feeTxType,"");
 									}
 								}else{//事务提醒
-									for(int j = 0 ; j < dlFeeArr.length ; j++){
-										String tzsTx = dlFeeArr[0].split(",")[j];
+									String[] tzsTxArr = dlFeeArr[0].split(",");
+									for(int j = 0 ; j < tzsTxArr.length ; j++){
+										String tzsTx = tzsTxArr[j];
 										fm.addZLFee(zlId, currUserId, 90, Double.parseDouble(dlFeeArr[1].split(",")[j]), 0.0, "", "", "", 1, 
 												cpyId, 1, currDate, "", "", 0, "", 0, "", "", "", "", "",feeTxType,tzsTx);
 									}

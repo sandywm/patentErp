@@ -115,8 +115,14 @@ public class ReadExcelFile {
 	}
 	
 	public static void main(String[] args) throws IOException{
-		String aa = "2018-09-01";
-		System.out.println(CurrentTime.getFinalDate_2(aa, 2));
+//		String aa = "2018-09-01";
+//		System.out.println(CurrentTime.getFinalDate_2(aa, 2));
+		String aa  = "sl:100";
+		String[] aaArr = aa.split(":");
+		String[] aa1Arr = aaArr[0].split(",");
+		for(int i = 0 ; i < aa1Arr.length ; i++){
+			System.out.println(aa1Arr[i]+"   "+aaArr[1].split(",")[i]);
+		}
 		//ReadExcelFile.readExcel();
 //		String aa = "2017-04-01 00:00:01";
 //		System.out.print(CurrentTime.stringConvertToTimestamp(aa));
