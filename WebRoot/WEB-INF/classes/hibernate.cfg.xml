@@ -13,10 +13,10 @@
 		<!-- useUnicode=true&amp;characterEncoding=utf-8 -->
 		<!-- 目的是为了防止数据库查询不到条件为中文时的记录 -->
 		<property name="connection.url">
-			jdbc:mysql://localhost:3306/patent?useUnicode=true&amp;characterEncoding=utf-8
+			jdbc:mysql://127.0.0.1:3306/patent?useUnicode=true&amp;characterEncoding=utf-8
 		</property>
 		<property name="connection.username">root</property>
-		<property name="connection.password">32011823pyly</property>
+		<property name="connection.password">simon</property>
 		<!-- C3P0 connection pool  -->
 		<property name="hibernate.connection.provider_class">
 			org.hibernate.connection.C3P0ConnectionProvider
