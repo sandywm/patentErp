@@ -1125,6 +1125,7 @@ body{
 .noZlTypeTxt{
 	color:#999;
 }
-#selFileBtn{
+#selFileBtn,
+.hideItem{
 	display:none;
 }

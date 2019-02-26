@@ -44,6 +44,7 @@
 				        data : {zlId : parent.globalZlId,opt:'lcfz'},
 				        url:'/zlm.do?action=getZlDetail',
 				        success:function (json){
+				        	console.log(json)
 				        	layer.closeAll('loading');
 				        	if(json['result'] == 'success'){
 				        		_this.renderLcFpPeo(json);
@@ -58,27 +59,31 @@
 				//获取相关的流程人员
 				renderLcFpPeo : function(json){
 					var strHtml = '',isReadFlag = false;
-					//专利撰写人员
+					lcfpMethod.data.zlAjType = json.ajType1;
 					strHtml += '<div class="layui-form-item" style="margin:15px 0 -10px 0;">';
 					strHtml += '<p class="lcfpTipsInfo"><i class="layui-icon layui-icon-speaker hasBlink"></i>注：01. 被分配的流程人员需要具有流程处理权限才能进行分配！</p>';
 					strHtml += '<p class="lcfpTipsInfo bigIndent">02. 正在进行中任务的人员请谨慎更换，一旦更换人员，那么此人员所处理的任务将被移除！</p>';
 					strHtml += '</div>';
 					strHtml += '<div class="layui-form-item" style="margin-top:15px;"><label class="layui-form-label"><span>*</span>专利难易度</label>';
 					strHtml += '<div class="layui-input-block clearfix"><div id="diffLevel"></div></div></div>';
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">专利撰写人员</label>';
-					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="zxPeopleBox" class="multiBox fl">';
-					if(json.zxUserId != 0){
-						strHtml += '<p id="addZxUser_con" userId="'+ json.zxUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.zxUserName +'</p>';
+					if(json.ajType1 == 'new'){
+						//专利撰写人员
+						strHtml += '<div class="layui-form-item"><label class="layui-form-label">专利撰写人员</label>';
+						strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="zxPeopleBox" class="multiBox fl">';
+						if(json.zxUserId != 0){
+							strHtml += '<p id="addZxUser_con" userId="'+ json.zxUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.zxUserName +'</p>';
+						}
+						strHtml += '</div><span id="addZxPeople" opt="addZxUser" lcfpId="'+ json.zxUserId +'" class="addSpan fl">添加/编辑</span><div class="layui-form-mid layui-word-aux">(注：如若未指定专利撰写人员，需撰写人员本人自行进行任务领取)</div><p id="lcNo3" class="currLcNo"></p>';
+						strHtml += '</div></div>';
+						
+						//专利审核人员
+						strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>专利审核人员</label>';
+						strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="zlShBox" class="multiBox fl">';
+						if(json.checkUserId != 0){
+							strHtml += '<p id="addZlShUser_con" userId="'+ json.checkUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.checkUserName +'</p>';
+						}
+						strHtml += '</div><span id="addZlShPeople" opt="addZlShUser" lcfpId="'+ json.checkUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo4" class="currLcNo"></p></div></div>';
 					}
-					strHtml += '</div><span id="addZxPeople" opt="addZxUser" lcfpId="'+ json.zxUserId +'" class="addSpan fl">添加/编辑</span><div class="layui-form-mid layui-word-aux">(注：如若未指定专利撰写人员，需撰写人员本人自行进行任务领取)</div><p id="lcNo3" class="currLcNo"></p>';
-					strHtml += '</div></div>';
-					//专利审核人员
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>专利审核人员</label>';
-					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="zlShBox" class="multiBox fl">';
-					if(json.checkUserId != 0){
-						strHtml += '<p id="addZlShUser_con" userId="'+ json.checkUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.checkUserName +'</p>';
-					}
-					strHtml += '</div><span id="addZlShPeople" opt="addZlShUser" lcfpId="'+ json.checkUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo4" class="currLcNo"></p></div></div>';
 					//客户确认人员
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>客户确认人员</label>';
 					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="cusSureBox" class="multiBox fl">';
@@ -86,13 +91,15 @@
 						strHtml += '<p id="addCusSureUser_con" userId="'+ json.cusCheckUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.cusCheckUserName +'</p>';
 					}
 					strHtml += '</div><span id="addCusSure" opt="addCusSureUser" lcfpId="'+ json.cusCheckUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo5" class="currLcNo"></p></div></div>';
-					// 定稿提交人员 
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>定稿提交人员</label>';
-					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="dingGaoBox" class="multiBox fl">';
-					if(json.tjUserId != 0){
-						strHtml += '<p id="addDingGaoUser_con" userId="'+ json.tjUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.tjUserName +'</p>';
+					if(json.ajType1 == 'new'){
+						// 定稿提交人员 
+						strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>定稿提交人员</label>';
+						strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="dingGaoBox" class="multiBox fl">';
+						if(json.tjUserId != 0){
+							strHtml += '<p id="addDingGaoUser_con" userId="'+ json.tjUserId +'"><i class="layui-icon layui-icon-username"></i>'+ json.tjUserName +'</p>';
+						}
+						strHtml += '</div><span id="addDinggao" opt="addDingGaoUser" lcfpId="'+ json.tjUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo6" class="currLcNo"></p></div></div>';
 					}
-					strHtml += '</div><span id="addDinggao" opt="addDingGaoUser" lcfpId="'+ json.tjUserId +'" class="addSpan fl">添加/编辑</span><p id="lcNo6" class="currLcNo"></p></div></div>';
 					//导入通知书人员
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>通知书导入人员</label>';
 					strHtml += '<div class="layui-input-block lcfzWrap clearfix"><div id="tzsBox" class="multiBox fl">';

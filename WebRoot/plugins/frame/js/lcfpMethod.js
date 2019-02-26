@@ -3,8 +3,9 @@ layui.define(['rate'],function(exports){
 	var obj = {
 		data : {
 			isSaveLcFpFlag : false,
-			isZlLcFpFlag : true,//判断是否是专利信息下的流程分配 ture是
-			difflevel : 0
+			isZlLcFpFlag : true,//判断是否是专利信息下的流程分配 true是
+			difflevel : 0,
+			zlAjType : ''
 		},
 		bindEvent_fp : function(){
 			var _this = this;
@@ -64,60 +65,77 @@ layui.define(['rate'],function(exports){
 					bzshUserId = $('#addBuzhengShUser_con').attr('userId'),
 					bhUserId = $('#addZlBhUser_con').attr('userId'),
 					cusSuerUserId = $('#addCusSureUser_con').attr('userId');
-				var index= parent.layer.getFrameIndex(window.name);
-				if(zxUserId == undefined || zxUserId==''){
-					zxUserId = 0;
-				}
-				if(_this.data. difflevel == 0){
+				var index= parent.layer.getFrameIndex(window.name),
+					isNewAjTypeFlag = true,isOldAjRightFlag=false;
+				_this.data.zlAjType == 'new' ? isNewAjTypeFlag : isNewAjTypeFlag = false;
+				if(_this.data.difflevel == 0){
 					layer.msg('请设置专利难易度！', {icon:5,anim:6,time:1500});
-				}else if(checkUserId == undefined || checkUserId == ''){
-					layer.msg('请选择专利审核人员！', {icon:5,anim:6,time:1500});
-				}else if(cusSuerUserId == undefined || cusSuerUserId==''){
-					layer.msg('请选择客户确认人员！', {icon:5,anim:6,time:1500});
-				}else if(tjUserId == undefined || tjUserId == ''){
-					layer.msg('请选择定稿提交人员！', {icon:5,anim:6,time:1500});
-				}else if(tzsUserId == undefined || tzsUserId ==''){
-					layer.msg('请选择通知书导入人员！', {icon:5,anim:6,time:1500});
-				}/*else if(feeUserId == undefined || feeUserId==''){
-					layer.msg('请选择费用催缴人员！', {icon:5,anim:6,time:1500});
-				}*/else if(bzUserId == undefined || bzUserId==''){
-					layer.msg('请选择专利补正人员！', {icon:5,anim:6,time:1500});
-				}else if(bzshUserId == undefined || bzshUserId==''){
-					layer.msg('请选择专利补正审核人员！', {icon:5,anim:6,time:1500});
-				}/*else if(bhUserId == undefined || bhUserId==''){
-					layer.msg('请选择专利驳回人员！', {icon:5,anim:6,time:1500});
-				}*/else{
-					//alert(zxUserId + "=zxUserId-" + checkUserId + "=checkUserId-" + tjUserId + "=tjUserId-" + tzsUserId + "=tzsUserId-" + feeUserId + "=feeUserId-" + bzUserId + "=bzUserId-" + bzshUserId + "=bzshUserId-" + bhUserId + "=bhUserId")
-					var field={zlId:parent.globalZlId,zlLevel:_this.data.difflevel,zxUserId:zxUserId,checkUserId:checkUserId,tjUserId:tjUserId,tzsUserId:tzsUserId,
-							feeUserId:0,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:0,cusCheckUserId:cusSuerUserId};
-					$.ajax({
-  						type:'post',
-				        async:false,
-				        dataType:'json',
-				        data : field,
-				        url:'/zlm.do?action=updateOperatorUserInfo',
-				        success:function (json){
-				        	layer.closeAll('loading');
-				        	if(json['result'] == 'success'){
-				        		if(_this.data.isZlLcFpFlag){
-				        			_this.data.isSaveLcFpFlag = true;
-					        		layer.msg('流程人员分配设置成功',{icon:1,time:1000});
-				        		}else{
-				        			layer.msg('流程分配设置成功',{icon:1,time:1000},function(){
-					        			parent.addZlFlag = true;
-					        			parent.layer.close(index);
-					        		});
-				        		}
-				        	}else if(json['result'] == 'stopInfo'){
-				        		layer.msg('案件终止状态下不能进行修改', {icon:5,anim:6,time:2200});
-				        	}else if(json['result'] == 'noAbility'){
-				        		layer.msg('抱歉，您暂无权限进行流程分配', {icon:5,anim:6,time:2200});	
-				        	}else if(json['result'] == 'notUpdate'){
-				        		layer.msg('定稿提交以后不能对撰写人、技术审核人员、定稿提交人员进行分配', {icon:5,anim:6,time:2500});
-				        	}
-				        }
-  					});
+				}else if(isNewAjTypeFlag){//新案下需要
+					if(zxUserId == undefined || zxUserId==''){
+						zxUserId = 0;
+					}
+					if(checkUserId == undefined || checkUserId == ''){
+						layer.msg('请选择专利审核人员！', {icon:5,anim:6,time:1500});
+						return;
+					}
+					isOldAjRightFlag = true;
+				}else if(isNewAjTypeFlag == false){
+					isOldAjRightFlag = true;
 				}
+				if(isOldAjRightFlag){
+					if(cusSuerUserId == undefined || cusSuerUserId==''){
+						layer.msg('请选择客户确认人员！', {icon:5,anim:6,time:1500});
+					}else if(isNewAjTypeFlag && tjUserId == undefined || tjUserId == ''){//旧案下
+						layer.msg('请选择定稿提交人员！', {icon:5,anim:6,time:1500});
+					}else if(tzsUserId == undefined || tzsUserId ==''){
+						layer.msg('请选择通知书导入人员！', {icon:5,anim:6,time:1500});
+					}/*else if(feeUserId == undefined || feeUserId==''){
+						layer.msg('请选择费用催缴人员！', {icon:5,anim:6,time:1500});
+					}*/else if(bzUserId == undefined || bzUserId==''){
+						layer.msg('请选择专利补正人员！', {icon:5,anim:6,time:1500});
+					}else if(bzshUserId == undefined || bzshUserId==''){
+						layer.msg('请选择专利补正审核人员！', {icon:5,anim:6,time:1500});
+					}/*else if(bhUserId == undefined || bhUserId==''){
+						layer.msg('请选择专利驳回人员！', {icon:5,anim:6,time:1500});
+					}*/else{
+						//alert(zxUserId + "=zxUserId-" + checkUserId + "=checkUserId-" + tjUserId + "=tjUserId-" + tzsUserId + "=tzsUserId-" + feeUserId + "=feeUserId-" + bzUserId + "=bzUserId-" + bzshUserId + "=bzshUserId-" + bhUserId + "=bhUserId")
+						if(isNewAjTypeFlag){//新案
+							var field={zlId:parent.globalZlId,zlLevel:_this.data.difflevel,zxUserId:zxUserId,checkUserId:checkUserId,tjUserId:tjUserId,tzsUserId:tzsUserId,
+									feeUserId:0,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:0,cusCheckUserId:cusSuerUserId};
+						}else{//旧案
+							var field={zlId:parent.globalZlId,zlLevel:_this.data.difflevel,tzsUserId:tzsUserId,
+									feeUserId:0,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:0,cusCheckUserId:cusSuerUserId};
+						}
+						$.ajax({
+	  						type:'post',
+					        async:false,
+					        dataType:'json',
+					        data : field,
+					        url:'/zlm.do?action=updateOperatorUserInfo',
+					        success:function (json){
+					        	layer.closeAll('loading');
+					        	if(json['result'] == 'success'){
+					        		if(_this.data.isZlLcFpFlag){
+					        			_this.data.isSaveLcFpFlag = true;
+						        		layer.msg('流程人员分配设置成功',{icon:1,time:1000});
+					        		}else{
+					        			layer.msg('流程分配设置成功',{icon:1,time:1000},function(){
+						        			parent.addZlFlag = true;
+						        			parent.layer.close(index);
+						        		});
+					        		}
+					        	}else if(json['result'] == 'stopInfo'){
+					        		layer.msg('案件终止状态下不能进行修改', {icon:5,anim:6,time:2200});
+					        	}else if(json['result'] == 'noAbility'){
+					        		layer.msg('抱歉，您暂无权限进行流程分配', {icon:5,anim:6,time:2200});	
+					        	}else if(json['result'] == 'notUpdate'){
+					        		layer.msg('定稿提交以后不能对撰写人、技术审核人员、定稿提交人员进行分配', {icon:5,anim:6,time:2500});
+					        	}
+					        }
+	  					});
+					}
+				}
+				
 			});
 		},
 		//流程分配公共openlayer方法
