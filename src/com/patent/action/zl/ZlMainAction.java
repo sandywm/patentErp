@@ -1368,6 +1368,7 @@ public class ZlMainAction extends DispatchAction {
 							}
 						}
 						map.put("applyYjFlag", applyYjFlag);//当前进行中的流程是否存在未审核的移交申请
+						map.put("ajType1", zl.getAjType1());
 					}else if(opt.equals("lc")){//流程
 						map = new HashMap<String,Object>();
 						List<ZlajLcInfoTb> lcList = lcm.listInfoByZlId(zlId);
@@ -1477,8 +1478,23 @@ public class ZlMainAction extends DispatchAction {
 								}else{
 									map_d.put("feeRate","无费减");//费减
 								}
-								map_d.put("gfDate", gf.getFeeEndDateGf());//官方期限
-								map_d.put("cpyDate", gf.getFeeEndDateJj());//费用期限
+								if(feeName.equals("代理费") && !gf.getTzsTx().equals("")){//事务段的代理费
+									String tzsTx = gf.getTzsTx();
+									if(tzsTx.equals("sl")){
+										tzsTx = "受理通知书";
+									}else if(tzsTx.equals("gb")){
+										tzsTx = "公布通知书";
+									}else if(tzsTx.equals("sc")){
+										tzsTx = "实质审查通知书";
+									}else if(tzsTx.equals("sq")){
+										tzsTx = "授权通知书";
+									}
+									map_d.put("gfDate", tzsTx);//官方期限
+									map_d.put("cpyDate", tzsTx);//费用期限
+								}else{
+									map_d.put("gfDate", gf.getFeeEndDateGf());//官方期限
+									map_d.put("cpyDate", gf.getFeeEndDateJj());//费用期限
+								}
 								Integer djStatus_temp = gf.getDjStatus();
 								map_d.put("djStatus", djStatus_temp.equals(0) ? "自交" : "代交");//代缴状态
 								if(djStatus_temp.equals(1)){//代缴下才有退换信息
@@ -2277,7 +2293,7 @@ public class ZlMainAction extends DispatchAction {
 									}
 								}
 								//如果人员都分配了，修改人员分配流程完成
-								if(flag_final){
+								if(flag_final || zlType1.equals("old")){
 									lcm.updateComInfoById(lcId, currDate);
 								}
 								if(zlType1.equals("old") && ajStatus < 7){//旧案时，修改完成后相当于定稿提交完成之后的情况

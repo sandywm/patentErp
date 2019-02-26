@@ -76,7 +76,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 		if(lqStatus.equals(0)){
 			hql += " and (zl.zxUserId = 0 and zl.ajType1 = 'new') or (zl.tzsUserId = 0 and zl.ajType1 = 'old')";//可能是新案，也可能是旧案
 		}else if(lqStatus.equals(1)){
-			hql += " and zl.zxUserId > 0 and zl.ajStatus >= 3.0";//新案的话3.0时流程分配完成，旧案时是7.0
+			hql += " and zl.zxUserId > 0 and zl.ajStatus >= 3.0 or zl.ajStatus >= 7.0";//新案的话3.0时流程分配完成，旧案时是7.0
 		}else if(lqStatus.equals(2)){//撰写任务领取只针对新案
 			hql += " and zl.zxUserId = 0 and zl.tzsUserId > 0 and zl.ajType1 = 'new'";
 		}else if(lqStatus.equals(3)){
@@ -123,7 +123,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 		if(lqStatus.equals(0)){
 			hql += " and (zl.zxUserId = 0 and zl.ajType1 = 'new') or (zl.tzsUserId = 0 and zl.ajType1 = 'old')";//可能是新案，也可能是旧案
 		}else if(lqStatus.equals(1)){
-			hql += " and zl.zxUserId > 0 and zl.ajStatus >= 3.0";//新案的话3.0时流程分配完成，旧案时是7.0
+			hql += " and zl.zxUserId > 0 and zl.ajStatus >= 3.0 or zl.ajStatus >= 7.0";//新案的话3.0时流程分配完成，旧案时是7.0
 		}else if(lqStatus.equals(2)){//撰写任务领取只针对新案
 			hql += " and zl.zxUserId = 0 and zl.tzsUserId > 0 and zl.ajType1 = 'new'";
 		}else if(lqStatus.equals(3)){
