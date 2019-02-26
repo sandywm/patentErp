@@ -219,14 +219,15 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 		},
 		//旧案下案件编号只能输入数字和字母的检测
 		checkOldAjNumPattern : function(obj){
+			var zlTypeVal = $('#zlTypeInp').val();
 			$('#'+obj).on('blur',function(){
 				var reg = /^[0-9a-zA-Z]*$/g;
 				if($('#'+obj).val() == ''){
 					layer.msg('旧案专利号不能为空', {icon:5,anim:6,time:2000});
 					return;
 				}else{
-					if($('#'+obj).val().length > 30){
-						layer.msg('旧案专利号最多可输入30个字符', {icon:5,anim:6,time:2000});
+					if($('#'+obj).val().length > 20){
+						layer.msg('旧案专利号最多可输入20个字符', {icon:5,anim:6,time:2000});
 						return;
 					}else if(!reg.test($('#'+obj).val())){
 						layer.msg('旧案专利号只能是数字和字母组合，不能有空格、汉字和特殊字符', {icon:5,anim:6,time:2000});
@@ -234,9 +235,29 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 						return;
 					}
 				}
+				//var tmpArray = $('#'+obj).val().split(''),tmpStr='';
+				var tmpStr = $('#'+obj).val().substring(4,5);
+				if($('#zlTypeInp').val() == 'fm'){//第五位1
+					if(tmpStr == 1){
+						
+					}else{
+						layer.msg('发明专利号格式错误', {icon:5,anim:6,time:2000});
+					}
+				}else if($('#zlTypeInp').val() == 'syxx'){//第五位 2、8
+					if(tmpStr == 2 || tmpStr == 8){
+						
+					}else{
+						layer.msg('实用新型专利号格式错误', {icon:5,anim:6,time:2000});
+					}
+				}else if($('#zlTypeInp').val() == 'wg'){//3、9
+					if(tmpStr == 3 || tmpStr == 9){
+						
+					}else{
+						layer.msg('外观专利号格式错误', {icon:5,anim:6,time:2000});
+					}
+				}
 				$('#'+obj).val($('#'+obj).val().toUpperCase());
 			});
-			
 		},
 		//旧案下 发明+新型下增加发明专利号 新型专利号 可编辑
 		createFmXxZlNumDom : function(){
@@ -311,7 +332,7 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 				}else{
 					laydate.render({
 						elem:'#remDateInpMul_' + multiDlFeeNum,
-						 min:_this.getMinDate()
+						min:_this.getMinDate()
 					});
 				}
 			}
@@ -842,6 +863,16 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 			}
 		}
 	};
+	//是否费减
+	form.on('radio(isHasFeeRateFilter)', function(data){
+		var value = data.value;
+		$('#rateInp').val(value);
+	});
+	//事务提醒方式
+	form.on('select(shiwuSelectFilter)', function(data){
+		var value = data.value,parent = $(this).parent().parent().parent();
+		parent.find('.shiwuInp').val(value);
+	});
 	form.on('radio(ajSqAreaFilter)', function(data){
 		var value = data.value;
 		$('#ajSqAddress').val(value);

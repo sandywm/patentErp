@@ -955,7 +955,8 @@ body{
 .selZlType + .layui-form-select,
 .selAjType + .layui-form-select{
 	width:146px;
-	margin-right:-40px;
+	/*margin-right:-40px;*/
+	margin-left:-8px;
 }
 .layui-rate{
 	padding:6px 5px 0px 0;

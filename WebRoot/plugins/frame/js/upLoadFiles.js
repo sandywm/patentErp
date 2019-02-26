@@ -114,8 +114,8 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 			    			}
 			    		}
 				       var tr = $(['<tr class="hasSelTr noUpDone" id="upload-'+ index +'">',
-						'<td>'+ file.name +'</td>',
-						opts == 'addEditZlOpts' ? '<td><div class="ajFjTypeTxt layui-form">'+ zlAjTypeStr +'</div></td>' : '',
+						'<td style="max-width:260px;">'+ file.name +'</td>',
+						opts == 'addEditZlOpts' ? '<td><div style="max-width:130px;" class="ajFjTypeTxt layui-form">'+ zlAjTypeStr +'</div></td>' : '',
 						opts == 'batchImp_tzs' || opts == 'batchImp_fee' ? '' : '<td><div class="zlTypeTxt layui-form">'+ zlTypeTxt +'</div></td>',
 						'<td>'+ (file.size/1014).toFixed(1) +'kb</td>',
 						'<td>等待上传</td>',
