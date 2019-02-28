@@ -89,9 +89,9 @@ layui.define(['rate'],function(exports){
 						layer.msg('请选择定稿提交人员！', {icon:5,anim:6,time:1500});
 					}else if(tzsUserId == undefined || tzsUserId ==''){
 						layer.msg('请选择通知书导入人员！', {icon:5,anim:6,time:1500});
-					}/*else if(feeUserId == undefined || feeUserId==''){
+					}else if(feeUserId == undefined || feeUserId==''){
 						layer.msg('请选择费用催缴人员！', {icon:5,anim:6,time:1500});
-					}*/else if(bzUserId == undefined || bzUserId==''){
+					}else if(bzUserId == undefined || bzUserId==''){
 						layer.msg('请选择专利补正人员！', {icon:5,anim:6,time:1500});
 					}else if(bzshUserId == undefined || bzshUserId==''){
 						layer.msg('请选择专利补正审核人员！', {icon:5,anim:6,time:1500});
@@ -101,10 +101,10 @@ layui.define(['rate'],function(exports){
 						//alert(zxUserId + "=zxUserId-" + checkUserId + "=checkUserId-" + tjUserId + "=tjUserId-" + tzsUserId + "=tzsUserId-" + feeUserId + "=feeUserId-" + bzUserId + "=bzUserId-" + bzshUserId + "=bzshUserId-" + bhUserId + "=bhUserId")
 						if(isNewAjTypeFlag){//新案
 							var field={zlId:parent.globalZlId,zlLevel:_this.data.difflevel,zxUserId:zxUserId,checkUserId:checkUserId,tjUserId:tjUserId,tzsUserId:tzsUserId,
-									feeUserId:0,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:0,cusCheckUserId:cusSuerUserId};
+									feeUserId:feeUserId,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:0,cusCheckUserId:cusSuerUserId};
 						}else{//旧案
 							var field={zlId:parent.globalZlId,zlLevel:_this.data.difflevel,tzsUserId:tzsUserId,
-									feeUserId:0,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:0,cusCheckUserId:cusSuerUserId};
+									feeUserId:feeUserId,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:0,cusCheckUserId:cusSuerUserId};
 						}
 						$.ajax({
 	  						type:'post',
