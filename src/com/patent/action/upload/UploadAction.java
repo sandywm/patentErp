@@ -134,19 +134,19 @@ public class UploadAction extends DispatchAction {
 		//通知书、票据、附件需要具有专利流程处理权限的才能上传
 		boolean abilityFlag = false;
 		if(loginType.equals("cpyUser")){
+			cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
 			if(this.getLoginRoleName(request).equals("管理员")){
-				cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
 				abilityFlag = true;
 			}else{
-				if(fileType.equals("dg")){
+				if(fileType.equals("dg")){//导入专利的技术底稿、定稿文件、合同文件权限
 					boolean abilityFlag_1 = Ability.checkAuthorization(this.getLoginRoleId(request), "addZl");//增加专利的能上传
 					boolean abilityFlag_2 = Ability.checkAuthorization(this.getLoginRoleId(request), "upZl");//修改专利的能上传
 					abilityFlag = abilityFlag_1 || abilityFlag_2;
-				}else if(fileType.equals("pj") || fileType.equals("fee")){//上传发票和已缴费清单
-					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addFee");//增加费用权限
-					cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
-				}else if(fileType.equals("tzs")){
-					cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
+				}else if(fileType.equals("pj")){//上传发票和已缴费清单
+					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "impPj");//上传发票权限
+				}else if(fileType.equals("fee")){//上传发票和已缴费清单
+					abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "impFee");//导入已缴费清单权限
+				}else if(fileType.equals("tzs")){//导入通知书
 					if(zlm.listInfoByOpt("tzs", currLoginUserId, cpyId).size() > 0){
 						abilityFlag = true;
 					}

@@ -396,7 +396,7 @@ public class FeeAction extends DispatchAction {
 			if(roleName.equals("管理员")){
 				abilityFlag = true;
 			}else{//只获取自己的任务流程
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addFee");//只有具有增加费用权限的人员
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "expFee");//只有具有导出费用清单权限的人员
 			}
 			if(abilityFlag){
 				Integer feeStatus = CommonTools.getFinalInteger("feeStatus", request);//0：未交费，1：已缴费，2：全部
@@ -1213,7 +1213,7 @@ public class FeeAction extends DispatchAction {
 			if(roleName.equals("管理员")){
 				abilityFlag = true;
 			}else{//只获取自己的任务流程
-				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "addFee");//只有具有增加费用权限的人员
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "impFee");//只有具有导入费用权限的人员
 			}
 			if(abilityFlag){
 				String filePath = CommonTools.getFinalStr("filePath", request);
@@ -1825,6 +1825,28 @@ public class FeeAction extends DispatchAction {
 			msg = "success";
 		}
 		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 获取导入/出费用、上传票据的权限
+	 * @description
+	 * @author Administrator
+	 * @date 2019-2-28 下午04:45:31
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getFeeOrPjAbility(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		Map<String,Object> map = new HashMap<String,Object>();
+		String opt = CommonTools.getFinalStr("opt", request);//impPj(上传发票权限),impFee(导入费用权限),expFee(导出费用权限)
+		boolean abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), opt);
+		map.put("abilityFlag", abilityFlag);
 		this.getJsonPkg(map, response);
 		return null;
 	}
