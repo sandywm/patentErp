@@ -332,15 +332,31 @@
 					$('.dlFeeNum_dan').attr('placeholder','请输入发明专利代理费');
 					if(zlInfoMethod.data.onlyOneFlag_tit){
 						//发明+新型下创建两个标题
+						zlInfoMethod.data.singleZlTitFlag = false;
 						var fmxxZlTitStr = zlInfoMethod.createFmxxZlTitDom();
 						$('#zlTitleBox').append(fmxxZlTitStr);
 						$('.originZlTitBox').hide().find('input').val('').attr('disabled','disabled');
-						zlInfoMethod.judgeZlTitPattern('fmZlTitInp');
-						zlInfoMethod.judgeZlTitPattern('xxZlTitInp');
 						zlInfoMethod.data.switchZlTitFlag = false;//打开判断案件标题是否为空的第二个条件 组合变false
 					}
 					zlInfoMethod.data.onlyOneFlag_tit = false;
 					zlInfoMethod.data.onlyOneFlag_zlNum = false;
+					var reg = /^[A-Za-z0-9\u4e00-\u9fa5]+$/;
+					$('#fmZlTitInp').on('blur',function(){
+						if(!reg.test($.trim($('#fmZlTitInp').val()))){
+							zlInfoMethod.data.tmpFmTitFlag = false;
+							layer.msg('案件标题不能含有标点符号和特殊字符_faming', {icon:5,anim:6,time:2000});
+						}else{
+							zlInfoMethod.data.tmpFmTitFlag = true;
+						}	
+					});
+					$('#xxZlTitInp').on('blur',function(){
+						if(!reg.test($.trim($('#xxZlTitInp').val()))){
+							zlInfoMethod.data.tmpXxTitFlag = false;
+							layer.msg('案件标题不能含有标点符号和特殊字符_xinxing', {icon:5,anim:6,time:2000});
+						}else{
+							zlInfoMethod.data.tmpXxTitFlag = true;
+						}	
+					});
 				}else{
 					page.data.isClickwgXXFlag = true;
 					zlInfoMethod.data.onlyOneFlag_tit = true;//打开让切换到组合类型时还可以重新创建title

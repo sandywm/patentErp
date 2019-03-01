@@ -7,6 +7,8 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 			isClickZlTypeFlag : false,
 			singleZlTitFlag : true,
 			switchZlTitFlag : true,
+			tmpFmTitFlag : false,
+			tmpXxTitFlag : false,
 			onlyOneFlag_tit : true,//创建一次组合类型下的案件title
 			onlyOneFlag_zlNum : true//创建一次组合类型的专利号
 		},
@@ -56,6 +58,13 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 				}else{
 					var isNewAjTypeFlag = true,isOldAjRightFlag=false;//旧案下各个条件是否都已满足，新案下为true
 					var fmZlTitInpVal = $('#fmZlTitInp').val(),xxZlTitInpVal = $('#xxZlTitInp').val();
+					if(zlTypeInpVal == 'fmxx'){
+						if(_this.data.tmpFmTitFlag && _this.data.tmpXxTitFlag){
+							_this.data.singleZlTitFlag = true;
+						}else{
+							_this.data.singleZlTitFlag = false;
+						}
+					}
 					//案件类型 分为新建new 和 旧案 old
 					anjianTypeVal == 'new' ? isNewAjTypeFlag : isNewAjTypeFlag = false;
 					if(ajTitleVal == '' && _this.data.switchZlTitFlag || fmZlTitInpVal == '' || xxZlTitInpVal == ''){
