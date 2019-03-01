@@ -1404,6 +1404,8 @@
 				$('#dlFeeListWrap_xx').html('');
 				multiDlFeeNum = 0;
 				if($('#anjianType').val() == 'old'){
+					$('#ajSqZlNum').val('');
+					$('.zlPatternNum').html('');
 					$('#fmxxZlNumWrap').remove();
 					$('.originZlNumBox').show().find('input').attr('disabled',false);
 					//检测旧案专利号

@@ -22,11 +22,13 @@
 				<input type="radio" name="ajTypeRad" class="ajTypeRad" lay-filter="ajTypeRadFilter" value="old" title="旧案(中途转入)"/>
 			</div>				
 		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label"><span class="mustItem">*</span>案件标题</label>
-			<div class="layui-input-block">
-				<input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)" maxlength="40" autocomplete="off" class="layui-input"/>
-			</div>				
+		<div id="zlTitleBox" class="layui-form-item">
+			<div class="originZlTitBox">
+				<label class="layui-form-label"><span class="mustItem">*</span>案件标题</label>
+				<div class="layui-input-block">
+					<input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)" maxlength="40" autocomplete="off" class="layui-input"/>
+				</div>			
+			</div>
 		</div>
 		<div class="layui-form-item">
 			<div class="itemDiv">
@@ -60,16 +62,13 @@
 				<div class="originZlNumBox">
 					<label class="layui-form-label"><span class="mustItem zlNoMustBe"></span>案件申请号/专利号</label>
 					<div class="layui-input-inline" style="width:69.2%;">
+						<p class="zlPatternNum singWid"></p>
 						<input id="ajSqZlNum" type="text" name="ajSqZlNum" disabled maxlength="20" autocomplete="off" class="layui-input"/>
 					</div>	
 				</div>
 			</div>			
 		</div>
 		<div class="layui-form-item clearfix">
-			
-		</div>
-		<div class="layui-form-item clearfix">
-			
 			<div class="itemDiv">
 				<label class="layui-form-label">已领取专利任务</label>
 				<div class="layui-input-block">
@@ -255,6 +254,8 @@
 			form.on('radio(ajTypeRadFilter)', function(data){
 				var value = data.value;
 				$('#anjianType').val(value);
+				$('.zlPatternNum').html('');
+				$('#ajSqZlNum').val('');
 				if(value == 'old'){
 					$('.feeDiv').show();
 					$('.hideItem').show();
@@ -310,6 +311,7 @@
 				zlInfoMethod.agentFeeInpShow();
 				if(value == 'fmxx'){
 					page.data.isFmxxOpts = 'fm';
+					$('.zlPatternNum').html('');
 					$('.selZlTaskSp').hide();
 					$('.singleDlFee').html('发明专利代理费参考费用：¥<span id="singDlFeeNum"></span>元');
 					$('.secInitDlFee').html('新型专利代理费参考费用：¥<span id="xxDlFeeNum"></span>元');
@@ -319,7 +321,7 @@
 					$('#addDlFeeBtn').html('添加发明专利代理费');
 					zlInfoMethod.data.isXxFeeFlag = true;
 					$('#ajNumInp').val('');
-					if($('#anjianType').val() == 'old'){//旧案 增加发明和新型专利号
+					if($('#anjianType').val() == 'old' && zlInfoMethod.data.onlyOneFlag_zlNum){//旧案 增加发明和新型专利号
 						var zlNumDomStr = zlInfoMethod.createFmXxZlNumDom();
 						$('#zlNumBoxWrap').append(zlNumDomStr);
 						$('.originZlNumBox').hide().find('input').val('').attr('disabled','disabled');
@@ -328,8 +330,21 @@
 						zlInfoMethod.checkOldAjNumPattern('xxZlNumInp','xxZlNum');
 					}
 					$('.dlFeeNum_dan').attr('placeholder','请输入发明专利代理费');
+					if(zlInfoMethod.data.onlyOneFlag_tit){
+						//发明+新型下创建两个标题
+						var fmxxZlTitStr = zlInfoMethod.createFmxxZlTitDom();
+						$('#zlTitleBox').append(fmxxZlTitStr);
+						$('.originZlTitBox').hide().find('input').val('').attr('disabled','disabled');
+						zlInfoMethod.judgeZlTitPattern('fmZlTitInp');
+						zlInfoMethod.judgeZlTitPattern('xxZlTitInp');
+						zlInfoMethod.data.switchZlTitFlag = false;//打开判断案件标题是否为空的第二个条件 组合变false
+					}
+					zlInfoMethod.data.onlyOneFlag_tit = false;
+					zlInfoMethod.data.onlyOneFlag_zlNum = false;
 				}else{
 					page.data.isClickwgXXFlag = true;
+					zlInfoMethod.data.onlyOneFlag_tit = true;//打开让切换到组合类型时还可以重新创建title
+					zlInfoMethod.data.onlyOneFlag_zlNum = false;//打开让切换到组合类型时还可以重新创建zlNum
 					page.data.isFmxxOpts = '';
 					$('.selZlTaskSp').show();
 					$('.fmxxDlFee_xx').hide();
@@ -340,7 +355,12 @@
 					$('#singDlFeeNum').text(dlFeeNum);
 					$('#dlFeeListWrap_xx').html('');
 					multiDlFeeNum = 0;
+					$('#fmxxZlTitBox').remove();
+					$('.originZlTitBox').show().find('input').attr('disabled',false);
+					zlInfoMethod.data.switchZlTitFlag = true;//打开判断案件标题是否为空的第二个条件 单个变true
 					if($('#anjianType').val() == 'old'){
+						$('#ajSqZlNum').val('');
+						$('.zlPatternNum').html('');
 						$('#fmxxZlNumWrap').remove();
 						$('.originZlNumBox').show().find('input').attr('disabled',false);
 						//检测旧案专利号

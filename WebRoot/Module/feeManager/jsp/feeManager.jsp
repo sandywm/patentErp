@@ -111,13 +111,16 @@
 				data : {
 					isHasPageFun : false,//用于检测是否需要分页
 					globalFeeStatus : 5, //费用
-					addFeeFlag : false,
+					//addFeeFlag : false,
+					expFeeFlag : false,
+					impFeeFlag : false,
 					globalFeeId : [],
 					exportFlag : false
 				},
 				init : function(){
 					//获取权限
-					this.data.addFeeFlag = common.getPermission('addFee','',0);
+					this.data.expFeeFlag = common.getPermission('expFee','',0);
+					this.data.impFeeFlag = common.getPermission('impFee','',0);
 					this.createSearchHt(5);
 					loadFeeInfoList('initLoad');
 					this.bindEvent();
@@ -127,7 +130,7 @@
 					this.queryFun();
 					//交费单据批量导入
 					$('#importFeeBtn').on('click',function(){
-						if(_this.data.addFeeFlag){
+						if(_this.data.impFeeFlag){
 							hasReadFlag = false;
 							var fullScreenIndex = layer.open({
 								title:'',
@@ -151,7 +154,7 @@
 					});
 					//导出费用账单(未交费 导出国家专利局 导出客户清单)
 					$('#exportFeeBtn_noSub').on('click',function(){
-						if(_this.data.addFeeFlag){
+						if(_this.data.expFeeFlag){
 							var type = $(this).data('type');
 						    active[type] ? active[type].call(this) : '';
 						    if(_this.data.exportFlag){
@@ -166,7 +169,7 @@
 					});
 					//导出费用(已缴费 全部)
 					$('#exportFeeBtn_hasSub').on('click',function(){
-						if(_this.data.addFeeFlag){
+						if(_this.data.expFeeFlag){
 							tmpAddBackFee = 'addBackFeeStr';
 							var fullScreenIndex = globalIndex = layer.open({
 								title:'',

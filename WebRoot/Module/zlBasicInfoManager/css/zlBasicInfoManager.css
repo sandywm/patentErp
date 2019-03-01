@@ -77,6 +77,7 @@ body{
 }
 .zlNumBox{
 	margin-left:27px;
+	position:relative;
 }
 .zlNumBox.hasMargLeft{
 	margin-left:10px;
@@ -91,8 +92,12 @@ body{
 }
 .zlNumBox span,
 .zlNumBox p,
-.zlNumBox input{
+.zlNumBox label,
+.innerFmxxNum{
 	float:left;
+}
+.innerFmxxNum{
+	position:relative;
 }
 .sepcialLab{
 	text-align:left;
@@ -1128,4 +1133,49 @@ body{
 #selFileBtn,
 .hideItem{
 	display:none;
+}
+.zlPatternNum{
+	height:36px;
+	line-height:38px;
+	position:absolute;
+	top:0;
+	border:1px solid #d2d2d2;
+	border-radius:2px;
+	background:#fff;
+	display:none;
+	color:#333;
+}
+.singWid{
+	left:0px;
+	width:97%;
+	padding-left:2.5%;
+}
+.multiWid{
+	left:6px;
+	width:90%;
+	padding-left:5%;
+}
+.zlPatColor{
+	color:#F47837;
+}
+/* 发明新型专利标题 */
+.fmxxZlTitBox{
+	width:50%;
+	float:left;
+	line-height:38px;
+}
+.fmxxZlTitBox label,
+.fmxxZlTitBox input{
+	float:left;
+}
+.fmxxZlTitBox label{
+	width:20%;
+	text-align:center;
+	margin-left:41px;
+}
+.fmxxZlTitBox label span{
+	color:red;
+}
+.fmxxZlTitBox input{
+	width:70.5%;
 }

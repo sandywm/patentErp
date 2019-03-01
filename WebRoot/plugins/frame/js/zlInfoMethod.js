@@ -5,11 +5,15 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 		data : {
 			isXxFeeFlag : false,
 			isClickZlTypeFlag : false,
-			isZlNumRightFlag : false//不同专利类型对应专利编号格式
+			singleZlTitFlag : true,
+			switchZlTitFlag : true,
+			onlyOneFlag_tit : true,//创建一次组合类型下的案件title
+			onlyOneFlag_zlNum : true//创建一次组合类型的专利号
 		},
 		bindEvent_comMet : function(){
 			var _this = this;
 			//保存 编辑专利
+			this.judgeZlTitPattern('ajTitleInp');
 			$('#saveZlBtn').on('click',function(){
 				var anjianTypeVal=$('#anjianType').val(),sqrName='',tmpFmPath=[],tmpXxPath=[], ajTitleVal = $.trim($('#ajTitleInp').val()),//案件标题
 					//ajNumInpVal = $('#ajNumInp').val(),//案件编号(旧案下使用)
@@ -51,10 +55,13 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 					layer.msg('请选择案件类型', {icon:5,anim:6,time:1500});
 				}else{
 					var isNewAjTypeFlag = true,isOldAjRightFlag=false;//旧案下各个条件是否都已满足，新案下为true
+					var fmZlTitInpVal = $('#fmZlTitInp').val(),xxZlTitInpVal = $('#xxZlTitInp').val();
 					//案件类型 分为新建new 和 旧案 old
 					anjianTypeVal == 'new' ? isNewAjTypeFlag : isNewAjTypeFlag = false;
-					if(ajTitleVal == ''){
+					if(ajTitleVal == '' && _this.data.switchZlTitFlag || fmZlTitInpVal == '' || xxZlTitInpVal == ''){
 						layer.msg('案件标题不能为空', {icon:5,anim:6,time:1500});
+					}else if(_this.data.singleZlTitFlag == false){
+						layer.msg('案件标题不能含有标点符号和特殊字符', {icon:5,anim:6,time:2000});
 					}else if(zlTypeInpVal == ''){
 						layer.msg('请选择专利类型', {icon:5,anim:6,time:1500});
 					}else if(isNewAjTypeFlag == false){//旧案
@@ -89,6 +96,7 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 							dlFeeList_xxLen = $('#dlFeeListWrap_xx div').length,
 							isDlFeeRightFlag = false;//检测代理费是否填写正确
 							fmxxZlNumStr = fmZlNumInpVal + ',' + xxZlNumInpVal;
+							fmxxZlTitStr = fmZlTitInpVal + ',' + xxZlTitInpVal;
 						if(remindInpVal == ''){
 							layer.msg('请选择提醒方式', {icon:5,anim:6,time:1500});
 						}else if(dlFeeListDivLen == 0 && zlTypeInpVal != 'fmxx'){
@@ -160,7 +168,7 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 													yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 													ajUpload:'',ajUploadHt:'',cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee:globalDlFee};
 										}else{//发明+新型
-											var field = {ajTitle:escape(ajTitleVal),
+											var field = {ajTitle:fmxxZlTitStr,
 													ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,feeRate:rateInpVal,payUserInfo:payerInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 													ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 													yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),           
@@ -247,7 +255,7 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 														tmpXxPath.push($('.xxPathInp').eq(i).val());
 													});
 													xxPathVal = tmpXxPath.join(',');
-													var field = {ajTitle:escape(ajTitleVal),
+													var field = {ajTitle:fmxxZlTitStr,
 															ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,feeRate:rateInpVal,payUserInfo:payerInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 															ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 															yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
@@ -308,7 +316,7 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 														});
 														fmPathVal = tmpFmPath.join(',');
 														xxPathVal = tmpXxPath.join(',');
-														var field = {ajTitle:escape(ajTitleVal),
+														var field = {ajTitle:fmxxZlTitStr,
 															ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,feeRate:rateInpVal,payUserInfo:payerInpVal,ajFieldId:ajFieldIdVal,zlNoGf:fmxxZlNumStr,ajSqAddress:escape(ajSqAddressVal),
 															ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 															yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
@@ -586,8 +594,19 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 			var zlTypeVal = $('#zlTypeInp').val(),_this = this;
 			$('#'+obj).on('blur',function(){
 				var reg = /^[0-9a-zA-Z]*$/g;
+				if($('#zlTypeInp').val() == ''){
+					$('#'+obj).val('');
+					layer.msg('请选选择专利类型', {icon:5,anim:6,time:2000});
+					return;
+				}
 				if($('#'+obj).val() == ''){
-					layer.msg('旧案专利号不能为空', {icon:5,anim:6,time:2000});
+					if(opts == ''){
+						layer.msg('旧案专利号不能为空', {icon:5,anim:6,time:2000});
+					}else if(opts == 'fmZlNum'){
+						layer.msg('旧案发明专利号不能为空', {icon:5,anim:6,time:2000});
+					}else if(opts == 'xxZlNum'){
+						layer.msg('旧案新型专利号不能为空', {icon:5,anim:6,time:2000});
+					}
 					return;
 				}else{
 					if($('#'+obj).val().length < 5){
@@ -602,42 +621,56 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 						return;
 					}
 				}
-				var tmpStr = $('#'+obj).val().substring(4,5);
+				var tmpStr = $('#'+obj).val().substring(4,5).toUpperCase();
+				var tmpStr_four = $('#'+obj).val().substring(0,4).toUpperCase();
+				var tmpStr_end = $('#'+obj).val().substring(5).toUpperCase();
 				if($('#zlTypeInp').val() == 'fm' || $('#zlTypeInp').val() == 'fmxx' && opts == 'fmZlNum'){//第五位1
 					if(tmpStr == 1){
-						//_this.data.isZlNumRightFlag = true;
 					}else{
-						//_this.data.isZlNumRightFlag = false;
-						//$('#'+obj).val('');
+						$('#'+obj).focus();
+						$('#'+obj).prev().hide().html('');
 						layer.msg('发明专利号格式错误', {icon:5,anim:6,time:2000});
+						return;
 					}
 				}else if($('#zlTypeInp').val() == 'syxx' || $('#zlTypeInp').val() == 'fmxx' && opts == 'xxZlNum'){//第五位 2、8
 					if(tmpStr == 2 || tmpStr == 8){
-						//_this.data.isZlNumRightFlag = true;
 					}else{
-						//$('#'+obj).val('');
-						//_this.data.isZlNumRightFlag = false;
+						$('#'+obj).focus();
+						$('#'+obj).prev().hide().html('');
 						layer.msg('实用新型专利号格式错误', {icon:5,anim:6,time:2000});
+						return;
 					}
 				}else if($('#zlTypeInp').val() == 'wg'){//3、9
 					if(tmpStr == 3 || tmpStr == 9){
-						//_this.data.isZlNumRightFlag = true;
 					}else{
-						//$('#'+obj).val('');
-						//_this.data.isZlNumRightFlag = false;
+						$('#'+obj).prev().hide().html('');
+						$('#'+obj).focus();
 						layer.msg('外观专利号格式错误', {icon:5,anim:6,time:2000});
+						return;
 					}
 				}
 				$('#'+obj).val($('#'+obj).val().toUpperCase());
+				$('#'+obj).prev().show().html(tmpStr_four + '<strong class="zlPatColor">'+ tmpStr +'</strong>' + tmpStr_end);
+				$('.zlPatternNum').on('click',function(){
+					$(this).hide().next().show().focus();
+				});
 			});
 		},
 		//旧案下 发明+新型下增加发明专利号 新型专利号 可编辑
 		createFmXxZlNumDom : function(){
 			var strHtml = '';
-			strHtml += '<div id="fmxxZlNumWrap"><div class="zlNumBox"><span>*</span><p>发明专利号</p>';
-			strHtml += '<input id="fmZlNumInp" type="text" placeholder="请输入发明专利号" maxlength="30" autocomplete="off" class="layui-input"/></div>';
-			strHtml += '<div class="zlNumBox hasMargLeft"><span>*</span><p>新型专利号</p>';
-			strHtml += '<input id="xxZlNumInp" type="text" placeholder="请输入新型专利号" maxlength="30" autocomplete="off" class="layui-input"/></div></div>';
+			strHtml += '<div id="fmxxZlNumWrap" class="clearfix"><div class="zlNumBox"><span>*</span><label>发明专利号</label>';
+			strHtml += '<div class="innerFmxxNum"><p class="zlPatternNum multiWid"></p><input id="fmZlNumInp" type="text" placeholder="请输入发明专利号" maxlength="30" autocomplete="off" class="layui-input"/></div></div>';
+			strHtml += '<div class="zlNumBox hasMargLeft"><span>*</span><label>新型专利号</label>';
+			strHtml += '<div class="innerFmxxNum"><p class="zlPatternNum multiWid"></p><input id="xxZlNumInp" type="text" placeholder="请输入新型专利号" maxlength="30" autocomplete="off" class="layui-input"/></div></div>';
+			return strHtml;
+		},
+		//发明+新型下增加发明专利标题 新型专利标题
+		createFmxxZlTitDom : function(){
+			var strHtml = '';
+			strHtml += '<div id="fmxxZlTitBox" class="clearfix">';
+			strHtml += '<div class="fmxxZlTitBox"><label><span>*</span>发明案件标题</label><input id="fmZlTitInp" type="text" placeholder="请输入发明案件标题(40字以内)" maxlength="40" class="layui-input"/></div>';
+			strHtml += '<div class="fmxxZlTitBox"><label><span>*</span>新型案件标题</label><input id="xxZlTitInp" type="text" placeholder="请输入新型案件标题(40字以内)" maxlength="40" class="layui-input"/></div></div>';
 			return strHtml;
 		},
 		//创建添加代理费input
@@ -1165,6 +1198,21 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 				_this.judgeAgentFee_num('xxAgentFeeInp',false);
 			});
 		},*/
+		judgeZlTitPattern : function(obj){
+			var _this = this;
+			var reg = /^[A-Za-z0-9\u4e00-\u9fa5]+$/;
+			$('#'+obj).on('blur',function(){
+				if($('#'+obj).val() != ''){
+					if(!reg.test($.trim($('#'+obj).val()))){
+						_this.data.singleZlTitFlag = false;
+						layer.msg('案件标题不能含有标点符号和特殊字符', {icon:5,anim:6,time:2000});
+						return;
+					}else{
+						_this.data.singleZlTitFlag = true;
+					}		
+				}
+			});
+		},
 		//增加专利时代理费用填写格式
 		judgeAgentFee : function(obj){
 			if($('#'+obj).val().length==1){
