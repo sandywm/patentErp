@@ -258,7 +258,7 @@
 							for(var i=0;i<fmrName.length;i++){
 								nowHtml_sub += '<p id="fmrId_'+ tmpArrayFmrId[i] +'" fmridattr="'+ tmpArrayFmrId[i] +'" sqrids="'+ tmpArraySqrFmrId[i] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrFmrId[i] +'">';
 								if(i == 0){//指定第一发明人
-									nowHtml_sub += '<span><em class="firstNoteTxt fmrNoteTxt">[第一发明人]</em>'+ fmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+									nowHtml_sub += '<span><em id="firstFmrId" class="firstNoteTxt fmrNoteTxt">[第一发明人]</em>'+ fmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 								}else{
 									nowHtml_sub += '<span>'+ fmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 								}
