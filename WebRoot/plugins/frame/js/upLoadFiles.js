@@ -69,7 +69,9 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 						  that.errorMsg('最多只能上传'+ maxNumber +'个文件');
 						  return false;
 					  }else{
-						  $('.deleteBtn_sel').hide();
+						  if(opts != 'zlTaskOpts'){
+							  $('.deleteBtn_sel').hide();
+						  }
 					  }
 				  }
 				  ,choose: function(obj){
@@ -188,17 +190,6 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 				    				 var zlTypeTxt = _this.switchZlTypeCHN(tmpZlTypeVal);
 					    			 parentNextEle.html(zlTypeTxt);
 				    				 form.render();
-				    				 /*if(tmpZlTypeVal == 'fmxx'){
-				    					 //01：新案时 技术底稿采用fmPath和xxPath 合同类型不变
-				    					 //02：旧案时：技术底稿采用fmPath和xxPath 合同不变  定稿文件采用ajUploadDg_fm ajUploadDg_xx
-				    					
-				    					 if(tmpAjTypeVal == 'new'){
-				    						 alert("nihao")
-				    						 topParent.find('.uploadInpHid').removeClass('ajHtPathInp ajDgPathInp ajJsPathInp');
-				    					 }
-				    				 }else{
-				    					 
-				    				 }*/
 				    				 if(value == 'js'){//技术底稿
 				    					 topParent.find('.uploadInpHid').removeClass('ajHtPathInp ajDgPathInp xxPathInp_dg fmPathInp_dg').addClass('ajJsPathInp');
 					    			 }else{//定稿文件(旧案)

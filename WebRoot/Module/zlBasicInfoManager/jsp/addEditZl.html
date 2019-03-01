@@ -344,7 +344,7 @@
 					$('#fmZlTitInp').on('blur',function(){
 						if(!reg.test($.trim($('#fmZlTitInp').val()))){
 							zlInfoMethod.data.tmpFmTitFlag = false;
-							layer.msg('案件标题不能含有标点符号和特殊字符_faming', {icon:5,anim:6,time:2000});
+							layer.msg('案件标题不能含有标点符号和特殊字符', {icon:5,anim:6,time:2000});
 						}else{
 							zlInfoMethod.data.tmpFmTitFlag = true;
 						}	
@@ -352,7 +352,7 @@
 					$('#xxZlTitInp').on('blur',function(){
 						if(!reg.test($.trim($('#xxZlTitInp').val()))){
 							zlInfoMethod.data.tmpXxTitFlag = false;
-							layer.msg('案件标题不能含有标点符号和特殊字符_xinxing', {icon:5,anim:6,time:2000});
+							layer.msg('案件标题不能含有标点符号和特殊字符', {icon:5,anim:6,time:2000});
 						}else{
 							zlInfoMethod.data.tmpXxTitFlag = true;
 						}	

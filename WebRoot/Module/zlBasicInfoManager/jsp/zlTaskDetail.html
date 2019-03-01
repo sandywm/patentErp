@@ -215,10 +215,11 @@
 						this.judgeByCustom();
 					}else if(lcNo == 6){//定稿提交
 						$('.remarkWrap').remove();
+						$('.upFileWrap').hide();
 						var sqrName  = zlInfo[0].sqrName.split(',');
-						nowHtml_sub += '<div class="layui-form-item"><label class="layui-form-label titLabel">案件标题：</label>';
+						nowHtml_sub += '<div class="layui-form-item"><label class="layui-form-label titLabel"><span class="mustItem">*</span>案件标题：</label>';
 						nowHtml_sub += '<div class="layui-input-block inpHeiDiv"><input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)"  value="'+ zlInfo[0].zlTitle +'" maxlength="40" autocomplete="off" class="layui-input"/></div></div>';
-						nowHtml_sub += '<div class="layui-form-item hasMargTop"><label class="layui-form-label titLabel">申<span class="oneBlank"></span>请<span class="oneBlank"></span>人：</label><input id="sqrIdInp" type="hidden"/>';
+						nowHtml_sub += '<div class="layui-form-item hasMargTop"><label class="layui-form-label titLabel"><span class="mustItem">*</span>申<span class="oneBlank"></span>请<span class="oneBlank"></span>人：</label><input id="sqrIdInp" type="hidden"/>';
 						nowHtml_sub += '<div class="layui-input-block fixHeiDiv clearfix"><input id="ajSqrId" type="hidden" name="ajSqrId"/>';
 						nowHtml_sub += '<div id="sqrBox" class="multiBox fl">';
 						var tmpArraySqrId = zlInfo[0].sqrId.split(',');
@@ -230,7 +231,7 @@
 						}
 						nowHtml_sub += '</div>';
 						nowHtml_sub += '<span id="addSqrBtn" class="addSpan fl">添加/编辑申请人</span></div></div>';
-						nowHtml_sub += '<div class="layui-form-item hasMargTop"><label class="layui-form-label titLabel">联<span class="oneBlank"></span>系<span class="oneBlank"></span>人：</label>';
+						nowHtml_sub += '<div class="layui-form-item hasMargTop"><label class="layui-form-label titLabel"><span class="mustItem">*</span>联<span class="oneBlank"></span>系<span class="oneBlank"></span>人：</label>';
 						nowHtml_sub += '<div class="layui-input-block fixHeiDiv clearfix"><input id="ajLxrId" type="hidden" name="ajLxrId"/>';
 						nowHtml_sub += '<div class="multiBox fl" style="width:100%;">';
 						nowHtml_sub += '<div id="lxrBox" class="multiBox fl">';
@@ -245,7 +246,7 @@
 						}
 						nowHtml_sub += '</div>';
 						nowHtml_sub += '<span id="addlxrBtn" opts="addLxrOpts" class="addSpan fl">添加/编辑联系人</span></div></div></div>';
-						nowHtml_sub += '<div class="layui-form-item hasMargTop"><label class="layui-form-label titLabel">发<span class="oneBlank"></span>明<span class="oneBlank"></span>人：</label>';
+						nowHtml_sub += '<div class="layui-form-item hasMargTop"><label class="layui-form-label titLabel"><span class="mustItem">*</span>发<span class="oneBlank"></span>明<span class="oneBlank"></span>人：</label>';
 						nowHtml_sub += '<div class="layui-input-block fixHeiDiv clearfix"><input id="ajFmrId" type="hidden" name="ajFmrId"/>';
 						nowHtml_sub += '<div class="multiBox fl" style="width:100%;">';
 						nowHtml_sub += '<div id="fmrBox" class="multiBox fl">';
@@ -265,7 +266,7 @@
 						}
 						nowHtml_sub += '</div>';
 						nowHtml_sub += '<span id="addFmrBtn" opts="addFmrOpts" class="addSpan fl">添加/编辑发明人</span></div></div></div>';
-						nowHtml_sub += '<div class="layui-form-item hasMargTop"><label class="layui-form-label titLabel">是否费减：</label><input id="rateInp" type="hidden"/>';
+						nowHtml_sub += '<div class="layui-form-item hasMargTop"><label class="layui-form-label titLabel"><span class="mustItem">*</span>是否费减：</label><input id="rateInp" type="hidden"/>';
 						nowHtml_sub += '<div class="layui-input-block fixHeiDiv hasLinHei">';
 						nowHtml_sub += '<input type="radio" name="feeRateInp" value="0" lay-filter="isHasFeeRateFilter" title="无费减"><input type="radio" name="feeRateInp" lay-filter="isHasFeeRateFilter" value="0.7" title="70%"><input type="radio" name="feeRateInp" lay-filter="isHasFeeRateFilter" value="0.85" title="85%"></div></div>';
 						$('.judgeBox').addClass('dinggaoHei').show().html(nowHtml_sub);
@@ -540,7 +541,6 @@
 								}
 							}
 							var field = {/*zlId : globalZlId*/lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),checkStatus:adviceInpVal};
-							console.log(field);
 						}
 						$.ajax({
 	  						type:'post',
