@@ -378,8 +378,15 @@ body{
 	display:none;
 }
 .shenheHei{
+	/*height:40px;*/
+	/*line-height:40px;*/
+}
+.verifyBox{
 	height:40px;
 	line-height:40px;
+}
+.isOpenCusBox{
+	margin-top:2px;
 }
 .dinggaoHei{
 	height:auto;

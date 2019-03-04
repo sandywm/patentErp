@@ -195,13 +195,14 @@
 						}
 						this.showHideFun();
 					}
-					if(lcNo >= 4 && lcNo < 5){//审核意见/撰写质量评定
+					if(lcNo >= 4 && lcNo < 5){//审核意见/撰写质量评定 专利审核 专利复审
+						nowHtml_jud += '<div class="verifyBox clearfix">';
 						nowHtml_jud += '<span>审核意见：</span><input type="hidden" id="adviceInp"/>';
 						nowHtml_jud += '<div class="isPassBox layui-form">';
 						nowHtml_jud += '<input type="radio" name="adviceRad" lay-filter="isPassFilter" value="0" title="退回修改">';
 						nowHtml_jud += '<input type="radio" name="adviceRad" lay-filter="isPassFilter" value="6" title="审核通过"></div>';
-						nowHtml_jud += '<p id="judgeStar"></p>';
-						$('.judgeBox').addClass('shenheHei').html(nowHtml_jud);
+						nowHtml_jud += '<p id="judgeStar"></p></div>';
+ 						$('.judgeBox').html(nowHtml_jud);
 						form.render();
 						this.judgeScore();
 					}else if(lcNo >= 5 && lcNo < 6 || this.data.lcName == '补正审核'){
@@ -210,7 +211,7 @@
 						nowHtml_cus += '<div class="isPassBox layui-form">';
 						nowHtml_cus += '<input type="radio" name="adviceRad" lay-filter="isPassFilter_cus" value="0" title="退回修改">';
 						nowHtml_cus += '<input type="radio" name="adviceRad" lay-filter="isPassFilter_cus" value="1" title="审核通过"></div>';
-						$('.judgeBox').addClass('shenheHei').html(nowHtml_cus);
+						$('.judgeBox').html(nowHtml_cus);
 						form.render();
 						this.judgeByCustom();
 					}else if(lcNo == 6){//定稿提交
@@ -362,15 +363,29 @@
 						}
 					});
 				},
+				//专利审核 、专利复审下审核通过后创建是否开启客户确认
+				isOpenCusStatusDom : function(){
+					var nowHtml_jud = '';
+					nowHtml_jud += '<div class="verifyBox isOpenCusBox clearfix"><input type="hidden" id="isOpenCusInp" value="0"/>';
+					nowHtml_jud += '<label class="fl">是否开启客户确认：</label><div class="fl">';
+					nowHtml_jud += '<input type="radio" name="isOpenCus" lay-filter="isOpenCusFilter" value="0" title="开启" checked/>';
+					nowHtml_jud += '<input type="radio" name="isOpenCus" lay-filter="isOpenCusFilter" value="1" title="不开启(将直接进入到定稿提交)"/></div>';
+					nowHtml_jud += '</div>';
+					return nowHtml_jud;
+				},
 				judgeScore : function(){
 					$('.judgeBox').show();
 					//form 监听获取查看审核意见通过后的评分
 					var _this = this;
 					form.on('radio(isPassFilter)', function(data){
+						var isOpenCusDom = _this.isOpenCusStatusDom();
 						if(data.value == 6){//表示通过
 							_this.data.tmpJudgeStar = 1;
 							$('#judgeStar').show();
 							$('#adviceInp').val('');
+							$('.judgeBox').append(isOpenCusDom);
+							form.render();
+							_this.isOpenCusStaSel();//是否开启客户确认选择
 							rate.render({
 							    elem: '#judgeStar'
 							    ,value: 0
@@ -399,7 +414,13 @@
 							_this.data.tmpJudgeStar = 0;
 							$('#judgeStar').hide();
 							$('#adviceInp').val(data.value);
+							$('.isOpenCusBox').remove();
 						}
+					});
+				},
+				isOpenCusStaSel : function(){
+					form.on('radio(isOpenCusFilter)', function(data){
+						data.value == 0 ? $('#isOpenCusInp').val(0) : $('#isOpenCusInp').val(1);
 					});
 				},
 				judgeByCustom : function(){
@@ -453,10 +474,10 @@
 								layer.msg('请上传撰稿文件',{icon:5,anim:6,time:1500});
 								return;
 							}
-							var field = {/*zlId : globalZlId*/lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val()};
-						}else if(lcNo >=4 && lcNo < 5){
+							var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val()};
+						}else if(lcNo >=4 && lcNo < 5){//专利审核 专利复审
 							//专利审核(附件选填 备注必填)
-							var adviceInpVal = $('#adviceInp').val(),remarkVal = $.trim($('.remarkArea').val());
+							var adviceInpVal = $('#adviceInp').val(),isOpenCusInpVal = $('#isOpenCusInp').val(),remarkVal = $.trim($('.remarkArea').val());
 							if(_this.data.tmpJudgeStar == 0 && adviceInpVal == ''){
 								layer.msg('请选择审核意见',{icon:5,anim:6,time:1500});
 								return;
@@ -469,7 +490,12 @@
 								layer.msg('请填写备注',{icon:5,anim:6,time:1500});
 								return;
 							}
-							var field = {/*zlId : globalZlId*/lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),zxScore:adviceInpVal};
+							if(adviceInpVal == 0){//退回修改
+								var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),zxScore:adviceInpVal};
+							}else{
+								var field = {lcmxId:globalMxId,cusOpenStatus:isOpenCusInpVal,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),zxScore:adviceInpVal};
+							}
+							console.log(field);
 						}else if(lcNo >= 5 && lcNo < 6){
 							//客户确认
 							//通过时 附件 备注 ->选填  不通过 附件可选 备注 必填
@@ -485,7 +511,7 @@
 									}
 								}
 							}
-							var field = {/*zlId : globalZlId*/lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),cusCheckStatus:adviceInpVal};
+							var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),cusCheckStatus:adviceInpVal};
 						}else if(lcNo == 6){
 							//定稿提交
 							var sqrName='',ajTitleVal = $.trim($('#ajTitleInp').val()),
@@ -518,7 +544,7 @@
 								return;
 							}
 							//alert(globalZlId + "--" + ajTitleVal + "--" + ajSqrIdVal + "--" + sqrName + "--" + ajLxrIdVal + "=----" + ajFmrIdVal + "--" + rateInpVal + "--" + $('#fujianInp').val())
-							var field = {/*zlId : globalZlId*/lcmxId:globalMxId,zlTitle:ajTitleVal,sqrId:ajSqrIdVal,sqrName:sqrName,lxrId:ajLxrIdVal,fmrId:ajFmrIdVal,ajFjInfo:rateInpVal,taskRemark:'',upZxFile:$('#fujianInp').val()};
+							var field = {lcmxId:globalMxId,zlTitle:ajTitleVal,sqrId:ajSqrIdVal,sqrName:sqrName,lxrId:ajLxrIdVal,fmrId:ajFmrIdVal,ajFjInfo:rateInpVal,taskRemark:'',upZxFile:$('#fujianInp').val()};
 						}else if(_this.data.lcName == '专利补正' || _this.data.lcName == '补正修改'){
 							//专利补正/补正修改 (附件必填 备注选填)
 							var remarkVal = $.trim($('.remarkArea').val());
@@ -540,7 +566,7 @@
 									}
 								}
 							}
-							var field = {/*zlId : globalZlId*/lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),checkStatus:adviceInpVal};
+							var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),checkStatus:adviceInpVal};
 						}
 						$.ajax({
 	  						type:'post',
