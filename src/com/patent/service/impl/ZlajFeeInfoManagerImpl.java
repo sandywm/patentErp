@@ -613,4 +613,21 @@ public class ZlajFeeInfoManagerImpl implements ZlajFeeInfoManager{
 			HibernateUtil.closeSession();
 		}
 	}
+
+	@Override
+	public List<ZlajFeeInfoTb> listDlfeeInfoByZlId(Integer zlId,String tzsTx)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			fDao = (ZlajFeeInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_FEE_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return fDao.findDlfeeInfoByZlId(sess, zlId,tzsTx);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定专利的事务段提醒的代理费(未开启缴费时间)时出现异常");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
 }

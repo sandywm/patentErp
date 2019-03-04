@@ -251,4 +251,16 @@ public interface ZlajFeeInfoDao {
 	 * @return
 	 */
 	List<ZlajFeeInfoTb> findSpecInfoByFeeIdArr(Session sess,String feeIdStr);
+	
+	/**
+	 * 获取指定专利的事务段提醒的代理费
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-1 上午11:09:39
+	 * @param sess
+	 * @param zlId 专利编号
+	 * @param tzsTx 通知书提醒[受理通知书(sl)、公布通知书(gb)、实质审查通知书(sc)、授权通知书(sq)]
+	 * @return
+	 */
+	List<ZlajFeeInfoTb> findDlfeeInfoByZlId(Session sess,Integer zlId,String tzsTx);
 }

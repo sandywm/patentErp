@@ -50,6 +50,7 @@ public interface ZlajMainInfoManager {
 	 * @param ajUploadDg 定稿文件(多个逗号隔开)
 	 * @param ajUploadHt 合同文件(多个逗号隔开)
 	 * @param payUserInfo 付款方
+	 * @param bzTjUserId 补正提交人员
 	 * @return
 	 * @throws WEBException
 	 */
@@ -59,7 +60,7 @@ public interface ZlajMainInfoManager {
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId,Integer zlLevel,
-			String ajType1,String ajUploadDg,String ajUploadHt,String payUserInfo) throws WEBException;
+			String ajType1,String ajUploadDg,String ajUploadHt,String payUserInfo,Integer bzTjUserId) throws WEBException;
 	
 	/**
 	 * 根据条件分页获取专利列表(ID降序)
@@ -222,11 +223,12 @@ public interface ZlajMainInfoManager {
 	 * @param bzUserId 案件补正人员（-1不修改）
 	 * @param bzshUserId 案件补正审核人员（-1不修改）
 	 * @param bhUserId 案件驳回人员（-1不修改）
+	 * @param bzTjUserId 补正提交人员（-1不修改）
 	 * @return
 	 * @throws WEBException
 	 */
 	boolean updateOperatorUserInfoByZlId(Integer zlId,Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
-			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId) throws WEBException;
+			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer bzTjUserId) throws WEBException;
 	
 	/**
 	 * 修改专利状态
@@ -252,6 +254,17 @@ public interface ZlajMainInfoManager {
 	 */
 	boolean updateZlUpFile_dg(Integer id,String zlUpFile) throws WEBException;
 	
+	/**
+	 * 修改专利定稿路径
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-1 下午03:04:39
+	 * @param id
+	 * @param zlUpFile 专利定稿路径
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateZlUpFile_dg1(Integer id,String zlUpFile) throws WEBException;
 	/**
 	 * 根据主键修改专利的最终标题、申请人、发明人、联系人、费减
 	 * @description

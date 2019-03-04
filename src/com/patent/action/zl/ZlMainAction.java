@@ -1879,6 +1879,7 @@ public class ZlMainAction extends DispatchAction {
 		Integer bzUserId = -1;
 		Integer bzshUserId = -1;
 		Integer bhUserId = -1;
+		Integer bzTjUserId = -1;
 		String lcName = "";
 		String currDate = CurrentTime.getStringDate();
 		if(zlId > 0){
@@ -1931,7 +1932,7 @@ public class ZlMainAction extends DispatchAction {
 													msg = "noYj_cus";
 													flag = false;
 												}
-											}else if(yjType.equals("dgtj") && currLoginUserId.equals(zl.getZxUserId())){
+											}else if(yjType.equals("dgtj") && currLoginUserId.equals(zl.getTjUserId())){
 												if(ajStatus < 7){
 													lcName = "定稿提交";//案件没完成提交之前可以移交
 													tjUserId = userId_yj;
@@ -1940,21 +1941,24 @@ public class ZlMainAction extends DispatchAction {
 													flag = false;
 												}
 												
-											}else if(yjType.equals("tzs") && currLoginUserId.equals(zl.getZxUserId())){
+											}else if(yjType.equals("tzs") && currLoginUserId.equals(zl.getTzsUserId())){
 												lcName = "导入通知书";//无限制
 												tzsUserId = userId_yj;
 											}else if(yjType.equals("fycj") && currLoginUserId.equals(zl.getZxUserId())){
 												lcName = "费用催缴";//无限制
 												feeUserId = userId_yj;
-											}else if(yjType.equals("bz") && currLoginUserId.equals(zl.getZxUserId())){
+											}else if(yjType.equals("bz") && currLoginUserId.equals(zl.getFeeUserId())){
 												lcName = "专利补正";//无限制
 												bzUserId = userId_yj;
-											}else if(yjType.equals("bzsh") && currLoginUserId.equals(zl.getZxUserId())){
+											}else if(yjType.equals("bzsh") && currLoginUserId.equals(zl.getBzshUserId())){
 												lcName = "补正审核";//无限制
 												bzshUserId = userId_yj;
-											}else if(yjType.equals("bh") && currLoginUserId.equals(zl.getZxUserId())){
+											}else if(yjType.equals("bh") && currLoginUserId.equals(zl.getBhUserId())){
 												lcName = "专利驳回";//无限制
 												bhUserId = userId_yj;
+											}else if(yjType.equals("bztj") && currLoginUserId.equals(zl.getBzTjUserId())){
+												lcName = "补正提交";//无限制
+												bzTjUserId = userId_yj;
 											}
 											if(flag){
 												//人员移交统一归纳到2.0（人员分配中来）
@@ -1966,7 +1970,7 @@ public class ZlMainAction extends DispatchAction {
 													mxm.addLcMx(lcId, userId_yj, lcName+"任务领取", currLcNo, currDate, currDate,"", 0, "", "", 0.0,user.getUserName()+"任务移交",-1,"","",0,0,"");
 													//给被移交人发送邮件提醒
 													mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, userId_yj, "cpyUser",  ajNoQt+ " "+lcName+"任务移交", user.getUserName()+"将["+ajNoQt+"]"+lcName+"任务移交给你");
-													zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId, tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+													zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId, tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId,bzTjUserId);
 													msg = "success";
 												}
 											}
@@ -2023,6 +2027,7 @@ public class ZlMainAction extends DispatchAction {
 		Integer bhUserId = -1;
 		Integer checkUserId = -1;
 		Integer lcPjScore = -1;
+		Integer bzTjUserId = -1;
 		String msg = "error";
 		boolean flag_final = false;
 		if(this.getLoginType(request).equals("cpyUser")){
@@ -2043,6 +2048,7 @@ public class ZlMainAction extends DispatchAction {
 				bzUserId = CommonTools.getFinalInteger("bzUserId", request);
 				bzshUserId = CommonTools.getFinalInteger("bzshUserId", request);
 				bhUserId = CommonTools.getFinalInteger("bhUserId", request);
+				bzTjUserId = CommonTools.getFinalInteger("bzTjUserId", request);
 				checkUserId = CommonTools.getFinalInteger("checkUserId", request);
 				List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
 				if(zlList.size() > 0){
@@ -2053,10 +2059,10 @@ public class ZlMainAction extends DispatchAction {
 						boolean flag = false;
 						if(ajStatus >= 7 || zlType1.equals("old")){//定稿提交以后或者是旧案---专利撰写、专利审核、客户确认(专利补正时也有客户确认)、定稿提交人员不能再进行修改
 							flag = zlm.updateOperatorUserInfoByZlId(zlId, -1, -1, cusCheckUserId,-1, 
-									tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+									tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId,bzTjUserId);
 						}else{
 							flag = zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId,tjUserId, 
-									tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+									tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId,bzTjUserId);
 						}
 						if(flag){
 							//修改专利难易度
@@ -2075,6 +2081,7 @@ public class ZlMainAction extends DispatchAction {
 							Integer bzUserId_db = zl.getBzUserId();
 							Integer bzshUserId_db = zl.getBzshUserId();
 							Integer bhUserId_db = zl.getBhUserId();
+							Integer bzTjUserId_db = zl.getBzTjUserId();
 							//人员移交统一归纳到2.0（人员分配中来）
 							List<ZlajLcInfoTb> lcList = lcm.listLcInfoByLcMz(zl.getId(),"人员分配");
 							if(lcList.size() > 0){
@@ -2273,6 +2280,27 @@ public class ZlMainAction extends DispatchAction {
 												ZlajLcMxInfoTb lcmx = it.next();
 												if(lcmx.getLcMxEDate().equals("")){//需要修改未完成的
 													mxm.updateFzrInfoById(lcmx.getId(), bzshUserId,"");
+												}
+											}
+										}
+									}
+								}
+								//补正提交人员
+								if(bzTjUserId_db.equals(0)){
+									mxm.addLcMx(lcId, bzTjUserId, "补正提交人员分配", 2.0, currDate, currDate, "", 0, "", "",  0.0, "",lcPjScore,"","",0,0,"");
+									mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, bzTjUserId, "cpyUser", "新任务通知：补正提交", "专利["+ajTitle+"]已发布，请您随时关注专利进度!完成专利补正提交工作!");
+								}else{
+									if(!bzshUserId.equals(bzshUserId_db)){
+										List<ZlajLcMxInfoTb>  mxList = mxm.listSpecInfoInfoByOpt(zlId, "补正提交人员分配");
+										if(mxList.size() > 0){
+											mxm.updateFzrInfoById(mxList.get(0).getId(), bzTjUserId,"操作人员修改");
+										}
+										List<ZlajLcMxInfoTb>  mxList_bzsc = mxm.listSpecInfoInfoByOpt(zlId, "补正提交");
+										if(mxList_bzsc.size() > 0){
+											for(Iterator<ZlajLcMxInfoTb> it = mxList_bzsc.iterator() ; it.hasNext();){
+												ZlajLcMxInfoTb lcmx = it.next();
+												if(lcmx.getLcMxEDate().equals("")){//需要修改未完成的
+													mxm.updateFzrInfoById(lcmx.getId(), bzTjUserId,"");
 												}
 											}
 										}
@@ -2545,7 +2573,7 @@ public class ZlMainAction extends DispatchAction {
 									}
 									Integer zlId = zlm.addZL(ajNo, ajNoQt, zlNoGf_curr, ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, 
 											yxqDetail, ajUpload, ajRemark, ajEwyqId, ajApplyDate, zlNo, zlStatusChi, 0,0,pubZlId,0,0,0,0,0,0,0,cpyId,
-											currLoginUserId,zlLevel,ajType1,ajUploadDg,ajUploadHt,payUserInfo);
+											currLoginUserId,zlLevel,ajType1,ajUploadDg,ajUploadHt,payUserInfo,0);
 									if(zlId > 0){
 										if(ajTypeArr.length == 2){
 											if(zlId_1.equals(0)){
@@ -3320,7 +3348,7 @@ public class ZlMainAction extends DispatchAction {
 										mxm.updateEdateById(lcmx.getId(), currUserId, "", -1, "", "", "", currDate, "撰写任务已被领取",-1);
 										//修改任务分配流程为完成状态
 										lcm.updateComInfoById(lc.getId(), currDate);
-										zlm.updateOperatorUserInfoByZlId(zlId,-1,currUserId,-1,-1,-1,-1,-1,-1,-1);
+										zlm.updateOperatorUserInfoByZlId(zlId,-1,currUserId,-1,-1,-1,-1,-1,-1,-1,-1);
 										Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", currDate, lc.getLcCpyDate(), "", "",3.0);
 										mxm.addLcMx(lcId_3, currUserId, "新申请撰稿", 3.0, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
 										//领取成功后把状态修改成3.0
@@ -4455,11 +4483,11 @@ public class ZlMainAction extends DispatchAction {
 												//增加下一个流程
 												Integer nextLcId = lcm.addLcInfo(zlId, "客户确认", "客户确认", currDate, cpyDate, "", "",lcNo);
 												if(nextLcId > 0){
-													mxm.addLcMx(nextLcId, zl.getTjUserId(), "客户确认", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
+													mxm.addLcMx(nextLcId, zl.getCusCheckUserId(), "客户确认", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
 													//修改专利的案件状态
 													zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待客户确认");
 													//发送邮件
-													mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getTjUserId(), "cpyUser", "新任务通知：定稿提交", "专利["+zl.getAjTitle()+"]审核已审核通过，请及时完成专利提交工作!");
+													mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getCusCheckUserId(), "cpyUser", "新任务通知：客户确认", "专利["+zl.getAjTitle()+"]审核已审核通过，请及时完成客户确认工作!");
 													//审核成功，增加撰写人经验、撰写数量(增加到客户确认上完成)
 												}else{
 													msg = "error";
@@ -4584,8 +4612,21 @@ public class ZlMainAction extends DispatchAction {
 										}
 										if(mxList_t.size() > 0){
 											ZlajLcMxInfoTb mx_last = mxList_t.get(mxList_t.size() - 1);
-											zlm.updateZlUpFile_dg(zlId, mx_last.getLcMxUpFile());
+											upZxFile = mx_last.getLcMxUpFile();
+											zlm.updateZlUpFile_dg1(zlId, upZxFile);
 											mxm.updateEdateById(lcMxId, zl.getTjUserId(),"",  currUserId, upZxFile, currDate, "", currDate, taskRemark,-1);
+											if(!upZxFile.equals("")){
+												String[] fjNameArr = upZxFile.split(",");
+												for(Integer i = 0 ; i < fjNameArr.length ; i++){
+													String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
+													Integer lastIndex = fileName.lastIndexOf("_");
+													String lastFjName = fileName.substring(lastIndex+1, fileName.length());
+													Integer lastIndex_1 = lastFjName.indexOf(".");
+													String fjVersion = lastFjName.substring(0, lastIndex_1);
+													String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
+													fjm.addFj(zlId, fjNameArr[i], fjVersion, "定稿文件", fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
+												}
+											}
 											//修改流程完成时间
 											lcm.updateComInfoById(lcId, currDate);
 											//修改必须的信息
@@ -5484,6 +5525,14 @@ public class ZlMainAction extends DispatchAction {
 												zlm.updateAjNoGfById(zlId, ajNoGf);
 												readResult = "success";
 												readResultChi = "读取成功";
+												//查看是否有事务提醒--代理费[获取指定专利的事务段提醒的代理费(未开启缴费时间)]
+												List<ZlajFeeInfoTb> dlfList = fm.listDlfeeInfoByZlId(zlId,"sl");
+												if(dlfList.size() > 0){
+													for(Iterator<ZlajFeeInfoTb> it = dlfList.iterator() ; it.hasNext();){
+														ZlajFeeInfoTb dlFee = it.next();
+														fm.updateFeeInfoById(dlFee.getId(), currDate, currDate);
+													}
+												}
 											}
 					        			}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
 					        				if(!applyDate_db.equals("")){
@@ -5734,6 +5783,14 @@ public class ZlMainAction extends DispatchAction {
 								        				}
 						        					}
 								        		}
+												//查看是否有事务提醒--代理费[获取指定专利的事务段提醒的代理费(未开启缴费时间)]
+												List<ZlajFeeInfoTb> dlfList = fm.listDlfeeInfoByZlId(zlId,"sq");
+												if(dlfList.size() > 0){
+													for(Iterator<ZlajFeeInfoTb> it = dlfList.iterator() ; it.hasNext();){
+														ZlajFeeInfoTb dlFee = it.next();
+														fm.updateFeeInfoById(dlFee.getId(), currDate, currDate);
+													}
+												}
 					        				}else{//不存在申请日不能导入后续的通知书
 					        					readResult = "dateError";
 					        					readResultChi = "指定专利无申请日，无法进行读取";
@@ -5776,6 +5833,26 @@ public class ZlMainAction extends DispatchAction {
 					        				zlm.updateZlStatusById(zlId, "13", "实质审查中");
 					        				readResult = "success";
 					        				readResultChi = "读取成功";
+					        				//查看是否有事务提醒--代理费[获取指定专利的事务段提醒的代理费(未开启缴费时间)]
+											List<ZlajFeeInfoTb> dlfList = fm.listDlfeeInfoByZlId(zlId,"sc");
+											if(dlfList.size() > 0){
+												for(Iterator<ZlajFeeInfoTb> it = dlfList.iterator() ; it.hasNext();){
+													ZlajFeeInfoTb dlFee = it.next();
+													fm.updateFeeInfoById(dlFee.getId(), currDate, currDate);
+												}
+											}
+					        			}else if(tzsName.contains("公布通知书")){//发明专利申请公布通知书
+					        				zlm.updateZlStatusById(zlId, "16", "实质审查中");
+					        				readResult = "success";
+					        				readResultChi = "读取成功";
+					        				//查看是否有事务提醒--代理费[获取指定专利的事务段提醒的代理费(未开启缴费时间)]
+											List<ZlajFeeInfoTb> dlfList = fm.listDlfeeInfoByZlId(zlId,"gb");
+											if(dlfList.size() > 0){
+												for(Iterator<ZlajFeeInfoTb> it = dlfList.iterator() ; it.hasNext();){
+													ZlajFeeInfoTb dlFee = it.next();
+													fm.updateFeeInfoById(dlFee.getId(), currDate, currDate);
+												}
+											}
 					        			}else if(tzsName.equals("电子申请回执")){//电子申请回执
 					        				readResult = "success";
 					        				readResultChi = "读取成功";
@@ -6051,6 +6128,7 @@ public class ZlMainAction extends DispatchAction {
 						Integer bzUserId = -1;
 						Integer bzshUserId = -1;
 						Integer bhUserId = -1;
+						Integer bzTjUserId = -1;
 						if(lcTask.equals("新申请撰稿") || lcTask.equals("撰稿修改")){
 							zxUserId = newFzUserId;
 						}else if(lcTask.equals("专利审核")){
@@ -6069,9 +6147,11 @@ public class ZlMainAction extends DispatchAction {
 							bzshUserId = newFzUserId;
 						}else if(lcTask.equals("专利驳回")){
 							bhUserId = newFzUserId;
+						}else if(lcTask.equals("补正提交")){
+							bzTjUserId = newFzUserId;
 						}
 						zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId, 
-								tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+								tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId,bzTjUserId);
 						lcyjm.addYj(lcmxId, currUserId, lcTask, "", 1, CurrentTime.getCurrentTime(), currUserId, cpyId, yjType);
 						//给新分配的人员发送邮件
 						mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, newFzUserId, "cpyUser", "流程任务移交", "您已被分配为专利["+zl.getAjTitle()+"]中的"+mx.getLcMxName()+"]流程任务的负责人,请随时关注任务进度");
@@ -6184,6 +6264,7 @@ public class ZlMainAction extends DispatchAction {
 										Integer bzUserId = -1;
 										Integer bzshUserId = -1;
 										Integer bhUserId = -1;
+										Integer bzTjUserId = -1;
 										if(lcTask.equals("新申请撰稿") || lcTask.equals("撰稿修改")){
 											zxUserId = newFzUserId;
 										}else if(lcTask.equals("专利审核")){
@@ -6202,9 +6283,11 @@ public class ZlMainAction extends DispatchAction {
 											bzshUserId = newFzUserId;
 										}else if(lcTask.equals("专利驳回")){
 											bhUserId = newFzUserId;
+										}else if(lcTask.equals("补正提交")){
+											bzTjUserId = newFzUserId;
 										}
 										zlm.updateOperatorUserInfoByZlId(zlId, checkUserId, zxUserId, cusCheckUserId, 
-												tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId);
+												tjUserId, tzsUserId, feeUserId, bzUserId, bzshUserId, bhUserId,bzTjUserId);
 										//给新分配的人员发送邮件
 										mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, newFzUserId, "cpyUser", "流程任务分配", "您已被分配为专利["+zl.getAjTitle()+"]中的"+mx.getLcMxName()+"]流程任务的负责人,请随时关注任务进度");
 									}
@@ -6278,6 +6361,19 @@ public class ZlMainAction extends DispatchAction {
 		        bos.close();
 		    } catch (IOException e){  
 		        e.printStackTrace();  
+		    } finally{
+				if(fis != null){
+					fis.close();	    		
+				}
+				if(bis != null){
+					bis.close();
+				}
+				if(fos != null){
+					fos.close();
+				}
+				if(bos != null){
+					bos.close();
+				}
 		    }
 		}
 		return null;

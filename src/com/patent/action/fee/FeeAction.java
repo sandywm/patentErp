@@ -39,6 +39,7 @@ import org.apache.poi.hssf.usermodel.HSSFComment;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.hssf.usermodel.HSSFPatriarch;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -614,15 +615,15 @@ public class FeeAction extends DispatchAction {
 						            totalPrice_gf = Convert.convertInputNumber_2(totalPrice_gf + feePrice);
 						            cell = row.createCell(6); 
 						            cell.setCellStyle(style);  
-						            cell.setCellValue(String.valueOf(feePrice)); 
+						            cell.setCellValue(feePrice); 
 						            cell = row.createCell(7); 
 						            cell.setCellStyle(style);  
 						            cell.setCellValue(zlf.getFeeEndDateGf()); 
 						            cell = row.createCell(8); 
 						            cell.setCellStyle(style);  
-						            cell.setCellValue(totalPrice_gf); 
-						            cell = row.createCell(8); 
-						            cell.setCellStyle(style);  
+//						            cell.setCellValue(totalPrice_gf); 
+//						            cell = row.createCell(8); 
+//						            cell.setCellStyle(style);  
 						            if(zlf.getFeeTypeInfoTb().getFeeName().contains("年费")){
 										//查看是否存在滞纳金
 										Integer feeId = zlf.getId();
@@ -635,7 +636,7 @@ public class FeeAction extends DispatchAction {
 									        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0,(short)3, 3, (short) 6, 6);
 									        HSSFComment comment = draw.createCellComment(anchor);
 									        ZlajFeeSubInfoTb fs = fsList.get(0);
-									        cell.setCellValue(String.valueOf(fs.getFeePrice()));//滞纳金费用
+									        cell.setCellValue(fs.getFeePrice());//滞纳金费用
 									        totalPrice_znj =  Convert.convertInputNumber_2(totalPrice_znj + fs.getFeePrice());
 											for(Integer j = 0 ; j < fsa_len ; j++){
 												ZlajFeeSubInfoTb fs_all = fsaList.get(j);
@@ -649,6 +650,8 @@ public class FeeAction extends DispatchAction {
 											comment.setAuthor("system");//添加作者
 											cell.setCellComment(comment);
 										}
+						            }else{
+						            	cell.setCellValue(0);
 						            }
 						            Double serFeePrice = 0d;//服务费
 						            totalPrice_ser = Convert.convertInputNumber_2(totalPrice_ser + serFeePrice);
@@ -1825,28 +1828,6 @@ public class FeeAction extends DispatchAction {
 			msg = "success";
 		}
 		map.put("result", msg);
-		this.getJsonPkg(map, response);
-		return null;
-	}
-	
-	/**
-	 * 获取导入/出费用、上传票据的权限
-	 * @description
-	 * @author Administrator
-	 * @date 2019-2-28 下午04:45:31
-	 * @param mapping
-	 * @param form
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	public ActionForward getFeeOrPjAbility(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		Map<String,Object> map = new HashMap<String,Object>();
-		String opt = CommonTools.getFinalStr("opt", request);//impPj(上传发票权限),impFee(导入费用权限),expFee(导出费用权限)
-		boolean abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), opt);
-		map.put("abilityFlag", abilityFlag);
 		this.getJsonPkg(map, response);
 		return null;
 	}

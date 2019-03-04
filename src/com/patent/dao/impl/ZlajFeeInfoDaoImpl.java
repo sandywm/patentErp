@@ -260,4 +260,11 @@ public class ZlajFeeInfoDaoImpl implements ZlajFeeInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<ZlajFeeInfoTb> findDlfeeInfoByZlId(Session sess, Integer zlId,String tzsTx) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajFeeInfoTb as zlf where zlf.zlajMainInfoTb.id = "+zlId + " and zlf.feeTxType = 1 and zlf.feeEndDateJj = '' and zlf.tzsTx = '"+tzsTx+"'";
+		return sess.createQuery(hql).list();
+	}
+
 }

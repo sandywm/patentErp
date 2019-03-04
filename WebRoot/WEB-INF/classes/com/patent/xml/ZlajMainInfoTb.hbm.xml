@@ -175,6 +175,11 @@
                 <comment>案件补正审核人员（没有就为0）</comment>
             </column>
         </property>
+         <property name="bzTjUserId" type="java.lang.Integer">
+            <column name="bztj_user_id">
+                <comment>案件提交审核人员（没有就为0）</comment>
+            </column>
+        </property>
         <property name="bhUserId" type="java.lang.Integer">
             <column name="bh_user_id">
                 <comment>案件驳回人员（没有就为0）</comment>

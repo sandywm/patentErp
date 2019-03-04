@@ -405,4 +405,16 @@ public interface ZlajFeeInfoManager{
 	 * @throws WEBException
 	 */
 	void delAllDlfeeByFeeIdArr(String feeIdArr)throws WEBException ;
+	
+	/**
+	 * 获取指定专利的事务段提醒的代理费(未开启缴费时间)
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-1 上午11:28:46
+	 * @param zlId 专利编号
+	 * @param tzsTx 通知书提醒[受理通知书(sl)、公布通知书(gb)、实质审查通知书(sc)、授权通知书(sq)]
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajFeeInfoTb> listDlfeeInfoByZlId(Integer zlId,String tzsTx)throws WEBException ;
 }

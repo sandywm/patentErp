@@ -27,7 +27,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			String ajUpload, String ajRemark, String ajEwyqId,
 			String ajApplyDate, String ajStatus,String ajStatusChi,Integer pubZlId, Integer checkUserId,Integer zxUserId,Integer cusCheckUserId,
 			Integer tjUserId,Integer tzsUserId,Integer feeUserId,Integer bzUserId,Integer bzshUserId,Integer bhUserId,Integer cpyId,Integer ajAddUserId,Integer zlLevel,
-			String ajType1,String ajUploadDg,String ajUploadHt,String payUserInfo)
+			String ajType1,String ajUploadDg,String ajUploadHt,String payUserInfo,Integer bzTjUserId)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -38,7 +38,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			ZlajMainInfoTb zl = new ZlajMainInfoTb(cDao.get(sess, cpyId), ajNo, ajNoQt, ajNoGf,
 					ajTitle, ajType, ajFieldId, ajSqrId, ajSqrName,ajFmrId, ajLxrId, jsLxrId,ajFjInfo,ajSqAddress, ajYxqDetail,
 					ajUpload, ajRemark, ajEwyqId,ajApplyDate, ajStatus, ajStatusChi, 0,0,pubZlId,"","","",CurrentTime.getStringDate(),checkUserId,zxUserId,cusCheckUserId,
-					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId,zlLevel,ajType1,ajUploadDg,ajUploadHt,payUserInfo);
+					tjUserId,tzsUserId,feeUserId,bzUserId,bzshUserId,bhUserId,ajAddUserId,zlLevel,ajType1,ajUploadDg,ajUploadHt,payUserInfo,bzTjUserId);
 			zlDao.save(sess, zl);
 			tran.commit();
 			return zl.getId();
@@ -261,7 +261,7 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	public boolean updateOperatorUserInfoByZlId(Integer zlId,
 			Integer checkUserId, Integer zxUserId, Integer cusCheckUserId,Integer tjUserId,
 			Integer tzsUserId, Integer feeUserId, Integer bzUserId,
-			Integer bzshUserId, Integer bhUserId) throws WEBException {
+			Integer bzshUserId, Integer bhUserId,Integer bzTjUserId) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
@@ -295,6 +295,9 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 				}
 				if(bhUserId >= 0){
 					zl.setBhUserId(bhUserId);
+				}
+				if(bzTjUserId >= 0){
+					zl.setBzTjUserId(bzTjUserId);
 				}
 				zlDao.update(sess, zl);
 				tran.commit();
@@ -600,6 +603,31 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据主键修改案件分案信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateZlUpFile_dg1(Integer id, String zlUpFile)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajMainInfoTb zl = zlDao.get(sess, id);
+			if(zl != null){
+				zl.setAjUploadDg(zlUpFile);
+				zlDao.update(sess, zl);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改专利定稿文件时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}
