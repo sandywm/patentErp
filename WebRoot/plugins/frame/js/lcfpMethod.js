@@ -54,6 +54,11 @@ layui.define(['rate'],function(exports){
 				globalTypeUser = $(this).attr('opt');
 				_this.commonLayerOpen('增加客户确认人员');
 			});
+			//补正提交人员			
+			$('#addBzTijiao').on('click',function(){
+				globalTypeUser = $(this).attr('opt');
+				_this.commonLayerOpen('增加补正提交人员');
+			});
 			//保存
 			$('#saveLcFpBtn').on('click',function(){
 				var zxUserId = $('#addZxUser_con').attr('userId'),
@@ -65,6 +70,7 @@ layui.define(['rate'],function(exports){
 					bzshUserId = $('#addBuzhengShUser_con').attr('userId'),
 					bhUserId = $('#addZlBhUser_con').attr('userId'),
 					cusSuerUserId = $('#addCusSureUser_con').attr('userId');
+					bzTjUserId = $('#addBzTjUser_con').attr('userId');
 				var index= parent.layer.getFrameIndex(window.name),
 					isNewAjTypeFlag = true,isOldAjRightFlag=false;
 				_this.data.zlAjType == 'new' ? isNewAjTypeFlag : isNewAjTypeFlag = false;
@@ -97,14 +103,16 @@ layui.define(['rate'],function(exports){
 						layer.msg('请选择专利补正审核人员！', {icon:5,anim:6,time:1500});
 					}/*else if(bhUserId == undefined || bhUserId==''){
 						layer.msg('请选择专利驳回人员！', {icon:5,anim:6,time:1500});
-					}*/else{
+					}*/else if(bzTjUserId == undefined || bzTjUserId == ''){
+						layer.msg('请选择补正提交人员！', {icon:5,anim:6,time:1500});
+					}else{
 						//alert(zxUserId + "=zxUserId-" + checkUserId + "=checkUserId-" + tjUserId + "=tjUserId-" + tzsUserId + "=tzsUserId-" + feeUserId + "=feeUserId-" + bzUserId + "=bzUserId-" + bzshUserId + "=bzshUserId-" + bhUserId + "=bhUserId")
 						if(isNewAjTypeFlag){//新案
 							var field={zlId:parent.globalZlId,zlLevel:_this.data.difflevel,zxUserId:zxUserId,checkUserId:checkUserId,tjUserId:tjUserId,tzsUserId:tzsUserId,
-									feeUserId:feeUserId,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:0,cusCheckUserId:cusSuerUserId};
+									feeUserId:feeUserId,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:0,cusCheckUserId:cusSuerUserId,bzTjUserId:bzTjUserId};
 						}else{//旧案
 							var field={zlId:parent.globalZlId,zlLevel:_this.data.difflevel,tzsUserId:tzsUserId,
-									feeUserId:feeUserId,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:0,cusCheckUserId:cusSuerUserId};
+									feeUserId:feeUserId,bzUserId:bzUserId,bzshUserId:bzshUserId,bhUserId:0,cusCheckUserId:cusSuerUserId,bzTjUserId:bzTjUserId};
 						}
 						$.ajax({
 	  						type:'post',

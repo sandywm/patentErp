@@ -381,7 +381,7 @@
 					if(lqStatusVal != 4 && lqStatusVal != 5 && lqStatusVal != 6){	
 						var field = {stopStatus:ajStopStatusInpVal,ajNoQt:ajNoTitInp_ajNoVal,zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),ajType:ajTypeInpVal,cusId:cusIdInpVal,sDate:sDateInpVal,eDate:eDateInpVal,lqStatus: lqStatusVal};
 					}else if(lqStatusVal == 4){
-						var field = {ajNoQt:ajNoTitInp_ajNoVal,zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),cusId:cusIdInpVal,comStatus:taskStaVal,lqStatus: lqStatusVal};//0未完成(默认) 1 已完成
+						var field = {ajNoQt:ajNoTitInp_ajNoVal,zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),cusId:cusIdInpVal,ajType:ajTypeInpVal,comStatus:taskStaVal,lqStatus: lqStatusVal};//0未完成(默认) 1 已完成
 					}else if(lqStatusVal == 5){
 						//专利移交审核/专利移交记录
 						var field = {ajNoQt:ajNoTitInp_ajNoVal,zlNo:ajNoTitInp_ajZlNoVal,ajTitle:escape(ajNoTitInp_ajTitVal),checkStatus:$('#tranStatusInp').val(),lqStatus: lqStatusVal};
@@ -500,7 +500,7 @@
 								}
 							}}
 						]],
-						done : function(){
+						done : function(res){
 							layer.closeAll('loading');
 							laydate.render({elem:'#sDateInp'});
 							laydate.render({elem:'#eDateInp'});

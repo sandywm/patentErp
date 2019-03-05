@@ -130,6 +130,7 @@
 				        url:'/zlm.do?action=getLcTaskDetail',
 				        success:function (json){
 				        	layer.closeAll('loading');
+				        	console.log(json)
 				        	$('#zlTitSp').html('专利 ['+ zlTit +'] 任务详情');
 				        	if(json['result'] == 'success'){
 				        		$('.taskStep').show();
@@ -148,6 +149,11 @@
 				        	}
 				        }
   					});
+					//关闭整个弹层
+					$('.closeBtns').on('click',function(){
+						var index= parent.layer.getFrameIndex(window.name);
+        				parent.layer.close(index);
+					});
 				},
 				loadTaskLcDetail : function(fileInfo,zlInfo,lcNo){
 					var prevHtml = '',nowHtml_jud = '',nowHtml_sub = '',nowHtml_cus='';
@@ -195,22 +201,25 @@
 						}
 						this.showHideFun();
 					}
-					if(lcNo >= 4 && lcNo < 5){//审核意见/撰写质量评定 专利审核 专利复审
+					if(lcNo >= 4 && lcNo < 5 || this.data.lcName == '补正审核'){//审核意见/撰写质量评定 专利审核 专利复审
 						nowHtml_jud += '<div class="verifyBox clearfix">';
 						nowHtml_jud += '<span>审核意见：</span><input type="hidden" id="adviceInp"/>';
 						nowHtml_jud += '<div class="isPassBox layui-form">';
 						nowHtml_jud += '<input type="radio" name="adviceRad" lay-filter="isPassFilter" value="0" title="退回修改">';
 						nowHtml_jud += '<input type="radio" name="adviceRad" lay-filter="isPassFilter" value="6" title="审核通过"></div>';
-						nowHtml_jud += '<p id="judgeStar"></p></div>';
+						if(lcNo >= 4 && lcNo < 5 ){
+							nowHtml_jud += '<p id="judgeStar"></p></div>';
+						}
  						$('.judgeBox').html(nowHtml_jud);
 						form.render();
 						this.judgeScore();
-					}else if(lcNo >= 5 && lcNo < 6 || this.data.lcName == '补正审核'){
+					}else if(lcNo >= 5 && lcNo < 6 || this.data.lcName == '客户确认-补正'){
 						//客户确认 增加审核
+						nowHtml_cus += '<div class="verifyBox clearfix">';
 						nowHtml_cus += '<span>审核意见：</span><input type="hidden" id="adviceInp"/>';
 						nowHtml_cus += '<div class="isPassBox layui-form">';
 						nowHtml_cus += '<input type="radio" name="adviceRad" lay-filter="isPassFilter_cus" value="0" title="退回修改">';
-						nowHtml_cus += '<input type="radio" name="adviceRad" lay-filter="isPassFilter_cus" value="1" title="审核通过"></div>';
+						nowHtml_cus += '<input type="radio" name="adviceRad" lay-filter="isPassFilter_cus" value="1" title="审核通过"></div></div>';
 						$('.judgeBox').html(nowHtml_cus);
 						form.render();
 						this.judgeByCustom();
@@ -333,11 +342,13 @@
 						var strHtml = '',strHtmlLine = '';
 						strHtml += '<li id="stepSeven"><span>7</span><p>专利补正/补正修改</p></li>';
 						strHtml += '<li id="stepEight"><span>8</span><p>补正审核</p></li>';
+						strHtml += '<li id="stepNine"><span>9</span><p>客户确认-补正</p></li>';
+						strHtml += '<li id="stepTen"><span>10</span><p>补正提交</p></li>';
 						strHtmlLine += '<span class="stepLine"><em id="moveLine"></em></span>';
-						strHtmlLine += '<div><span></span></div><div><span></span></div>';
+						strHtmlLine += '<div><span></span></div><div><span></span></div><div><span></span></div><div><span></span></div>';
 						$('.taskStep ul').html(strHtml);
 						$('.stepLineBox').html(strHtmlLine);
-						$('.stepLineBox').find('.stepLine').css({'width':'16%'});
+						$('.stepLineBox').find('.stepLine').css({'width':'50%'});
 						if(this.data.lcName == '专利补正' || this.data.lcName == '补正修改'){
 							$('.addFileTips').html('请添加专利补正文件');
 							$('#stepSeven').addClass('active hasBlink');
@@ -345,6 +356,17 @@
 							$('#stepSeven').addClass('active').find('span').html(this.data.isCompIcon);
 							$('#stepEight').addClass('active hasBlink');
 							$('.addFileTips').html('请添加补正审核意见书');
+						}else if(this.data.lcName == '客户确认-补正'){
+							$('#stepSeven').addClass('active').find('span').html(this.data.isCompIcon);
+							$('#stepEight').addClass('active').find('span').html(this.data.isCompIcon);
+							$('#stepNine').addClass('active hasBlink');
+							$('.addFileTips').html('请添加客户确认-补正书');
+						}else if(this.data.lcName == '补正提交'){
+							$('#stepSeven').addClass('active').find('span').html(this.data.isCompIcon);
+							$('#stepEight').addClass('active').find('span').html(this.data.isCompIcon);
+							$('#stepNine').addClass('active').find('span').html(this.data.isCompIcon);
+							$('#stepTen').addClass('active hasBlink');
+							$('.addFileTips').html('请添加补正提交文件');
 						}
 					}
 				},
@@ -369,7 +391,11 @@
 					nowHtml_jud += '<div class="verifyBox isOpenCusBox clearfix"><input type="hidden" id="isOpenCusInp" value="0"/>';
 					nowHtml_jud += '<label class="fl">是否开启客户确认：</label><div class="fl">';
 					nowHtml_jud += '<input type="radio" name="isOpenCus" lay-filter="isOpenCusFilter" value="0" title="开启" checked/>';
-					nowHtml_jud += '<input type="radio" name="isOpenCus" lay-filter="isOpenCusFilter" value="1" title="不开启(将直接进入到定稿提交)"/></div>';
+					if(this.data.lcName == '专利审核'){
+						nowHtml_jud += '<input type="radio" name="isOpenCus" lay-filter="isOpenCusFilter" value="1" title="不开启(将直接进入到定稿提交)"/></div>';	
+					}else if(this.data.lcName == '补正审核'){
+						nowHtml_jud += '<input type="radio" name="isOpenCus" lay-filter="isOpenCusFilter" value="1" title="不开启(将直接进入到补正提交)"/></div>';
+					}
 					nowHtml_jud += '</div>';
 					return nowHtml_jud;
 				},
@@ -380,39 +406,44 @@
 					form.on('radio(isPassFilter)', function(data){
 						var isOpenCusDom = _this.isOpenCusStatusDom();
 						if(data.value == 6){//表示通过
-							_this.data.tmpJudgeStar = 1;
-							$('#judgeStar').show();
-							$('#adviceInp').val('');
+							$('#adviceInp').val(1);
 							$('.judgeBox').append(isOpenCusDom);
 							form.render();
 							_this.isOpenCusStaSel();//是否开启客户确认选择
-							rate.render({
-							    elem: '#judgeStar'
-							    ,value: 0
-							    ,length:3
-							    ,text: true
-							    ,choose: function(value){
-								  if(value == 1){//一般
-								  	$('#adviceInp').val(1); 
-								  }else if(value == 2){//良
-								  	$('#adviceInp').val(2); 
-								  }else if(value == 3){//优
-								  	$('#adviceInp').val(5);
-								  }
-								}
-							    ,setText: function(value){ //自定义文本的回调
-							      var arrs = {
-							        '1': '一般'
-							        ,'2': '良'
-							        ,'3': '优'
-							      };
-							      this.span.text(arrs[value] || ('请评价此撰稿'));
-							    }
-							});
+							if(_this.data.lcName == '专利审核'){//专利审核开启专利评分
+								$('#adviceInp').val('');
+								_this.data.tmpJudgeStar = 1;
+								$('#judgeStar').show();
+								rate.render({
+								    elem: '#judgeStar'
+								    ,value: 0
+								    ,length:3
+								    ,text: true
+								    ,choose: function(value){
+									  if(value == 1){//一般
+									  	$('#adviceInp').val(1); 
+									  }else if(value == 2){//良
+									  	$('#adviceInp').val(2); 
+									  }else if(value == 3){//优
+									  	$('#adviceInp').val(5);
+									  }
+									}
+								    ,setText: function(value){ //自定义文本的回调
+								      var arrs = {
+								        '1': '一般'
+								        ,'2': '良'
+								        ,'3': '优'
+								      };
+								      this.span.text(arrs[value] || ('请评价此撰稿'));
+								    }
+								});
+							}
 						}else{
 							//退回修改
-							_this.data.tmpJudgeStar = 0;
-							$('#judgeStar').hide();
+							if(_this.data.lcName == '专利审核'){//专利审核开启专利评分
+								_this.data.tmpJudgeStar = 0;
+								$('#judgeStar').hide();
+							}
 							$('#adviceInp').val(data.value);
 							$('.isOpenCusBox').remove();
 						}
@@ -437,11 +468,6 @@
 				},
 				bindEvent : function(lcNo){
 					var _this = this;
-					//关闭整个弹层
-					$('.closeBtns').on('click',function(){
-						var index= parent.layer.getFrameIndex(window.name);
-        				parent.layer.close(index);
-					});
 					zlInfoMethod.bindEvent_comMet();
 					//保存任务
 					$('#saveTaskBtn').on('click',function(){
@@ -495,8 +521,7 @@
 							}else{
 								var field = {lcmxId:globalMxId,cusOpenStatus:isOpenCusInpVal,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),zxScore:adviceInpVal};
 							}
-							console.log(field);
-						}else if(lcNo >= 5 && lcNo < 6){
+						}else if(lcNo >= 5 && lcNo < 6 || _this.data.lcName == '客户确认-补正'){
 							//客户确认
 							//通过时 附件 备注 ->选填  不通过 附件可选 备注 必填
 							var adviceInpVal = $('#adviceInp').val(),remarkVal = $.trim($('.remarkArea').val());
@@ -554,7 +579,7 @@
 							}
 							var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val()};
 						}else if(_this.data.lcName == '补正审核'){
-							var adviceInpVal = $('#adviceInp').val(),remarkVal = $.trim($('.remarkArea').val());
+							var adviceInpVal = $('#adviceInp').val(),isOpenCusInpVal = $('#isOpenCusInp').val(),remarkVal = $.trim($('.remarkArea').val());
 							if(adviceInpVal == ''){
 								layer.msg('请选择审核意见',{icon:5,anim:6,time:1500});
 								return;
@@ -566,7 +591,11 @@
 									}
 								}
 							}
-							var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),checkStatus:adviceInpVal};
+							if(adviceInpVal == 0){//退回修改
+								var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val(),checkStatus:adviceInpVal};	
+							}else{
+								var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),cusOpenStatus:isOpenCusInpVal,upZxFile:$('#fujianInp').val(),checkStatus:adviceInpVal};
+							}
 						}
 						$.ajax({
 	  						type:'post',
