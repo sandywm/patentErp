@@ -1228,6 +1228,7 @@ public class ZlMainAction extends DispatchAction {
 						Integer bzUserId = zl.getBzUserId();
 						Integer bzshUserId = zl.getBzshUserId();
 						Integer bhUserId = zl.getBhUserId();
+						Integer bzTjUserId = zl.getBzTjUserId();
 						Integer cusCheckUserId = zl.getCusCheckUserId();
 						String ajStatus = zl.getAjStatus();
 						Double zlStatus = Double.parseDouble(ajStatus);
@@ -1330,6 +1331,17 @@ public class ZlMainAction extends DispatchAction {
 						}else{
 							map.put("bhUserName", "");
 						}
+						map.put("bzTjUserId", bzTjUserId);
+						if(bzTjUserId > 0){
+							CpyUserInfo cUser = cum.getEntityById(bzTjUserId);
+							if(cUser != null){
+								map.put("bzTjUserName", cUser.getUserName());
+							}else{
+								map.put("bzTjUserName", "");
+							}
+						}else{
+							map.put("bzTjUserName", "");
+						}
 						boolean applyYjFlag = false;
 						if(zlStatus == 3){
 							if(lcyjm.getEntityByOpt(zxUserId, "新申请撰稿", zlId) != null){
@@ -1344,7 +1356,7 @@ public class ZlMainAction extends DispatchAction {
 								//说明当前审核人员存在移交申请未审核数据
 								applyYjFlag = true;
 							}
-						}else if((zlStatus >= 5 && zlStatus < 6) || (zlStatus >= 11 && zlStatus < 12)){//专利修改时的客户确认或者是专利补正时的客户确认
+						}else if((zlStatus >= 5 && zlStatus < 6)){//专利修改时的客户确认
 							if(lcyjm.getEntityByOpt(cusCheckUserId, "客户确认", zlId) != null){
 								applyYjFlag = true;
 							}
@@ -1361,6 +1373,10 @@ public class ZlMainAction extends DispatchAction {
 								}else if(lcyjm.getEntityByOpt(bzUserId, "专利补正", zlId) != null){
 									applyYjFlag = true;
 								}else if(lcyjm.getEntityByOpt(bzshUserId, "补正审核", zlId) != null){
+									applyYjFlag = true;
+								}else if(lcyjm.getEntityByOpt(cusCheckUserId, "客户确认-补正", zlId) != null){
+									applyYjFlag = true;
+								}else if(lcyjm.getEntityByOpt(bzTjUserId, "补正提交", zlId) != null){
 									applyYjFlag = true;
 								}else if(lcyjm.getEntityByOpt(bhUserId, "专利驳回", zlId) != null){
 									applyYjFlag = true;
@@ -3575,6 +3591,7 @@ public class ZlMainAction extends DispatchAction {
 					Integer zlId = zl.getId();
 					String zlType = zl.getAjType();
 					String zlTypeChi = "";
+					String lcmxName = lcmx.getLcMxName();
 					if(zlType.equals("fm")){
 						zlTypeChi = "发明";
 					}else if(zlType.equals("syxx")){
@@ -3831,8 +3848,16 @@ public class ZlMainAction extends DispatchAction {
 			 					map_z.put("sqrLxrId", sqrLxrId);
 			 					list_z.add(map_z);
 							}
-						}else{//专利补正/专利补正审核
-							String lcmxName = lcmx.getLcMxName();
+						}else if(lcmxName.equals("专利补正") || lcmxName.equals("补正修改")){
+							
+						}else if(lcmxName.equals("补正审核")){
+							
+						}else if(lcmxName.equals("客户确认-补正")){
+							
+						}else if(lcmxName.equals("补正提交")){
+							
+						}
+						else{//专利补正/专利补正审核
 							filePath = zl.getAjUploadDg();
 							fileType = "定稿文件";
 							if(filePath.equals("")){
@@ -3845,6 +3870,12 @@ public class ZlMainAction extends DispatchAction {
 								ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);//获取最近一次的撰稿修改
 								filePath = mx.getLcMxUpFile();
 								upUser = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();
+							}else{//存在定稿文件（分新案和旧案）
+								if(zl.getAjType1().equals("new")){//新案时定稿文件是撰写人提交的
+									upUser = cum.getEntityById(zl.getZxUserId()).getUserName();
+								}else{//旧案时定稿文件是案件增加人员提交的
+									upUser = cum.getEntityById(zl.getAjAddUserId()).getUserName();
+								}
 							}
 							String lastBzFile = "";//上一次补正的文件
 							String lastBzScFile = "";//上一次补正审核的文件
