@@ -25,11 +25,6 @@
                 <comment>流程内容</comment>
             </column>
         </property>
-        <!--property name="lcMzNo" type="java.lang.Double">
-            <column name="lc_mz_no" precision="10" not-null="true">
-                <comment>流程数字</comment>
-            </column>
-        </property-->
         <property name="lcSDate" type="java.lang.String">
             <column name="lc_s_date" length="30" not-null="true">
                 <comment>流程开始时间</comment>
@@ -55,41 +50,11 @@
                 <comment>流程数字</comment>
             </column>
         </property>
-        <!--property name="lcUpInfo" type="java.lang.String">
-            <column name="lc_up_info" length="100">
-                <comment>上传的附件</comment>
+        <property name="lcTzsPath" type="java.lang.String">
+            <column name="lc_tzs_path" length="300">
+                <comment>流程通知书(当前流程所属通知书)</comment>
             </column>
         </property>
-         <property name="lcCpyUserId" type="java.lang.Integer">
-            <column name="lc_cpy_user_id">
-                <comment>流程负责人编号</comment>
-            </column>
-        </property>
-        <property name="lcCpyUserName" type="java.lang.String">
-            <column name="lc_cpy_user_name">
-                <comment>流程负责人姓名</comment>
-            </column>
-        </property>
-        <property name="lcComStatus" type="java.lang.Integer">
-            <column name="lc_com_status" not-null="true">
-                <comment>流程完成状态(0：未完成，1：完成)</comment>
-            </column>
-        </property>
-        <property name="lcPj" type="java.lang.String">
-            <column name="lc_pj">
-                <comment>流程评分</comment>
-            </column>
-        </property>
-        <property name="lcPjUserName" type="java.lang.String">
-            <column name="lc_pj_user_name">
-                <comment>流程评价人员</comment>
-            </column>
-        </property>
-        <property name="lcRemark" type="java.lang.String">
-            <column name="lc_remark" length="100">
-                <comment>备注</comment>
-            </column>
-        </property-->
         <set name="zlajLcMxInfoTbs" inverse="true">
             <key>
                 <column name="lc_id" not-null="true">

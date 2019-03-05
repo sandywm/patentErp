@@ -2116,7 +2116,7 @@ public class ZlMainAction extends DispatchAction {
 											}else{
 												mxm.addLcMx(lcId, zxUserId, "撰写人员分配", currLcNo, currDate, currDate, "", 0, "", "", 0.0,"操作人员主动分配",lcPjScore,"","",0,0,"");
 											}
-											Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", currDate, lc.getLcCpyDate(), "", "",3.0);
+											Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", currDate, lc.getLcCpyDate(), "", "",3.0,"");
 											mxm.addLcMx(lcId_3, zxUserId, "新申请撰稿", 3.0, currDate, "", "", 0, "", "",  0.0, "",lcPjScore,"","",0,0,"");
 											//领取成功后把状态修改成3.0
 											zlm.updateZlStatusById(zlId, "3.0","新申请撰稿");//修改专利状态为3
@@ -2624,7 +2624,7 @@ public class ZlMainAction extends DispatchAction {
 											pzm.updateAjIdById(pubZlId, zlId);
 										}
 										//增加流程
-										Integer lcId_1 = lcm.addLcInfo(zlId, "专利案件录入", "专利案件录入", sDate, cpyDate, sDate, "",1.0);
+										Integer lcId_1 = lcm.addLcInfo(zlId, "专利案件录入", "专利案件录入", sDate, cpyDate, sDate, "",1.0,"");
 										if(lcId_1 > 0){
 											Integer lcMxId = mxm.addLcMx(lcId_1, currLoginUserId, "专利案件录入", 1.0, sDate, sDate, ajUpload, pubZlId, sDate, "",  0.0, ajRemark,-1,"","",0,0,"");
 											//移动上传文件
@@ -2730,7 +2730,7 @@ public class ZlMainAction extends DispatchAction {
 												}
 											}
 											//增加专利撰写流程
-											lcm.addLcInfo(zlId, "人员分配", "人员分配", sDate, cpyDate, "", "",2.0);
+											lcm.addLcInfo(zlId, "人员分配", "人员分配", sDate, cpyDate, "", "",2.0,"");
 											//当流程为2.0时，且存在人员分配流程，但是没有流程明细的时候--说明是需要流程分配人员进行流程分配
 										}
 										msg = "success";
@@ -3365,7 +3365,7 @@ public class ZlMainAction extends DispatchAction {
 										//修改任务分配流程为完成状态
 										lcm.updateComInfoById(lc.getId(), currDate);
 										zlm.updateOperatorUserInfoByZlId(zlId,-1,currUserId,-1,-1,-1,-1,-1,-1,-1,-1);
-										Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", currDate, lc.getLcCpyDate(), "", "",3.0);
+										Integer lcId_3 = lcm.addLcInfo(zlId, "新申请撰稿", "新申请撰稿", currDate, lc.getLcCpyDate(), "", "",3.0,"");
 										mxm.addLcMx(lcId_3, currUserId, "新申请撰稿", 3.0, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
 										//领取成功后把状态修改成3.0
 										zlm.updateZlStatusById(zlId, "3.0","新申请撰稿");//修改专利状态为3
@@ -3848,40 +3848,32 @@ public class ZlMainAction extends DispatchAction {
 			 					map_z.put("sqrLxrId", sqrLxrId);
 			 					list_z.add(map_z);
 							}
-						}else if(lcmxName.equals("专利补正") || lcmxName.equals("补正修改")){
-							
-						}else if(lcmxName.equals("补正审核")){
-							
-						}else if(lcmxName.equals("客户确认-补正")){
-							
-						}else if(lcmxName.equals("补正提交")){
-							
-						}
-						else{//专利补正/专利补正审核
-							filePath = zl.getAjUploadDg();
-							fileType = "定稿文件";
-							if(filePath.equals("")){
-								List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "撰稿修改");
-								Integer mxLen = mxList_t.size();
-								if(mxLen == 0){//不能存在撰稿修改，说明撰写人一次性通过
-									mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "新申请撰稿");
-									mxLen = mxList_t.size();
-								}
-								ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);//获取最近一次的撰稿修改
-								filePath = mx.getLcMxUpFile();
-								upUser = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();
-							}else{//存在定稿文件（分新案和旧案）
-								if(zl.getAjType1().equals("new")){//新案时定稿文件是撰写人提交的
-									upUser = cum.getEntityById(zl.getZxUserId()).getUserName();
-								}else{//旧案时定稿文件是案件增加人员提交的
-									upUser = cum.getEntityById(zl.getAjAddUserId()).getUserName();
-								}
-							}
+						}else{//专利补正、补正审核、客户确认、补正提交
 							String lastBzFile = "";//上一次补正的文件
 							String lastBzScFile = "";//上一次补正审核的文件
-							if(lcmxName.equals("专利补正")){
+							if(!lcmxName.equals("客户确认-补正")){
+								filePath = zl.getAjUploadDg();//定稿文件
+								fileType = "定稿文件";
 								remark = zl.getAjRemark();
-							}else if(lcmxName.equals("补正修改")){
+								if(filePath.equals("")){
+									List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "撰稿修改");
+									Integer mxLen = mxList_t.size();
+									if(mxLen == 0){//不能存在撰稿修改，说明撰写人一次性通过
+										mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "新申请撰稿");
+										mxLen = mxList_t.size();
+									}
+									ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);//获取最近一次的撰稿修改
+									filePath = mx.getLcMxUpFile();
+									upUser = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();
+								}else{//存在定稿文件（分新案和旧案）
+									if(zl.getAjType1().equals("new")){//新案时定稿文件是撰写人提交的
+										upUser = cum.getEntityById(zl.getZxUserId()).getUserName();
+									}else{//旧案时定稿文件是案件增加人员提交的
+										upUser = cum.getEntityById(zl.getAjAddUserId()).getUserName();
+									}
+								}
+							}
+							if(lcmxName.equals("补正修改")){//补正修改时需要查看上一次的专利补正文件
 								lastBzFile = lcmx.getLastUpFileBz();
 								lastBzScFile = lcmx.getLastUpFileBzSc();
 								filePath += ":" + lastBzFile + ":" + lastBzScFile;
@@ -3900,8 +3892,19 @@ public class ZlMainAction extends DispatchAction {
 									upUser += ":"+cum.getEntityById(lcmx.getLastUpUserIdBzSc()).getUserName();
 								}
 								remark = lcmx.getLastBzScRemark();
+							}else if(lcmxName.equals("客户确认-补正") || lcmxName.equals("补正提交")){
+								//只获取补正文件
+								lastBzFile = lcmx.getLastUpFileBz();
+								filePath = lastBzFile;
+								fileType = "补正文件";
+								upUser = cum.getEntityById(lcmx.getLastUpUserIdBz()).getUserName();
+							}
+							//另外还需要获取补正通知书
+							if(!lcmxName.equals("补正提交")){//补正提交不获取补正通知书
+								
 							}
 						}
+						
 						List<Object> list_d = new ArrayList<Object>();
 						if(!filePath.equals("")){
 							msg = "success";
@@ -4452,7 +4455,7 @@ public class ZlMainAction extends DispatchAction {
 									lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 									if(msg.equals("success")){
 										//增加下一个流程
-										Integer nextLcId = lcm.addLcInfo(zlId, "专利审核", "专利审核", currDate, cpyDate, "", "",lcNo);
+										Integer nextLcId = lcm.addLcInfo(zlId, "专利审核", "专利审核", currDate, cpyDate, "", "",lcNo,"");
 										if(nextLcId > 0){
 											mxm.addLcMx(nextLcId, zl.getCheckUserId(), "专利审核", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
 											//修改案件状态
@@ -4489,7 +4492,7 @@ public class ZlMainAction extends DispatchAction {
 											}
 											lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 											//增加撰稿修改环节
-											Integer nextLcId = lcm.addLcInfo(zlId, "撰稿修改", "撰稿修改", currDate, cpyDate, "", "",lcNo);
+											Integer nextLcId = lcm.addLcInfo(zlId, "撰稿修改", "撰稿修改", currDate, cpyDate, "", "",lcNo,"");
 											if(nextLcId > 0){
 												mxm.addLcMx(nextLcId, zl.getZxUserId(), "撰稿修改", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
 												//修改专利的案件状态
@@ -4514,7 +4517,7 @@ public class ZlMainAction extends DispatchAction {
 												}
 												lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 												//增加下一个流程
-												Integer nextLcId = lcm.addLcInfo(zlId, "客户确认", "客户确认", currDate, cpyDate, "", "",lcNo);
+												Integer nextLcId = lcm.addLcInfo(zlId, "客户确认", "客户确认", currDate, cpyDate, "", "",lcNo,"");
 												if(nextLcId > 0){
 													mxm.addLcMx(nextLcId, zl.getCusCheckUserId(), "客户确认", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
 													//修改专利的案件状态
@@ -4528,7 +4531,7 @@ public class ZlMainAction extends DispatchAction {
 											}else{
 												lcNo = 6;//定稿提交
 												//增加下一个流程
-												Integer nextLcId = lcm.addLcInfo(zlId, "定稿提交", "定稿提交", currDate, cpyDate, "", "",6.0);
+												Integer nextLcId = lcm.addLcInfo(zlId, "定稿提交", "定稿提交", currDate, cpyDate, "", "",6.0,"");
 												if(nextLcId > 0){
 													mxm.addLcMx(nextLcId, zl.getTjUserId(), "定稿提交", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
 													//修改专利的案件状态
@@ -4584,7 +4587,7 @@ public class ZlMainAction extends DispatchAction {
 										}
 										lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 										//增加撰稿修改环节
-										Integer nextLcId = lcm.addLcInfo(zlId, "撰稿修改", "撰稿修改", currDate, cpyDate, "", "",lcNo);
+										Integer nextLcId = lcm.addLcInfo(zlId, "撰稿修改", "撰稿修改", currDate, cpyDate, "", "",lcNo,"");
 										if(nextLcId > 0){
 											mxm.addLcMx(nextLcId, zl.getZxUserId(), "撰稿修改", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
 											//修改专利的案件状态
@@ -4597,7 +4600,7 @@ public class ZlMainAction extends DispatchAction {
 									}else{//审核通过
 										lcNo = 6;//定稿提交
 										//增加下一个流程
-										Integer nextLcId = lcm.addLcInfo(zlId, "定稿提交", "定稿提交", currDate, cpyDate, "", "",6.0);
+										Integer nextLcId = lcm.addLcInfo(zlId, "定稿提交", "定稿提交", currDate, cpyDate, "", "",6.0,"");
 										if(nextLcId > 0){
 											mxm.addLcMx(nextLcId, zl.getTjUserId(), "定稿提交", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
 											//修改专利的案件状态
@@ -4617,7 +4620,6 @@ public class ZlMainAction extends DispatchAction {
 									}
 								}else if(lcNo == 6.0){//案件定稿提交
 									//提交之前需要先判断专利的信息是否填写完成
-									String upZxFile = CommonTools.getFinalStr("upZxFile", request);//撰写附件（参数），定稿时去掉上传附件
 									String zlTitle = Transcode.unescape_new1("zlTitle", request);//定稿时提交的专利标题
 									String sqrId = CommonTools.getFinalStr("sqrId", request);//申请人
 									String sqrName = Transcode.unescape_new1("sqrName", request);//申请人姓名
@@ -4625,19 +4627,6 @@ public class ZlMainAction extends DispatchAction {
 									String lxrId = CommonTools.getFinalStr("lxrId", request);//联系人
 									Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减
 									if(!sqrId.equals("") && !fmrId.equals("") && !lxrId.equals("")){
-										//增加附件信息
-//										if(!upZxFile.equals("")){
-//											String[] fjNameArr = upZxFile.split(",");
-//											for(Integer i = 0 ; i < fjNameArr.length ; i++){
-//												String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
-//												Integer lastIndex = fileName.lastIndexOf("_");
-//												String lastFjName = fileName.substring(lastIndex+1, fileName.length());
-//												Integer lastIndex_1 = lastFjName.indexOf(".");
-//												String fjVersion = lastFjName.substring(0, lastIndex_1);
-//												String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-//												fjm.addFj(zlId, fjNameArr[i], fjVersion, "定稿补充文件", fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
-//											}
-//										}
 										//获取客户最后一次撰稿时的附件(就是定稿文件)
 										List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "撰稿修改");
 										if(mxList_t.size() ==  0){
@@ -4645,7 +4634,7 @@ public class ZlMainAction extends DispatchAction {
 										}
 										if(mxList_t.size() > 0){
 											ZlajLcMxInfoTb mx_last = mxList_t.get(mxList_t.size() - 1);
-											upZxFile = mx_last.getLcMxUpFile();
+											String upZxFile = mx_last.getLcMxUpFile();//定稿文件
 											zlm.updateZlUpFile_dg1(zlId, upZxFile);
 											mxm.updateEdateById(lcMxId, zl.getTjUserId(),"",  currUserId, upZxFile, currDate, "", currDate, taskRemark,-1);
 											if(!upZxFile.equals("")){
@@ -4673,9 +4662,10 @@ public class ZlMainAction extends DispatchAction {
 										msg = "inComInfo";//信息不完整
 									}
 								}else if((lcNo >= 9 && lcNo <= 10.9)){//补正、补正审核、客户确认、补正提交时
-									String upZxFile = CommonTools.getFinalStr("upZxFile", request);//补正人员上传的撰稿文件（参数）
+									String upZxFile = CommonTools.getFinalStr("upZxFile", request);//补正人员、审核人员、客户人员上传的撰稿文件（参数）
 									//补正完成后开启补正审核人员进行审核
 									String lcmxName = lcmx.getLcMxName();
+									String lcTzsPath = lc.getLcTzsPath();//流程通知书路径
 									//布阵审核比专利补正/布阵修改多个审核意见和审核状态
 									if(lcmxName.equals("专利补正") || lcmxName.equals("补正修改")){
 										if(upFlag){
@@ -4695,7 +4685,7 @@ public class ZlMainAction extends DispatchAction {
 											lcNo += 1;
 											lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 											//增加下一个流程
-											Integer nextLcId = lcm.addLcInfo(zlId, "补正审核", "补正审核", currDate, cpyDate, "", gfDate,lcNo);
+											Integer nextLcId = lcm.addLcInfo(zlId, "补正审核", "补正审核", currDate, cpyDate, "", gfDate,lcNo,lcTzsPath);
 											if(nextLcId > 0){
 												String lastBzshUpFile = lcmx.getLastUpFileBzSc();//上一次补正审核提交的文件，upZxFile是这次补正人员提交的文件
 												mxm.addLcMx(nextLcId, zl.getBzshUserId(), "补正审核", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,upZxFile,lastBzshUpFile,currUserId,lcmx.getLastUpUserIdBzSc(),"");
@@ -4730,7 +4720,7 @@ public class ZlMainAction extends DispatchAction {
 												lcNo -= 1;
 												lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 												//增加下一个流程
-												Integer nextLcId = lcm.addLcInfo(zlId, "补正修改", "补正修改", currDate, cpyDate, "", gfDate,lcNo);
+												Integer nextLcId = lcm.addLcInfo(zlId, "补正修改", "补正修改", currDate, cpyDate, "", gfDate,lcNo,lcTzsPath);
 												if(nextLcId > 0){
 													//补正这需要将补正审核提交的文件暂存放到补正流程的lc_mx_upSize字段中
 													String lastBzUpFile = lcmx.getLastUpFileBz();//上一次补正提交的文件，upZxFile是这次审核人员提交的文件
@@ -4750,9 +4740,9 @@ public class ZlMainAction extends DispatchAction {
 												}
 												if(cusOpenStatus.equals(0)){
 													//开启客户确认环节
-													Integer nextLcId = lcm.addLcInfo(zlId, "客户确认-补正", "客户确认-补正", currDate, cpyDate, "", gfDate,lcNo);
+													Integer nextLcId = lcm.addLcInfo(zlId, "客户确认-补正", "客户确认-补正", currDate, cpyDate, "", gfDate,lcNo,"");
 													if(nextLcId > 0){
-														mxm.addLcMx(nextLcId, zl.getCusCheckUserId(), "客户确认-补正", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
+														mxm.addLcMx(nextLcId, zl.getCusCheckUserId(), "客户确认-补正", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,lcmx.getLastUpFileBz(),"",lcmx.getLastUpUserIdBz(),0,"");
 														//修改专利的案件状态
 														if(lcNo_db <= lcNo){
 															zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待客户确认补正");
@@ -4765,9 +4755,9 @@ public class ZlMainAction extends DispatchAction {
 												}else{
 													//补正提交
 													//增加下一个流程
-													Integer nextLcId = lcm.addLcInfo(zlId, "补正提交", "补正提交", currDate, cpyDate, "", gfDate,lcNo);
+													Integer nextLcId = lcm.addLcInfo(zlId, "补正提交", "补正提交", currDate, cpyDate, "", gfDate,lcNo,lcTzsPath);
 													if(nextLcId > 0){
-														mxm.addLcMx(nextLcId, zl.getBzTjUserId(), "补正提交", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
+														mxm.addLcMx(nextLcId, zl.getBzTjUserId(), "补正提交", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,lcmx.getLastUpFileBz(),"",lcmx.getLastUpUserIdBz(),0,"");
 														//修改专利的案件状态
 														zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待补正提交");
 														//发送邮件
@@ -4803,11 +4793,11 @@ public class ZlMainAction extends DispatchAction {
 											lcNo -= 1;
 											lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 											//增加撰稿修改环节
-											Integer nextLcId = lcm.addLcInfo(zlId, "补正修改", "补正修改", currDate, cpyDate, "", gfDate,lcNo);
+											Integer nextLcId = lcm.addLcInfo(zlId, "补正修改", "补正修改", currDate, cpyDate, "", gfDate,lcNo,lcTzsPath);
 											if(nextLcId > 0){
-												mxm.addLcMx(nextLcId, zl.getBzUserId(), "补正修改", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
+												mxm.addLcMx(nextLcId, zl.getBzUserId(), "补正修改", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,lcmx.getLastUpFileBz(),upZxFile,lcmx.getLastUpUserIdBz(),currUserId,taskRemark);
 												//修改专利的案件状态
-												zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"撰稿修改-客户确认");
+												zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"补正修改-客户确认");
 												//发送邮件
 												mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getBzUserId(), "cpyUser", "新任务通知：补正修改", "专利["+zl.getAjTitle()+"]客户确认未通过，请及时完成专利补正修改工作!");
 											}else{
@@ -4818,7 +4808,7 @@ public class ZlMainAction extends DispatchAction {
 												lcNo += 0.1;
 											}
 											//增加下一个流程
-											Integer nextLcId = lcm.addLcInfo(zlId, "补正提交", "补正提交", currDate, cpyDate, "", gfDate,lcNo);
+											Integer nextLcId = lcm.addLcInfo(zlId, "补正提交", "补正提交", currDate, cpyDate, "", gfDate,lcNo,lcTzsPath);
 											if(nextLcId > 0){
 												mxm.addLcMx(nextLcId, zl.getBzTjUserId(), "补正提交", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,"","",0,0,"");
 												//修改专利的案件状态
@@ -5637,7 +5627,7 @@ public class ZlMainAction extends DispatchAction {
 										upZipPath_final = path_pre_1+tzsPath_tmp; 
 										String applyDate_db = zl.getAjApplyDate();//获取数据库中专利的申请日
 										if(tzsName.equals("专利申请受理通知书")){
-											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.0);//导入通知书期限1个月
+											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入受理通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.0,"");//导入通知书期限1个月
 											if(currLcId > 0){
 												mxm.addLcMx(currLcId, currUserId, "导入受理通知书", 7.0, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1,"","",0,0,"");
 												//发送邮件
@@ -5657,7 +5647,7 @@ public class ZlMainAction extends DispatchAction {
 											}
 					        			}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
 					        				if(!applyDate_db.equals("")){
-					        					Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入费用减缓审批/缴纳申请费通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.1);//导入通知书期限1个月
+					        					Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入费用减缓审批/缴纳申请费通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",7.1,"");//导入通知书期限1个月
 												if(currLcId > 0){
 													mxm.addLcMx(currLcId, currUserId, "导入费用减缓审批/缴纳申请费通知书", 7.1, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1,"","",0,0,"");
 													//发送邮件
@@ -5740,7 +5730,7 @@ public class ZlMainAction extends DispatchAction {
 													lcNo = 9;
 												}
 					        					lcNo = Convert.convertInputNumber_6(lcNo);
-					        					Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入初步审查合格通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",lcNo);//导入通知书期限1个月
+					        					Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入初步审查合格通知书", currDate, CurrentTime.getFinalDate(currDate, 30), currDate, "",lcNo,"");//导入通知书期限1个月
 												if(currLcId > 0){
 													mxm.addLcMx(currLcId, currUserId, "导入初步审查合格通知书", lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1,"","",0,0,"");
 												}
@@ -5771,7 +5761,7 @@ public class ZlMainAction extends DispatchAction {
 												lcNo = Convert.convertInputNumber_6(lcNo);
 												finalDate = CurrentTime.getFinalDate_1(finalDate, addMonthes);
 												finalDate_cpy = CurrentTime.getFinalDate(finalDate,Constants.JF_SL_END_DATE_CPY);
-												Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
+												Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo,"");//导入通知书期限1个月
 												if(currLcId > 0){
 													mxm.addLcMx(currLcId, currUserId, "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1,"","",0,0,"");
 													//获取最后一个专利补正的lcNo
@@ -5786,10 +5776,9 @@ public class ZlMainAction extends DispatchAction {
 														lcNo = 9.2;
 													}
 													lcNo = Convert.convertInputNumber_6(lcNo);
-													//增加专利补正流程
-													Integer currLcId_1 = lcm.addLcInfo(zlId, "专利补正", "专利补正", currDate, finalDate_cpy, "", finalDate, lcNo);
+													//增加专利补正流程(获取通知书压缩包中的通知书图片)
+													Integer currLcId_1 = lcm.addLcInfo(zlId, "专利补正", "专利补正", currDate, finalDate_cpy, "", finalDate, lcNo,"");
 													if(currLcId_1 > 0){
-														//需要把通知书的图片暂存到lcmxUpSize里面
 														mxm.addLcMx(currLcId_1, zl.getBzUserId(), "专利补正", lcNo, currDate, "", "", 0, "", "", 0.0, "", -1,"","",0,0,"");
 													}
 													if(lcNo_db < lcNo){
@@ -5812,7 +5801,7 @@ public class ZlMainAction extends DispatchAction {
 											if(lcNo_db < lcNo){
 												zlm.updateZlStatusById(zlId, String.valueOf(lcNo), "案件被驳回");
 											}
-											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo);//导入通知书期限1个月
+											Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",lcNo,"");//导入通知书期限1个月
 											if(currLcId > 0){
 												mxm.addLcMx(currLcId, currUserId, "导入"+tzsName, lcNo, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1,"","",0,0,"");
 											}
@@ -5821,7 +5810,7 @@ public class ZlMainAction extends DispatchAction {
 					        				if(!applyDate_db.equals("")){
 					        					readResult = "success";
 					        					readResultChi = "读取成功";
-												Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",14.0);//导入通知书期限1个月
+												Integer currLcId = lcm.addLcInfo(zlId, "导入通知书", "导入"+tzsName, currDate, CurrentTime.getFinalDate(fwDate, 30), currDate, "",14.0,"");//导入通知书期限1个月
 												if(currLcId > 0){
 													mxm.addLcMx(currLcId,currUserId, "导入"+tzsName, 14.0, currDate, currDate, upZipPath_final, currUserId, currDate, "",  0.0, "成功导入"+tzsName,-1,"","",0,0,"");
 												}

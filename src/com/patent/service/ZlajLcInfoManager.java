@@ -20,11 +20,12 @@ public interface ZlajLcInfoManager {
 	 * @param comDate 流程完成时间
 	 * @param gfDate 流程官方绝限
 	 * @param lcNo 流程数字
+	 * @param lcTzsPath 流程通知书
 	 * @return
 	 * @throws WEBException
 	 */
 	Integer addLcInfo(Integer ajId,String lcName,String lcDetail,String sDate,String cpyDate,
-			String comDate,String gfDate,Double lcNo) throws WEBException;
+			String comDate,String gfDate,Double lcNo,String lcTzsPath) throws WEBException;
 	
 	/**
 	 * 修改指定编号的流程信息

@@ -24,6 +24,7 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 	private String lcEDate;
 	private String lcGfDate;
 	private Double lcNo;
+	private String lcTzsPath;
 	private Set<ZlajLcMxInfoTb> zlajLcMxInfoTbs = new HashSet<ZlajLcMxInfoTb>();
 
 	// Constructors
@@ -34,7 +35,7 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 
 	/** minimal constructor */
 	public ZlajLcInfoTb(ZlajMainInfoTb zlajMainInfoTb,String lcMz, String lcDetail, String lcSDate,
-			String lcCpyDate, String lcEDate, String lcGfDate,Double lcNo) {
+			String lcCpyDate, String lcEDate, String lcGfDate,Double lcNo,String lcTzsPath) {
 		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.lcMz = lcMz;
 		this.lcDetail = lcDetail;
@@ -43,11 +44,12 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 		this.lcEDate = lcEDate;
 		this.lcGfDate = lcGfDate;
 		this.lcNo = lcNo;
+		this.lcTzsPath = lcTzsPath;
 	}
 
 	/** full constructor */
 	public ZlajLcInfoTb(Integer id,ZlajMainInfoTb zlajMainInfoTb,String lcMz, String lcDetail, String lcSDate,
-			String lcCpyDate, String lcEDate, String lcGfDate,Double lcNo) {
+			String lcCpyDate, String lcEDate, String lcGfDate,Double lcNo,String lcTzsPath) {
 		this.id = id;
 		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.lcMz = lcMz;
@@ -57,6 +59,7 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 		this.lcEDate = lcEDate;
 		this.lcGfDate = lcGfDate;
 		this.lcNo = lcNo;
+		this.lcTzsPath = lcTzsPath;
 	}
 
 	// Property accessors
@@ -140,4 +143,13 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 	public void setLcNo(Double lcNo) {
 		this.lcNo = lcNo;
 	}
+
+	public String getLcTzsPath() {
+		return lcTzsPath;
+	}
+
+	public void setLcTzsPath(String lcTzsPath) {
+		this.lcTzsPath = lcTzsPath;
+	}
+	
 }
