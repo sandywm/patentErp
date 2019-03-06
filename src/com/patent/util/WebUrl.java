@@ -20,8 +20,13 @@ public class WebUrl {
     //上传文件留存地(绝对路径)
     public static String DATA_URL_UP_FILE_UPLOAD;
     
-  //上传文件留存地(相对路径)
+    //上传文件留存地(相对路径)
     public static String NEW_DATA_URL_UP_FILE_UPLOAD;
     
+    //通知书图片留存地（绝对路径）
+    public static String DATA_URL_TZS_IMG;
+    
+    //通知书图片留存地(相对路径)
+    public static String NEW_DATA_URL_TZS_IMG;
     
 }

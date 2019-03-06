@@ -30,5 +30,9 @@ public class InitServlet extends HttpServlet
     	WebUrl.DATA_URL_UP_FILE_UPLOAD = getServletContext().getRealPath("/Module/uploadFile");
     	
     	WebUrl.NEW_DATA_URL_UP_FILE_UPLOAD = "Module/uploadFile/";
+    	
+    	WebUrl.DATA_URL_TZS_IMG = getServletContext().getRealPath("/Module/tzsImg");
+    	
+    	WebUrl.NEW_DATA_URL_TZS_IMG = "/Module/tzsImg";
     }
 }

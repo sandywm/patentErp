@@ -90,6 +90,11 @@
                 <comment>上一次上传的审核附件(补正/补正审核时用)</comment>
             </column>
         </property>
+         <property name="lastUpFileCus" type="java.lang.String">
+            <column name="last_upFile_cus" length="500">
+                <comment>上一次上传的客户补充附件(补正/补正审核时用)</comment>
+            </column>
+        </property>
         <property name="lastUpUserIdBz" type="java.lang.Integer">
             <column name="last_up_user_id_bz">
                 <comment>上一次补正人员编号</comment>
@@ -100,9 +105,19 @@
                 <comment>上一次补正审核人员编号</comment>
             </column>
         </property>
+        <property name="lastUpUserIdCus" type="java.lang.Integer">
+            <column name="last_up_user_id_cus">
+                <comment>上一次客户审核人员编号</comment>
+            </column>
+        </property>
         <property name="lastBzScRemark" type="java.lang.String">
             <column name="last_bzSc_remark"  length="100">
                 <comment>上一次补正审核的备注</comment>
+            </column>
+        </property>
+        <property name="lastCusRemark" type="java.lang.String">
+            <column name="last_cus_remark"  length="100">
+                <comment>上一次客户审核的备注</comment>
             </column>
         </property>
         <set name="lcyjs" inverse="true">

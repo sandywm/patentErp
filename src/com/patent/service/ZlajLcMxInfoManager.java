@@ -28,15 +28,19 @@ public interface ZlajLcMxInfoManager {
 	 * @param lcPjScore 流程评分
 	 * @param lastUpFileBz 上一次上传的补正附件(补正/补正审核时用)
 	 * @param lastUpFileBzSc 上一次上传的审核附件(补正/补正审核时用)
+	 * @param lastUpFileCus 上一次上传的客户补充文件(补正/补正审核时用)
 	 * @param lastUpUserIdBz 上一次补正人员编号
 	 * @param lastUpUserIdBzSc 上一次补正人员编号
+	 * @param lastUpUserIdCus 上一次客户审核人员编号
 	 * @param lastBzScRemark 上一次补正审核的备注
+	 * @param lastCusRemark 上一次客户审核的备注
 	 * @return
 	 * @throws WEBException
 	 */
 	Integer addLcMx(Integer lcId,Integer fzUserId,String lcMxName, Double lcMxNo, String lcMxSDate, String lcMxEDate,
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,String lcMxUpSize,Double lcMxFee,String lcMxRemark,Integer lcPjScore,
-			String lastUpFileBz,String lastUpFileBzSc,Integer lastUpUserIdBz,Integer lastUpUserIdBzSc,String lastBzScRemark) throws WEBException;
+			String lastUpFileBz,String lastUpFileBzSc,String lastUpFileCus,Integer lastUpUserIdBz,
+			Integer lastUpUserIdBzSc,Integer lastUpUserIdCus,String lastBzScRemark,String lastCusRemark) throws WEBException;
 	
 	/**
 	 * 修改流程负责人、完成时间、备注等（一般是领取）

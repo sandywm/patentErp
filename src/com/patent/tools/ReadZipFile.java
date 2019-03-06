@@ -56,7 +56,11 @@ public class ReadZipFile {
 		List<TzsJson> list_all = new ArrayList<TzsJson>();
 		
 		Map<String,Object> map = new HashMap<String,Object>();
-		String finalPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath;//上传文件的绝对路径
+//		String finalPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath;//上传文件的绝对路径
+		String finalPath = upZipPath;
+		OutputStream os = null;
+		InputStream is = null;
+		
         try {
 			ZipFile zf = new ZipFile(finalPath,gbk);
 			FileInputStream fileInputStream = new FileInputStream(finalPath);
@@ -89,6 +93,7 @@ public class ReadZipFile {
 	            }else{
 	            	String fileName = ze.getName();
 	            	if(fileName.endsWith("XML") || fileName.endsWith("xml")){
+	            		System.out.println(fileName);
 	                    ZipEntry zip = zf.getEntry(ze.getName());
 	                    InputStream inputstream = null;
 	            		inputstream = zf.getInputStream(zip);
@@ -276,18 +281,51 @@ public class ReadZipFile {
 	        				}
 	        			}
 	        			inputstream.close();
-	            	}
+	            	}else if(fileName.endsWith(".tif")){
+	            		System.out.println(fileName);
+//    					int indexLen = fileName.indexOf("\\");
+//    					String fileNamePre = "";//文件夹名称
+//    					if(indexLen > -1){
+//    						fileNamePre = fileName.substring(0, indexLen);
+//    						int indexLastLen = fileName.lastIndexOf("\\");
+//    						if((fileNamePre+"\\"+fileNamePre+"\\"+fileNamePre).equals(fileName.substring(0, indexLastLen))){
+//    							String filePathPre = fileNamePre + "\\" + CurrentTime.getStringTime1();
+//    							String filePath = WebUrl.DATA_URL_TZS_IMG + "\\" + filePathPre;
+//    							File file_c = new File(filePath);
+//    							String tifName = fileName.substring(indexLastLen);
+//    							if(!file_c.exists()){
+//    								file_c.mkdirs();
+//    							}
+//    							try {
+//    								File mainfestFile = new File(filePath + "\\" + tifName);
+//    								mainfestFile.createNewFile();
+//    								os = new FileOutputStream(mainfestFile);
+//    								is = zf.getInputStream(ze);
+//    								int len;
+//    								while((len = is.read()) != -1){
+//    									os.write(len);
+//    								}
+//    							} catch (IOException e) {
+//    								// TODO Auto-generated catch block
+//    								e.printStackTrace();
+//    							}
+//    						}
+//    					}
+    					
+    				}
 	            }
 	        }
 	        zin.close();
 	        check.close();
 	        fileInputStream.close();
 	        zf.close();
+	        is.close();
+	        os.close();
         }catch (Exception e) {
 			// TODO Auto-generated catch block
         	map.put("readInfo", "typeError");//只支持ZIP压缩格式的通知书
 			//删除当前通知书压缩包
-			FileOpration.deleteFile(finalPath);
+//			FileOpration.deleteFile(finalPath);
 		}
         return list_all;
 	}
@@ -344,6 +382,7 @@ public class ReadZipFile {
 			zipInput = new ZipInputStream(new FileInputStream(file),Charset.forName("utf-8"));
 			while((zipEntry = zipInput.getNextEntry()) != null){
 				String currFileName = zipEntry.getName();
+				System.out.println(currFileName);
 				if(currFileName.endsWith(".tif")){
 					int indexLen = currFileName.indexOf("\\");
 					String fileNamePre = "";//文件夹名称
@@ -403,7 +442,8 @@ public class ReadZipFile {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		ReadZipFile rzf = new ReadZipFile();
-		rzf.copyZipFile(new File("e:\\1122.zip"));
+//		rzf.copyZipFile(new File("e:\\1122.zip"));
+		rzf.readZipFile_new("e:\\1122.zip", 1, 1, 0);
 //		List<TzsJson> tjList = new ArrayList<TzsJson>();
 ////		for(int i = 222 ; i <= 223; i++){
 ////			List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\"+i+".zip",0,0,0);
