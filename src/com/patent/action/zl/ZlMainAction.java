@@ -4760,6 +4760,7 @@ public class ZlMainAction extends DispatchAction {
 												Integer cusOpenStatus = CommonTools.getFinalInteger("cusOpenStatus", request);//0:默认开启，1:不开启(将直接进入到补正提交)
 												if(lcNo <= 10.9){
 													lcNo += 0.1;
+													lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 												}
 												if(cusOpenStatus.equals(0)){
 													//开启客户确认环节
@@ -4829,6 +4830,7 @@ public class ZlMainAction extends DispatchAction {
 										}else{//审核通过
 											if(lcNo <= 10.9){
 												lcNo += 0.1;
+												lcNo = Convert.convertInputNumber_5(lcNo);//保留一位小数
 											}
 											//增加下一个流程
 											Integer nextLcId = lcm.addLcInfo(zlId, "补正提交", "补正提交", currDate, cpyDate, "", gfDate,lcNo,lcTzsPath);
@@ -4844,6 +4846,7 @@ public class ZlMainAction extends DispatchAction {
 											}
 										}
 									}else if(lcmxName.equals("补正提交")){
+										upZxFile = lcmx.getLastUpFileBz();//定稿文件
 										mxm.updateEdateById(lcMxId, currUserId, "", currUserId, upZxFile, currDate, "", currDate, taskRemark,-1);
 										if(!upZxFile.equals("")){
 											String[] fjNameArr = upZxFile.split(",");
