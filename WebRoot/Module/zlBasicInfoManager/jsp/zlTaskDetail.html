@@ -130,7 +130,6 @@
 				        url:'/zlm.do?action=getLcTaskDetail',
 				        success:function (json){
 				        	layer.closeAll('loading');
-				        	console.log(json)
 				        	$('#zlTitSp').html('专利 ['+ zlTit +'] 任务详情');
 				        	if(json['result'] == 'success'){
 				        		$('.taskStep').show();
@@ -157,7 +156,7 @@
 				},
 				loadTaskLcDetail : function(fileInfo,zlInfo,lcNo){
 					var prevHtml = '',nowHtml_jud = '',nowHtml_sub = '',nowHtml_cus='';
-					if(lcNo >= 3 && lcNo <= 6 || this.data.lcName == '专利补正' || this.data.lcName == '补正修改' || this.data.lcName == '补正审核'){
+					if(lcNo >= 3 && lcNo <= 6 || this.data.lcName == '专利补正' || this.data.lcName == '补正修改' || this.data.lcName == '补正审核' || this.data.lcName == '客户确认-补正' || this.data.lcName == '补正提交'){
 						prevHtml += '<div class="prevTit"><p class="showHideBtn" isOpen="true"><i class="iconfont layui-extend-taskComp"></i>任务详情<i class="iconfont layui-extend-more rotateIcon"></i></p><a class="viewZlDetail" href="javascript:void(0)" opts="byTaskDetailOpt"><i class="layui-icon layui-icon-search"></i>专利详情</a></div>';
 						prevHtml += '<div class="pervWrap"><div class="detailPrevCon">';
 						prevHtml += '<ul class="basicInfoUl">';
@@ -282,6 +281,9 @@
 						$('.judgeBox').addClass('dinggaoHei').show().html(nowHtml_sub);
 						form.render();
 						this.isHasFeeRateSel();
+					}else if(this.data.lcName == '补正提交'){
+						$('.remarkWrap').remove();
+						$('.upFileWrap').remove();
 					}
 					selectFileUpload();
 					this.bindEvent(lcNo);
@@ -596,6 +598,9 @@
 							}else{
 								var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),cusOpenStatus:isOpenCusInpVal,upZxFile:$('#fujianInp').val(),checkStatus:adviceInpVal};
 							}
+						}else if(_this.data.lcName == '补正提交'){
+							var field = {lcmxId:globalMxId};
+							console.log(field)
 						}
 						$.ajax({
 	  						type:'post',
