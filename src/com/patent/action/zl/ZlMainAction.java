@@ -4702,7 +4702,7 @@ public class ZlMainAction extends DispatchAction {
 													Integer lastIndex_1 = lastFjName.indexOf(".");
 													String fjVersion = lastFjName.substring(0, lastIndex_1);
 													String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-													fjm.addFj(zlId, fjNameArr[i], fjVersion, "补正_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
+													fjm.addFj(zlId, fjNameArr[i], fjVersion, "补正文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 												}
 											}
 											lcNo += 1;
@@ -4810,7 +4810,7 @@ public class ZlMainAction extends DispatchAction {
 												Integer lastIndex_1 = lastFjName.indexOf(".");
 												String fjVersion = lastFjName.substring(0, lastIndex_1);
 												String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-												fjm.addFj(zlId, fjNameArr[i], fjVersion, "客户确认-补正补充文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
+												fjm.addFj(zlId, fjNameArr[i], fjVersion, "客户补充文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 											}
 										}
 										if(cusCheckStatus.equals(0)){//客户确认未通过

@@ -56,8 +56,8 @@ public class ReadZipFile {
 		List<TzsJson> list_all = new ArrayList<TzsJson>();
 		
 		Map<String,Object> map = new HashMap<String,Object>();
-//		String finalPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath;//上传文件的绝对路径
-		String finalPath = upZipPath;
+		String finalPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath;//上传文件的绝对路径
+//		String finalPath = upZipPath;
 		OutputStream os = null;
 		InputStream is = null;
 		
