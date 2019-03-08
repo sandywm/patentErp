@@ -3873,11 +3873,38 @@ public class ZlMainAction extends DispatchAction {
 									}
 								}
 							}
-							if(lcmxName.equals("补正修改")){//补正修改时需要查看上一次的专利补正文件
+							if(lcmxName.equals("补正修改") || lcmxName.equals("补正审核")){//补正修改时需要查看上一次的专利补正文件
 								lastBzFile = lcmx.getLastUpFileBz();
-								filePath += ":" + lastBzFile;
+								String[] lastBzFileArr = lastBzFile.split(",");
+								String lastBzFile_curr = "";
+								String fileType_curr = "";
+								for(int i = 0 ; i < lastBzFileArr.length ; i++){
+									String bzType = "";
+									if(lastBzFileArr[i].split(":").length == 2){
+										bzType = lastBzFileArr[i].split(":")[1];
+										if(bzType.equals("sq")){
+											bzType = "申请表-补正";
+										}else if(bzType.equals("df")){
+											bzType = "答复文件-补正";
+										}else if(bzType.equals("th")){
+											bzType = "替换文件-补正";
+										}else if(bzType.equals("zm")){
+											bzType = "证明文件-补正";
+										}
+									}else{
+										bzType = "补正文件";
+									}
+									if(i == 0){
+										lastBzFile_curr += lastBzFileArr[i].split(":")[0];
+										fileType_curr += bzType;
+									}else{
+										lastBzFile_curr += ","+lastBzFileArr[i].split(":")[0];
+										fileType_curr += "," + bzType;
+									}
+								}
+								filePath += ":" + lastBzFile_curr;
+								fileType += ":"+fileType_curr;
 								upUser += ":"+cum.getEntityById(lcmx.getLastUpUserIdBz()).getUserName();
-								fileType += ":补正文件";
 								lastBzScFile = lcmx.getLastUpFileBzSc();
 								if(!lastBzScFile.equals("")){
 									filePath += ":" + lastBzScFile;
@@ -3894,12 +3921,39 @@ public class ZlMainAction extends DispatchAction {
 								}else{
 									remark = lcmx.getLastCusRemark();
 								}
-							}else if(lcmxName.equals("补正审核")){
+							}/**else if(lcmxName.equals("补正审核")){
 								lastBzFile = lcmx.getLastUpFileBz();
+								String[] lastBzFileArr = lastBzFile.split(",");
+								String lastBzFile_curr = "";
+								String fileType_curr = "";
+								for(int i = 0 ; i < lastBzFileArr.length ; i++){
+									String bzType = "";
+									if(lastBzFileArr[i].split(":").length == 2){
+										bzType = lastBzFileArr[i].split(":")[1];
+										if(bzType.equals("sq")){
+											bzType = "申请表-补正";
+										}else if(bzType.equals("df")){
+											bzType = "答复文件-补正";
+										}else if(bzType.equals("th")){
+											bzType = "替换文件-补正";
+										}else if(bzType.equals("zm")){
+											bzType = "证明文件-补正";
+										}
+									}else{
+										bzType = "补正文件";
+									}
+									if(i == 0){
+										lastBzFile_curr += lastBzFileArr[i].split(":")[0];
+										fileType_curr += bzType;
+									}else{
+										lastBzFile_curr += ","+lastBzFileArr[i].split(":")[0];
+										fileType_curr += "," + bzType;
+									}
+									filePath += ":" + lastBzFile_curr;
+									upUser += ":"+cum.getEntityById(lcmx.getLastUpUserIdBz()).getUserName();
+									fileType += ":"+fileType_curr;
+								}
 								lastBzScFile = lcmx.getLastUpFileBzSc();
-								filePath += ":" + lastBzFile;
-								fileType += ":补正文件";
-								upUser += ":"+cum.getEntityById(lcmx.getLastUpUserIdBz()).getUserName();
 								if(!lastBzScFile.equals("")){
 									filePath += ":" + lastBzScFile;
 									fileType += ":补正审核";
@@ -3915,11 +3969,38 @@ public class ZlMainAction extends DispatchAction {
 								}else{
 									remark = lcmx.getLastCusRemark();
 								}
-							}else if(lcmxName.equals("客户确认-补正") || lcmxName.equals("补正提交")){
+							}**/else if(lcmxName.equals("客户确认-补正") || lcmxName.equals("补正提交")){
 								//只获取补正文件
 								lastBzFile = lcmx.getLastUpFileBz();
-								filePath = lastBzFile;
-								fileType = "补正文件";
+								String[] lastBzFileArr = lastBzFile.split(",");
+								String lastBzFile_curr = "";
+								String fileType_curr = "";
+								for(int i = 0 ; i < lastBzFileArr.length ; i++){
+									String bzType = "";
+									if(lastBzFileArr[i].split(":").length == 2){
+										bzType = lastBzFileArr[i].split(":")[1];
+										if(bzType.equals("sq")){
+											bzType = "申请表-补正";
+										}else if(bzType.equals("df")){
+											bzType = "答复文件-补正";
+										}else if(bzType.equals("th")){
+											bzType = "替换文件-补正";
+										}else if(bzType.equals("zm")){
+											bzType = "证明文件-补正";
+										}
+									}else{
+										bzType = "补正文件";
+									}
+									if(i == 0){
+										lastBzFile_curr += lastBzFileArr[i].split(":")[0];
+										fileType_curr += bzType;
+									}else{
+										lastBzFile_curr += ","+lastBzFileArr[i].split(":")[0];
+										fileType_curr += "," + bzType;
+									}
+								}
+								filePath = lastBzFile_curr;
+								fileType = fileType_curr;
 								upUser = cum.getEntityById(lcmx.getLastUpUserIdBz()).getUserName();
 							}
 							//另外还需要获取补正通知书
@@ -3939,7 +4020,7 @@ public class ZlMainAction extends DispatchAction {
 								String[] fjNameArr = filePath.split(",");
 								for(Integer i = 0 ; i < fjNameArr.length ; i++){
 									Map<String,String> map_f = new HashMap<String,String>();
-									String fileName_curr = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));//文件名称
+									String fileName_curr = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));//文件名称;
 									Integer lastIndex = fileName_curr.lastIndexOf("_");
 									String lastFjName = fileName_curr.substring(lastIndex+1, fileName_curr.length());
 									Integer lastIndex_1 = lastFjName.indexOf(".");
@@ -3949,7 +4030,11 @@ public class ZlMainAction extends DispatchAction {
 									map_f.put("fileName", fileName_curr);
 									map_f.put("fjGs", fjGs);
 									map_f.put("fjSize", fjSize);
-									map_f.put("fileType", fileType);
+									if(fileType.indexOf(",") >= 0){
+										map_f.put("fileType", fileType.split(",")[i]);
+									}else{
+										map_f.put("fileType", fileType);
+									}
 									map_f.put("zlType",zlTypeChi);
 									map_f.put("downFilePath", downFilePath);
 									map_f.put("upUser", upUser);
@@ -3961,7 +4046,7 @@ public class ZlMainAction extends DispatchAction {
 									String[] fjNameArr_sub = fjNameArr_main[i].split(",");
 									for(Integer j = 0 ; j < fjNameArr_sub.length ; j++){
 										Map<String,String> map_f = new HashMap<String,String>();
-										String fileName_curr = fjNameArr_sub[j].substring((fjNameArr_sub[j].lastIndexOf("\\") + 1));//文件名称
+										String fileName_curr = fjNameArr_sub[j].substring((fjNameArr_sub[j].lastIndexOf("\\") + 1));//文件名称;
 										Integer lastIndex = fileName_curr.lastIndexOf("_");
 										String lastFjName = fileName_curr.substring(lastIndex+1, fileName_curr.length());
 										Integer lastIndex_1 = lastFjName.indexOf(".");
@@ -3971,7 +4056,11 @@ public class ZlMainAction extends DispatchAction {
 										map_f.put("fileName", fileName_curr);
 										map_f.put("fjGs", fjGs);
 										map_f.put("fjSize", fjSize);
-										map_f.put("fileType", fileTypeArr[i]);
+										if(fileTypeArr[i].indexOf(",") >= 0){
+											map_f.put("fileType", fileTypeArr[i].split(",")[j]);
+										}else{
+											map_f.put("fileType", fileTypeArr[i]);
+										}
 										map_f.put("zlType",zlTypeChi);
 										map_f.put("downFilePath", downFilePath);
 										map_f.put("upUser", upUserArr[i]);
@@ -4691,18 +4780,33 @@ public class ZlMainAction extends DispatchAction {
 									String lcTzsPath = lc.getLcTzsPath();//流程通知书路径
 									//布阵审核比专利补正/布阵修改多个审核意见和审核状态
 									if(lcmxName.equals("专利补正") || lcmxName.equals("补正修改")){
+										//此处的上传附件必须有附件类型(申请表（sq）、答复文件（df）、替换文件(th)、证明文件(zm)，格式为path:type,path:type
 										if(upFlag){
 											mxm.updateEdateById(lcMxId, currUserId, "", currUserId, upZxFile, currDate, "", currDate, taskRemark,-1);
 											if(!upZxFile.equals("")){
 												String[] fjNameArr = upZxFile.split(",");
 												for(Integer i = 0 ; i < fjNameArr.length ; i++){
+													fjNameArr[i] = fjNameArr[i].split(":")[0];
+													String fileType = "";
+													if(fjNameArr[i].split(":").length == 2){
+														fileType = fjNameArr[i].split(":")[1];
+														if(fileType.equals("sq")){
+															fileType = "-申请表";
+														}else if(fileType.equals("df")){
+															fileType = "-答复文件";
+														}else if(fileType.equals("th")){
+															fileType = "-替换文件";
+														}else if(fileType.equals("zm")){
+															fileType = "-证明文件";
+														}
+													}
 													String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
 													Integer lastIndex = fileName.lastIndexOf("_");
 													String lastFjName = fileName.substring(lastIndex+1, fileName.length());
 													Integer lastIndex_1 = lastFjName.indexOf(".");
 													String fjVersion = lastFjName.substring(0, lastIndex_1);
 													String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-													fjm.addFj(zlId, fjNameArr[i], fjVersion, "补正文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
+													fjm.addFj(zlId, fjNameArr[i]+fileType, fjVersion, "补正文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 												}
 											}
 											lcNo += 1;

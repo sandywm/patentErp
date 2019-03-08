@@ -93,7 +93,6 @@ public class ReadZipFile {
 	            }else{
 	            	String fileName = ze.getName();
 	            	if(fileName.endsWith("XML") || fileName.endsWith("xml")){
-	            		System.out.println(fileName);
 	                    ZipEntry zip = zf.getEntry(ze.getName());
 	                    InputStream inputstream = null;
 	            		inputstream = zf.getInputStream(zip);
@@ -282,7 +281,6 @@ public class ReadZipFile {
 	        			}
 	        			inputstream.close();
 	            	}else if(fileName.endsWith(".tif")){
-	            		System.out.println(fileName);
 //    					int indexLen = fileName.indexOf("\\");
 //    					String fileNamePre = "";//文件夹名称
 //    					if(indexLen > -1){
