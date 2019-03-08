@@ -4887,7 +4887,9 @@ public class ZlMainAction extends DispatchAction {
 													if(nextLcId > 0){
 														mxm.addLcMx(nextLcId, zl.getBzTjUserId(), "补正提交", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,lcmx.getLastUpFileBz(),"","",lcmx.getLastUpUserIdBz(),0,0,"","");
 														//修改专利的案件状态
-														zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待补正提交");
+														if(lcNo_db <= lcNo){
+															zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待补正提交");
+														}
 														//发送邮件
 														mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getBzTjUserId(), "cpyUser", "新任务通知：补正提交", "专利["+zl.getAjTitle()+"]审核已审核通过，请及时完成专利补正提交工作!");
 														
@@ -4925,7 +4927,9 @@ public class ZlMainAction extends DispatchAction {
 											if(nextLcId > 0){
 												mxm.addLcMx(nextLcId, zl.getBzUserId(), "补正修改", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,lcmx.getLastUpFileBz(),"",upZxFile,lcmx.getLastUpUserIdBz(),0,currUserId,"",taskRemark);
 												//修改专利的案件状态
-												zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待补正修改");
+												if(lcNo_db <= lcNo){
+													zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待补正提交");
+												}
 												//发送邮件
 												mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getBzUserId(), "cpyUser", "新任务通知：补正修改", "专利["+zl.getAjTitle()+"]客户确认未通过，请及时完成专利补正修改工作!");
 											}else{
@@ -4941,7 +4945,9 @@ public class ZlMainAction extends DispatchAction {
 											if(nextLcId > 0){
 												mxm.addLcMx(nextLcId, zl.getBzTjUserId(), "补正提交", lcNo, currDate, "", "", 0, "", "",  0.0, "",-1,lcmx.getLastUpFileBz(),"","",lcmx.getLastUpUserIdBz(),0,0,"","");
 												//修改专利的案件状态
-												zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待补正提交");
+												if(lcNo_db <= lcNo){
+													zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"等待补正提交");
+												}
 												//发送邮件
 												mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, zl.getBzTjUserId(), "cpyUser", "新任务通知：补正提交", "专利["+zl.getAjTitle()+"]审核已审核通过，请及时完成专利补正提交工作!");
 												
@@ -4963,6 +4969,9 @@ public class ZlMainAction extends DispatchAction {
 												String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
 												fjm.addFj(zlId, fjNameArr[i], fjVersion, "补正提交_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 											}
+										}
+										if(lcNo_db <= lcNo){
+											zlm.updateZlStatusById(zlId, String.valueOf(lcNo),"补正已提交");
 										}
 									}
 								}
