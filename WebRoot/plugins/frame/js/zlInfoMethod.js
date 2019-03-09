@@ -380,7 +380,9 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 				   			        	}else if(json['result'] == 'notUpdate'){
 				   			        		layer.msg('定稿以后或专利状态终止条件下不能修改', {icon:5,anim:6,time:2200});
 				   			        	}else if(json['result'] == 'addError'){
-				   			        		layer.msg('当前选择的专利任务已被其他专利占用！', {icon:5,anim:6,time:2200});
+				   			        		layer.msg('当前选择的专利任务已被其他专利占用', {icon:5,anim:6,time:2200});
+				   			        	}else if(json['result'] == 'exist'){
+				   			        		layer.msg('当前专利号已存，请重新输入', {icon:5,anim:6,time:2200});
 				   			        	}
 				   			        }
 				   				});

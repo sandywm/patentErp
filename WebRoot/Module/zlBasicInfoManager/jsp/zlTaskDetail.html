@@ -68,6 +68,7 @@
 						<table class="layui-table fileTable">
 					      <thead>
 					        <tr><th>附件名</th>
+					        <th class="hideItemFj">附件类型</th>
 					        <th>专利类型</th>
 					        <th>大小</th>
 					        <th>状态</th>
@@ -136,6 +137,9 @@
 				        		_this.data.cpyDate = json.cpyDate;
 								_this.data.gfDate = json.gfDate;
 								_this.data.lcFzr = json.lcFzr;
+								if(json.lcName == '专利补正' || json.lcName == '补正修改'){
+									$('.hideItemFj').show();
+								}
 								_this.data.lcName = json.lcName;
 								_this.data.remark = json.remark;
 				        		var fileInfo = json.fileInfo,zlInfo = json.zlInfo,lcNo = json.lcNo;
@@ -574,12 +578,37 @@
 							var field = {lcmxId:globalMxId,zlTitle:ajTitleVal,sqrId:ajSqrIdVal,sqrName:sqrName,lxrId:ajLxrIdVal,fmrId:ajFmrIdVal,ajFjInfo:rateInpVal,taskRemark:'',upZxFile:$('#fujianInp').val()};
 						}else if(_this.data.lcName == '专利补正' || _this.data.lcName == '补正修改'){
 							//专利补正/补正修改 (附件必填 备注选填)
-							var remarkVal = $.trim($('.remarkArea').val());
+							var remarkVal = $.trim($('.remarkArea').val()),isFjTypeFlag = true,zlBzStr='',totalZlBzStr='';
 							if($('#fujianInp').val() == ''){
 								layer.msg('请上传补正文件',{icon:5,anim:6,time:1500});
 								return;
 							}
-							var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:$('#fujianInp').val()};
+							$('.bzTypeInp').each(function(i){
+								if($('.bzTypeInp').eq(i).val() == ''){
+									isFjTypeFlag = false;//所有当前专利类型是发明+新型的上传成功的附件部分未指定附件类型
+								}
+							});
+							if(isFjTypeFlag && isHasUpLoadFlag){//表示选择了所有补正文件的附件类型
+								//path:type,path:type
+								if($('.sqPath').length == 0){//申请文件必选
+									layer.msg('上传文件至少一项为申请文件',{icon:5,anim:6,time:2000});
+									return;
+								}
+								$('.rowBzTypeInp').each(function(i){
+									if($('.rowBzTypeInp').length == 1){
+										zlBzStr = $('.rowBzTypeInp').eq(i).val();
+										totalZlBzStr = zlBzStr;
+									}else if($('.rowBzTypeInp').length > 1){
+										zlBzStr += $('.rowBzTypeInp').eq(i).val() + ',';
+										totalZlBzStr = zlBzStr.substring(0,zlBzStr.length-1);
+									}
+								});
+							}else{
+								layer.msg('请选择附件类型',{icon:5,anim:6,time:1500});
+								return;
+							}
+							var field = {lcmxId:globalMxId,taskRemark:escape(remarkVal),upZxFile:totalZlBzStr};
+							console.log(field)
 						}else if(_this.data.lcName == '补正审核'){
 							var adviceInpVal = $('#adviceInp').val(),isOpenCusInpVal = $('#isOpenCusInp').val(),remarkVal = $.trim($('.remarkArea').val());
 							if(adviceInpVal == ''){
@@ -600,7 +629,6 @@
 							}
 						}else if(_this.data.lcName == '补正提交'){
 							var field = {lcmxId:globalMxId};
-							console.log(field)
 						}
 						$.ajax({
 	  						type:'post',
@@ -671,7 +699,11 @@
 			function selectFileUpload(){
 				var upLoadFileList = $('#upLoadFileList'),url = '',fileType = 'doc|docx|wps|xls|xlsx|txt|pdf|pptx|ppt|zip|rar|dwg|eml|jpg|png|bmp|gif|jpeg|vsd|vsdx';
 				url = '/upload.do?action=uploadFile&ajId='+ globalZlId +'&fileType=fj';
-				globalUpload.uploadFiles(url,5,fileType,'zlTaskOpts');
+				if(page.data.lcName == '专利补正' || page.data.lcName == '补正修改'){
+					globalUpload.uploadFiles(url,5,fileType,'zlTaskOpts_bz');	
+				}else{
+					globalUpload.uploadFiles(url,5,fileType,'zlTaskOpts');	
+				}
 				if($('.deleteBtn_edit').length > 0){//表示编辑的时候执行附件删除动作
 					$('.deleteBtn_edit').on('click',function(){
 						$(this).parent().parent().remove();
