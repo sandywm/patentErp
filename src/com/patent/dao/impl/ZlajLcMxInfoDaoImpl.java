@@ -156,4 +156,13 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<ZlajLcMxInfoTb> findSpecFjInfoByOpt(Session sess, Integer zlId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajLcMxInfoTb as lcmx where exists(";
+		hql += " select lc.id from ZlajLcInfoTb as lc where lc.zlajMainInfoTb.id = "+zlId;
+		hql += " and (lc.lcDetail = '导入补正通知书' or lc.lcDetail = '补正提交') and lc.id = lcmx.zlajLcInfoTb.id order by lc.id asc)";
+		return sess.createQuery(hql).list();
+	}
+
 }

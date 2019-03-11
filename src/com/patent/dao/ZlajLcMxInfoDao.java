@@ -155,4 +155,15 @@ public interface ZlajLcMxInfoDao {
 	 * @return
 	 */
 	List<ZlajLcMxInfoTb> findUnComLcMxByOpt(Session sess,Integer fzUserId,Integer zlId);
+	
+	/**
+	 * 获取指定专利的补正通知书、补正提交时的文件
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-11 上午09:12:55
+	 * @param sess
+	 * @param zlId 专利编号
+	 * @return
+	 */
+	List<ZlajLcMxInfoTb> findSpecFjInfoByOpt(Session sess,Integer zlId);
 }

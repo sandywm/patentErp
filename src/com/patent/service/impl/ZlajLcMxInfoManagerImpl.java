@@ -356,4 +356,21 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajLcMxInfoTb> listSpecFjInfoByOpt(Integer zlId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			mxDao = (ZlajLcMxInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_MX_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return mxDao.findSpecFjInfoByOpt(sess, zlId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定专利的补正通知书、补正提交时的文件时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

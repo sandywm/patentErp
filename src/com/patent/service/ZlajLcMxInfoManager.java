@@ -231,4 +231,15 @@ public interface ZlajLcMxInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajLcMxInfoTb> listUnComLcMxByOpt(Integer fzUserId,Integer zlId) throws WEBException;
+	
+	/**
+	 * 获取指定专利的补正通知书、补正提交时的文件
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-11 上午09:18:12
+	 * @param zlId 专利编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajLcMxInfoTb> listSpecFjInfoByOpt(Integer zlId) throws WEBException;
 }

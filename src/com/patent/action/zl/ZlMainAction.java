@@ -6781,4 +6781,178 @@ public class ZlMainAction extends DispatchAction {
 		}
 		return null;
 	}
+	
+	/**
+	 * 获取历次所有的附件（技术底稿、定稿文件、历次的审查意见通知书（专利补正通知书）、历次的审查/专利补正提交文档）
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-11 上午08:54:07
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getAllFjList(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
+		Integer lcmxId = CommonTools.getFinalInteger("lcmxId", request);
+		String filePath_dg = "";//技术底稿
+		String filePath_dg1 = "";//定稿文件
+		String filePath_tzs = "";//通知书
+		String filePath_bz = "";//补正提交文件
+		String msg = "error";
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(lcmxId > 0){
+			List<ZlajLcMxInfoTb> mxList = mxm.listDetailInfoById(lcmxId);
+			if(mxList.size() > 0){
+				msg = "success";
+				ZlajLcMxInfoTb lcmx = mxList.get(0);
+				ZlajLcInfoTb lc = lcmx.getZlajLcInfoTb();
+				ZlajMainInfoTb zl = lc.getZlajMainInfoTb();
+				Integer zlId = zl.getId();
+				List<Object> list_fj = new ArrayList<Object>();
+				//技术底稿
+				filePath_dg = zl.getAjUpload();
+				if(!filePath_dg.equals("")){
+					String upUserDg = cum.getEntityById(zl.getAjAddUserId()).getUserName();
+					String[] filePathDgArr = filePath_dg.split(",");
+					for(int i = 0 ; i < filePathDgArr.length ; i++){
+						Map<String,String> map_f = new HashMap<String,String>();
+						String fileName_curr = filePathDgArr[i].substring((filePathDgArr[i].lastIndexOf("\\") + 1));//文件名称;
+						Integer lastIndex = fileName_curr.lastIndexOf("_");
+						String lastFjName = fileName_curr.substring(lastIndex+1, fileName_curr.length());
+						Integer lastIndex_1 = lastFjName.indexOf(".");
+						String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());//文件格式
+						String fjSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + filePathDgArr[i]);//文件大小
+						String downFilePath = filePathDgArr[i];
+						map_f.put("fileName", fileName_curr);
+						map_f.put("fjGs", fjGs);
+						map_f.put("fjSize", fjSize);
+						map_f.put("fileType", "技术底稿");
+						map_f.put("downFilePath", downFilePath);
+						map_f.put("upUser", upUserDg);
+						list_fj.add(map_f);
+					}
+				}
+				//定稿文件
+				filePath_dg1 = zl.getAjUploadDg();
+				String upUserDg1 = "";
+				if(filePath_dg1.equals("")){
+					List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "撰稿修改");
+					Integer mxLen = mxList_t.size();
+					if(mxLen == 0){//不能存在撰稿修改，说明撰写人一次性通过
+						mxList_t = mxm.listSpecInfoInfoByOpt(zlId, "新申请撰稿");
+						mxLen = mxList_t.size();
+					}
+					ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);//获取最近一次的撰稿修改
+					filePath_dg1 = mx.getLcMxUpFile();
+					upUserDg1 = cum.getEntityById(mx.getLcMxUpUserId()).getUserName();
+				}else{//存在定稿文件（分新案和旧案）
+					if(zl.getAjType1().equals("new")){//新案时定稿文件是撰写人提交的
+						upUserDg1 = cum.getEntityById(zl.getZxUserId()).getUserName();
+					}else{//旧案时定稿文件是案件增加人员提交的
+						upUserDg1 = cum.getEntityById(zl.getAjAddUserId()).getUserName();
+					}
+				}
+				if(!filePath_dg1.equals("")){
+					String[] filePathDgArr = filePath_dg1.split(",");
+					for(int i = 0 ; i < filePathDgArr.length ; i++){
+						Map<String,String> map_f = new HashMap<String,String>();
+						String fileName_curr = filePathDgArr[i].substring((filePathDgArr[i].lastIndexOf("\\") + 1));//文件名称;
+						Integer lastIndex = fileName_curr.lastIndexOf("_");
+						String lastFjName = fileName_curr.substring(lastIndex+1, fileName_curr.length());
+						Integer lastIndex_1 = lastFjName.indexOf(".");
+						String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());//文件格式
+						String fjSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + filePathDgArr[i]);//文件大小
+						String downFilePath = filePathDgArr[i];
+						map_f.put("fileName", fileName_curr);
+						map_f.put("fjGs", fjGs);
+						map_f.put("fjSize", fjSize);
+						map_f.put("fileType", "定稿文件");
+						map_f.put("downFilePath", downFilePath);
+						map_f.put("upUser", upUserDg1);
+						list_fj.add(map_f);
+					}
+				}
+				//获取历次的补正通知书和补正提交时的附件
+				List<ZlajLcMxInfoTb> fjList = mxm.listSpecFjInfoByOpt(zlId);
+				if(fjList.size() > 0){
+					for(Iterator<ZlajLcMxInfoTb> it = fjList.iterator() ; it.hasNext();){
+						ZlajLcMxInfoTb lcfj = it.next();
+						String mxName = lcfj.getLcMxName();
+						String upUser = cum.getEntityById(lcfj.getLcMxUpUserId()).getUserName();
+						if(mxName.equals("导入补正通知书")){
+							filePath_tzs = lcfj.getZlajLcInfoTb().getLcTzsPath();
+							if(!filePath_tzs.equals("")){
+								String[] filePathTzsArr = filePath_tzs.split(",");
+								for(int i = 0 ; i < filePathTzsArr.length ; i++){
+									Map<String,String> map_f = new HashMap<String,String>();
+									String fileName_curr = filePathTzsArr[i].substring((filePathTzsArr[i].lastIndexOf("\\") + 1));//文件名称;
+									Integer lastIndex = fileName_curr.lastIndexOf("_");
+									String lastFjName = fileName_curr.substring(lastIndex+1, fileName_curr.length());
+									Integer lastIndex_1 = lastFjName.indexOf(".");
+									String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());//文件格式
+									String fjSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + filePathTzsArr[i]);//文件大小
+									String downFilePath = filePathTzsArr[i];
+									map_f.put("fileName", fileName_curr);
+									map_f.put("fjGs", fjGs);
+									map_f.put("fjSize", fjSize);
+									map_f.put("fileType", "补正通知书");
+									map_f.put("downFilePath", downFilePath);
+									map_f.put("upUser", upUser);
+									list_fj.add(map_f);
+								}
+							}
+						}else if(mxName.equals("补正提交")){
+							filePath_bz = lcfj.getLcMxUpFile();//补正提交文件
+							String[] filePathBzArr = filePath_bz.split(",");
+							for(int i = 0 ; i < filePathBzArr.length ; i++){
+								String bzType = "";
+								String filePath = "";
+								if(filePathBzArr[i].split(":").length == 2){
+									bzType = filePathBzArr[i].split(":")[1];
+									if(bzType.equals("sq")){
+										bzType = "申请表-补正";
+									}else if(bzType.equals("df")){
+										bzType = "答复文件-补正";
+									}else if(bzType.equals("th")){
+										bzType = "替换文件-补正";
+									}else if(bzType.equals("zm")){
+										bzType = "证明文件-补正";
+									}
+									filePath =  filePathBzArr[i].split(":")[0];
+								}else{
+									bzType = "补正文件";
+									filePath =  filePathBzArr[i];
+								}
+								Map<String,String> map_f = new HashMap<String,String>();
+								String fileName_curr = filePath.substring((filePath.lastIndexOf("\\") + 1));//文件名称;
+								Integer lastIndex = fileName_curr.lastIndexOf("_");
+								String lastFjName = fileName_curr.substring(lastIndex+1, fileName_curr.length());
+								Integer lastIndex_1 = lastFjName.indexOf(".");
+								String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());//文件格式
+								String fjSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + filePath);//文件大小
+								String downFilePath = filePath;
+								map_f.put("fileName", fileName_curr);
+								map_f.put("fjGs", fjGs);
+								map_f.put("fjSize", fjSize);
+								map_f.put("fileType", bzType);
+								map_f.put("downFilePath", downFilePath);
+								map_f.put("upUser", upUser);
+								list_fj.add(map_f);
+							}
+						}
+					}
+				}
+				map.put("fjInfo", list_fj);
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
 }
