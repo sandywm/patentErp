@@ -53,6 +53,7 @@
 		<!-- task内容 -->
 		<div class="taskCon">
 			<div id="prevTaskCon"></div>
+			<div id="bzfjList"></div>
 			<div id="nowTaskCon" class="">
 				<div class="nowTit"><i class="iconfont layui-extend-daichuli"></i>任务处理</div>
 				<div class="dinggao layui-form"></div>
@@ -137,8 +138,12 @@
 				        		_this.data.cpyDate = json.cpyDate;
 								_this.data.gfDate = json.gfDate;
 								_this.data.lcFzr = json.lcFzr;
-								if(json.lcName == '专利补正' || json.lcName == '补正修改'){
-									$('.hideItemFj').show();
+								if(json.lcName == '专利补正' || json.lcName == '补正修改' || json.lcName == '补正审核'){
+									if(json.lcName != '补正审核'){
+										$('.hideItemFj').show();
+									}
+									$('#bzfjList').addClass('hasMargTop1');
+									_this.loadAllFjList();
 								}
 								_this.data.lcName = json.lcName;
 								_this.data.remark = json.remark;
@@ -158,10 +163,55 @@
         				parent.layer.close(index);
 					});
 				},
+				//获取以往历次的技术底稿、定稿文件、专利补正(审查意见)通知书、补正文档
+				loadAllFjList : function(){
+					var _this = this;
+					$.ajax({
+  						type:'post',
+				        dataType:'json',
+				        data : {lcmxId : globalMxId},
+				        url:'/zlm.do?action=getAllFjList',
+				        success:function (json){
+				        	if(json['result'] == 'success'){
+				        		var fjInfo = json.fjInfo;
+				        		_this.loadAllFjListDetail(fjInfo);
+				        	}else if(json['result'] == 'error'){
+				        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1500});
+				        	}
+				        }
+  					});
+				},
+				loadAllFjListDetail : function(fjInfo){
+					var allFjHtml = '';
+					allFjHtml += '<div class="prevTit"><p class="allFjPTit" isOpen="true" opts="allFjBz"><i class="iconfont layui-extend-fujian"></i>历次附件列表<i class="iconfont layui-extend-more rotateIcon"></i></p></div>';
+					allFjHtml += '<div class="allFjWrap"><span>附件</span>';
+					allFjHtml += '<div class="fujian"><ul class="listFujianTit_bz"><li class="onePrevWid hasBorL">附件名</li><li class="twoPrevWid">附件格式</li><li class="twoPrevWid">附件大小</li><li class="twoPrevWid">附件类型</li><li class="twoPrevWid">上传者</li><li class="twoPrevWid">操作</li></ul>';
+					allFjHtml += '<ul class="listFujianCon_bz">';
+					for(var i=0;i<fjInfo.length;i++){
+						allFjHtml += '<li>';
+						allFjHtml += '<p class="onePrevWid ellip hasBorL">'+ fjInfo[i].fileName +'</p>';
+						allFjHtml += '<p class="twoPrevWid">'+ fjInfo[i].fjGs +'</p>';
+						allFjHtml += '<p class="twoPrevWid">'+ fjInfo[i].fjSize +'</p>';
+						allFjHtml += '<p class="twoPrevWid">'+ fjInfo[i].fileType +'</p>';
+						allFjHtml += '<p class="twoPrevWid">'+ fjInfo[i].upUser +'</p>';
+						allFjHtml += '<p class="twoPrevWid"><a href="javascript:void(0)" class="downLoadBtn" downFilePath="'+ fjInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a></p>';
+						allFjHtml += '</li>';
+					}
+					allFjHtml += '</ul></div></div>';
+					$('#bzfjList').html(allFjHtml);
+					$('.listFujianCon_bz li:odd').addClass('oddColor');
+					if($('.downLoadBtn').length > 0){
+						$('.downLoadBtn').on('click',function(){
+							var downFilePath = $(this).attr('downFilePath');
+							common.downFiles(downFilePath,0);
+						});
+					}
+					this.showHideFun_bz();
+				},
 				loadTaskLcDetail : function(fileInfo,zlInfo,lcNo){
 					var prevHtml = '',nowHtml_jud = '',nowHtml_sub = '',nowHtml_cus='';
 					if(lcNo >= 3 && lcNo <= 6 || this.data.lcName == '专利补正' || this.data.lcName == '补正修改' || this.data.lcName == '补正审核' || this.data.lcName == '客户确认-补正' || this.data.lcName == '补正提交'){
-						prevHtml += '<div class="prevTit"><p class="showHideBtn" isOpen="true"><i class="iconfont layui-extend-taskComp"></i>任务详情<i class="iconfont layui-extend-more rotateIcon"></i></p><a class="viewZlDetail" href="javascript:void(0)" opts="byTaskDetailOpt"><i class="layui-icon layui-icon-search"></i>专利详情</a></div>';
+						prevHtml += '<div class="prevTit"><p class="showHideBtn" isOpen="true" opts="prev"><i class="iconfont layui-extend-taskComp"></i>任务详情<i class="iconfont layui-extend-more rotateIcon"></i></p><a class="viewZlDetail" href="javascript:void(0)" opts="byTaskDetailOpt"><i class="layui-icon layui-icon-search"></i>专利详情</a></div>';
 						prevHtml += '<div class="pervWrap"><div class="detailPrevCon">';
 						prevHtml += '<ul class="basicInfoUl">';
 						prevHtml += '<li><span>节点名称</span><p>'+ this.data.lcName +'</p></li>';
@@ -381,13 +431,27 @@
 					$('.showHideBtn').on('click',function(){
 						var isOpen = $(this).attr('isOpen');
 						if(isOpen == 'true'){
-							$('.layui-extend-more').removeClass('rotateIcon');
+							$('.showHideBtn .layui-extend-more').removeClass('rotateIcon');
 							$(this).attr('isOpen','false');
 							$('.pervWrap').stop().slideUp();
 						}else{
-							$('.layui-extend-more').addClass('rotateIcon');
+							$('.showHideBtn .layui-extend-more').addClass('rotateIcon');
 							$(this).attr('isOpen','true');
 							$('.pervWrap').stop().slideDown();
+						}
+					});
+				},
+				showHideFun_bz : function(){
+					$('.allFjPTit').on('click',function(){
+						var isOpen = $(this).attr('isOpen');
+						if(isOpen == 'true'){
+							$('.allFjPTit .layui-extend-more').removeClass('rotateIcon');
+							$(this).attr('isOpen','false');
+							$('.allFjWrap').stop().slideUp();
+						}else{
+							$('.allFjPTit .layui-extend-more').addClass('rotateIcon');
+							$(this).attr('isOpen','true');
+							$('.allFjWrap').stop().slideDown();
 						}
 					});
 				},
