@@ -22,9 +22,9 @@
 		<div class="layui-form-item">
 		    <label class="layui-form-label"><span class="mustItem">*</span>汇款金额</label>
 		    <div class="layui-input-block" style="width:80.1%;">
-		        <input type="text" id="backFeePriceInp" maxlength="6" placeholder="请输入汇款金额(大于0小于10万的正整数)" autocomplete="off" class="layui-input dlFeeInp">
-		    	<input type="hidden" id="dlfStatusInp" value="0"/>
-		    	<input type="checkbox" lay-filter="isHasAgentFee" title="是否包含冲抵代理费" lay-skin="primary" style="float:left;margin-left:10px;"/>
+		        <input type="text" id="backFeePriceInp" maxlength="6" placeholder="请输入汇款金额(大于0小于10万的正整数)" autocomplete="off" class="layui-input">
+		    	<!--input type="hidden" id="dlfStatusInp" value="0"/>
+		    	<input type="checkbox" lay-filter="isHasAgentFee" title="是否包含冲抵代理费" lay-skin="primary" style="float:left;margin-left:10px;"/-->
 		    </div>
 		</div>
 		<div class="layui-form-item">
@@ -40,6 +40,7 @@
 		        <input type="radio" lay-filter="backTypeFilter" name="backFeeType" value="wx" title="微信转账"/>
       			<input type="radio" lay-filter="backTypeFilter" name="backFeeType" value="zfb" title="支付宝转账"/>
       			<input type="radio" lay-filter="backTypeFilter" name="backFeeType" value="bank" title="银行转账"/>
+		   		<input type="radio" lay-filter="backTypeFilter" name="backFeeType" value="cash" title="现金"/>
 		    </div>
 		</div>
 		<div class="layui-form-item">
@@ -90,8 +91,8 @@
 							backFeePriceInpVal = $.trim($('#backFeePriceInp').val()),
 							backDateInpVal = $('#backDateInp').val(),
 							backTypeInpVal = $('#backTypeInp').val(),
-							remarkVal = $.trim($('#remark').val()),
-							dlfStatusVal = $('#dlfStatusInp').val();
+							remarkVal = $.trim($('#remark').val());
+							//dlfStatusVal = $('#dlfStatusInp').val();
 						if(cusIdInpVal == ''){
 							layer.msg('请选择客户', {icon:5,anim:6,time:1000});
 						}else if(backFeePriceInpVal == '' || backFeePriceInpVal == 0){
@@ -109,7 +110,7 @@
 			  						type:'post',
 							        async:false,
 							        dataType:'json',
-							        data : {cusId:cusIdInpVal,backFeePrice:backFeePriceInpVal,backDate:backDateInpVal,backType:backTypeInpVal,remark:remarkVal,dlfStatus:dlfStatusVal},
+							        data : {cusId:cusIdInpVal,backFeePrice:backFeePriceInpVal,backDate:backDateInpVal,backType:backTypeInpVal,remark:remarkVal/*,dlfStatus:dlfStatusVal*/},
 							        url:'/fee.do?action=addBackFee',
 							        success:function (json){
 							        	layer.closeAll('loading');
@@ -139,13 +140,13 @@
 				}
 			};
 			//是否包含代理费
-			form.on('checkbox(isHasAgentFee)', function(data){
+			/*form.on('checkbox(isHasAgentFee)', function(data){
 				if(data.elem.checked){
 					$('#dlfStatusInp').val(1);
 				}else{
 					$('#dlfStatusInp').val(0);
 				}
-			}); 
+			});*/ 
 			//汇款类型选择
 			form.on('radio(backTypeFilter)', function(data){
 			  $('#backTypeInp').val(data.value);
