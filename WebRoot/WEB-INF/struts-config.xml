@@ -71,6 +71,9 @@
     	<forward name="feePage" path="/Module/feeManager/jsp/feeManager.jsp"></forward>
     	<forward name="bfPage" path="/Module/backFeeManager/jsp/backFeeManager.jsp"></forward>
     </action>
+    <action path="/zdSubmit"  parameter="action" scope="request" type="com.patent.action.zd.ZdSubmitQqsAction">
+      <forward name="zdPage" path="/Module/feeManager/jsp/feeManager.jsp"></forward>
+    </action>
 
   </action-mappings>
 

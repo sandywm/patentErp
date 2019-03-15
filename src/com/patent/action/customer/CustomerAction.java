@@ -528,9 +528,18 @@ public class CustomerAction extends DispatchAction {
 				String fmrTel = CommonTools.getFinalStr(request.getParameter("fmrTel"));
 				String fmrEmail = CommonTools.getFinalStr(request.getParameter("fmrEmail"));
 				String fmriCard = CommonTools.getFinalStr(request.getParameter("fmriCard"));
-				Integer fmrId = cm.addCusFmrInfo(cusId, fmrName, fmriCard, fmrTel, fmrEmail);
-				if(fmrId > 0){
-					msg = "success";
+				//检查该代理机构下是否存在该名字的发明人
+				if(cm.listInfoByOpt(fmrName, fmriCard, cpyId).size() == 0){
+					Integer fmrId = cm.addCusFmrInfo(cusId, fmrName, fmriCard, fmrTel, fmrEmail);
+					if(fmrId > 0){
+						msg = "success";
+					}
+				}else{
+					if(fmriCard.equals("")){//存在该名字的发明人
+						msg = "iCard";
+					}else{//存在该名字该身份证的发明人
+						msg = "exist";
+					}
 				}
 			}
 		}else{
@@ -734,9 +743,26 @@ public class CustomerAction extends DispatchAction {
 				String fmrTel = CommonTools.getFinalStr(request.getParameter("fmrTel"));
 				String fmrEmail = CommonTools.getFinalStr(request.getParameter("fmrEmail"));
 				String fmriCard = CommonTools.getFinalStr(request.getParameter("fmriCard"));
-				boolean flag  = cm.upCusFmrById(fmrId, fmrName, fmriCard, fmrTel, fmrEmail);
-				if(flag){
-					msg = "success";
+				//检查该代理机构下是否存在该名字的发明人
+				CustomerFmrInfoTb fmr = fmrList.get(0);
+				if(fmr.getCusFmrName().equals(fmrName) && fmr.getCusFmrICard().equals(fmriCard)){
+					boolean flag  = cm.upCusFmrById(fmrId, fmrName, fmriCard, fmrTel, fmrEmail);
+					if(flag){
+						msg = "success";
+					}
+				}else{
+					if(cm.listInfoByOpt(fmrName, fmriCard, cpyId).size() == 0){
+						boolean flag  = cm.upCusFmrById(fmrId, fmrName, fmriCard, fmrTel, fmrEmail);
+						if(flag){
+							msg = "success";
+						}
+					}else{
+						if(fmriCard.equals("")){//存在该名字的发明人
+							msg = "iCard";
+						}else{//存在该名字该身份证的发明人
+							msg = "exist";
+						}
+					}
 				}
 			}
 		}else{

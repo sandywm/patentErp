@@ -13,7 +13,7 @@
 		<!-- useUnicode=true&amp;characterEncoding=utf-8 -->
 		<!-- 目的是为了防止数据库查询不到条件为中文时的记录 -->
 		<property name="connection.url">
-			jdbc:mysql://localhost:3306/patent?useUnicode=true&amp;characterEncoding=utf-8
+			jdbc:mysql://127.0.0.1:3306/patent?useUnicode=true&amp;characterEncoding=utf-8
 		</property>
 		<property name="connection.username">root</property>
 		<property name="connection.password">32011823pyly</property>
@@ -91,6 +91,8 @@
 		<mapping resource="com/patent/xml/FeeImportDealRecordInfo.hbm.xml" />
 		<mapping resource="com/patent/xml/CusPzInfo.hbm.xml" />
 		<mapping resource="com/patent/xml/TzsApplyFileInfo.hbm.xml" />
+		<mapping resource="com/patent/xml/ZlajZdSubmitTb.hbm.xml" />
+		<mapping resource="com/patent/xml/ZlajQqsInfoTb.hbm.xml" />
 
 	</session-factory>
 

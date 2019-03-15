@@ -2,6 +2,8 @@ package com.patent.service;
 
 import java.util.List;
 
+import org.hibernate.Session;
+
 import com.patent.exception.WEBException;
 import com.patent.module.CustomerFmrInfoTb;
 import com.patent.module.CustomerInfoTb;
@@ -220,4 +222,17 @@ public interface CustomerInfoManager {
 	 * @throws WEBException
 	 */
 	List<CustomerFmrInfoTb> listFmrInfoByFmrId(Integer fmrId,Integer cpyId) throws WEBException;
+	
+	/**
+	 * 根据发明人姓名、身份证号获取改代理机构下的发明人信息列表
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-15 上午10:22:36
+	 * @param fmrName 发明人姓名
+	 * @param fmrIcard 身份证号(""表示不查询)
+	 * @param cpyId 代理机构编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<CustomerFmrInfoTb> listInfoByOpt(String fmrName,String fmrIcard, Integer cpyId)  throws WEBException;
 }

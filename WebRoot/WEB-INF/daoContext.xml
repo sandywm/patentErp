@@ -33,4 +33,6 @@
 	<dao id="fee_import_record_info_Dao" class="com.patent.dao.impl.FeeImportRecordInfoDaoImpl"/>
 	<dao id="fee_import_deal_record_info_Dao" class="com.patent.dao.impl.FeeImportDealRecordInfoDaoImpl"/>
 	<dao id="cus_pz_info_Dao" class="com.patent.dao.impl.CusPzInfoDaoImpl"/>
+	<dao id="zlaj_zd_submit_info_Dao" class="com.patent.dao.impl.ZlajZdSubmitDaoImpl"/>
+	<dao id="zlaj_qqs_info_Dao" class="com.patent.dao.impl.ZlajQqsInfoDaoImpl"/>
 </daoContext>

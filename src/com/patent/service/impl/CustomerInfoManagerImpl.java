@@ -384,4 +384,21 @@ public class CustomerInfoManagerImpl implements CustomerInfoManager{
 		}
 	}
 
+	@Override
+	public List<CustomerFmrInfoTb> listInfoByOpt(String fmrName,
+			String fmrIcard, Integer cpyId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cfDao = (CustomerFmrInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUSTOMER_FMR_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return cfDao.findInfoByOpt(sess, fmrName, fmrIcard, cpyId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据发明人姓名、身份证号获取改代理机构下的发明人信息列表信息出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

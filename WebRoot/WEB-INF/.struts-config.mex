@@ -35,8 +35,9 @@
   <StrutsActivity path="/Module/customerManager/jsp/customerManager.jsp" location="50,1650" dimension="348,53" />
   <StrutsActivity path="/Module/zlYqManager/jsp/zlYqManager.jsp" location="650,1650" dimension="288,53" />
   <StrutsActivity path="/Module/zlBasicInfoManager/jsp/zlBasicInfoManager.jsp" location="1250,1650" dimension="364,53" />
+  <StrutsActivity path="/Module/backFeeManager/jsp/backFeeManager.jsp" location="650,1850" dimension="336,53" />
   <StrutsActivity path="/Module/feeManager/jsp/feeManager.jsp" location="50,1850" dimension="276,53" />
-  <StrutsActivity path="/Module/backFeeManager/jsp/backFeeManager.jsp" />
+  <StrutsActivity path="/zdSubmit.do" />
   <StrutsTransition id="/login.do,loginOut,/login.jsp,1" routingType="0">
     <AutomaticBendpoints>
       <AbsolutePoint location="50,132" />
@@ -161,12 +162,10 @@
       <AbsolutePoint location="803,1450" />
     </AutomaticBendpoints>
   </StrutsTransition>
-  <StrutsTransition id="/fee.do,bfPage,/Module/feeManager/jsp/feeManager.jsp,1" routingType="0">
+  <StrutsTransition id="/zdSubmit.do,zdPage,/Module/feeManager/jsp/feeManager.jsp,1" routingType="0">
     <AutomaticBendpoints>
-      <AbsolutePoint location="1775,532" />
-      <AbsolutePoint location="1924,532" />
-      <AbsolutePoint location="1924,1876" />
-      <AbsolutePoint location="326,1876" />
+      <AbsolutePoint location="0,0" />
+      <AbsolutePoint location="188,1876" />
     </AutomaticBendpoints>
   </StrutsTransition>
   <StrutsTransition id="/user.do,udPage,/Module/userManager/jsp/userBasicInfo.jsp,1" routingType="0">
