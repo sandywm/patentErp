@@ -233,52 +233,6 @@ public class ZlMainAction extends DispatchAction {
 				//获取当前用户是否有修改权限
 				if(Ability.checkAuthorization(this.getLoginRoleId(request), actNameEng)){
 					msg = "ability";
-//					if(actNameEng.equals("dealZl")){//专利流程处理
-//						//需要判断当前流程操作的人员是否和和原定的流程操作人员符合
-//						CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
-//						ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
-//						String lcNameEng = CommonTools.getFinalStr("lcNameEng", request);//流程
-//						Integer currLoginUserId = this.getLoginUserId(request);
-//						Integer zlId = CommonTools.getFinalInteger("zlId", request);
-//						Integer cpyId = cum.getEntityById(currLoginUserId).getCpyInfoTb().getId();
-//						List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, cpyId);
-//						if(zlList.size() > 0){
-//							ZlajMainInfoTb zl = zlList.get(0);
-//							if(lcNameEng.equals("zx") && currLoginUserId.equals(zl.getZxUserId())){
-//								msg = "ability";
-//							}else if(lcNameEng.equals("sc") && currLoginUserId.equals(zl.getCheckUserId())){
-//								msg = "ability";
-//							}else if(lcNameEng.equals("cus") && currLoginUserId.equals(zl.getCusCheckUserId())){
-//								msg = "ability";
-//							}else if(lcNameEng.equals("dgtj") && currLoginUserId.equals(zl.getTjUserId())){
-//								msg = "ability";
-//							}else if(lcNameEng.equals("tzs")){//通知书可以多专利批量导入
-//								if(zlm.listInfoByOpt(lcNameEng, currLoginUserId, cpyId).size() > 0){
-//									msg = "ability";
-//								}else{
-//									msg = "noAbility";
-//								}
-//							}else if(lcNameEng.equals("fycj")){//费用催缴可以多专利同时增加
-//								if(zlm.listInfoByOpt(lcNameEng, currLoginUserId, cpyId).size() > 0){
-//									msg = "ability";
-//								}else{
-//									msg = "noAbility";
-//								}
-//							}else if(lcNameEng.equals("bz") && currLoginUserId.equals(zl.getBzUserId())){
-//								msg = "ability";
-//							}else if(lcNameEng.equals("bzsh") && currLoginUserId.equals(zl.getBzshUserId())){
-//								msg = "ability";
-//							}else if(lcNameEng.equals("bh") && currLoginUserId.equals(zl.getBhUserId())){
-//								msg = "ability";
-//							}else{
-//								msg = "noAbility";
-//							}
-//						}else{
-//							msg = "error";
-//						}
-//					}else{
-//						msg = "ability";
-//					}
 				}else{
 					msg = "noAbility";
 				}
@@ -3793,7 +3747,7 @@ public class ZlMainAction extends DispatchAction {
 								}
 								remark = mx_1.getLcMxRemark();//上一次客户确认的意见
 							}
-							if(lcNo == 6.0){
+//							if(lcNo == 6.0){
 								Map<String,Object> map_z = new HashMap<String,Object>();
 								String zlTitle = zl.getAjTitle();
 								map_z.put("zlTitle", zlTitle);//案件标题
@@ -3847,7 +3801,7 @@ public class ZlMainAction extends DispatchAction {
 			 					map_z.put("lxrName", lxrName);
 			 					map_z.put("sqrLxrId", sqrLxrId);
 			 					list_z.add(map_z);
-							}
+//							}
 						}else{//专利补正、补正审核、客户确认、补正提交
 							String lastBzFile = "";//上一次补正的文件
 							String lastBzScFile = "";//上一次补正审核的文件
