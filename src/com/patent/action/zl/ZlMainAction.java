@@ -4684,6 +4684,15 @@ public class ZlMainAction extends DispatchAction {
 											msg = "error";
 										}
 									}
+									//增加客户确认环节可以查看、修改客户信息功能
+									String zlTitle = Transcode.unescape_new1("zlTitle", request);//定稿时提交的专利标题
+									String sqrId = CommonTools.getFinalStr("sqrId", request);//申请人
+									String sqrName = Transcode.unescape_new1("sqrName", request);//申请人姓名
+									String fmrId = CommonTools.getFinalStr("fmrId", request);//发明人
+									String lxrId = CommonTools.getFinalStr("lxrId", request);//联系人
+									Double ajFjInfo = CommonTools.getFinalDouble("ajFjInfo", request);//费减
+									//修改必须的信息
+									zlm.updateBasicInfoById(zlId, zlTitle, sqrId, sqrName, fmrId, lxrId, ajFjInfo);
 								}else if(lcNo == 6.0){//案件定稿提交
 									//提交之前需要先判断专利的信息是否填写完成
 									String zlTitle = Transcode.unescape_new1("zlTitle", request);//定稿时提交的专利标题
