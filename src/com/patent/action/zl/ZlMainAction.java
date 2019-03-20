@@ -4619,22 +4619,12 @@ public class ZlMainAction extends DispatchAction {
 								}else if(lcNo >= 5.0 && lcNo < 6.0){//客户确认
 									//修改流程详情
 									Integer cusCheckStatus = CommonTools.getFinalInteger("cusCheckStatus",request);//客户确认状态（0：未通过，1：已通过）
-									String upZxFile = CommonTools.getFinalStr("upZxFile", request);//撰写附件（参数）
+									String upZxFile = CommonTools.getFinalStr("upZxFile", request);//客户补充文件或者是客户确认函（参数）
+									mxm.updateEdateById(lcMxId, currUserId, "", currUserId, upZxFile, currDate, "", currDate, taskRemark,cusCheckStatus);//把客户确认的状态暂存在评分里面
 									//需要确认客户确认这块有没有上传的新文件
-									if(!upZxFile.equals("")){//上传文件不为空
-										String[] fjNameArr = upZxFile.split(",");
-										for(Integer i = 0 ; i < fjNameArr.length ; i++){
-											String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
-											Integer lastIndex = fileName.lastIndexOf("_");
-											String lastFjName = fileName.substring(lastIndex+1, fileName.length());
-											Integer lastIndex_1 = lastFjName.indexOf(".");
-											String fjVersion = lastFjName.substring(0, lastIndex_1);
-											String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-											fjm.addFj(zlId, fjNameArr[i], fjVersion, "客户补充文件_V"+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
-										}
-									}
+									String fjType = "";
 									if(cusCheckStatus.equals(0)){//客户确认未通过
-										mxm.updateEdateById(lcMxId, currUserId, "", currUserId, upZxFile, currDate, "", currDate, taskRemark,cusCheckStatus);//把客户确认的状态暂存在评分里面
+										fjType = "客户补充文件_V";
 										if(lcNo == 5.9){//不能再加
 											lcNo = lcNo - 2 ;
 										}else{
@@ -4667,20 +4657,7 @@ public class ZlMainAction extends DispatchAction {
 											msg = "error";
 										}
 									}else{//审核通过
-										String upQrhFile = CommonTools.getFinalStr("upQrhFile", request);//客户确认函--客户确认通过时必须要传递
-										if(!upQrhFile.equals("")){//上传文件不为空
-											mxm.updateEdateById(lcMxId, currUserId, "", currUserId, upQrhFile, currDate, "", currDate, taskRemark,cusCheckStatus);//把客户确认的状态暂存在评分里面
-											String[] fjNameArr = upQrhFile.split(",");
-											for(Integer i = 0 ; i < fjNameArr.length ; i++){
-												String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
-												Integer lastIndex = fileName.lastIndexOf("_");
-												String lastFjName = fileName.substring(lastIndex+1, fileName.length());
-												Integer lastIndex_1 = lastFjName.indexOf(".");
-												String fjVersion = lastFjName.substring(0, lastIndex_1);
-												String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
-												fjm.addFj(zlId, fjNameArr[i], fjVersion, "客户确认函", fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
-											}
-										}
+										fjType = "客户确认函_V";
 										lcNo = 6;//定稿提交
 										//增加下一个流程
 										Integer nextLcId = lcm.addLcInfo(zlId, "定稿提交", "定稿提交", currDate, cpyDate, "", "",6.0,"");
@@ -4699,6 +4676,18 @@ public class ZlMainAction extends DispatchAction {
 											}
 										}else{
 											msg = "error";
+										}
+									}
+									if(!upZxFile.equals("")){//上传文件不为空
+										String[] fjNameArr = upZxFile.split(",");
+										for(Integer i = 0 ; i < fjNameArr.length ; i++){
+											String fileName = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));
+											Integer lastIndex = fileName.lastIndexOf("_");
+											String lastFjName = fileName.substring(lastIndex+1, fileName.length());
+											Integer lastIndex_1 = lastFjName.indexOf(".");
+											String fjVersion = lastFjName.substring(0, lastIndex_1);
+											String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());
+											fjm.addFj(zlId, fjNameArr[i], fjVersion, fjType+lcNo, fjGs, FileOpration.getFileSize(filePath + fjNameArr[i]), currUserId, currDate);
 										}
 									}
 									//增加客户确认环节可以查看、修改客户信息功能
