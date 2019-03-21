@@ -268,32 +268,91 @@ public class ZlajEwyqAction extends DispatchAction {
 		String roleName = this.getLoginRoleName(request);
 		if(roleName.equals("super") || this.getLoginType(request).equals("cpyUser")){
 			String yqType = CommonTools.getFinalStr(request.getParameter("yqType"));
-			List<ZlajEwyqInfoTb> yqList = yqm.listInfoByType(yqType);
-			if(yqList.size() > 0){
-				msg = "success";
-				for(Iterator<ZlajEwyqInfoTb> it = yqList.iterator() ; it.hasNext();){
-					ZlajEwyqInfoTb yq = it.next();
-					Map<String,Object> map_d  = new HashMap<String,Object>();
-					map_d.put("id", yq.getId());
-					map_d.put("yqContent", yq.getYqContent());
-					String yqType_db = yq.getYqType();
-					String yqTypeChi = "";
-					if(yqType_db.indexOf("fm") >= 0){
-						yqTypeChi = "发明,";
+			if(yqType.equals("fmxx")){
+				List<Object> list_fm = new ArrayList<Object>();
+				List<Object> list_xx = new ArrayList<Object>();
+				List<ZlajEwyqInfoTb> yqList_fm = yqm.listInfoByType("fm");
+				if(yqList_fm.size() > 0){
+					msg = "success";
+					for(Iterator<ZlajEwyqInfoTb> it = yqList_fm.iterator() ; it.hasNext();){
+						ZlajEwyqInfoTb yq = it.next();
+						Map<String,Object> map_d  = new HashMap<String,Object>();
+						map_d.put("id", yq.getId());
+						map_d.put("yqContent", yq.getYqContent());
+						String yqType_db = yq.getYqType();
+						String yqTypeChi = "";
+						if(yqType_db.indexOf("fm") >= 0){
+							yqTypeChi = "发明,";
+						}
+						if(yqType_db.indexOf("syxx") >= 0){
+							yqTypeChi += "实用新型,";
+						}
+						if(yqType_db.indexOf("wg") >= 0){
+							yqTypeChi += "外观,";
+						}
+						if(!yqTypeChi.equals("")){
+							yqTypeChi = yqTypeChi.substring(0, yqTypeChi.length() - 1);
+						}
+						map_d.put("yqTypeChi", yqTypeChi);
+						list_fm.add(map_d);
 					}
-					if(yqType_db.indexOf("syxx") >= 0){
-						yqTypeChi += "实用新型,";
-					}
-					if(yqType_db.indexOf("wg") >= 0){
-						yqTypeChi += "外观,";
-					}
-					if(!yqTypeChi.equals("")){
-						yqTypeChi = yqTypeChi.substring(0, yqTypeChi.length() - 1);
-					}
-					map_d.put("yqTypeChi", yqTypeChi);
-					list_d.add(map_d);
+					map.put("fmyqInfo", list_fm);
 				}
-				map.put("yqInfo", list_d);
+				List<ZlajEwyqInfoTb> yqList_xx = yqm.listInfoByType("syxx");
+				if(yqList_xx.size() > 0){
+					msg = "success";
+					for(Iterator<ZlajEwyqInfoTb> it = yqList_xx.iterator() ; it.hasNext();){
+						ZlajEwyqInfoTb yq = it.next();
+						Map<String,Object> map_d  = new HashMap<String,Object>();
+						map_d.put("id", yq.getId());
+						map_d.put("yqContent", yq.getYqContent());
+						String yqType_db = yq.getYqType();
+						String yqTypeChi = "";
+						if(yqType_db.indexOf("fm") >= 0){
+							yqTypeChi = "发明,";
+						}
+						if(yqType_db.indexOf("syxx") >= 0){
+							yqTypeChi += "实用新型,";
+						}
+						if(yqType_db.indexOf("wg") >= 0){
+							yqTypeChi += "外观,";
+						}
+						if(!yqTypeChi.equals("")){
+							yqTypeChi = yqTypeChi.substring(0, yqTypeChi.length() - 1);
+						}
+						map_d.put("yqTypeChi", yqTypeChi);
+						list_xx.add(map_d);
+					}
+					map.put("xxyqInfo", list_xx);
+				}
+			}else{
+				List<ZlajEwyqInfoTb> yqList = yqm.listInfoByType(yqType);
+				if(yqList.size() > 0){
+					msg = "success";
+					for(Iterator<ZlajEwyqInfoTb> it = yqList.iterator() ; it.hasNext();){
+						ZlajEwyqInfoTb yq = it.next();
+						Map<String,Object> map_d  = new HashMap<String,Object>();
+						map_d.put("id", yq.getId());
+						map_d.put("yqContent", yq.getYqContent());
+						String yqType_db = yq.getYqType();
+						String yqTypeChi = "";
+						if(yqType_db.indexOf("fm") >= 0){
+							yqTypeChi = "发明,";
+						}
+						if(yqType_db.indexOf("syxx") >= 0){
+							yqTypeChi += "实用新型,";
+						}
+						if(yqType_db.indexOf("wg") >= 0){
+							yqTypeChi += "外观,";
+						}
+						if(!yqTypeChi.equals("")){
+							yqTypeChi = yqTypeChi.substring(0, yqTypeChi.length() - 1);
+						}
+						map_d.put("yqTypeChi", yqTypeChi);
+						list_d.add(map_d);
+					}
+					map.put("yqInfo", list_d);
+				}
 			}
 		}else{
 			msg = "noAbility";

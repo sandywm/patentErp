@@ -219,4 +219,21 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 		}
 	}
 
+	@Override
+	public List<ZlajLcInfoTb> listUnComInfoByOpt(Integer cpyId, String lcTask)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return lcDao.findUnComInfoByOpt(sess, cpyId, lcTask);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取代理机构下指定流程任务未完成的流程时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

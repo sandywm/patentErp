@@ -89,4 +89,16 @@ public interface ZlajLcInfoDao {
 	 */
 	List<ZlajLcInfoTb> findInfoByZlId(Session sess,Integer zlId);
 	
+	/**
+	 * 获取代理机构下指定流程任务未完成的流程
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-20 下午04:35:17
+	 * @param sess
+	 * @param cpyId 代理机构编号
+	 * @param lcTask 流程任务
+	 * @return
+	 */
+	List<ZlajLcInfoTb> findUnComInfoByOpt(Session sess,Integer cpyId,String lcTask);
+	
 }

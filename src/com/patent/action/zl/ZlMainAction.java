@@ -46,6 +46,9 @@ import com.patent.factory.AppFactory;
 import com.patent.json.FeeDetailJson;
 import com.patent.json.FileListJson;
 import com.patent.json.LateFeeJson;
+import com.patent.json.LxrJson;
+import com.patent.json.QrhJson;
+import com.patent.json.SqrJson;
 import com.patent.json.TzsJson;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.CustomerFmrInfoTb;
@@ -81,6 +84,7 @@ import com.patent.service.ZlajTzsInfoManager;
 import com.patent.tools.CommonTools;
 import com.patent.tools.Convert;
 import com.patent.tools.CurrentTime;
+import com.patent.tools.ExportCusQrhWord;
 import com.patent.tools.FileOpration;
 import com.patent.tools.ReadZipFile;
 import com.patent.util.Constants;
@@ -2504,9 +2508,11 @@ public class ZlMainAction extends DispatchAction {
 							Integer zlId_2 = 0;
 							String ajApplyDate = "";
 							String[] ajTypeArr = ajType.split(",");
+							String[] ajEwyqIdArr = ajEwyqId.split(":");
 							String zlNoGf_curr = zlNoGf;
 							for(Integer i = 0 ; i < ajTypeArr.length ; i++){
 								ajType = ajTypeArr[i];
+								ajEwyqId = ajEwyqIdArr[i];
 								String ajTitle = ajTitleStr.split(",")[i];
 								if(cpyId > 0 && !ajType.equals("")){
 									if(ajType.equals("fm")){
@@ -6922,6 +6928,145 @@ public class ZlMainAction extends DispatchAction {
 		}
 		map.put("result", msg);
 		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 批量导出客户确认函
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-20 下午04:16:32
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward exportBatchCusQrh(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		ZlajLcInfoManager zlm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
+		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		boolean abilityFlag = false;
+		Integer cpyId = 0;
+		String msg = "noAbility";
+		if(this.getLoginType(request).equals("cpyUser")){
+			CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
+			if(cpyUser != null){
+				cpyId = cpyUser.getCpyInfoTb().getId();
+			}
+			//判断权限
+			//获取当前用户是否有修改权限
+			if(this.getLoginRoleName(request).equals("管理员")){
+				abilityFlag = true;
+			}else{
+				//获取当前角色是否具有导出客户确认函权限
+				abilityFlag = Ability.checkAuthorization(this.getLoginRoleId(request), "expCusQrh");
+			}
+		}
+		if(abilityFlag){
+			msg = "success";
+			//只有专利到客户确认环节的才能导出-获取所有专利任务是客户确认环节的专利信息
+			List<ZlajLcInfoTb> lcList = zlm.listUnComInfoByOpt(cpyId, "客户确认");
+			List<QrhJson> list_qrh = new ArrayList<QrhJson>();
+			for(Iterator<ZlajLcInfoTb> it = lcList.iterator() ; it.hasNext();){
+				List<SqrJson> list_sqr = new ArrayList<SqrJson>();
+				ZlajLcInfoTb lc = it.next();
+				ZlajMainInfoTb zl = lc.getZlajMainInfoTb();
+				String sqlx = zl.getAjType();
+				String ewyq = zl.getAjEwyqId();
+				String[] ewyqArr = ewyq.split(",");
+				String ssStatusChi = "no";//实审
+				String fjStatucChi = "否";//费减
+				String tqgkStatucChi = "no";//提前公开
+				if(ewyq.indexOf("13") >= 0){
+					fjStatucChi = "是";
+				}
+				if(sqlx.equals("fm")){//发明才有实审
+					sqlx = "发明";
+					for(int i = 0 ; i < ewyqArr.length ; i++){
+						if(ewyqArr[i].equals("1")){
+							ssStatusChi = "是";
+							break;
+						}else{
+							ssStatusChi = "否";
+						}
+					}
+					for(int i = 0 ; i < ewyqArr.length ; i++){
+						if(ewyqArr[i].equals("2")){
+							tqgkStatucChi = "是";
+							break;
+						}else{
+							tqgkStatucChi = "否";
+						}
+					}
+				}else if(sqlx.equals("syxx")){
+					sqlx = "实用新型";
+				}else if(sqlx.equals("wg")){
+					sqlx = "外观";
+				}
+				String fmrIdStr = zl.getAjFmrId();
+				String fmrName = "";
+				String firstFmrICard = "";
+				if(!fmrIdStr.equals("")){
+					String[] fmrIdArr = fmrIdStr.split(",");
+					for(Integer i = 0 ; i < fmrIdArr.length ; i++){
+						List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
+						if(cList.size() > 0){
+							if(i.equals(0)){
+								firstFmrICard = cList.get(0).getCusFmrICard();
+							}
+							fmrName += cList.get(0).getCusFmrName() + ",";
+						}
+					}
+					if(!fmrName.equals("")){
+						fmrName = fmrName.substring(0, fmrName.length() - 1);
+					}
+				}
+				String sqrIdStr = zl.getAjSqrId();
+				String lxrIdStr = zl.getAjLxrId();
+				if(!sqrIdStr.equals("")){
+					String[] sqrIdArr = sqrIdStr.split(",");
+					for(Integer i = 0 ; i < sqrIdArr.length ; i++){
+						List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[i]));
+						if(cList.size() > 0){
+							CustomerInfoTb cus = cList.get(0);
+							Integer sqrId = cus.getId();
+							String sqrName = cus.getCusName();
+							String sqrCardNo = cus.getCusICard();
+							String sqrAddress = cus.getCusAddress();
+							List<LxrJson> list_lxr = new ArrayList<LxrJson>();
+							if(!lxrIdStr.equals("")){
+								String[] lxrIdArr = lxrIdStr.split(",");
+								for(Integer j = 0 ; j < lxrIdArr.length ; j++){
+									List<CustomerLxrInfoTb> lxrList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
+									if(lxrList.size() > 0){
+										CustomerLxrInfoTb lxr = lxrList.get(0);
+										String lxrName = "";
+										String lxrMobile = "";
+										String lxrEmail = "";
+										if(lxr.getCustomerInfoTb().getId().equals(sqrId)){
+											lxrName = lxr.getCusLxrName();
+											lxrMobile = lxr.getCusLxrTel();
+											lxrEmail = lxr.getCusLxrEmail();
+											list_lxr.add(new LxrJson(lxrName,lxrMobile,lxrEmail));
+										}
+									}
+								}
+							}
+							list_sqr.add(new SqrJson(sqrName,sqrCardNo,sqrAddress,"",list_lxr));
+						}
+					}
+				}
+				list_qrh.add(new QrhJson(zl.getAjNo(),zl.getAjTitle(),sqlx,ssStatusChi,tqgkStatucChi,fjStatucChi,fmrName,firstFmrICard,list_sqr,"电子"));
+			}
+			if(list_qrh.size() > 0){
+				ExportCusQrhWord qrh = new ExportCusQrhWord();
+				qrh.exportWord(list_qrh);
+			}
+		}
 		return null;
 	}
 }

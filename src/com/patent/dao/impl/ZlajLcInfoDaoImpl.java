@@ -69,4 +69,12 @@ public class ZlajLcInfoDaoImpl implements ZlajLcInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<ZlajLcInfoTb> findUnComInfoByOpt(Session sess, Integer cpyId,
+			String lcTask) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajLcInfoTb as lc where lc.zlajMainInfoTb.cpyInfoTb.id = "+cpyId + " and lc.lcDetail = '"+lcTask+"' and lc.lcEDate = '' and lc.zlajMainInfoTb.ajStopStatus = 0";
+		return sess.createQuery(hql).list();
+	}
+
 }

@@ -2,6 +2,8 @@ package com.patent.service;
 
 import java.util.List;
 
+import org.hibernate.Session;
+
 import com.patent.exception.WEBException;
 import com.patent.module.ZlajLcInfoTb;
 
@@ -124,6 +126,18 @@ public interface ZlajLcInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajLcInfoTb> listInfoByZlId(Integer zlId) throws WEBException;
+	
+	/**
+	 * 获取代理机构下指定流程任务未完成的流程
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-20 下午04:45:22
+	 * @param cpyId 代理机构编号
+	 * @param lcTask 流程任务
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajLcInfoTb> listUnComInfoByOpt(Integer cpyId,String lcTask) throws WEBException;
 	
 	
 }
