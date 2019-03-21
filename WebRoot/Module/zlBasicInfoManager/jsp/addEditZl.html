@@ -237,6 +237,7 @@
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		var num=0,tmpEwyqIdArray=[],zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
+		var colorArray = ['blue','red','pink','green','black'];
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -360,7 +361,7 @@
 				}else{
 					page.data.isClickwgXXFlag = true;
 					zlInfoMethod.data.onlyOneFlag_tit = true;//打开让切换到组合类型时还可以重新创建title
-					zlInfoMethod.data.onlyOneFlag_zlNum = false;//打开让切换到组合类型时还可以重新创建zlNum
+					zlInfoMethod.data.onlyOneFlag_zlNum = true;//打开让切换到组合类型时还可以重新创建zlNum
 					page.data.isFmxxOpts = '';
 					$('.selZlTaskSp').show();
 					$('.fmxxDlFee_xx').hide();
@@ -496,11 +497,9 @@
         				parent.layer.close(index);
 					});
 					zlInfoMethod.bindEvent_comMet();
-					//保存增加的专利
 				},
 				//编辑时渲染结构
 				renderZlBasicInfo : function(json){
-					console.log(json)
 					var strHtml = '',isReadFlag = true,zlTypeTxtStr='';
 					//新案、旧案
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>案件类型</label><div class="layui-input-block"><input type="hidden" id="anjianType" value="'+ json.ajType1 +'"/>';
@@ -698,7 +697,7 @@
 					sqrIdArray = tmpArraySqrId;
 					sqrTxtArray = tmpArraySqrName;
 					for(var i=0;i<tmpArraySqrName.length;i++){
-						strHtml += '<p id="sqrId_'+ tmpArraySqrId[i] +'" sqrattrname="'+ tmpArraySqrName[i] +'" sqrattrid="'+ tmpArraySqrId[i] +'" class="delSqrBtn"><span>'+ tmpArraySqrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+						strHtml += '<div class="dgTjBox"><p id="sqrId_'+ tmpArraySqrId[i] +'" clsColor="'+ colorArray[i] +'" sqrattrname="'+ tmpArraySqrName[i] +'" sqrattrid="'+ tmpArraySqrId[i] +'" class="delSqrBtn '+ colorArray[i] +'"><span>'+ tmpArraySqrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p><a class="getSqrDetailBtn" cusId="'+ tmpArraySqrId[i] +'" cusName="'+ tmpArraySqrName[i] +'" href="javascript:void(0)">详情</a></div>';
 						sqrArray.push('sqrId_'+tmpArraySqrId[i]);
 						//sqrIdArray.push(tmpArraySqrId[i]);
 						//sqrTxtArray.push(tmpArraySqrName[i]);
@@ -715,7 +714,7 @@
 						var tmpArraySqrLxrId = json.sqrLxrId.split(',');
 						lxrIdNum = tmpArrayLxrId;
 						for(var i=0;i<tmpArrayLxrName.length;i++){
-							strHtml += '<p id="lxrId_'+ tmpArrayLxrId[i] +'" lxridattr="'+ tmpArrayLxrId[i] +'" sqrids="'+ tmpArraySqrLxrId[i] +'" class="lxFmTag delLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrLxrId[i] +'"><span>'+ tmpArrayLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+							strHtml += '<div class="dgTjBox"><p id="lxrId_'+ tmpArrayLxrId[i] +'" lxridattr="'+ tmpArrayLxrId[i] +'" sqrids="'+ tmpArraySqrLxrId[i] +'" class="lxFmTag delLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrLxrId[i] +'"><span>'+ tmpArrayLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p><a class="getLxrInfoBtn" lxrId="'+ tmpArrayLxrId[i] +'" lxrName="'+ tmpArrayLxrName[i] +'" href="javascript:void(0)">详情</a></div>';
 						}
 					}
 					strHtml += '</div><span id="addlxrBtn" opts="addLxrOpts" class="addSpan fl">添加/编辑事务联系人</span></div>';
@@ -730,12 +729,13 @@
 						var tmpArraySqrFmrId = json.sqrFmrId.split(',');
 						fmrIdNum = tmpArrayFmrId;
 						for(var i=0;i<tmpArrayFmrName.length;i++){
-							strHtml += '<p id="fmrId_'+ tmpArrayFmrId[i] +'" fmridattr="'+ tmpArrayFmrId[i] +'" sqrids="'+ tmpArraySqrFmrId[i] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrFmrId[i] +'">';
+							strHtml += '<div class="dgTjBox"><p id="fmrId_'+ tmpArrayFmrId[i] +'" fmridattr="'+ tmpArrayFmrId[i] +'" sqrids="'+ tmpArraySqrFmrId[i] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrFmrId[i] +'">';
 							if(i == 0){//指定第一发明人
 								strHtml += '<span><em id="firstFmrId" class="firstNoteTxt fmrNoteTxt">[第一发明人]</em>'+ tmpArrayFmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 							}else{
 								strHtml += '<span>'+ tmpArrayFmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 							}
+							strHtml += '<a class="getFmrInfoBtn" fmrName="'+ tmpArrayFmrName[i] +'" fmrId="'+ tmpArrayFmrId[i] +'" href="javascript:void(0)">详情</a></div>';
 						}	
 					}
 					strHtml += '</div><span id="addFmrBtn" opts="addFmrOpts" class="addSpan fl">添加/编辑发明人</span></div>';
@@ -750,7 +750,7 @@
 						var tmpArraySqrJsLxrId = json.sqrJsrId.split(',');
 						jsLxrIdNum = tmpArrayJsLxrId;
 						for(var i=0;i<tmpArrayJsLxrName.length;i++){
-							strHtml += '<p id="fmrId_'+ tmpArrayJsLxrId[i] +'" fmridattr="'+ tmpArrayJsLxrId[i] +'" sqrids="'+ tmpArraySqrJsLxrId[i] +'" class="lxFmTag delJsLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrJsLxrId[i] +'"><span>'+ tmpArrayJsLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+							strHtml += '<div class="dgTjBox"><p id="fmrId_'+ tmpArrayJsLxrId[i] +'" fmridattr="'+ tmpArrayJsLxrId[i] +'" sqrids="'+ tmpArraySqrJsLxrId[i] +'" class="lxFmTag delJsLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrJsLxrId[i] +'"><span>'+ tmpArrayJsLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p><a  class="getJsLxrInfoBtn" fmrId="'+ tmpArrayJsLxrId[i] +'" fmrName="'+ tmpArrayJsLxrName[i] +'" href="javascript:void(0)">详情</a></div>';
 						}
 					}
 					strHtml += '</div><span id="addJsLxrBtn" opts="addJsLxrOpts" class="addSpan fl">添加/编辑技术联系人</span></div>';
@@ -909,6 +909,7 @@
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label"></label><div class="layui-input-block" style="width:75%;text-align:center;">';
 					strHtml += '<button type="button" id="saveZlBtn" class="layui-btn" style="width:120px;margin-left:0px;">保存专利</button></div></div>';
 					$('#addNewZl').html(strHtml);
+					commonAddColorCls();//不同申请人对应其下联系人 发明人 技术联系人 显示对应申请人色块
 					json.ajType1 == 'old' ? $('.hideItem').show() : $('.hideItem').hide();
 					form.render();
 					for(var i=0;i<json.feeTxInfo.length;i++){
@@ -954,6 +955,11 @@
 					zlInfoMethod.agentFeeTxtByZlType(json.ajType);
 					var dlFeeNum =  zlInfoMethod.getCpyDlFee(json.ajType);//获取代理机构指定专利类型费用;
 					$('#singDlFeeNum').text(dlFeeNum);
+					//查看申请人 发明人 联系人基本信息
+					viewDetInfo_cus();
+					viewDetInfo_lxr();
+					viewDetInfo_fmr();
+					viewDetInfo_jslxr();
 				}
 			};
 			$(function(){

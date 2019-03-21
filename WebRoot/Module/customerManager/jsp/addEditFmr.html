@@ -180,6 +180,10 @@
 			        		layer.msg("保存失败，请重试！",{icon:5,anim:6,time:1000});
 			        	}else if(json["result"] == 'noAbility'){
 			        		layer.msg("抱歉，您暂无权限对"+ globalFmrTxt +"信息进行编辑！",{icon:5,anim:6,time:2500});
+			        	}else if(json["result"] == 'iCard'){
+			        		layer.msg("该姓名有重名，必须输入身份证号",{icon:5,anim:6,time:2500});
+			        	}else if(json["result"] == 'exist'){
+			        		layer.msg("当前用户信息已存在，请重新输入",{icon:5,anim:6,time:2500});
 			        	}
 			        }
 		    	});

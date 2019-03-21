@@ -55,7 +55,7 @@
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var tmpLxrFmrId=[],tmpLxrFmrTxt=[],tmpLxrFmrOpts = parent.tmpLxrFmrOpts,lxrFmrText='',globalPage = {};
+		var tmpLxrFmrId=[],tmpLxrFmrTxt=[],tmpLxrFmrOpts = parent.tmpLxrFmrOpts,lxrFmrText='',globalPage = {},parSqrIdArray = parent.sqrIdArray;
 		layui.use(['layer','form'],function(){
 			var layer = layui.layer,
 				form = layui.form;
@@ -86,7 +86,7 @@
 					//保存已添加的联系人或发明人
 					$('#saveZlBtn').on('click',function(){
 						var sqrIdArray = parent.sqrIdArray;
-						var strHtml = '',tmpLxrIdArray=[],tmpSqrId=[],tmpLxrTxtArray=[],tmpFmrIdArray=[],tmpFmrTxtArray=[],isMustFlag=false;
+						var strHtml = '',tmpLxrIdArray=[],tmpSqrId=[],tmpLxrTxtArray=[],tmpFmrIdArray=[],tmpFmrTxtArray=[],tmpFmrTxtSpec=[],isMustFlag=false;
 						var index= parent.layer.getFrameIndex(window.name);
 						for(var i=0;i<sqrIdArray.length;i++){
 							$('#sqr_'+sqrIdArray[i]).attr('hasCheckedLen',$('#sqr_'+sqrIdArray[i]).find('input[name='+ sqrLxrFmrName +']:checked').length);
@@ -114,10 +114,19 @@
 								//parent.sqrIdArray.push($('.listP').eq(i).attr('sqrIdNum'));
 							});
 							for(var i=0;i<tmpLxrTxtArray.length;i++){
-								strHtml += '<p id="lxrId_'+ tmpLxrIdArray[i] +'" lxrIdAttr="'+ tmpLxrIdArray[i] +'" sqrIds="'+ tmpSqrId[i].split('_')[1] +'" class="lxFmTag delLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="'+ tmpSqrId[i] +'"/><span>'+ tmpLxrTxtArray[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+								strHtml += '<div class="dgTjBox"><p id="lxrId_'+ tmpLxrIdArray[i] +'" lxrIdAttr="'+ tmpLxrIdArray[i] +'" sqrIds="'+ tmpSqrId[i].split('_')[1] +'" class="lxFmTag delLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="'+ tmpSqrId[i] +'"/><span>'+ tmpLxrTxtArray[i] +'</span><i class="layui-icon layui-icon-close"></i></p><a class="getLxrInfoBtn" lxrId="'+ tmpLxrIdArray[i] +'" lxrName="'+ tmpLxrTxtArray[i] +'" href="javascript:void(0)">详情</a></div>';
 							}
 							parent.$('#lxrBox').html(strHtml);
+							parent.$('#lxrBox').find('p').each(function(i){
+								for(var j=0;j<parSqrIdArray.length;j++){
+									if(parent.$('#lxrBox').find('p').eq(i).attr('sqrIds') == parSqrIdArray[j]){
+										var clsColor = parent.$('#sqrId_' + parSqrIdArray[j]).attr('clscolor');
+										parent.$('#lxrBox').find('p').eq(i).addClass(clsColor);
+									}
+								}
+							});
 							parent.delHasAddMethod('delLxrBtn','delLxrOpt');
+							parent.viewDetInfo_lxr();//重新调用查看联系人 发明人 技术联系人基本信息
 						}else{
 							var tmpFmrJslxrIdArray = [],tmpFmrJsLxrIdNum = [],delNameBtn='',firstFmrId = $('#firstFmrId').attr('fmridcard');
 							if(tmpLxrFmrOpts == 'addFmrOpts'){//发明人
@@ -142,27 +151,51 @@
 							$('.listP').each(function(i){
 								tmpFmrIdArray.push($('.listP').eq(i).attr('lxrFmrId'));
 								tmpFmrTxtArray.push($('.listP').eq(i).find('strong').html());
+								tmpFmrTxtSpec.push($('.listP').eq(i).find('input').val());//存放发明人名字用在查看发明人详情中
 								tmpSqrId.push($('.listP').eq(i).attr('parSqrId'));
 								//parent.fmrIdArray.push('fmrId_'+$('.listP').eq(i).attr('lxrFmrId'));
 								//parent.fmrIdNum.push($('.listP').eq(i).attr('lxrFmrId'));
 								tmpFmrJslxrIdArray.push('fmrId_'+$('.listP').eq(i).attr('lxrFmrId'));
 								tmpFmrJsLxrIdNum.push($('.listP').eq(i).attr('lxrFmrId'));
 							});
-							
 							for(var i=0;i<tmpFmrTxtArray.length;i++){
-								strHtml += '<p id="fmrId_'+ tmpFmrIdArray[i] +'" fmrIdAttr="'+ tmpFmrIdArray[i] +'" sqrIds="'+ tmpSqrId[i].split('_')[1] +'" class="lxFmTag '+ delNameBtn +'"><input type="hidden" class="lxrFmrInpHid" name="'+ tmpSqrId[i] +'"/><span>'+ tmpFmrTxtArray[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+								strHtml += '<div class="dgTjBox"><p id="fmrId_'+ tmpFmrIdArray[i] +'" fmrIdAttr="'+ tmpFmrIdArray[i] +'" sqrIds="'+ tmpSqrId[i].split('_')[1] +'" class="lxFmTag '+ delNameBtn +'"><input type="hidden" class="lxrFmrInpHid" name="'+ tmpSqrId[i] +'"/><span>'+ tmpFmrTxtArray[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+								if(tmpLxrFmrOpts == 'addFmrOpts'){
+									strHtml += '<a class="getFmrInfoBtn" fmrId="'+ tmpFmrIdArray[i] +'" fmrName="'+ tmpFmrTxtSpec[i] +'" href="javascript:void(0)">详情</a>';
+								}else if(tmpLxrFmrOpts == 'addJsLxrOpts'){
+									strHtml += '<a class="getJsLxrInfoBtn" fmrId="'+ tmpFmrIdArray[i] +'" fmrName="'+ tmpFmrTxtArray[i] +'" href="javascript:void(0)">详情</a>';
+								}
+								strHtml += '</div>';
 							}
 							if(tmpLxrFmrOpts == 'addFmrOpts'){//发明人
 								if(firstFmrId != 0){
 									parent.$('#fmrBox').html(strHtml);
+									parent.$('#fmrBox').find('p').each(function(i){
+										for(var j=0;j<parSqrIdArray.length;j++){
+											if(parent.$('#fmrBox').find('p').eq(i).attr('sqrIds') == parSqrIdArray[j]){
+												var clsColor = parent.$('#sqrId_' + parSqrIdArray[j]).attr('clscolor');
+												parent.$('#fmrBox').find('p').eq(i).addClass(clsColor);
+											}
+										}
+									});
 									parent.delHasAddMethod('delFmrBtn','delFmrOpt');
+									parent.viewDetInfo_fmr();//重新调用查看联系人 发明人 技术联系人基本信息
 								}else{
 									layer.msg('第一发明人身份证号不能为空，请添加', {icon:5,anim:6,time:2000});
 									return;
 								}
 							}else if(tmpLxrFmrOpts == 'addJsLxrOpts'){
 								parent.$('#techLxrBox').html(strHtml);
+								parent.$('#techLxrBox').find('p').each(function(i){
+									for(var j=0;j<parSqrIdArray.length;j++){
+										if(parent.$('#techLxrBox').find('p').eq(i).attr('sqrIds') == parSqrIdArray[j]){
+											var clsColor = parent.$('#sqrId_' + parSqrIdArray[j]).attr('clscolor');
+											parent.$('#techLxrBox').find('p').eq(i).addClass(clsColor);
+										}
+									}
+								});
 								parent.delHasAddMethod('delJsLxrBtn','delJsLxrOpt');
+								parent.viewDetInfo_jslxr();//重新调用查看联系人 发明人 技术联系人基本信息
 							}
 						}
 						parent.layer.close(index);
@@ -195,7 +228,7 @@
 							if(tmpLxrFmrOpts == 'addLxrOpts' || tmpLxrFmrOpts == 'addJsLxrOpts'){
 								strHtml += '<p id="hasSelP_'+ hasCheckId +'" lxrFmrId="'+ hasCheckId +'" parSqrId="myParSqr_'+ sqrId +'" class="listP"><strong class="ellip">'+ lxrFmrName +'</strong>';
 							}else{
-								strHtml += '<p id="hasSelP_'+ hasCheckId +'" lxrFmrId="'+ hasCheckId +'" parSqrId="myParSqr_'+ sqrId +'" class="listP"><b class="iconfont idCardIcon" onclick="editFmrCardInfo()"></b><strong class="ellip"><em fmridcard="'+ fmridcard +'" lxrFmrName="'+ lxrFmrName +'" lxrFmrId="'+ hasCheckId +'" class="firstNoteTxt"></em>'+ lxrFmrName +'</strong>';
+								strHtml += '<p id="hasSelP_'+ hasCheckId +'" lxrFmrId="'+ hasCheckId +'" parSqrId="myParSqr_'+ sqrId +'" class="listP"><b class="iconfont idCardIcon" onclick="editFmrCardInfo()"></b><strong class="ellip"><em fmridcard="'+ fmridcard +'" lxrFmrName="'+ lxrFmrName +'" lxrFmrId="'+ hasCheckId +'" class="firstNoteTxt"></em>'+ lxrFmrName +'</strong><input value="'+ lxrFmrName +'" type="hidden"/>';
 							}
 							strHtml += '<a class="moveUpDown fl"></a>';
 							strHtml += '<i id="'+ hasCheckId +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';
@@ -423,7 +456,7 @@
 								if(tmpLxrFmrOpts == 'addJsLxrOpts'){
 									strHtmlHasSel += '<p id="hasSelP_'+ tmpFmrJsLxrIdNum[j] +'" lxrFmrId="'+ tmpFmrJsLxrIdNum[j] +'" parSqrId="myParSqr_'+ tmpSqrIdArray[j] +'" class="listP"><strong class="ellip">'+ tmpFmrName[j] +'</strong>';	
 								}else{
-									strHtmlHasSel += '<p id="hasSelP_'+ tmpFmrJsLxrIdNum[j] +'" lxrFmrId="'+ tmpFmrJsLxrIdNum[j] +'" parSqrId="myParSqr_'+ tmpSqrIdArray[j] +'" class="listP"><b class="iconfont idCardIcon"  onclick="editFmrCardInfo()"></b><strong class="ellip"><em fmridcard="'+ tmpFmrIdCard[j] +'" lxrFmrName="'+ tmpFmrName[j] +'" lxrFmrId="'+ tmpFmrJsLxrIdNum[j] +'" class="firstNoteTxt"></em> '+ tmpFmrName[j] +'</strong>';
+									strHtmlHasSel += '<p id="hasSelP_'+ tmpFmrJsLxrIdNum[j] +'" lxrFmrId="'+ tmpFmrJsLxrIdNum[j] +'" parSqrId="myParSqr_'+ tmpSqrIdArray[j] +'" class="listP"><b class="iconfont idCardIcon" onclick="editFmrCardInfo()"></b><strong class="ellip"><em fmridcard="'+ tmpFmrIdCard[j] +'" lxrFmrName="'+ tmpFmrName[j] +'" lxrFmrId="'+ tmpFmrJsLxrIdNum[j] +'" class="firstNoteTxt"></em> '+ tmpFmrName[j] +'</strong><input value="'+ tmpFmrName[j] +'" type="hidden"/>';
 								}
 								strHtmlHasSel += '<a class="moveUpDown fl"></a>';
 								strHtmlHasSel += '<i id="'+ tmpFmrJsLxrIdNum[j] +'" class="layui-icon layui-icon-delete delSelBtn"></i></p>';

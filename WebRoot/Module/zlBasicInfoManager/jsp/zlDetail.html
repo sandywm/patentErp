@@ -142,6 +142,7 @@
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
 		var num=0,tmpEwyqIdArray=[],globalTaskOpts={tzsId:0},globalTzsId=0,zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
+		var colorArray = ['blue','red','pink','green','black'];
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -596,7 +597,7 @@
 					sqrIdArray = tmpArraySqrId;
 					sqrTxtArray = tmpArraySqrName;
 					for(var i=0;i<tmpArraySqrName.length;i++){
-						strHtml += '<p id="sqrId_'+ tmpArraySqrId[i] +'" sqrattrname="'+ tmpArraySqrName[i] +'" sqrattrid="'+ tmpArraySqrId[i] +'" class="delSqrBtn"><span>'+ tmpArraySqrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+						strHtml += '<div class="dgTjBox"><p id="sqrId_'+ tmpArraySqrId[i] +'" clsColor="'+ colorArray[i] +'" sqrattrname="'+ tmpArraySqrName[i] +'" sqrattrid="'+ tmpArraySqrId[i] +'" class="delSqrBtn '+ colorArray[i] +'"><span>'+ tmpArraySqrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p><a class="getSqrDetailBtn" cusId="'+ tmpArraySqrId[i] +'" cusName="'+ tmpArraySqrName[i] +'" href="javascript:void(0)">详情</a></div>';
 						sqrArray.push('sqrId_'+tmpArraySqrId[i]);
 					}
 					strHtml += '</div>';
@@ -605,7 +606,11 @@
 					}
 					strHtml += '</div></div>';
 					//联系人
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">事务联系人</label><div class="layui-input-block fixHeiDiv clearfix">';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">';
+					if(json.ajType1 == 'old'){
+						strHtml += '<span class="mustItem">*</span>';
+					}
+					strHtml += '事务联系人</label><div class="layui-input-block fixHeiDiv clearfix">';
 					strHtml += '<input id="ajLxrId" type="hidden" value="'+ json.lxrId +'" name="ajLxrId"/><div class="multiBox fl" style="width:100%;">';
 					strHtml += '<div id="lxrBox" class="multiBox fl">';
 					if(json.lxrId != ''){
@@ -614,7 +619,7 @@
 						var tmpArraySqrLxrId = json.sqrLxrId.split(',');
 						lxrIdNum = tmpArrayLxrId;
 						for(var i=0;i<tmpArrayLxrName.length;i++){
-							strHtml += '<p id="lxrId_'+ tmpArrayLxrId[i] +'" lxridattr="'+ tmpArrayLxrId[i] +'" sqrids="'+ tmpArraySqrLxrId[i] +'" class="lxFmTag delLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrLxrId[i] +'"><span>'+ tmpArrayLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+							strHtml += '<div class="dgTjBox"><p id="lxrId_'+ tmpArrayLxrId[i] +'" lxridattr="'+ tmpArrayLxrId[i] +'" sqrids="'+ tmpArraySqrLxrId[i] +'" class="lxFmTag delLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrLxrId[i] +'"><span>'+ tmpArrayLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p><a class="getLxrInfoBtn" lxrId="'+ tmpArrayLxrId[i] +'" lxrName="'+ tmpArrayLxrName[i] +'" href="javascript:void(0)">详情</a></div>';
 						}
 					}
 					strHtml += '</div>';
@@ -623,7 +628,11 @@
 					}
 					strHtml += '</div></div>';		
 					//发明人
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label">发明人</label><div class="layui-input-block fixHeiDiv clearfix">';
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label">';
+					if(json.ajType1 == 'old'){
+						strHtml += '<span class="mustItem">*</span>';
+					}
+					strHtml += '发明人</label><div class="layui-input-block fixHeiDiv clearfix">';
 					strHtml += '<input id="ajFmrId" type="hidden" name="ajFmrId" value="'+ json.fmrId +'"/><div class="multiBox fl" style="width:100%;">';
 					strHtml += '<div id="fmrBox" class="multiBox fl">';	
 					if(json.fmrId != ''){
@@ -632,12 +641,13 @@
 						var tmpArraySqrFmrId = json.sqrFmrId.split(',');
 						fmrIdNum = tmpArrayFmrId;	
 						for(var i=0;i<tmpArrayFmrName.length;i++){
-							strHtml += '<p id="fmrId_'+ tmpArrayFmrId[i] +'" fmridattr="'+ tmpArrayFmrId[i] +'" sqrids="'+ tmpArraySqrFmrId[i] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrFmrId[i] +'">';
+							strHtml += '<div class="dgTjBox"><p id="fmrId_'+ tmpArrayFmrId[i] +'" fmridattr="'+ tmpArrayFmrId[i] +'" sqrids="'+ tmpArraySqrFmrId[i] +'" class="lxFmTag delFmrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrFmrId[i] +'">';
 							if(i == 0){//指定第一发明人
 								strHtml += '<span><em id="firstFmrId" class="firstNoteTxt fmrNoteTxt">[第一发明人]</em>'+ tmpArrayFmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 							}else{
 								strHtml += '<span>'+ tmpArrayFmrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
 							}
+							strHtml += '<a class="getFmrInfoBtn" fmrId="'+ tmpArrayFmrId[i] +'" fmrName="'+ tmpArrayFmrName[i] +'"  href="javascript:void(0)">详情</a></div>';
 						}	
 					}
 					strHtml += '</div>';
@@ -655,7 +665,7 @@
 						var tmpArraySqrJsLxrId = json.sqrJsrId.split(',');
 						jsLxrIdNum = tmpArrayJsLxrId;
 						for(var i=0;i<tmpArrayJsLxrName.length;i++){
-							strHtml += '<p id="fmrId_'+ tmpArrayJsLxrId[i] +'" fmridattr="'+ tmpArrayJsLxrId[i] +'" sqrids="'+ tmpArraySqrJsLxrId[i] +'" class="lxFmTag delJsLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrJsLxrId[i] +'"><span>'+ tmpArrayJsLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
+							strHtml += '<div class="dgTjBox"><p id="fmrId_'+ tmpArrayJsLxrId[i] +'" fmridattr="'+ tmpArrayJsLxrId[i] +'" sqrids="'+ tmpArraySqrJsLxrId[i] +'" class="lxFmTag delJsLxrBtn"><input type="hidden" class="lxrFmrInpHid" name="myParSqr_'+ tmpArraySqrJsLxrId[i] +'"><span>'+ tmpArrayJsLxrName[i] +'</span><i class="layui-icon layui-icon-close"></i></p><a class="getJsLxrInfoBtn" fmrId="'+ tmpArrayJsLxrId[i] +'" fmrName="'+ tmpArrayJsLxrName[i] +'" href="javascript:void(0)">详情</a></div>';
 						}
 					}
 					strHtml += '</div>';
@@ -823,7 +833,7 @@
 						strHtml += '<button type="button" id="saveZlBtn" class="layui-btn" style="width:120px;margin-left:0px;">保存专利</button></div></div>';
 					}
 					$('#addNewZl').html(strHtml);
-					json.ajType1 == 'old' ? $('.hideItem').show() : $('.hideItem').hide();
+					commonAddColorCls();//不同申请人对应其下联系人 发明人 技术联系人 显示对应申请人色块
 					form.render();
 					if(this.data.upZlFlag){
 						for(var i=0;i<json.feeTxInfo.length;i++){
@@ -872,6 +882,11 @@
 					zlInfoMethod.agentFeeTxtByZlType(json.ajType);
 					var dlFeeNum =  zlInfoMethod.getCpyDlFee(json.ajType);//获取代理机构指定专利类型费用;
 					$('#singDlFeeNum').text(dlFeeNum);
+					//查看申请人 发明人 联系人基本信息
+					viewDetInfo_cus();
+					viewDetInfo_lxr();
+					viewDetInfo_fmr();
+					viewDetInfo_jslxr();
 				},
 				//渲染流程分配人员结构
 				renderLcFpPeo : function(json){

@@ -46,8 +46,18 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 			addBzTypeStr += '</select><input class="bzTypeInp" type="hidden"/><input class="rowBzTypeInp" type="hidden"/>';
 			return addBzTypeStr;
 		},
+		//客户确认下增加附件类型 客户补充文件和客户确认函
+		switchZlCusType : function(adVal){
+			var cusTypeStr = '';
+			if(adVal == 0 ){
+				cusTypeStr = '客户补充文件';
+			}else{
+				cusTypeStr = '客户确认函';
+			}
+			return cusTypeStr;
+		},
 		uploadFiles : function(url,maxNumber,fileType,opts){
-			//addEditZlOpts batchImp_tzs zlTaskOpts zlTaskOpts_bz batchImp_fee
+			//addEditZlOpts batchImp_tzs zlTaskOpts zlTaskOpts_bz zlTaskOpts_cus batchImp_fee
 			this.data.globalOpts = opts;
 			var imageListView = $('#upLoadFileList')
 			,_this = this
@@ -78,7 +88,7 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 						  that.errorMsg('最多只能上传'+ maxNumber +'个文件');
 						  return false;
 					  }else{
-						  if(opts == 'zlTaskOpts' || opts == 'zlTaskOpts_bz'){
+						  if(opts == 'zlTaskOpts' || opts == 'zlTaskOpts_bz' || opts == 'zlTaskOpts_cus'){
 							  $('.deleteBtn_sel').show();
 						  }else{
 							  $('.deleteBtn_sel').hide();
@@ -86,7 +96,7 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 					  }
 				  }
 				  ,choose: function(obj){
-				  	  var that = this,zlTypeTxt='',zlAjTypeStr='',zlBzTypeStr = '';
+				  	  var that = this,zlTypeTxt='',zlAjTypeStr='',zlBzTypeStr = '',zlCusTypeStr = '';
 				      //读取本地文件
 				  	  if($('.commonResCon li').length > 0 && opts == 'batchImp_fee'){//通知书/缴费单据批量导入第二次
 				  		$('.importCon').show();
@@ -100,8 +110,11 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 				  		zlAjTypeStr = _this.switchZlAjNewOrOld($('#anjianType').val());
 				  	  }else if(opts == 'zlTaskOpts_bz'){//专利补正 添加附件类型 
 				  		zlBzTypeStr = _this.addZlTaskBzType();
+				  	  }else if(opts == 'zlTaskOpts_cus'){
+				  		  //客户确认增加客户补充文件类型或客户确认函类型
+				  		zlCusTypeStr = _this.switchZlCusType($('#adviceInp').val());
 				  	  }
-				  	  if(opts == 'zlTaskOpts' || opts == 'zlTaskOpts_bz'){//从去完成任务里面进来
+				  	  if(opts == 'zlTaskOpts' || opts == 'zlTaskOpts_bz' || opts == 'zlTaskOpts_cus'){//从去完成任务里面进来
 				  		zlTypeTxt = parent.globalTaskOpts.zlType;
 				  	  }else{
 				  		zlTypeTxt = _this.switchZlTypeCHN($('#zlTypeInp').val());
@@ -132,6 +145,7 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 						'<td style="max-width:260px;">'+ file.name +'</td>',
 						opts == 'addEditZlOpts' ? '<td><div style="max-width:130px;" class="ajFjTypeTxt layui-form">'+ zlAjTypeStr +'</div></td>' : '',
 						opts == 'zlTaskOpts_bz' ? '<td style="max-width:110px;"><div class="zlTypeTxt layui-form">'+ zlBzTypeStr +'</div></td>' : '',
+						opts == 'zlTaskOpts_cus' ? '<td style="max-width:110px;"><div class="cusTypeTxt layui-form">' + zlCusTypeStr + '</div></td>' : '',
 						opts == 'batchImp_tzs' || opts == 'batchImp_fee' ? '' : '<td><div class="zlTypeTxt layui-form">'+ zlTypeTxt +'</div></td>',
 						'<td>'+ (file.size/1014).toFixed(1) +'kb</td>',
 						'<td>等待上传</td>',
@@ -260,6 +274,8 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 				    		}
 				    		parent.find('.rowBzTypeInp').val(topParent.find('.uploadInpHid').val() + ':' + value);
 				    	 });
+				     }else if(opts == 'zlTaskOpts_cus'){
+				    	 //客户确认增加附件类型：客户补正文件 客户确认函
 				     }
 				  }
 				  ,done: function(res, index, upload){
@@ -281,7 +297,7 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 							  parent.parent.$('body').find('.loadingWrap').html(_this.data.upSuccTips);
 							  _this.showTime(3,parent.parent.$('body').find('#countNum_up'),opts,'',false);
 						  }
-				      }else if(opts == 'addEditZlOpts' || opts == 'zlTaskOpts_bz'){//增加 编辑专利下增加附件类型 专利补正、补正修改 任务
+				      }else if(opts == 'addEditZlOpts' || opts == 'zlTaskOpts_bz' || opts == 'zlTaskOpts_cus'){//增加 编辑专利下增加附件类型 专利补正、补正修改 客户确认 任务
 				    	  tds.eq(4).html('<span style="color: #5FB878;">上传成功</span>');
 					      tds.eq(6).find('.uploadInpHid').attr('name','hasUpSuccInp');
 					      tds.eq(6).find('.uploadInpHid').val(res.data[0].src);
@@ -311,7 +327,7 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 				    	tds.eq(2).html('<span style="color: #ff5722;">上传失败</span>');
 					    tds.eq(3).find('.layui-progress-bar').css('background-color','#ff5722');
 					    tds.eq(4).find('.reloadBtn_sel').removeClass('layui-hide'); //显示重传
-				    }else if(opts == 'addEditZlOpts' || opts == 'zlTaskOpts_bz'){
+				    }else if(opts == 'addEditZlOpts' || opts == 'zlTaskOpts_bz' || opts == 'zlTaskOpts_cus'){
 				    	tds.eq(4).html('<span style="color: #ff5722;">上传失败</span>');
 					    tds.eq(5).find('.layui-progress-bar').css('background-color','#ff5722');
 					    tds.eq(6).find('.reloadBtn_sel').removeClass('layui-hide'); //显示重传

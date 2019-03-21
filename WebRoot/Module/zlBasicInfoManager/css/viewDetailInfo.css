@@ -1,0 +1,30 @@
+@import url("../../../css/common.css");
+@import url("../../../plugins/layui/css/modules/layui-icon-extend/iconfont.css");
+.comDetInfo{
+	border-bottom:1px solid #eee;
+}
+.comDetInfo span,
+.comDetInfo p{
+	float:left;
+}
+.comDetInfo span{
+	display:block;
+	width:22%;
+	height:100%;
+	line-height:40px;
+	text-align:right;
+	color:#666;
+}
+.comDetInfo p{
+	width:78%;
+	color:#333;
+	margin-top:10px;
+}
+.comDetInfo p.specHei{
+	padding-bottom:5px;
+}
+.noInfoTxt{
+	text-align:center;
+	color:#999;
+	line-height:150px;
+}

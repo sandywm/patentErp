@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 	<meta charset="utf-8"/>
+ 	<link href="/plugins/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+ 	<link href="/Module/zlBasicInfoManager/css/viewDetailInfo.css" rel="stylesheet" type="text/css"/>
+  	<title>查看申请人联系人发明人详情</title>
+</head>
+<body style="background:#fff;">
+	<div id="detailInfoWrap"></div>
+	<script src="/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer'],function(){
+			var layer = layui.layer,
+				$ = layui.jquery;
+			var page = {
+				loadDetailInfo : function(){
+					layer.load('1');
+					var url = '',_this = this;
+					if(parent.detailOpts == 'cusDetInfo'){//申请人详情
+						url = '/customer.do?action=getCusDetailInfo';
+						var field = {cusId : parent.cusIdDet,opt:'cus'};
+					}else if(parent.detailOpts == 'lxrDetInfo'){//联系人详情
+						url = '/customer.do?action=getCusDetail';
+						var field = {lxrId : parent.lxrIdDet,opt:'lxr'};
+					}else if(parent.detailOpts == 'fmrDetInfo' || parent.detailOpts == 'JsLxrDetInfo'){//发明人详情
+						url = '/customer.do?action=getCusDetail';
+						var field = {fmrId : parent.fmrIdDet,opt:'fmr'};
+					}
+					$.ajax({
+						type:'post',
+				        async:false,
+				        dataType:'json',
+				        data:field,
+				        url:url,
+				        success:function (json){
+				        	layer.closeAll('loading');
+				        	if(json['result'] == 'success'){
+				        		_this.renderDetailHtml(json);
+				        	}else if(json['result'] == 'error'){
+				        		layer.msg('系统错误，请稍后重试', {icon:5,anim:6,time:1500});
+				        	}else if(json['result'] == 'noInfo'){
+				        		$('#detailInfoWrap').html('<p class="noInfoTxt">暂无信息</p>');
+				        	}
+				        }
+					});
+				},
+				renderDetailHtml : function(json){
+					var strHtml = '';
+					if(parent.detailOpts == 'cusDetInfo'){
+						var cusTypeCHN = this.switchCusTypeToCHN(json.cusType);
+						strHtml += '<div class="comDetInfo clearfix">';
+						strHtml += '<span>申请人：</span><p>'+ json.cusName +'</p></div>';
+						strHtml += '<div class="comDetInfo clearfix">';
+						strHtml += '<span>申请人类型：</span><p>'+ cusTypeCHN +'</p></div>';
+						strHtml += '<div class="comDetInfo clearfix">';
+						if(json.cusType == 'gr'){
+							strHtml += '<span>身份证号：</span><p>'+ json.cusiCard +'</p></div>';
+						}else{
+							strHtml += '<span>组织机构代码：</span><p>'+ json.cusiCard +'</p></div>';
+						}
+						strHtml += '<div class="comDetInfo clearfix">';
+						strHtml += '<span>邮政编码：</span><p>'+ json.cusZip +'</p></div>';
+						strHtml += '<div class="comDetInfo clearfix">';
+						strHtml += '<span>申请人地址：</span><p class="specHei">'+ json.cusAddress +'</p></div>';
+					}else if(parent.detailOpts == 'lxrDetInfo'){
+						strHtml += '<div class="comDetInfo clearfix">';
+						strHtml += '<span>联系人：</span><p>'+ json.lxrName +'</p></div>';
+						strHtml += '<div class="comDetInfo clearfix">';
+						strHtml += '<span>联系人电话：</span><p>'+ json.lxrTel +'</p></div>';
+						strHtml += '<div class="comDetInfo clearfix">';
+						strHtml += '<span>联系人邮箱：</span><p>'+ json.lxrEmail +'</p></div>';
+					}else if(parent.detailOpts == 'fmrDetInfo' || parent.detailOpts == 'JsLxrDetInfo'){
+						strHtml += '<div class="comDetInfo clearfix">';
+						if(parent.detailOpts == 'fmrDetInfo'){
+							strHtml += '<span>发明人：</span><p>'+ json.fmrName +'</p></div>';
+						}else{
+							strHtml += '<span>技术联系人：</span><p>'+ json.fmrName +'</p></div>';
+						}
+						strHtml += '<div class="comDetInfo clearfix">';
+						strHtml += '<span>身份证号：</span><p>'+ json.fmriCard +'</p></div>';
+						strHtml += '<div class="comDetInfo clearfix">';
+						strHtml += '<span>电话：</span><p>'+ json.fmrTel +'</p></div>';
+						strHtml += '<div class="comDetInfo clearfix">';
+						strHtml += '<span>邮箱：</span><p>'+ json.fmrEmail +'</p></div>';
+					}
+					$('#detailInfoWrap').html(strHtml);
+					
+				},
+				switchCusTypeToCHN : function(cusType){
+					var res = '';
+					if(cusType == 'gr'){
+						res = '个人';
+					}else if(cusType == 'dzyx'){
+						res = '大专院校';
+					}else if(cusType == 'kydw'){
+						res = '科研单位';
+					}else if(cusType == 'gkqy'){
+						res = '工矿企业';
+					}else if(cusType == 'sydw'){
+						res = '事业单位';
+					}
+					return res;
+				}
+			};
+			page.loadDetailInfo();
+		});
+	</script>
+</body> 
+</html>

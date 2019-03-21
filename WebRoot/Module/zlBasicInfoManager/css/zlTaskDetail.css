@@ -199,6 +199,29 @@ body{
 .nowTit{
 	border-bottom:1px solid #e6e6e6;
 }
+.nowTit a{
+	width:135px;
+	height:100%;
+	position:absolute;
+	right:0;
+	top:0;
+	color:#666;
+	text-indent:0px;
+	text-align:center;
+	color:#F47837;
+}
+.nowTit a:hover span{
+	text-decoration:underline;
+}
+.nowTit a span{
+	float:left;
+}
+.nowTit a i{
+	font-size:20px;
+	font-weight:600;
+	float:left;
+	margin:0 2px 0 8px;
+}
 .layui-extend-taskComp,
 .layui-extend-daichuli,
 .layui-extend-fujian{
@@ -376,7 +399,7 @@ body{
 #upListAction{
 	display:none;
 	position:absolute;
-	right:10%;
+	right:0;
 	top:0;
 }
 .noticeSpan{
@@ -411,10 +434,6 @@ body{
 	color:#666;
 	margin:10px 0;
 	display:none;
-}
-.shenheHei{
-	/*height:40px;*/
-	/*line-height:40px;*/
 }
 .verifyBox{
 	height:40px;
@@ -451,9 +470,13 @@ body{
 	margin-top:15px;	
 }
 .titLabel{
-	text-align:left;
+	width:95px;
+	text-align:right;
 	padding:9px 0;
 	color:#666;
+}
+.titLabel span.mustItem{
+	float:none;
 }
 .judgeBox span.oneBlank{
 	width:7px;
@@ -462,25 +485,60 @@ body{
 }
 .fixHeiDiv,
 .inpHeiDiv{
-	margin-left:80px;
+	margin-left:95px;
 }
 .fixHeiDiv .multiBox{
 	margin-right:10px;
+}
+.fixHeiDiv .multiBox .dgTjBox{
+	float:left;
+	margin-right:16px;
+}
+.fixHeiDiv .multiBox .dgTjBox:last-child{
+	margin-right:0px;
 }
 .fixHeiDiv .multiBox p{
 	height:22px;
 	line-height:22px;
 	padding:0 8px;
 	float:left;
-	display:block;
+	border:1px solid #ccc;
+	color:#333;
+	margin-right:8px;
+	margin-top:8px;
+	border-radius:6px 3px 3px 6px;
+	position:relative;
+	cursor:pointer;
+}
+.fixHeiDiv .multiBox p.delFieldBtn{
 	background:rgba(32,160,255,.1);
 	border:1px solid rgba(32,160,255,.2);
 	color:#20a0ff;
-	margin-right:8px;
-	margin-top:8px;
 	border-radius:3px;
-	position:relative;
-	cursor:pointer;
+}
+.fixHeiDiv .multiBox p.blue{
+	border-left:6px solid #20a0ff;
+}
+.fixHeiDiv .multiBox p.red{
+	border-left:6px solid #50d316;
+}
+.fixHeiDiv .multiBox p.pink{
+	border-left:6px solid #fda53a;
+}
+.fixHeiDiv .multiBox p.green{
+	border-left:6px solid #c03fe5;
+}
+.fixHeiDiv .multiBox p.black{
+	border-left:6px solid #ef353f;
+}
+.fixHeiDiv .multiBox .dgTjBox p{
+	margin-right:0px;
+}
+.fixHeiDiv .multiBox .dgTjBox p + a{
+	float:left;
+	color:#F47837;
+	line-height:24px;
+	margin:8px 0 0 2px;
 }
 .hasMargTop{
 	margin-top:10px;	
@@ -495,9 +553,6 @@ body{
 }
 .fixHeiDiv .multiBox p:hover i{
 	color:#F47837;
-}
-.fixHeiDiv .multiBox p:last-child{
-	margin-right:0px;
 }
 .fixHeiDiv .addSpan{
 	cursor:pointer;
@@ -542,5 +597,18 @@ body{
 	color:#F47837;
 }
 .hideItemFj{
+	display:none;
+}
+.detColor{
+	color:#F47837;
+}
+.mustItems{
+	color:red;
+	margin-right:2px;
+}
+.layui-btn+.layui-btn{
+	margin-left:0px !important;
+}
+#selAdBtn{
 	display:none;
 }

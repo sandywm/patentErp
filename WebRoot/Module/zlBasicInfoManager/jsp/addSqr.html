@@ -23,8 +23,7 @@
 					</div>
 					<div class="fl">
   						<div class="layui-input-inline">
-  							<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search
-"></i></button>
+  							<button id="queryBtn" class="layui-btn"><i class="layui-icon layui-icon-search"></i></button>
   						</div>
   					</div>
 				</div>
@@ -42,7 +41,7 @@
 	</div>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var noDataFlag = false,tmpSqrId=[],tmpSqrTxt=[],addCustFlag=false;
+		var noDataFlag = false,tmpSqrId=[],tmpSqrTxt=[],addCustFlag=false,colorArray = parent.colorArray;
 		layui.use(['layer','form','table','jquery'],function(){
 			var layer = layui.layer,
 				$ = layui.jquery,
@@ -114,19 +113,26 @@
 							});
 							var strHtml = '';
 							for(var i=0;i<tmpSqrTxt.length;i++){
-								strHtml += '<p id="sqrId_'+ tmpSqrId[i] +'" sqrAttrId="'+ tmpSqrId[i] +'" sqrAttrName="'+ tmpSqrTxt[i] +'" class="delSqrBtn"><span>'+ tmpSqrTxt[i] +'</span><i class="layui-icon layui-icon-close"></i></p>';
-							}
-							if(parent.lxrIdNum.length != 0 || parent.fmrIdNum.length != 0 || parent.jsLxrIdNum.length != 0){
-								if(_this.data.cancelSelSqrId.length != 0){//用户取消了之前选中的
-									for(var i=0,iLen=_this.data.cancelSelSqrId.length;i<iLen;i++){
-										parent.$('input[name=myParSqr_'+ _this.data.cancelSelSqrId[i] +']').parent().remove();
-									}
-								}
+								strHtml += '<div class="dgTjBox"><p id="sqrId_'+ tmpSqrId[i] +'" clsColor="'+ colorArray[i] +'" sqrAttrId="'+ tmpSqrId[i] +'" sqrAttrName="'+ tmpSqrTxt[i] +'" class="delSqrBtn '+ colorArray[i] +'"><span>'+ tmpSqrTxt[i] +'</span><i class="layui-icon layui-icon-close"></i></p><a class="getSqrDetailBtn" cusId="'+ tmpSqrId[i] +'" cusName="'+ tmpSqrTxt[i] +'" href="javascript:void(0)">详情</a></div>';
 							}
 							parent.$('#sqrBox').html(strHtml);
+							if(parent.lxrIdNum.length != 0 || parent.fmrIdNum.length != 0 || parent.jsLxrIdNum.length != 0){
+								var parSqrIdArray = parent.sqrIdArray;
+								if(_this.data.cancelSelSqrId.length != 0){//用户取消了之前选中的
+									for(var i=0,iLen=_this.data.cancelSelSqrId.length;i<iLen;i++){
+										parent.$('input[name=myParSqr_'+ _this.data.cancelSelSqrId[i] +']').parent().parent().remove();
+									}
+								}
+								//循环联系人下的P然后和parSqrIdArray进行个对比
+								for(var i=0;i<parSqrIdArray.length;i++){
+									var colCls = parent.$('#sqrId_' + parSqrIdArray[i]).attr('clscolor');
+									parent.$('input[name=myParSqr_'+ parSqrIdArray[i] +']').parent().removeClass('blue red pink green black').addClass(colCls);
+								}
+							}
 							parent.$('#payerInp').val(tmpSqrTxt[0]);//增加第一付款方
 					        parent.layer.close(index);
 					        parent.delHasAddMethod('delSqrBtn','delSqrOpt');
+					        parent.viewDetInfo_cus();//重新调用查看申请人基本信息
 						}
 					});
 				},
@@ -136,8 +142,8 @@
 					$('.delSelBtn').on('click',function(){
 						var id = $(this).attr('id');
 						$('#hasSelP_'+id).remove();
-						$('#sqrId_'+id).attr('checked',false);
-						$('#sqrId_'+id).prev().removeClass('hasActive');
+						/*$('#sqrId_'+id).attr('checked',false);
+						$('#sqrId_'+id).prev().removeClass('hasActive');*/
 						_this.data.cancelSelSqrId.push(id);
 						if($('.listP').length == 0){
 							$('.tipInfo').show();
