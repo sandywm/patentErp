@@ -181,11 +181,12 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">案件额外要求</label>
+			<label class="layui-form-label singleYqTxt">案件额外要求</label>
 			<input id="ajEwyqId" type="hidden" name="ajEwyqId"/>
 			<input id="tmpAjEwyqId" type="hidden"/>
-			<div id="ewyqBpx" class="layui-input-block"><p class="ewyqTips">请先选择专利类型</p></div>
+			<div id="ewyqBox" class="layui-input-block"><p class="ewyqTips">请先选择专利类型</p></div>
 		</div>
+		<div id="xxEyYqBox" class="layui-form-item"></div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">案件备注</label>
 			<div class="layui-input-block">
@@ -236,7 +237,7 @@
 	<script src="/Module/zlBasicInfoManager/js/delMethod.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var num=0,tmpEwyqIdArray=[],zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
+		var num=0,tmpEwyqIdArray=[],tmpEwyqIdArray_xx=[],zlId=0,upSuccSrcArray = [],addEditZlOpts = parent.addEditZlOpts,isHasLxrFlag = false,isHasFmrFlag = false,isHasJsLxrFlag=false,fieldArray=[],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],jsLxrIdArray=[],addCustFlag=false,tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
 		var colorArray = ['blue','red','pink','green','black'];
 		layui.config({
 			base: '/plugins/frame/js/'
@@ -309,6 +310,7 @@
 				var dlFeeNum =  zlInfoMethod.getCpyDlFee(value);//获取代理机构指定专利类型费用;
 				$('#zlTypeInp').val(value);
 				tmpEwyqIdArray.length = 0;
+				tmpEwyqIdArray_xx.length = 0;
 				zlInfoMethod.agentFeeInpShow();
 				if(value == 'fmxx'){
 					page.data.isFmxxOpts = 'fm';
@@ -359,6 +361,7 @@
 						}	
 					});
 				}else{
+					$('#xxEyYqBox').html('').hide();//清空新型额外要求内容
 					page.data.isClickwgXXFlag = true;
 					zlInfoMethod.data.onlyOneFlag_tit = true;//打开让切换到组合类型时还可以重新创建title
 					zlInfoMethod.data.onlyOneFlag_zlNum = true;//打开让切换到组合类型时还可以重新创建zlNum
@@ -814,7 +817,7 @@
 					//案件额外要求
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label">案件额外要求</label>';
 					strHtml += '<input id="ajEwyqId" type="hidden" name="ajEwyqId"/><input id="tmpAjEwyqId" type="hidden"/>';
-					strHtml += '<div id="ewyqBpx" class="layui-input-block">';
+					strHtml += '<div id="ewyqBox" class="layui-input-block">';
 					if(json.yqInfo.length > 0){
 						for(var i=0;i<json.yqInfo.length;i++){
 							if(json.yqInfo[i].checked){

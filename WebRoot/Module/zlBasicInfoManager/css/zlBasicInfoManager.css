@@ -54,7 +54,7 @@ body{
 	margin-top:15px;
 }
 .layui-form-label{
-	width:136px;
+	width:140px;
 	padding:9px 10px;
 }
 .layui-form-radio{
@@ -105,7 +105,7 @@ body{
 	width:108px;
 }
 .itemDiv .layui-input-inline{
-	width:70.5%;
+	width:70%;
 	position:relative;
 }
 .layui-input-inline em.moneyDec,
@@ -389,7 +389,7 @@ body{
 	margin-bottom:0px;
 }
 .layui-input-block{
-	margin-left:156px;
+	margin-left:160px;
 }
 /* 专利额外要求 */
 .noYqData{
@@ -1214,4 +1214,7 @@ body{
 }
 .detColor{
 	color:#F47837;
+}
+#xxEyYqBox{
+	display:none;
 }

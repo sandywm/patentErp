@@ -33,12 +33,13 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 					yxqDetailInpVal = $('#yxqDetailInp').val(),//案件优先权
 					//fujianInpVal = $('#fujianInp').val(),//案件附件
 					ajEwyqIdVal = $('#ajEwyqId').val(),//案件额外要求
+					ajEwyqId_xxVal = $('#tmpAjEwyqId_xx').val(),//案件额外要求->新型
 					ajRemarkVal = $('#ajRemark').val(),//案件备注
 					cpyDateInpVal = $('#cpyDateInp').val(),//定稿提交截至时间
 					pubZlIdInpVal = $('#pubZlIdInp').val(),//已领取专利任务
 					payerInpVal = $('#payerInp').val(),//付款方
 					url = '',fmPathVal = '',xxPathVal = '',
-					globalDlFee='',globalDlFee_fm='',globalDlFee_xx='',
+					globalDlFee='',globalDlFee_fm='',globalDlFee_xx='',ajEyYqIdStr='',//发明+新型下的组合字符串
 					ajJsPathVal='',ajHtPathVal='',ajDgPathVal_fm='',ajDgPathVal_xx='',ajDgPathVal='',isFjTypeFlag=true;
 				ajFieldIdVal = _this.getIdStr('delFieldBtn','jffieldattrid');
 				ajSqrIdVal = _this.getIdStr('delSqrBtn','sqrattrid');
@@ -47,11 +48,30 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 				ajFmrIdVal = _this.getIdStr('delFmrBtn','fmridattr');
 				ajJsLxrIdVal = _this.getIdStr('delJsLxrBtn','fmridattr');
 				//alert(ajFieldIdVal + "----" + ajSqrIdVal + "--" + ajLxrIdVal + "--" + ajFmrIdVal + "----@@" + ajJsLxrIdVal)
-				if(tmpEwyqIdArray.length != 0){
-					$('#tmpAjEwyqId').val(tmpEwyqIdArray.join(','));
-					ajEwyqIdVal = $('#tmpAjEwyqId').val();
+				if(zlTypeInpVal != 'fmxx'){
+					if(tmpEwyqIdArray.length != 0){
+						$('#tmpAjEwyqId').val(tmpEwyqIdArray.join(','));
+						ajEwyqIdVal = $('#tmpAjEwyqId').val();
+					}else{
+						$('#tmpAjEwyqId').val('');
+					}
 				}else{
-					$('#tmpAjEwyqId').val(0);
+					//01->1,2,3:''  02-> '':3,4,5    03->'' 04->1,2,3:4,5,6
+					if(tmpEwyqIdArray.length != 0 && tmpEwyqIdArray_xx.length != 0){
+						$('#tmpAjEwyqId').val(tmpEwyqIdArray.join(','));
+						$('#tmpAjEwyqId_xx').val(tmpEwyqIdArray_xx.join(','));
+						ajEyYqIdStr = $('#tmpAjEwyqId').val() + ':' + $('#tmpAjEwyqId_xx').val();
+					}else if(tmpEwyqIdArray.length != 0 && tmpEwyqIdArray_xx.length == 0){
+						$('#tmpAjEwyqId').val(tmpEwyqIdArray.join(','));
+						$('#tmpAjEwyqId_xx').val('');
+						ajEyYqIdStr = $('#tmpAjEwyqId').val() + ':' + '';
+					}else if(tmpEwyqIdArray.length == 0 && tmpEwyqIdArray_xx.length != 0){
+						$('#tmpAjEwyqId').val('');
+						$('#tmpAjEwyqId_xx').val(tmpEwyqIdArray_xx.join(','));
+						ajEyYqIdStr = '' + ':' + $('#tmpAjEwyqId_xx').val();
+					}else if(tmpEwyqIdArray.length == 0 && tmpEwyqIdArray_xx.length == 0){
+						ajEyYqIdStr = '';
+					}	
 				}
 				if(anjianTypeVal == ''){
 					layer.msg('请选择案件类型', {icon:5,anim:6,time:1500});
@@ -158,7 +178,9 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 								}else{
 									yxqDetailInpVal = '';
 								}
-								$('#tmpAjEwyqId').val() == '' ? ajEwyqIdVal = 0 : ajEwyqIdVal = $('#tmpAjEwyqId').val();
+								if(zlTypeInpVal != 'fmxx'){
+									$('#tmpAjEwyqId').val() == '' ? ajEwyqIdVal = 0 : ajEwyqIdVal = $('#tmpAjEwyqId').val();
+								}
 								if($('#fmrBox p').length > 0 && $('#firstFmrId').length == 0){
 									layer.msg('请给当前已选择发明人指定一个第一发明人',{icon:5,anim:6,time:2000});
 									return;
@@ -172,15 +194,15 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 									if($('.deleteBtn').length == 0){//未传附件
 										if(zlTypeInpVal != 'fmxx'){
 											var field = {ajTitle:escape(ajTitleVal),
-													ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,feeRate:rateInpVal,payUserInfo:payerInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+													ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,payUserInfo:payerInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 													ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 													yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 													ajUpload:'',ajUploadHt:'',cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee:globalDlFee};
 										}else{//发明+新型
 											var field = {ajTitle:fmxxZlTitStr,
-													ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,feeRate:rateInpVal,payUserInfo:payerInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+													ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,payUserInfo:payerInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 													ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
-													yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),           
+													yxqDetail:yxqDetailInpVal,ajEwyqId:ajEyYqIdStr,ajRemark:escape(ajRemarkVal),           
 													fmPath:'',xxPath:'',ajUploadHt:'',cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee_fm:globalDlFee_fm,dlFee_xx:globalDlFee_xx};
 										}
 									}
@@ -248,7 +270,7 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 											if(zlTypeInpVal != 'fmxx'){
 												//新案下单个类型 ajUpload ajUploadHt
 												var field = {ajTitle:escape(ajTitleVal),
-													ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,feeRate:rateInpVal,payUserInfo:payerInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+													ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,payUserInfo:payerInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 													ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
 													yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
 													ajUpload:ajJsPathVal,ajUploadHt:ajHtPathVal,cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee:globalDlFee};
@@ -265,9 +287,9 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 													});
 													xxPathVal = tmpXxPath.join(',');
 													var field = {ajTitle:fmxxZlTitStr,
-															ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,feeRate:rateInpVal,payUserInfo:payerInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
+															ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,payUserInfo:payerInpVal,ajFieldId:ajFieldIdVal,ajSqAddress:escape(ajSqAddressVal),
 															ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
-															yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
+															yxqDetail:yxqDetailInpVal,ajEwyqId:ajEyYqIdStr,ajRemark:escape(ajRemarkVal),
 															fmPath:fmPathVal,xxPath:xxPathVal,ajUploadHt:ajHtPathVal,cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee_fm:globalDlFee_fm,dlFee_xx:globalDlFee_xx};
 												}else{
 													layer.msg('请给您上传的附件指派一个专利类型',{icon:5,anim:6,time:1500});
@@ -328,7 +350,7 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 														var field = {ajTitle:fmxxZlTitStr,
 															ajType:zlTypeInpVal,ajType1:anjianTypeVal,feeTxType:remindInpVal,feeRate:rateInpVal,payUserInfo:payerInpVal,ajFieldId:ajFieldIdVal,zlNoGf:fmxxZlNumStr,ajSqAddress:escape(ajSqAddressVal),
 															ajSqrId:ajSqrIdVal,ajSqrName:escape(sqrName),ajLxrId:ajLxrIdVal,ajFmrId:ajFmrIdVal,jsLxrId:ajJsLxrIdVal,
-															yxqDetail:yxqDetailInpVal,ajEwyqId:ajEwyqIdVal,ajRemark:escape(ajRemarkVal),
+															yxqDetail:yxqDetailInpVal,ajEwyqId:ajEyYqIdStr,ajRemark:escape(ajRemarkVal),
 															fmPath:fmPathVal,xxPath:xxPathVal,ajUploadHt:ajHtPathVal,ajUploadDg_fm:ajDgPathVal_fm,ajUploadDg_xx:ajDgPathVal_xx,cpyDate:cpyDateInpVal,pubZlId:pubZlIdInpVal,dlFee_fm:globalDlFee_fm,dlFee_xx:globalDlFee_xx};
 													}else{
 														layer.msg('请给您上传的附件指派一个专利类型',{icon:5,anim:6,time:1500});
@@ -1131,9 +1153,31 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 				value : defaultVal
 			});
 		},
+		//转换额外要求专利类型->文字
+		switchYqTxtCHN : function(yqType){
+			var yqTxt = '';
+			if(yqType == 'fm' || yqType == 'fmxx'){
+				yqTxt = '发明';
+			}else if(yqType == 'wg'){
+				yqTxt = '外观';
+			}else if(yqType == 'syxx'){
+				yqTxt = '新型';
+			}
+			return yqTxt;
+		},
+		//创建新型额外要求DOM
+		createXxEyYqHtml : function(){
+			var xxYqHtml = '';
+			xxYqHtml += '<label class="layui-form-label">新型案件额外要求</label><input id="ajEwyqId_xx" type="hidden" name="ajEwyqId_xx"/>';
+			xxYqHtml += '<input id="tmpAjEwyqId_xx" type="hidden"/>';
+			xxYqHtml += '<div id="ewyqBox_xx" class="layui-input-block"><p class="ewyqTips">请先选择专利类型</p></div>';
+			return xxYqHtml;
+		},
 		//获取案件额外要求记录
 		getEwYqList : function(yqType){
 			var _this = this;
+			yqTxt = this.switchYqTxtCHN(yqType);
+			$('.singleYqTxt').html(yqTxt + '案件额外要求');
 			$.ajax({
 				type:'post',
 		        async:false,
@@ -1142,13 +1186,20 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 		        url:'/zlyq.do?action=getZlyqData',
 		        success:function (json){
 		        	layer.closeAll('loading');
-		        	var yqInfo = json.yqInfo;
 		        	if(json['result'] == 'success'){
-		        		_this.renderZlYq(yqInfo);
+		        		if(yqType == 'fmxx'){
+		        			var fmyqInfo = json.fmyqInfo,xxyqInfo = json.xxyqInfo;
+		        			var xxYqHtml = _this.createXxEyYqHtml();
+		        			$('#xxEyYqBox').show().html(xxYqHtml);
+		        			_this.renderZlYq_multi(fmyqInfo,xxyqInfo);
+		        		}else{
+		        			var yqInfo = json.yqInfo;
+		        			_this.renderZlYq(yqInfo);
+		        		}
 		        	}else if(json['result'] == 'noAbility'){
-		        		$('#ewyqBpx').html('<p class="noYqData"><i class="layui-icon layui-icon-face-cry"></i>抱歉，您暂无权限获取专利额外要求列表</p>');
+		        		$('#ewyqBox').html('<p class="noYqData"><i class="layui-icon layui-icon-face-cry"></i>抱歉，您暂无权限获取专利额外要求列表</p>');
 		        	}else if(json['result'] == 'noInfo'){
-		        		$('#ewyqBpx').html('<p class="noYqData"><i class="layui-icon layui-icon-face-cry"></i>暂无此专利类型的案件专利额外要求，如若需要，请联系超级管理员进行添加</p>');
+		        		$('#ewyqBox').html('<p class="noYqData"><i class="layui-icon layui-icon-face-cry"></i>暂无此专利类型的案件专利额外要求，如若需要，请联系超级管理员进行添加</p>');
 		        	}
 		        }
 			});
@@ -1172,13 +1223,25 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 		        }
 			});
 		},
-		//更加选择的专利类型加载对应的专利额外要求
+		//通过选择的专利类型加载对应的专利额外要求
 		renderZlYq : function(yqInfo){
 			var strHtml = '';
 			for(var i=0;i<yqInfo.length;i++){
 				strHtml += '<input type="checkbox" name="zlYqInfoInp" lay-filter="ewyqFilter" value="'+ yqInfo[i].id +'" title="'+ yqInfo[i].yqContent +'" lay-skin="primary"/>';
 			}
-			$('#ewyqBpx').html(strHtml);
+			$('#ewyqBox').html(strHtml);
+			form.render();
+		},
+		renderZlYq_multi : function(fmyqInfo,xxyqInfo){
+			var strHtml = '',strHtml_xx = '';
+			for(var i=0;i<fmyqInfo.length;i++){
+				strHtml += '<input type="checkbox" name="zlYqInfoInp" lay-filter="ewyqFilter" value="'+ fmyqInfo[i].id +'" title="'+ fmyqInfo[i].yqContent +'" lay-skin="primary"/>';
+			}
+			for(var i=0;i<xxyqInfo.length;i++){
+				strHtml_xx += '<input type="checkbox" name="zlYqInfoInp_xx" lay-filter="ewyqFilter_xx" value="'+ xxyqInfo[i].id +'" title="'+ xxyqInfo[i].yqContent +'" lay-skin="primary"/>';
+			}
+			$('#ewyqBox').html(strHtml);
+			$('#ewyqBox_xx').html(strHtml_xx);
 			form.render();
 		},
 		agentDlFee_usual : function(obj){
@@ -1308,7 +1371,7 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 		var value = data.value;
 		$('#ajSqAddress').val(value);
 	});
-	//案件额外要求
+	//案件额外要求->单个专利类型下
 	form.on('checkbox(ewyqFilter)',function(data){
 		var value = data.value;
 		if(data.elem.checked){
@@ -1317,6 +1380,19 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 			for(var i=0;i<tmpEwyqIdArray.length;i++){
 				if(value == tmpEwyqIdArray[i]){
 					tmpEwyqIdArray.splice(i,1);
+				}
+			}
+		}
+	});
+	//案件额外要求->发明+新型下的新型
+	form.on('checkbox(ewyqFilter_xx)',function(data){
+		var value = data.value;
+		if(data.elem.checked){
+			tmpEwyqIdArray_xx.push(value);
+		}else{
+			for(var i=0;i<tmpEwyqIdArray_xx.length;i++){
+				if(value == tmpEwyqIdArray_xx[i]){
+					tmpEwyqIdArray_xx.splice(i,1);
 				}
 			}
 		}
