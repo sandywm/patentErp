@@ -13,6 +13,7 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import com.patent.json.LxrJson;
 import com.patent.json.QrhJson;
 import com.patent.json.SqrJson;
+import com.patent.util.WebUrl;
 
 public class ExportCusQrhWord {
 
@@ -48,19 +49,8 @@ public class ExportCusQrhWord {
 	 * @param list_qrh
 	 * @throws Exception
 	 */
-	public void exportWord(List<QrhJson> list_qrh) throws Exception{
-		//创建文本对象
-//		list_qrh = new ArrayList<QrhJson>();
-//		List<SqrJson> list_sqr = new ArrayList<SqrJson>();
-//		List<LxrJson> list_lxr = new ArrayList<LxrJson>();
-//		List<LxrJson> list_lxr1 = new ArrayList<LxrJson>();
-//		list_lxr.add(new LxrJson("曹新新","15269029629","519513253@qq.com"));
-//		list_lxr.add(new LxrJson("王心怡","15269029629","519513253@qq.com"));
-//		list_sqr.add(new SqrJson("濮阳博瑞特石油工程技术有限公司", "91410902558315925T", "濮阳市濮台路与新东路交叉口向北800米路西","18103939769",list_lxr));
-//		list_lxr1.add(new LxrJson("周新新","15269029629","519513253@qq.com"));
-//		list_lxr1.add(new LxrJson("李连杰","15269029629","519513253@qq.com"));
-//		list_sqr.add(new SqrJson("濮阳隆特科技有限公司", "91410902558315925T", "濮阳市濮台路与新东路交叉口向北800米路西","18103939769",list_lxr1));
-//		list_qrh.add(new QrhJson("0000120191000001","C环滑套喷砂器","发明","是","是","是","贾志强、曹新新、宋健、于传霖、刘明、李新凯","410928196508159637",list_sqr,"电子"));
+	public List<File> exportWord(List<QrhJson> list_qrh) throws Exception{
+		List<File> fileList = new ArrayList<File>();
 		for(int j = 0; j < list_qrh.size(); j++){
 			QrhJson qrh = list_qrh.get(j);
 			XWPFDocument  docxDocument = new XWPFDocument();
@@ -104,14 +94,16 @@ public class ExportCusQrhWord {
 	        setFontStyle(docxDocument,12,"宋体",false,ParagraphAlignment.RIGHT,"申请单位专利主管部门或发明人代表","000000");
 	        setFontStyle(docxDocument,12,"宋体",false,ParagraphAlignment.RIGHT,"签   名:________________________","000000");
 	        setFontStyle(docxDocument,12,"宋体",false,ParagraphAlignment.RIGHT,"日   期:________________________","000000");
-	        String filePath = "D:\\"+qrh.getZlTitle()+"_"+qrh.getZlSerialNo();
+	        String filePath = WebUrl.DATA_URL_QRS_ZIP + "\\"+qrh.getZlTitle()+"_"+qrh.getZlSerialNo();
 	        File file = new File(filePath);
 	        if(!file.exists()){
 				file.mkdirs();
 			}
+	        fileList.add(file);
 	        FileOutputStream fout = new FileOutputStream(filePath + "\\客户确认函_"+qrh.getZlSerialNo()+".doc");  
 			docxDocument.write(fout);
 	        fout.close();
 		}
+		return fileList;
 	}
 }

@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
@@ -32,9 +34,51 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.usermodel.XSSFDrawing;
+import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
+import org.apache.poi.xwpf.usermodel.Borders;
+import org.apache.poi.xwpf.usermodel.BreakClear;
+import org.apache.poi.xwpf.usermodel.BreakType;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.TextAlignment;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFHeader;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell.XWPFVertAlign;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.impl.xb.xmlschema.SpaceAttribute;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFonts;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHpsMeasure;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTJc;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTabStop;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STJc;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTabJc;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STVerticalJc;
 
 import com.alibaba.fastjson.JSON;
 import com.patent.action.fee.FeeAction;
+import com.patent.json.LxrJson;
+import com.patent.json.QrhJson;
+import com.patent.json.SqrJson;
 import com.patent.tools.CurrentTime;
 import com.patent.tools.FileOpration;
 import com.patent.util.WebUrl;
@@ -44,6 +88,7 @@ import jxl.*;
 import jxl.read.biff.BiffException;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+//import org.apache.commons.lang3.StringUtils;
 public class ReadExcelFile {
 	
 	public static void readExcel(){
@@ -114,15 +159,459 @@ public class ReadExcelFile {
 		}
 	}
 	
-	public static void main(String[] args) throws IOException{
+	/**
+	 * @Description: 文字页脚
+	 * @see: http://www.coderanch.com/t/525626/java/java/Adding-Header-Footer-Word-Document
+	 */
+	public void simpleFooter(String savePath) throws Exception {
+		XWPFDocument document = new XWPFDocument();
+		CTP ctp = CTP.Factory.newInstance();
+		CTR ctr = ctp.addNewR();
+		CTText textt = ctr.addNewT();
+		textt.setStringValue( "测试" );
+		XWPFParagraph codePara = new XWPFParagraph( ctp, document );
+		codePara.setAlignment(ParagraphAlignment.CENTER);
+		codePara.setVerticalAlignment(TextAlignment.CENTER);
+		XWPFParagraph[] newparagraphs = new XWPFParagraph[1];
+		newparagraphs[0] = codePara;
+		CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+		XWPFHeaderFooterPolicy headerFooterPolicy = new  XWPFHeaderFooterPolicy( document, sectPr );
+		headerFooterPolicy.createFooter( STHdrFtr.DEFAULT, newparagraphs );
+		headerFooterPolicy.createHeader(STHdrFtr.DEFAULT, newparagraphs );
+		FileOutputStream fos = new FileOutputStream(savePath);
+		document.write(fos);
+		fos.close();
+	}
+	
+	//页脚:显示页码信息
+	public void simpleNumberFooter(XWPFDocument document) throws Exception {
+		CTP ctp = CTP.Factory.newInstance();
+		XWPFParagraph codePara = new XWPFParagraph(ctp, document);
+		XWPFRun r1 = codePara.createRun();
+		r1.setText("第");
+		r1.setFontSize(11);
+		CTRPr rpr = r1.getCTR().isSetRPr() ? r1.getCTR().getRPr() : r1.getCTR().addNewRPr();
+		CTFonts fonts = rpr.isSetRFonts() ? rpr.getRFonts() : rpr.addNewRFonts();
+		fonts.setAscii("宋体");
+		fonts.setEastAsia("宋体");
+		fonts.setHAnsi("宋体");
+ 
+		r1 = codePara.createRun();
+		CTFldChar fldChar = r1.getCTR().addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.Enum.forString("begin"));
+ 
+		r1 = codePara.createRun();
+		CTText ctText = r1.getCTR().addNewInstrText();
+		ctText.setStringValue("PAGE  \\* MERGEFORMAT");
+		ctText.setSpace(SpaceAttribute.Space.Enum.forString("preserve"));
+		r1.setFontSize(11);
+		rpr = r1.getCTR().isSetRPr() ? r1.getCTR().getRPr() : r1.getCTR().addNewRPr();
+		fonts = rpr.isSetRFonts() ? rpr.getRFonts() : rpr.addNewRFonts();
+		fonts.setAscii("宋体");
+		fonts.setEastAsia("宋体");
+		fonts.setHAnsi("宋体");
+ 
+		fldChar = r1.getCTR().addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.Enum.forString("end"));
+ 
+		r1 = codePara.createRun();
+		r1.setText("页 总共");
+		r1.setFontSize(11);
+		rpr = r1.getCTR().isSetRPr() ? r1.getCTR().getRPr() : r1.getCTR().addNewRPr();
+		fonts = rpr.isSetRFonts() ? rpr.getRFonts() : rpr.addNewRFonts();
+		fonts.setAscii("宋体");
+		fonts.setEastAsia("宋体");
+		fonts.setHAnsi("宋体");
+		
+		r1 = codePara.createRun();
+		fldChar = r1.getCTR().addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.Enum.forString("begin"));
+ 
+		r1 = codePara.createRun();
+		ctText = r1.getCTR().addNewInstrText();
+		ctText.setStringValue("NUMPAGES  \\* MERGEFORMAT ");
+		ctText.setSpace(SpaceAttribute.Space.Enum.forString("preserve"));
+		r1.setFontSize(11);
+		rpr = r1.getCTR().isSetRPr() ? r1.getCTR().getRPr() : r1.getCTR().addNewRPr();
+		fonts = rpr.isSetRFonts() ? rpr.getRFonts() : rpr.addNewRFonts();
+		fonts.setAscii("宋体");
+		fonts.setEastAsia("宋体");
+		fonts.setHAnsi("宋体");
+ 
+		fldChar = r1.getCTR().addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.Enum.forString("end"));
+		
+		r1 = codePara.createRun();
+		r1.setText("页");
+		r1.setFontSize(11);
+		rpr = r1.getCTR().isSetRPr() ? r1.getCTR().getRPr() : r1.getCTR().addNewRPr();
+		fonts = rpr.isSetRFonts() ? rpr.getRFonts() : rpr.addNewRFonts();
+		fonts.setAscii("宋体");
+		fonts.setEastAsia("宋体");
+		fonts.setHAnsi("宋体");
+		
+		codePara.setAlignment(ParagraphAlignment.CENTER);
+		codePara.setVerticalAlignment(TextAlignment.CENTER);
+		codePara.setBorderTop(Borders.THICK);
+		XWPFParagraph[] newparagraphs = new XWPFParagraph[1];
+		newparagraphs[0] = codePara;
+		CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+		XWPFHeaderFooterPolicy headerFooterPolicy = new XWPFHeaderFooterPolicy(document, sectPr);
+		headerFooterPolicy.createFooter(STHdrFtr.DEFAULT, newparagraphs);
+	}
+	
+	
+	public void simpleDateHeader(XWPFDocument document) throws Exception {
+		CTP ctp = CTP.Factory.newInstance();
+		XWPFParagraph codePara = new XWPFParagraph(ctp, document);
+		
+		XWPFRun r1 = codePara.createRun();
+		CTFldChar fldChar = r1.getCTR().addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.Enum.forString("begin"));
+ 
+		r1 = codePara.createRun();
+		CTText ctText = r1.getCTR().addNewInstrText();
+		ctText.setStringValue("TIME \\@ \"EEEE\"");
+		ctText.setSpace(SpaceAttribute.Space.Enum.forString("preserve"));
+		r1.setFontSize(11);
+		CTRPr rpr = r1.getCTR().isSetRPr() ? r1.getCTR().getRPr() : r1.getCTR().addNewRPr();
+		CTFonts fonts = rpr.isSetRFonts() ? rpr.getRFonts() : rpr.addNewRFonts();
+		fonts.setAscii("微软雅黑");
+		fonts.setEastAsia("微软雅黑");
+		fonts.setHAnsi("微软雅黑");
+ 
+		fldChar = r1.getCTR().addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.Enum.forString("end"));
+ 
+		r1 = codePara.createRun();
+		r1.setText("年");
+		r1.setFontSize(11);
+		rpr = r1.getCTR().isSetRPr() ? r1.getCTR().getRPr() : r1.getCTR().addNewRPr();
+		fonts = rpr.isSetRFonts() ? rpr.getRFonts() : rpr.addNewRFonts();
+		fonts.setAscii("微软雅黑");
+		fonts.setEastAsia("微软雅黑");
+		fonts.setHAnsi("微软雅黑");
+		
+		r1 = codePara.createRun();
+		fldChar = r1.getCTR().addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.Enum.forString("begin"));
+ 
+		r1 = codePara.createRun();
+		ctText = r1.getCTR().addNewInstrText();
+		ctText.setStringValue("TIME \\@ \"O\"");
+		ctText.setSpace(SpaceAttribute.Space.Enum.forString("preserve"));
+		r1.setFontSize(11);
+		rpr = r1.getCTR().isSetRPr() ? r1.getCTR().getRPr() : r1.getCTR().addNewRPr();
+		fonts = rpr.isSetRFonts() ? rpr.getRFonts() : rpr.addNewRFonts();
+		fonts.setAscii("微软雅黑");
+		fonts.setEastAsia("微软雅黑");
+		fonts.setHAnsi("微软雅黑");
+ 
+		fldChar = r1.getCTR().addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.Enum.forString("end"));
+		
+		r1 = codePara.createRun();
+		r1.setText("月");
+		r1.setFontSize(11);
+		rpr = r1.getCTR().isSetRPr() ? r1.getCTR().getRPr() : r1.getCTR().addNewRPr();
+		fonts = rpr.isSetRFonts() ? rpr.getRFonts() : rpr.addNewRFonts();
+		fonts.setAscii("微软雅黑");
+		fonts.setEastAsia("微软雅黑");
+		fonts.setHAnsi("微软雅黑");
+		
+		r1 = codePara.createRun();
+		fldChar = r1.getCTR().addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.Enum.forString("begin"));
+ 
+		r1 = codePara.createRun();
+		ctText = r1.getCTR().addNewInstrText();
+		ctText.setStringValue("TIME \\@ \"A\"");
+		ctText.setSpace(SpaceAttribute.Space.Enum.forString("preserve"));
+		r1.setFontSize(11);
+		rpr = r1.getCTR().isSetRPr() ? r1.getCTR().getRPr() : r1.getCTR().addNewRPr();
+		fonts = rpr.isSetRFonts() ? rpr.getRFonts() : rpr.addNewRFonts();
+		fonts.setAscii("微软雅黑");
+		fonts.setEastAsia("微软雅黑");
+		fonts.setHAnsi("微软雅黑");
+ 
+		fldChar = r1.getCTR().addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.Enum.forString("end"));
+		
+		r1 = codePara.createRun();
+		r1.setText("日");
+		r1.setFontSize(11);
+		rpr = r1.getCTR().isSetRPr() ? r1.getCTR().getRPr() : r1.getCTR().addNewRPr();
+		fonts = rpr.isSetRFonts() ? rpr.getRFonts() : rpr.addNewRFonts();
+		fonts.setAscii("微软雅黑");
+		fonts.setEastAsia("微软雅黑");
+		fonts.setHAnsi("微软雅黑");
+		
+		codePara.setAlignment(ParagraphAlignment.CENTER);
+		codePara.setVerticalAlignment(TextAlignment.CENTER);
+		codePara.setBorderBottom(Borders.THICK);
+		XWPFParagraph[] newparagraphs = new XWPFParagraph[1];
+		newparagraphs[0] = codePara;
+		CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+		XWPFHeaderFooterPolicy headerFooterPolicy = new XWPFHeaderFooterPolicy(document, sectPr);
+		headerFooterPolicy.createHeader(STHdrFtr.DEFAULT, newparagraphs);
+	}
+	
+	/**
+	 * 增加新页
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-19 上午11:06:59
+	 * @param document
+	 * @param breakType
+	 */
+	public void addNewPage(XWPFDocument document,BreakType breakType){
+		XWPFParagraph xp = document.createParagraph();
+		xp.createRun().addBreak(breakType);
+	}
+	
+	public void addBreakClear(XWPFDocument document,BreakClear breakClear){
+		XWPFParagraph xp = document.createParagraph();
+		xp.createRun().addBreak(breakClear);
+	}
+ 
+	//TODO 写的时候遇到过一次数组越界,测试几次都没法重现
+	public void addSimpleParagraph(XWPFDocument document,String text,String fontName,int fontSize,String color,boolean isBold,boolean isItalic){
+		XWPFParagraph xp = document.createParagraph();
+		XWPFRun r1 = xp.createRun();
+		r1.setText(text);
+		r1.setFontSize(fontSize);
+		r1.setBold(isBold);
+		r1.setItalic(isItalic);
+		r1.setColor(color);
+		CTRPr rpr = r1.getCTR().isSetRPr() ? r1.getCTR().getRPr() : r1.getCTR().addNewRPr();
+		CTFonts fonts = rpr.isSetRFonts() ? rpr.getRFonts() : rpr.addNewRFonts();
+		fonts.setAscii(fontName);
+		fonts.setEastAsia(fontName);
+		fonts.setHAnsi(fontName);
+		xp.setAlignment(ParagraphAlignment.CENTER);
+		xp.setVerticalAlignment(TextAlignment.CENTER);
+	}
+	
+	
+	//注意: 代码采用的是先写数据再写表头
+	public  void createSimpleTable(XWPFDocument doc) throws Exception {
+		List<String> columnList = new ArrayList<String>();
+		columnList.add("序号");
+		columnList.add("姓名信息|姓甚|名谁");
+		columnList.add("名刺信息|籍贯|营生");
+		XWPFTable table = doc.createTable(2,5);
+		CTTbl ttbl = table.getCTTbl();
+		CTTblPr tblPr = ttbl.getTblPr() == null ? ttbl.addNewTblPr() : ttbl.getTblPr();
+		CTTblWidth tblWidth = tblPr.isSetTblW() ? tblPr.getTblW() : tblPr.addNewTblW();
+		CTJc cTJc=tblPr.addNewJc();
+		cTJc.setVal(STJc.Enum.forString("center"));
+		tblWidth.setW(new BigInteger("8000"));
+		tblWidth.setType(STTblWidth.DXA);
+		
+		XWPFTableRow firstRow=null;
+		XWPFTableRow secondRow=null;
+		XWPFTableCell firstCell=null;
+		XWPFTableCell secondCell=null;
+		
+		for(int i=0;i<2;i++){
+			firstRow=table.getRow(i);
+			firstRow.setHeight(380);
+			for(int j=0;j<5;j++){
+				firstCell=firstRow.getCell(j);
+				setCellText(firstCell, "测试", null, 1600);
+			}
+		}
+		
+		firstRow=table.insertNewTableRow(0);
+	    secondRow=table.insertNewTableRow(1);
+		firstRow.setHeight(380);
+		secondRow.setHeight(380);
+		for(String str:columnList){
+			if(str.indexOf("|") == -1){
+				firstCell=firstRow.addNewTableCell();
+				secondCell=secondRow.addNewTableCell();
+				createVSpanCell(firstCell, str,"CCCCCC",1600,STMerge.RESTART);
+				createVSpanCell(secondCell, "", "CCCCCC", 1600,null);
+			}else{
+				String[] strArr=str.split("\\|");
+				firstCell=firstRow.addNewTableCell();
+				createHSpanCell(firstCell, strArr[0],"CCCCCC",1600,STMerge.RESTART);
+				for(int i=1;i<strArr.length-1;i++){
+					firstCell=firstRow.addNewTableCell();
+					createHSpanCell(firstCell, "","CCCCCC",1600,null);
+				}
+				for(int i=1;i<strArr.length;i++){
+					secondCell=secondRow.addNewTableCell();
+					setCellText(secondCell, strArr[i], "CCCCCC", 1600);
+				}
+			}
+		}
+		
+	}
+	
+	public  void setCellText(XWPFTableCell cell,String text, String bgcolor, int width) {
+		CTTc cttc = cell.getCTTc();
+		CTTcPr cellPr = cttc.addNewTcPr();
+		cellPr.addNewTcW().setW(BigInteger.valueOf(width));
+		cell.setColor(bgcolor);
+		cell.setVerticalAlignment(XWPFVertAlign.CENTER);
+		CTTcPr ctPr = cttc.addNewTcPr();
+		ctPr.addNewVAlign().setVal(STVerticalJc.CENTER);
+		cttc.getPList().get(0).addNewPPr().addNewJc().setVal(STJc.CENTER);
+		cell.setText(text);
+	}
+	public void createHSpanCell(XWPFTableCell cell,String value, String bgcolor, int width,STMerge.Enum stMerge){
+		CTTc cttc = cell.getCTTc();
+		CTTcPr cellPr = cttc.addNewTcPr();
+		cellPr.addNewTcW().setW(BigInteger.valueOf(width));
+		cell.setColor(bgcolor);
+		cellPr.addNewHMerge().setVal(stMerge);
+		cellPr.addNewVAlign().setVal(STVerticalJc.CENTER);
+		cttc.getPList().get(0).addNewPPr().addNewJc().setVal(STJc.CENTER);
+		cttc.getPList().get(0).addNewR().addNewT().setStringValue(value);
+	}
+	
+	public void createVSpanCell(XWPFTableCell cell,String value, String bgcolor, int width,STMerge.Enum stMerge){
+		CTTc cttc = cell.getCTTc();
+		CTTcPr cellPr = cttc.addNewTcPr();
+		cellPr.addNewTcW().setW(BigInteger.valueOf(width));
+		cell.setColor(bgcolor);
+		cellPr.addNewVMerge().setVal(stMerge);
+		cellPr.addNewVAlign().setVal(STVerticalJc.CENTER);
+		cttc.getPList().get(0).addNewPPr().addNewJc().setVal(STJc.CENTER);
+		cttc.getPList().get(0).addNewR().addNewT().setStringValue(value);
+	}
+	
+	
+	public void saveDocument(XWPFDocument document,String savePath) throws Exception{
+		FileOutputStream fos = new FileOutputStream(savePath);
+		document.write(fos);
+		fos.close();
+	}
+
+	/**
+	 * 设置字体样式
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-19 上午11:44:42
+	 * @param docxDocument
+	 * @param fontSize
+	 * @param font
+	 * @param boldFlag
+	 * @param textCon
+	 */
+	private void setFontStyle(XWPFDocument  docxDocument,Integer fontSize,String font,boolean boldFlag,ParagraphAlignment pa,String textCon,String color){
+		XWPFParagraph paragraph  = docxDocument.createParagraph();
+		XWPFRun run_txt = paragraph.createRun();
+		run_txt.setTextPosition(15);//设置行间距
+		paragraph.setAlignment(pa);//对齐方式
+//		paragraph.setIndentationFirstLine(567);//首行缩进：567==1厘米
+		run_txt.setText(textCon);
+        run_txt.setFontFamily(font);
+        run_txt.setFontSize(fontSize);
+        run_txt.setBold(boldFlag);
+        run_txt.setColor(color);//
+	}
+	
+	
+	/**
+	 * 导出word文档
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-19 上午09:47:34
+	 * @throws Exception
+	 */
+	private void exportWord() throws Exception{
+		//创建文本对象
+		List<QrhJson> list_qrh = new ArrayList<QrhJson>();
+		List<SqrJson> list_sqr = new ArrayList<SqrJson>();
+		List<LxrJson> list_lxr = new ArrayList<LxrJson>();
+		List<LxrJson> list_lxr1 = new ArrayList<LxrJson>();
+		list_lxr.add(new LxrJson("曹新新","15269029629","519513253@qq.com"));
+		list_lxr.add(new LxrJson("王心怡","15269029629","519513253@qq.com"));
+		list_sqr.add(new SqrJson("濮阳博瑞特石油工程技术有限公司", "91410902558315925T", "濮阳市濮台路与新东路交叉口向北800米路西","18103939769",list_lxr));
+		list_lxr1.add(new LxrJson("周新新","15269029629","519513253@qq.com"));
+		list_lxr1.add(new LxrJson("李连杰","15269029629","519513253@qq.com"));
+		list_sqr.add(new SqrJson("濮阳隆特科技有限公司", "91410902558315925T", "濮阳市濮台路与新东路交叉口向北800米路西","18103939769",list_lxr1));
+		list_qrh.add(new QrhJson("0000120191000001","C环滑套喷砂器","发明","是","是","是","贾志强、曹新新、宋健、于传霖、刘明、李新凯","410928196508159637",list_sqr,"电子"));
+		for(int j = 0; j < list_qrh.size(); j++){
+			QrhJson qrh = list_qrh.get(j);
+			XWPFDocument  docxDocument = new XWPFDocument();
+			setFontStyle(docxDocument,18,"宋体",true,ParagraphAlignment.CENTER,"专利申请委托相关事项确认函","000000");
+	        setFontStyle(docxDocument,16,"宋体",true,ParagraphAlignment.BOTH,"一、基本信息","000000");
+	        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"发明名称："+qrh.getZlTitle(),"000000");
+	        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"申请类型："+qrh.getSqlx(),"000000");
+	        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"是否提实审："+qrh.getSsStatusChi(),"000000");
+	        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"是否提前公开："+qrh.getTqgkStatucChi(),"000000");
+	        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"是否已做费减："+qrh.getFjStatucChi(),"000000");
+	        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"发明/设计人："+qrh.getFmrInfo(),"000000");
+	        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"第一发明人身份证号："+qrh.getFmrICard(),"000000");
+	        List<SqrJson> sqrList = qrh.getSqrList();
+	        for(int i = 0 ; i < sqrList.size() ; i++){
+	        	SqrJson sqr = sqrList.get(i);
+	        	setFontStyle(docxDocument,14,"宋体",true,ParagraphAlignment.BOTH,"申  请  人："+sqr.getSqrName(),"DC143C");
+		        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"身份证号或社会统一信用代码证号："+sqr.getSqrICard(),"000000");
+		        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"申请人地址："+sqr.getSqrAddress(),"000000");
+		        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"申请人电话："+sqr.getSqrMobile(),"000000");
+		        List<LxrJson> lxrList = sqr.getLxrList();
+		        for(int k = 0 ; k < lxrList.size() ; k++){
+		        	LxrJson lxr = lxrList.get(k);
+		        	setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"联系人："+lxr.getLxrName(),"8B008B");
+			        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"联系电话："+lxr.getLxrMobile(),"000000");
+			        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"联系人电子邮箱："+lxr.getLxrEmail(),"000000");
+		        }
+	        }
+	        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"代理委托书：电子","000000");
+	        setFontStyle(docxDocument,16,"宋体",true,ParagraphAlignment.BOTH,"二、注意事项","000000");
+	        setFontStyle(docxDocument,12,"宋体",false,ParagraphAlignment.BOTH,"请申请人明确本件专利的注意事项或具体要求。","000000");
+	        String content = "本专利的申请文本是基于代理人"+CurrentTime.getStringDate()+"发送的确认稿，文件名为《"+qrh.getZlTitle()+"》，该文件经申请人/发明人代表通过确认，同意向国家知识产权局递交。";
+	        setFontStyle(docxDocument,14,"宋体",true,ParagraphAlignment.BOTH,content,"000000");
+	        setFontStyle(docxDocument,12,"宋体",false,ParagraphAlignment.RIGHT,"申请单位专利主管部门或发明人代表","000000");
+	        setFontStyle(docxDocument,12,"宋体",false,ParagraphAlignment.RIGHT,"签   名:________________________","000000");
+	        setFontStyle(docxDocument,12,"宋体",false,ParagraphAlignment.RIGHT,"日   期:________________________","000000");
+	        String filePath = "D:\\"+qrh.getZlTitle()+"_"+qrh.getZlSerialNo();
+	        File file = new File(filePath);
+	        if(!file.exists()){
+				file.mkdirs();
+			}
+	        FileOutputStream fout = new FileOutputStream(filePath + "\\客户确认函_"+qrh.getZlSerialNo()+".doc");  
+			docxDocument.write(fout);
+	        fout.close();
+		}
+	}
+	
+	public static void main(String[] args) throws Exception{
+		ReadExcelFile t = new ReadExcelFile();
+//		t.exportWord();
+		String aa = "1,2,3:";
+		String bb = ":1,2,3";
+		System.out.println(aa.split(":").length + "  " + bb.split(":").length);
+//		System.out.println("------------------------简单文字页脚-----------------");
+////		t.simpleFooter("D:\\word测试_"+ System.currentTimeMillis() + ".docx");
+//		System.out.println("------------------------简单文字页眉页脚-----------------");
+//		XWPFDocument document = new XWPFDocument();
+//		t.simpleDateHeader(document);
+//		t.createSimpleTable(document);
+//		t.addNewPage(document, BreakType.PAGE);
+//		String str="测试测试测试测试测试文本测试测试测试测试测试文本测试\r\n测试测试测试测试文本测试测试测试测试测试文本测试";
+//		t.addSimpleParagraph(document, str, "宋体",11,"FF0000", true, false);
+//		t.addNewPage(document, BreakType.COLUMN);
+//		t.addSimpleParagraph(document, str,"微软雅黑",12, "00FF00", false, true);
+//		t.addNewPage(document, BreakType.TEXT_WRAPPING);
+//		t.addSimpleParagraph(document, str,"楷体",13, "0000FF", true, true);
+//		t.addBreakClear(document, BreakClear.ALL);
+//		t.addSimpleParagraph(document, str,"黑体",14,"000000", false, false);
+//		t.simpleNumberFooter(document);
+//		t.saveDocument(document, "D:\\word测试.docx");
+
 //		String aa = "2018-09-01";
 //		System.out.println(CurrentTime.getFinalDate_2(aa, 2));
-		String aa  = "sl:100";
-		String[] aaArr = aa.split(":");
-		String[] aa1Arr = aaArr[0].split(",");
-		for(int i = 0 ; i < aa1Arr.length ; i++){
-			System.out.println(aa1Arr[i]+"   "+aaArr[1].split(",")[i]);
-		}
+//		String aa  = "sl:100";
+//		String[] aaArr = aa.split(":");
+//		String[] aa1Arr = aaArr[0].split(",");
+//		for(int i = 0 ; i < aa1Arr.length ; i++){
+//			System.out.println(aa1Arr[i]+"   "+aaArr[1].split(",")[i]);
+//		}
 		//ReadExcelFile.readExcel();
 //		String aa = "2017-04-01 00:00:01";
 //		System.out.print(CurrentTime.stringConvertToTimestamp(aa));

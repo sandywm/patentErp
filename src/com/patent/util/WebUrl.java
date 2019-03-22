@@ -29,4 +29,10 @@ public class WebUrl {
     //通知书图片留存地(相对路径)
     public static String NEW_DATA_URL_TZS_IMG;
     
+    //确认函压缩包留存地（绝对路径）
+    public static String DATA_URL_QRS_ZIP;
+    
+  //确认函压缩包留存地（相对路径）
+    public static String NEW_DATA_URL_QRS_ZIP;
+    
 }

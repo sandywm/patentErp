@@ -34,5 +34,9 @@ public class InitServlet extends HttpServlet
     	WebUrl.DATA_URL_TZS_IMG = getServletContext().getRealPath("/Module/tzsImg");
     	
     	WebUrl.NEW_DATA_URL_TZS_IMG = "/Module/tzsImg";
+    	
+    	WebUrl.DATA_URL_QRS_ZIP = getServletContext().getRealPath("/Module/qrsZip");
+    	
+    	WebUrl.NEW_DATA_URL_QRS_ZIP = "/Module/qrsZip";
     }
 }

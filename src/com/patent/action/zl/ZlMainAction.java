@@ -2512,7 +2512,17 @@ public class ZlMainAction extends DispatchAction {
 							String zlNoGf_curr = zlNoGf;
 							for(Integer i = 0 ; i < ajTypeArr.length ; i++){
 								ajType = ajTypeArr[i];
-								ajEwyqId = ajEwyqIdArr[i];
+								if(!ajEwyqId.equals("")){
+									if(ajEwyqIdArr.length == 2){
+										ajEwyqId = ajEwyqIdArr[i];
+									}else{//一个有一个没有(4:这样的格式--这种情况下length为1)
+										if(i == 0){
+											ajEwyqId = ajEwyqIdArr[0];
+										}else{
+											ajEwyqId = "";
+										}
+									}
+								}
 								String ajTitle = ajTitleStr.split(",")[i];
 								if(cpyId > 0 && !ajType.equals("")){
 									if(ajType.equals("fm")){
@@ -6952,8 +6962,12 @@ public class ZlMainAction extends DispatchAction {
 		boolean abilityFlag = false;
 		Integer cpyId = 0;
 		String msg = "noAbility";
+		String zipPath = "";
+		String zipName = "";
+		Integer userId = this.getLoginUserId(request);
+		Map<String,String> map = new HashMap<String,String>();
 		if(this.getLoginType(request).equals("cpyUser")){
-			CpyUserInfo cpyUser = cum.getEntityById(this.getLoginUserId(request));
+			CpyUserInfo cpyUser = cum.getEntityById(userId);
 			if(cpyUser != null){
 				cpyId = cpyUser.getCpyInfoTb().getId();
 			}
@@ -6971,101 +6985,164 @@ public class ZlMainAction extends DispatchAction {
 			//只有专利到客户确认环节的才能导出-获取所有专利任务是客户确认环节的专利信息
 			List<ZlajLcInfoTb> lcList = zlm.listUnComInfoByOpt(cpyId, "客户确认");
 			List<QrhJson> list_qrh = new ArrayList<QrhJson>();
-			for(Iterator<ZlajLcInfoTb> it = lcList.iterator() ; it.hasNext();){
-				List<SqrJson> list_sqr = new ArrayList<SqrJson>();
-				ZlajLcInfoTb lc = it.next();
-				ZlajMainInfoTb zl = lc.getZlajMainInfoTb();
-				String sqlx = zl.getAjType();
-				String ewyq = zl.getAjEwyqId();
-				String[] ewyqArr = ewyq.split(",");
-				String ssStatusChi = "no";//实审
-				String fjStatucChi = "否";//费减
-				String tqgkStatucChi = "no";//提前公开
-				if(ewyq.indexOf("13") >= 0){
-					fjStatucChi = "是";
-				}
-				if(sqlx.equals("fm")){//发明才有实审
-					sqlx = "发明";
-					for(int i = 0 ; i < ewyqArr.length ; i++){
-						if(ewyqArr[i].equals("1")){
-							ssStatusChi = "是";
-							break;
-						}else{
-							ssStatusChi = "否";
-						}
+			if(lcList.size() > 0){
+				for(Iterator<ZlajLcInfoTb> it = lcList.iterator() ; it.hasNext();){
+					List<SqrJson> list_sqr = new ArrayList<SqrJson>();
+					ZlajLcInfoTb lc = it.next();
+					ZlajMainInfoTb zl = lc.getZlajMainInfoTb();
+					String sqlx = zl.getAjType();
+					String ewyq = zl.getAjEwyqId();
+					String[] ewyqArr = ewyq.split(",");
+					String ssStatusChi = "no";//实审
+					String fjStatucChi = "否";//费减
+					String tqgkStatucChi = "no";//提前公开
+					if(ewyq.indexOf("13") >= 0){
+						fjStatucChi = "是";
 					}
-					for(int i = 0 ; i < ewyqArr.length ; i++){
-						if(ewyqArr[i].equals("2")){
-							tqgkStatucChi = "是";
-							break;
-						}else{
-							tqgkStatucChi = "否";
-						}
-					}
-				}else if(sqlx.equals("syxx")){
-					sqlx = "实用新型";
-				}else if(sqlx.equals("wg")){
-					sqlx = "外观";
-				}
-				String fmrIdStr = zl.getAjFmrId();
-				String fmrName = "";
-				String firstFmrICard = "";
-				if(!fmrIdStr.equals("")){
-					String[] fmrIdArr = fmrIdStr.split(",");
-					for(Integer i = 0 ; i < fmrIdArr.length ; i++){
-						List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
-						if(cList.size() > 0){
-							if(i.equals(0)){
-								firstFmrICard = cList.get(0).getCusFmrICard();
+					if(sqlx.equals("fm")){//发明才有实审
+						sqlx = "发明";
+						for(int i = 0 ; i < ewyqArr.length ; i++){
+							if(ewyqArr[i].equals("1")){
+								ssStatusChi = "是";
+								break;
+							}else{
+								ssStatusChi = "否";
 							}
-							fmrName += cList.get(0).getCusFmrName() + ",";
+						}
+						for(int i = 0 ; i < ewyqArr.length ; i++){
+							if(ewyqArr[i].equals("2")){
+								tqgkStatucChi = "是";
+								break;
+							}else{
+								tqgkStatucChi = "否";
+							}
+						}
+					}else if(sqlx.equals("syxx")){
+						sqlx = "实用新型";
+					}else if(sqlx.equals("wg")){
+						sqlx = "外观";
+					}
+					String fmrIdStr = zl.getAjFmrId();
+					String fmrName = "";
+					String firstFmrICard = "";
+					if(!fmrIdStr.equals("")){
+						String[] fmrIdArr = fmrIdStr.split(",");
+						for(Integer i = 0 ; i < fmrIdArr.length ; i++){
+							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
+							if(cList.size() > 0){
+								if(i.equals(0)){
+									firstFmrICard = cList.get(0).getCusFmrICard();
+								}
+								fmrName += cList.get(0).getCusFmrName() + ",";
+							}
+						}
+						if(!fmrName.equals("")){
+							fmrName = fmrName.substring(0, fmrName.length() - 1);
 						}
 					}
-					if(!fmrName.equals("")){
-						fmrName = fmrName.substring(0, fmrName.length() - 1);
-					}
-				}
-				String sqrIdStr = zl.getAjSqrId();
-				String lxrIdStr = zl.getAjLxrId();
-				if(!sqrIdStr.equals("")){
-					String[] sqrIdArr = sqrIdStr.split(",");
-					for(Integer i = 0 ; i < sqrIdArr.length ; i++){
-						List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[i]));
-						if(cList.size() > 0){
-							CustomerInfoTb cus = cList.get(0);
-							Integer sqrId = cus.getId();
-							String sqrName = cus.getCusName();
-							String sqrCardNo = cus.getCusICard();
-							String sqrAddress = cus.getCusAddress();
-							List<LxrJson> list_lxr = new ArrayList<LxrJson>();
-							if(!lxrIdStr.equals("")){
-								String[] lxrIdArr = lxrIdStr.split(",");
-								for(Integer j = 0 ; j < lxrIdArr.length ; j++){
-									List<CustomerLxrInfoTb> lxrList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
-									if(lxrList.size() > 0){
-										CustomerLxrInfoTb lxr = lxrList.get(0);
-										String lxrName = "";
-										String lxrMobile = "";
-										String lxrEmail = "";
-										if(lxr.getCustomerInfoTb().getId().equals(sqrId)){
-											lxrName = lxr.getCusLxrName();
-											lxrMobile = lxr.getCusLxrTel();
-											lxrEmail = lxr.getCusLxrEmail();
-											list_lxr.add(new LxrJson(lxrName,lxrMobile,lxrEmail));
+					String sqrIdStr = zl.getAjSqrId();
+					String lxrIdStr = zl.getAjLxrId();
+					if(!sqrIdStr.equals("")){
+						String[] sqrIdArr = sqrIdStr.split(",");
+						for(Integer i = 0 ; i < sqrIdArr.length ; i++){
+							List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[i]));
+							if(cList.size() > 0){
+								CustomerInfoTb cus = cList.get(0);
+								Integer sqrId = cus.getId();
+								String sqrName = cus.getCusName();
+								String sqrCardNo = cus.getCusICard();
+								String sqrAddress = cus.getCusAddress();
+								List<LxrJson> list_lxr = new ArrayList<LxrJson>();
+								if(!lxrIdStr.equals("")){
+									String[] lxrIdArr = lxrIdStr.split(",");
+									for(Integer j = 0 ; j < lxrIdArr.length ; j++){
+										List<CustomerLxrInfoTb> lxrList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
+										if(lxrList.size() > 0){
+											CustomerLxrInfoTb lxr = lxrList.get(0);
+											String lxrName = "";
+											String lxrMobile = "";
+											String lxrEmail = "";
+											if(lxr.getCustomerInfoTb().getId().equals(sqrId)){
+												lxrName = lxr.getCusLxrName();
+												lxrMobile = lxr.getCusLxrTel();
+												lxrEmail = lxr.getCusLxrEmail();
+												list_lxr.add(new LxrJson(lxrName,lxrMobile,lxrEmail));
+											}
 										}
 									}
 								}
+								list_sqr.add(new SqrJson(sqrName,sqrCardNo,sqrAddress,"",list_lxr));
 							}
-							list_sqr.add(new SqrJson(sqrName,sqrCardNo,sqrAddress,"",list_lxr));
 						}
 					}
+					list_qrh.add(new QrhJson(zl.getAjNo(),zl.getAjTitle(),sqlx,ssStatusChi,tqgkStatucChi,fjStatucChi,fmrName,firstFmrICard,list_sqr,"电子"));
+					ExportCusQrhWord qrh = new ExportCusQrhWord();
+					List<File> fileList = qrh.exportWord(list_qrh);
+					//生成压缩包
+					zipName = "\\客户确认函_" + CurrentTime.getStringTime() + "_"+userId+".zip";
+					zipPath = WebUrl.DATA_URL_QRS_ZIP + zipName;
+					FileOpration.toZip(fileList, zipPath,true);
+					//删除文件夹
+					 for (File sourceFile : fileList) {
+						 FileOpration.deleteAllFile(sourceFile.getPath());
+					 }
+					 map.put("zipPath", zipPath);
 				}
-				list_qrh.add(new QrhJson(zl.getAjNo(),zl.getAjTitle(),sqlx,ssStatusChi,tqgkStatucChi,fjStatucChi,fmrName,firstFmrICard,list_sqr,"电子"));
+			}else{
+				msg = "noInfo";
 			}
-			if(list_qrh.size() > 0){
-				ExportCusQrhWord qrh = new ExportCusQrhWord();
-				qrh.exportWord(list_qrh);
-			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	/**
+	 * 下载zip压缩包-确认书
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-22 下午03:58:08
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward downZipFile(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		String zipPath = Transcode.unescape_new1("zipPath", request);
+		String zipName = "";
+		if(!zipPath.equals("")){
+			//下载文件到客户端
+			zipName = zipPath.substring(zipPath.lastIndexOf("\\")+1,zipPath.length());
+	        OutputStream fos = null;
+	        BufferedOutputStream bos = null;
+	        InputStream fis = null;
+	        BufferedInputStream bis = null;
+	        fis = new FileInputStream(new File(zipPath));
+			bis = new BufferedInputStream(fis);
+			fos = response.getOutputStream();
+			bos = new BufferedOutputStream(fos);
+			zipName = URLEncoder.encode(zipName,"UTF-8");
+			//这个就就是弹出下载对话框的关键代码
+			response.setHeader("Pragma", "No-cache");
+			response.setHeader("Cache-Control", "No-cache");
+			response.setDateHeader("Expires", 0); 
+	        response.setHeader("Content-disposition","attachment;filename=" +zipName);
+	        response.setContentType("application/x-download");
+	        int bytesRead = 0;
+	        byte[] buffer = new byte[8192];
+	        while ((bytesRead = bis.read(buffer,0,8192)) != -1) {
+	        	fos.write(buffer, 0, bytesRead);
+	        }
+	        fos.flush();
+	        fis.close();
+	        bis.close();
+	        fos.close();
+	        bos.close();
+	        FileOpration.deleteFile(zipPath);
 		}
 		return null;
 	}
