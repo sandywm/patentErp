@@ -47,9 +47,10 @@ public class ExportCusQrhWord {
 	 * @author Administrator
 	 * @date 2019-3-20 下午04:14:21
 	 * @param list_qrh
+	 * @param opt:zip/doc
 	 * @throws Exception
 	 */
-	public List<File> exportWord(List<QrhJson> list_qrh) throws Exception{
+	public List<File> exportWord(List<QrhJson> list_qrh,String opt,Integer userId) throws Exception{
 		List<File> fileList = new ArrayList<File>();
 		for(int j = 0; j < list_qrh.size(); j++){
 			QrhJson qrh = list_qrh.get(j);
@@ -95,12 +96,15 @@ public class ExportCusQrhWord {
 	        setFontStyle(docxDocument,12,"宋体",false,ParagraphAlignment.RIGHT,"签   名:________________________","000000");
 	        setFontStyle(docxDocument,12,"宋体",false,ParagraphAlignment.RIGHT,"日   期:________________________","000000");
 	        String filePath = WebUrl.DATA_URL_QRS_ZIP + "\\"+qrh.getZlTitle()+"_"+qrh.getZlSerialNo();
+	        if(opt.equals("doc")){//不生成压缩包的时候不需要文件夹
+	        	filePath = WebUrl.DATA_URL_QRS_ZIP;
+	        }
 	        File file = new File(filePath);
 	        if(!file.exists()){
 				file.mkdirs();
 			}
 	        fileList.add(file);
-	        FileOutputStream fout = new FileOutputStream(filePath + "\\客户确认函_"+qrh.getZlSerialNo()+".doc");  
+	        FileOutputStream fout = new FileOutputStream(filePath + "\\客户确认函_"+qrh.getZlSerialNo()+"_"+userId+".doc");  
 			docxDocument.write(fout);
 	        fout.close();
 		}

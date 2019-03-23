@@ -3558,6 +3558,7 @@ public class ZlMainAction extends DispatchAction {
 					ZlajLcMxInfoTb lcmx = mxList.get(0);
 					ZlajLcInfoTb lc = lcmx.getZlajLcInfoTb();
 					ZlajMainInfoTb zl = lc.getZlajMainInfoTb();
+					Integer lcId = lc.getId();
 					Integer zlId = zl.getId();
 					String zlType = zl.getAjType();
 					String zlTypeChi = "";
@@ -4043,6 +4044,7 @@ public class ZlMainAction extends DispatchAction {
 								}
 							}
 							map.put("zlInfo", list_z);//定稿提交时必须要确定的几项数据
+							map.put("lcId", lcId);
 							map.put("lcNo", lcNo);//当前流程号
 							map.put("fileInfo", list_d);//附件列表
 							map.put("remark", remark);//意见/备注
@@ -4050,6 +4052,7 @@ public class ZlMainAction extends DispatchAction {
 							if(lcNo == 3.0){//新申请撰稿时可能没有技术底稿
 								msg = "success";
 								map.put("zlId", zlId);
+								map.put("lcId", lcId);
 								map.put("lcmxId", lcmxId);
 								map.put("lcNo", lcNo);//当前流程号
 								map.put("remark", remark);//意见/备注
@@ -6953,12 +6956,13 @@ public class ZlMainAction extends DispatchAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public ActionForward exportBatchCusQrh(ActionMapping mapping, ActionForm form,
+	public ActionForward createBatchCusQrh(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
 		ZlajLcInfoManager zlm = (ZlajLcInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_INFO);
 		CustomerInfoManager cm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO);
+		String opt = CommonTools.getFinalStr("opt", request);//方式：zip/doc
 		boolean abilityFlag = false;
 		Integer cpyId = 0;
 		String msg = "noAbility";
@@ -6982,111 +6986,127 @@ public class ZlMainAction extends DispatchAction {
 		}
 		if(abilityFlag){
 			msg = "success";
-			//只有专利到客户确认环节的才能导出-获取所有专利任务是客户确认环节的专利信息
-			List<ZlajLcInfoTb> lcList = zlm.listUnComInfoByOpt(cpyId, "客户确认");
+			List<ZlajLcInfoTb> lcList = new ArrayList<ZlajLcInfoTb>();
+			if(opt.equals("zip")){
+				//只有专利到客户确认环节的才能导出-获取所有专利任务是客户确认环节的专利信息
+				lcList = zlm.listUnComInfoByOpt(cpyId, "客户确认");
+			}else{//客户确认环节下载-直接生成doc
+				Integer lcId = CommonTools.getFinalInteger("lcId", request);
+				lcList = zlm.listLcInfoById(lcId);
+			}
 			List<QrhJson> list_qrh = new ArrayList<QrhJson>();
 			if(lcList.size() > 0){
 				for(Iterator<ZlajLcInfoTb> it = lcList.iterator() ; it.hasNext();){
 					List<SqrJson> list_sqr = new ArrayList<SqrJson>();
 					ZlajLcInfoTb lc = it.next();
-					ZlajMainInfoTb zl = lc.getZlajMainInfoTb();
-					String sqlx = zl.getAjType();
-					String ewyq = zl.getAjEwyqId();
-					String[] ewyqArr = ewyq.split(",");
-					String ssStatusChi = "no";//实审
-					String fjStatucChi = "否";//费减
-					String tqgkStatucChi = "no";//提前公开
-					if(ewyq.indexOf("13") >= 0){
-						fjStatucChi = "是";
-					}
-					if(sqlx.equals("fm")){//发明才有实审
-						sqlx = "发明";
-						for(int i = 0 ; i < ewyqArr.length ; i++){
-							if(ewyqArr[i].equals("1")){
-								ssStatusChi = "是";
-								break;
-							}else{
-								ssStatusChi = "否";
-							}
+					if(lc.getLcEDate().equals("")){//只生成未完成的
+						ZlajMainInfoTb zl = lc.getZlajMainInfoTb();
+						String sqlx = zl.getAjType();
+						String ewyq = zl.getAjEwyqId();
+						String[] ewyqArr = ewyq.split(",");
+						String ssStatusChi = "no";//实审
+						String fjStatucChi = "否";//费减
+						String tqgkStatucChi = "no";//提前公开
+						if(ewyq.indexOf("13") >= 0){
+							fjStatucChi = "是";
 						}
-						for(int i = 0 ; i < ewyqArr.length ; i++){
-							if(ewyqArr[i].equals("2")){
-								tqgkStatucChi = "是";
-								break;
-							}else{
-								tqgkStatucChi = "否";
-							}
-						}
-					}else if(sqlx.equals("syxx")){
-						sqlx = "实用新型";
-					}else if(sqlx.equals("wg")){
-						sqlx = "外观";
-					}
-					String fmrIdStr = zl.getAjFmrId();
-					String fmrName = "";
-					String firstFmrICard = "";
-					if(!fmrIdStr.equals("")){
-						String[] fmrIdArr = fmrIdStr.split(",");
-						for(Integer i = 0 ; i < fmrIdArr.length ; i++){
-							List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
-							if(cList.size() > 0){
-								if(i.equals(0)){
-									firstFmrICard = cList.get(0).getCusFmrICard();
+						if(sqlx.equals("fm")){//发明才有实审
+							sqlx = "发明";
+							for(int i = 0 ; i < ewyqArr.length ; i++){
+								if(ewyqArr[i].equals("1")){
+									ssStatusChi = "是";
+									break;
+								}else{
+									ssStatusChi = "否";
 								}
-								fmrName += cList.get(0).getCusFmrName() + ",";
+							}
+							for(int i = 0 ; i < ewyqArr.length ; i++){
+								if(ewyqArr[i].equals("2")){
+									tqgkStatucChi = "是";
+									break;
+								}else{
+									tqgkStatucChi = "否";
+								}
+							}
+						}else if(sqlx.equals("syxx")){
+							sqlx = "实用新型";
+						}else if(sqlx.equals("wg")){
+							sqlx = "外观";
+						}
+						String fmrIdStr = zl.getAjFmrId();
+						String fmrName = "";
+						String firstFmrICard = "";
+						if(!fmrIdStr.equals("")){
+							String[] fmrIdArr = fmrIdStr.split(",");
+							for(Integer i = 0 ; i < fmrIdArr.length ; i++){
+								List<CustomerFmrInfoTb> cList = cm.listFmrInfoByFmrId(Integer.parseInt(fmrIdArr[i]), cpyId);
+								if(cList.size() > 0){
+									if(i.equals(0)){
+										firstFmrICard = cList.get(0).getCusFmrICard();
+									}
+									fmrName += cList.get(0).getCusFmrName() + ",";
+								}
+							}
+							if(!fmrName.equals("")){
+								fmrName = fmrName.substring(0, fmrName.length() - 1);
 							}
 						}
-						if(!fmrName.equals("")){
-							fmrName = fmrName.substring(0, fmrName.length() - 1);
-						}
-					}
-					String sqrIdStr = zl.getAjSqrId();
-					String lxrIdStr = zl.getAjLxrId();
-					if(!sqrIdStr.equals("")){
-						String[] sqrIdArr = sqrIdStr.split(",");
-						for(Integer i = 0 ; i < sqrIdArr.length ; i++){
-							List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[i]));
-							if(cList.size() > 0){
-								CustomerInfoTb cus = cList.get(0);
-								Integer sqrId = cus.getId();
-								String sqrName = cus.getCusName();
-								String sqrCardNo = cus.getCusICard();
-								String sqrAddress = cus.getCusAddress();
-								List<LxrJson> list_lxr = new ArrayList<LxrJson>();
-								if(!lxrIdStr.equals("")){
-									String[] lxrIdArr = lxrIdStr.split(",");
-									for(Integer j = 0 ; j < lxrIdArr.length ; j++){
-										List<CustomerLxrInfoTb> lxrList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
-										if(lxrList.size() > 0){
-											CustomerLxrInfoTb lxr = lxrList.get(0);
-											String lxrName = "";
-											String lxrMobile = "";
-											String lxrEmail = "";
-											if(lxr.getCustomerInfoTb().getId().equals(sqrId)){
-												lxrName = lxr.getCusLxrName();
-												lxrMobile = lxr.getCusLxrTel();
-												lxrEmail = lxr.getCusLxrEmail();
-												list_lxr.add(new LxrJson(lxrName,lxrMobile,lxrEmail));
+						String sqrIdStr = zl.getAjSqrId();
+						String lxrIdStr = zl.getAjLxrId();
+						if(!sqrIdStr.equals("")){
+							String[] sqrIdArr = sqrIdStr.split(",");
+							for(Integer i = 0 ; i < sqrIdArr.length ; i++){
+								List<CustomerInfoTb> cList = cm.listInfoById(cpyId, Integer.parseInt(sqrIdArr[i]));
+								if(cList.size() > 0){
+									CustomerInfoTb cus = cList.get(0);
+									Integer sqrId = cus.getId();
+									String sqrName = cus.getCusName();
+									String sqrCardNo = cus.getCusICard();
+									String sqrAddress = cus.getCusAddress();
+									List<LxrJson> list_lxr = new ArrayList<LxrJson>();
+									if(!lxrIdStr.equals("")){
+										String[] lxrIdArr = lxrIdStr.split(",");
+										for(Integer j = 0 ; j < lxrIdArr.length ; j++){
+											List<CustomerLxrInfoTb> lxrList = cm.listLxrInfoByCusId(Integer.parseInt(lxrIdArr[j]), cpyId);
+											if(lxrList.size() > 0){
+												CustomerLxrInfoTb lxr = lxrList.get(0);
+												String lxrName = "";
+												String lxrMobile = "";
+												String lxrEmail = "";
+												if(lxr.getCustomerInfoTb().getId().equals(sqrId)){
+													lxrName = lxr.getCusLxrName();
+													lxrMobile = lxr.getCusLxrTel();
+													lxrEmail = lxr.getCusLxrEmail();
+													list_lxr.add(new LxrJson(lxrName,lxrMobile,lxrEmail));
+												}
 											}
 										}
 									}
+									list_sqr.add(new SqrJson(sqrName,sqrCardNo,sqrAddress,"",list_lxr));
 								}
-								list_sqr.add(new SqrJson(sqrName,sqrCardNo,sqrAddress,"",list_lxr));
 							}
 						}
+						list_qrh.add(new QrhJson(zl.getAjNo(),zl.getAjTitle(),sqlx,ssStatusChi,tqgkStatucChi,fjStatucChi,fmrName,firstFmrICard,list_sqr,"电子"));
+						ExportCusQrhWord qrh = new ExportCusQrhWord();
+						List<File> fileList = qrh.exportWord(list_qrh,opt,userId);
+						if(opt.equals("zip")){//此时需要删除生成的word文档
+							//生成压缩包
+							zipName = "\\客户确认函_" + CurrentTime.getStringTime() + "_"+userId+".zip";
+							zipPath = WebUrl.DATA_URL_QRS_ZIP + zipName;
+							FileOpration.toZip(fileList, zipPath,true);
+							//删除文件夹
+							 for (File sourceFile : fileList) {
+								 FileOpration.deleteAllFile(sourceFile.getPath());
+							 }
+						}else{
+							if(fileList.size() > 0){
+								zipPath = fileList.get(0).getPath() + "\\客户确认函_" + zl.getAjNo() + "_"+userId+".doc";
+							}
+						}
+						map.put("zipPath", zipPath);
+					}else{
+						continue;
 					}
-					list_qrh.add(new QrhJson(zl.getAjNo(),zl.getAjTitle(),sqlx,ssStatusChi,tqgkStatucChi,fjStatucChi,fmrName,firstFmrICard,list_sqr,"电子"));
-					ExportCusQrhWord qrh = new ExportCusQrhWord();
-					List<File> fileList = qrh.exportWord(list_qrh);
-					//生成压缩包
-					zipName = "\\客户确认函_" + CurrentTime.getStringTime() + "_"+userId+".zip";
-					zipPath = WebUrl.DATA_URL_QRS_ZIP + zipName;
-					FileOpration.toZip(fileList, zipPath,true);
-					//删除文件夹
-					 for (File sourceFile : fileList) {
-						 FileOpration.deleteAllFile(sourceFile.getPath());
-					 }
-					 map.put("zipPath", zipPath);
 				}
 			}else{
 				msg = "noInfo";
