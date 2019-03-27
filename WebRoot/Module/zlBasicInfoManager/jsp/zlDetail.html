@@ -391,6 +391,7 @@
 				renderZlBasicInfo : function(json){
 					var strHtml = '',isReadFlag = true,zlTypeTxtStr='';
 					this.data.zlAjType = json.ajType1;
+					lcfpMethod.data.zlAjType = json.ajType1;
 					if(!this.data.upZlFlag){
 						//表示不具有编辑权限
 						strHtml += '<div class="noUpTipTxt"><i class="layui-icon layui-icon-face-cry"></i>抱歉，您暂无编辑此专利的权限！</div>';
