@@ -31,7 +31,7 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 			uDao = (CpyUserInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_USER_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			ZlajLcInfoTb lc = new ZlajLcInfoTb(ajDao.get(sess, ajId),lcName, lcDetail, sDate,cpyDate, comDate, gfDate,lcNo,lcTzsPath);
+			ZlajLcInfoTb lc = new ZlajLcInfoTb(ajDao.get(sess, ajId),lcName, lcDetail, sDate,cpyDate, comDate, gfDate,lcNo,lcTzsPath,0,0);
 			lcDao.save(sess, lc);
 			tran.commit();
 			return lc.getId();
@@ -119,7 +119,7 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 	}
 
 	@Override
-	public boolean updateComInfoById(Integer id, String comDate)
+	public boolean updateComInfoById(Integer id, String comDate,Integer createStatus,Integer qrhId)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
@@ -129,7 +129,15 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 			tran = sess.beginTransaction();
 			ZlajLcInfoTb lc = lcDao.get(sess, id);
 			if(lc != null){
-				lc.setLcEDate(comDate);
+				if(!comDate.equals("")){
+					lc.setLcEDate(comDate);
+				}
+				if(qrhId > 0){
+					lc.setQrhId(qrhId);
+				}
+				if(createStatus > 0){
+					lc.setCreateStatus(createStatus);//流程完成也不能下载
+				}
 				lcDao.update(sess, lc);
 				tran.commit();
 				return true;
@@ -220,17 +228,34 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 	}
 
 	@Override
-	public List<ZlajLcInfoTb> listUnComInfoByOpt(Integer cpyId, String lcTask)
+	public List<ZlajLcInfoTb> listUnComInfoByOpt(Integer cpyId, String lcTask,String ajNo,String ajTitle,Integer cusId,Integer createStatus)
 			throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return lcDao.findUnComInfoByOpt(sess, cpyId, lcTask);
+			return lcDao.findUnComInfoByOpt(sess, cpyId, lcTask,ajNo,ajTitle,cusId,createStatus);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("获取代理机构下指定流程任务未完成的流程时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<ZlajLcInfoTb> listInfoByQrhId(Integer qrhId,Integer cpyId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return lcDao.findInfoByQrhId(sess, cpyId, qrhId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据确认函编号获取流程信息时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

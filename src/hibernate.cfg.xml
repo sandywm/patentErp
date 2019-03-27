@@ -93,6 +93,7 @@
 		<mapping resource="com/patent/xml/TzsApplyFileInfo.hbm.xml" />
 		<mapping resource="com/patent/xml/ZlajZdSubmitTb.hbm.xml" />
 		<mapping resource="com/patent/xml/ZlajQqsInfoTb.hbm.xml" />
+		<mapping resource="com/patent/xml/ZlajQrh.hbm.xml" />
 
 	</session-factory>
 

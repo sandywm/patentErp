@@ -97,8 +97,25 @@ public interface ZlajLcInfoDao {
 	 * @param sess
 	 * @param cpyId 代理机构编号
 	 * @param lcTask 流程任务
+	 * @param ajNo 案件编号
+	 * @param ajTitle 案件标题
+	 * @param cpyId 客户编号
+	 * @param createStatus 创建确认书标记（1：未下载，2：已下载,0:全部）
 	 * @return
 	 */
-	List<ZlajLcInfoTb> findUnComInfoByOpt(Session sess,Integer cpyId,String lcTask);
+	List<ZlajLcInfoTb> findUnComInfoByOpt(Session sess,Integer cpyId,String lcTask,
+			String ajNo,String ajTitle,Integer cusId,Integer createStatus);
+	
+	/**
+	 * 根据确认函编号获取流程信息
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-26 上午09:51:58
+	 * @param sess
+	 * @param cpyId 代理机构编号
+	 * @param qrhId 确认函编号
+	 * @return
+	 */
+	List<ZlajLcInfoTb> findInfoByQrhId(Session sess,Integer cpyId,Integer qrhId);
 	
 }

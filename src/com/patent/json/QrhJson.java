@@ -4,6 +4,7 @@ import java.util.List;
 
 public class QrhJson {
 
+	private Integer zlId;//专利编号
 	private String zlSerialNo;//案件序列号
 	private String zlTitle;//发明名称
 	private String sqlx;//申请类型
@@ -17,9 +18,10 @@ public class QrhJson {
 	
 	public QrhJson(){}
 	
-	public QrhJson(String zlSerialNo,String zlTitle,String sqlx, String ssStatusChi, String tqgkStatucChi,
+	public QrhJson(Integer zlId,String zlSerialNo,String zlTitle,String sqlx, String ssStatusChi, String tqgkStatucChi,
 			String fjStatucChi, String fmrInfo, String fmrICard,
 			List<SqrJson> sqrList, String wts) {
+		this.zlId = zlId;
 		this.zlSerialNo = zlSerialNo;
 		this.zlTitle = zlTitle;
 		this.sqlx = sqlx;
@@ -110,6 +112,14 @@ public class QrhJson {
 
 	public void setZlSerialNo(String zlSerialNo) {
 		this.zlSerialNo = zlSerialNo;
+	}
+
+	public Integer getZlId() {
+		return zlId;
+	}
+
+	public void setZlId(Integer zlId) {
+		this.zlId = zlId;
 	}
 	
 	

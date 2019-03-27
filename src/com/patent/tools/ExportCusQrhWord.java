@@ -10,9 +10,13 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
+import com.patent.factory.AppFactory;
 import com.patent.json.LxrJson;
 import com.patent.json.QrhJson;
 import com.patent.json.SqrJson;
+import com.patent.module.ZlajLcMxInfoTb;
+import com.patent.service.ZlajLcMxInfoManager;
+import com.patent.util.Constants;
 import com.patent.util.WebUrl;
 
 public class ExportCusQrhWord {
@@ -50,10 +54,12 @@ public class ExportCusQrhWord {
 	 * @param opt:zip/doc
 	 * @throws Exception
 	 */
-	public List<File> exportWord(List<QrhJson> list_qrh,String opt,Integer userId) throws Exception{
+	public List<File> exportWord(List<QrhJson> list_qrh,Integer userId) throws Exception{
+		ZlajLcMxInfoManager mxm = (ZlajLcMxInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_LC_MX_INFO);
 		List<File> fileList = new ArrayList<File>();
 		for(int j = 0; j < list_qrh.size(); j++){
 			QrhJson qrh = list_qrh.get(j);
+			String firstSqrName = "";//客户（第一申请人）
 			XWPFDocument  docxDocument = new XWPFDocument();
 			setFontStyle(docxDocument,18,"宋体",true,ParagraphAlignment.CENTER,"专利申请委托相关事项确认函","000000");
 	        setFontStyle(docxDocument,16,"宋体",true,ParagraphAlignment.BOTH,"一、基本信息","000000");
@@ -69,6 +75,9 @@ public class ExportCusQrhWord {
 	        List<SqrJson> sqrList = qrh.getSqrList();
 	        for(int i = 0 ; i < sqrList.size() ; i++){
 	        	SqrJson sqr = sqrList.get(i);
+	        	if(i == 0){
+	        		firstSqrName = sqr.getSqrName();
+	        	}
 	        	setFontStyle(docxDocument,14,"宋体",true,ParagraphAlignment.BOTH,"申  请  人："+sqr.getSqrName(),"DC143C");
 		        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"身份证号或社会统一信用代码证号："+sqr.getSqrICard(),"000000");
 		        setFontStyle(docxDocument,14,"宋体",false,ParagraphAlignment.BOTH,"申请人地址："+sqr.getSqrAddress(),"000000");
@@ -95,15 +104,34 @@ public class ExportCusQrhWord {
 	        setFontStyle(docxDocument,12,"宋体",false,ParagraphAlignment.RIGHT,"申请单位专利主管部门或发明人代表","000000");
 	        setFontStyle(docxDocument,12,"宋体",false,ParagraphAlignment.RIGHT,"签   名:________________________","000000");
 	        setFontStyle(docxDocument,12,"宋体",false,ParagraphAlignment.RIGHT,"日   期:________________________","000000");
-	        String filePath = WebUrl.DATA_URL_QRS_ZIP + "\\"+qrh.getZlTitle()+"_"+qrh.getZlSerialNo();
-	        if(opt.equals("doc")){//不生成压缩包的时候不需要文件夹
-	        	filePath = WebUrl.DATA_URL_QRS_ZIP;
-	        }
+	        String filePath = WebUrl.DATA_URL_QRS_ZIP + "\\"+qrh.getZlTitle()+"_"+firstSqrName + "_" + qrh.getZlSerialNo();
 	        File file = new File(filePath);
 	        if(!file.exists()){
 				file.mkdirs();
 			}
 	        fileList.add(file);
+	        //复制撰稿文件到确认函目录
+	        List<ZlajLcMxInfoTb> mxList_t = mxm.listSpecInfoInfoByOpt(qrh.getZlId(), "撰稿修改");
+			Integer mxLen = mxList_t.size();
+			if(mxLen == 0){//不能存在撰稿修改，说明撰写人一次性通过
+				mxList_t = mxm.listSpecInfoInfoByOpt(qrh.getZlId(), "新申请撰稿");
+				mxLen = mxList_t.size();
+			}
+			ZlajLcMxInfoTb mx = mxList_t.get(mxLen - 1);//获取最近一次的撰稿修改
+			String zgFile = mx.getLcMxUpFile();//撰稿确定文件
+			String[] fjNameArr = zgFile.split(",");
+			for(Integer i = 0 ; i < fjNameArr.length ; i++){
+				String fileName_curr = fjNameArr[i].substring((fjNameArr[i].lastIndexOf("\\") + 1));//文件名称;
+				String zgGs = fileName_curr.substring(fileName_curr.indexOf("."));//文件格式
+				//将撰稿审核后的文件复制到确认函目录下
+				if(fjNameArr.length > 1){
+					FileOpration.copyFile(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + fjNameArr[i], filePath + "\\" + "申请文稿_"+(i+1)+zgGs);
+				}else{//只有一个撰稿文件
+					FileOpration.copyFile(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + fjNameArr[i], filePath + "\\" + "申请文稿_"+zgGs);
+				}
+			}
+			//将法律文件复制到确认函目录下
+			FileOpration.copyFile(WebUrl.DATA_URL_QRS_ZIP + "\\风险告知书.doc", filePath + "\\风险告知书.doc");
 	        FileOutputStream fout = new FileOutputStream(filePath + "\\客户确认函_"+qrh.getZlSerialNo()+"_"+userId+".doc");  
 			docxDocument.write(fout);
 	        fout.close();

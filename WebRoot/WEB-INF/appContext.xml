@@ -28,4 +28,5 @@
 	<app id="fee_import_record_info_Web" class="com.patent.service.impl.FeeImportRecordInfoManagerImpl"/>
 	<app id="zlaj_zd_submit_info_Web" class="com.patent.service.impl.ZlajZdSubmitManagerImpl"/>
 	<app id="zlaj_qqs_info_Web" class="com.patent.service.impl.ZlajQqsInfoManagerImpl"/>
+	<app id="zlaj_qrh_info_Web" class="com.patent.service.impl.ZlajQrhManagerImpl"/>
 </appContext>

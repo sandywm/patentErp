@@ -533,7 +533,7 @@ public class ReadExcelFile {
 		list_lxr1.add(new LxrJson("周新新","15269029629","519513253@qq.com"));
 		list_lxr1.add(new LxrJson("李连杰","15269029629","519513253@qq.com"));
 		list_sqr.add(new SqrJson("濮阳隆特科技有限公司", "91410902558315925T", "濮阳市濮台路与新东路交叉口向北800米路西","18103939769",list_lxr1));
-		list_qrh.add(new QrhJson("0000120191000001","C环滑套喷砂器","发明","是","是","是","贾志强、曹新新、宋健、于传霖、刘明、李新凯","410928196508159637",list_sqr,"电子"));
+		list_qrh.add(new QrhJson(1,"0000120191000001","C环滑套喷砂器","发明","是","是","是","贾志强、曹新新、宋健、于传霖、刘明、李新凯","410928196508159637",list_sqr,"电子"));
 		for(int j = 0; j < list_qrh.size(); j++){
 			QrhJson qrh = list_qrh.get(j);
 			XWPFDocument  docxDocument = new XWPFDocument();

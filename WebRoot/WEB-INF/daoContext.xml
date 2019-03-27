@@ -35,4 +35,5 @@
 	<dao id="cus_pz_info_Dao" class="com.patent.dao.impl.CusPzInfoDaoImpl"/>
 	<dao id="zlaj_zd_submit_info_Dao" class="com.patent.dao.impl.ZlajZdSubmitDaoImpl"/>
 	<dao id="zlaj_qqs_info_Dao" class="com.patent.dao.impl.ZlajQqsInfoDaoImpl"/>
+	<dao id="zlaj_qrh_info_Dao" class="com.patent.dao.impl.ZlajQrhDaoImpl"/>
 </daoContext>

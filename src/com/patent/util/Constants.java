@@ -91,6 +91,7 @@ public class Constants {
 	public static final String WEB_FEE_IMPORT_RECORD_INFO = "fee_import_record_info_Web";
 	public static final String WEB_ZLAJ_ZD_SUBMIT_INFO = "zlaj_zd_submit_info_Web";
 	public static final String WEB_ZLAJ_QQS_INFO = "zlaj_qqs_info_Web";
+	public static final String WEB_ZLAJ_QRH_INFO = "zlaj_qrh_info_Web";
 	
 	//-------------------DAO-------------------------//
 	public static final String DAO_CPY_USER_INFO = "cpy_user_info_Dao";
@@ -128,4 +129,5 @@ public class Constants {
 	public static final String DAO_CUS_PZ_INFO = "cus_pz_info_Dao";
 	public static final String DAO_ZLAJ_ZD_SUBMIT_INFO = "zlaj_zd_submit_info_Dao";
 	public static final String DAO_ZLAJ_QQS_INFO = "zlaj_qqs_info_Dao";
+	public static final String DAO_ZLAJ_QRH_INFO = "zlaj_qrh_info_Dao";
 }

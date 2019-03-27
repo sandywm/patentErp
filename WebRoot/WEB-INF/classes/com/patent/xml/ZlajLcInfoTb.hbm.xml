@@ -55,6 +55,16 @@
                 <comment>流程通知书(当前流程所属通知书)</comment>
             </column>
         </property>
+        <property name="createStatus" type="java.lang.Integer">
+            <column name="create_status">
+                <comment>创建确认书标记（1：未下载，2：已下载）</comment>
+            </column>
+        </property>
+        <property name="qrhId" type="java.lang.Integer">
+            <column name="qrh_id">
+                <comment>确认函编号</comment>
+            </column>
+        </property>
         <set name="zlajLcMxInfoTbs" inverse="true">
             <key>
                 <column name="lc_id" not-null="true">

@@ -71,9 +71,28 @@ public class ZlajLcInfoDaoImpl implements ZlajLcInfoDao{
 
 	@Override
 	public List<ZlajLcInfoTb> findUnComInfoByOpt(Session sess, Integer cpyId,
-			String lcTask) {
+			String lcTask,String ajNo,String ajTitle,Integer cusId,Integer createStatus) {
 		// TODO Auto-generated method stub
 		String hql = " from ZlajLcInfoTb as lc where lc.zlajMainInfoTb.cpyInfoTb.id = "+cpyId + " and lc.lcDetail = '"+lcTask+"' and lc.lcEDate = '' and lc.zlajMainInfoTb.ajStopStatus = 0";
+		if(!ajNo.equals("")){
+			hql += " and lc.zlajMainInfoTb.ajNo like '%"+ajNo+"%'";
+		}else if(!ajTitle.equals("")){
+			hql += " and lc.zlajMainInfoTb.ajTitle like '%"+ajTitle+"%'";
+		}
+		if(cusId > 0){
+			hql += " and lc.zlajMainInfoTb.cpyInfoTb.id = "+cpyId;
+		}
+		if(createStatus > 0){
+			hql += " and lc.createStatus = "+createStatus;
+		}
+		return sess.createQuery(hql).list();
+	}
+
+	@Override
+	public List<ZlajLcInfoTb> findInfoByQrhId(Session sess, Integer cpyId,
+			Integer qrhId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajLcInfoTb as lc where lc.zlajMainInfoTb.cpyInfoTb.id = "+cpyId + " and lc.qrhId = "+qrhId;
 		return sess.createQuery(hql).list();
 	}
 

@@ -25,6 +25,8 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 	private String lcGfDate;
 	private Double lcNo;
 	private String lcTzsPath;
+	private Integer createStatus;
+	private Integer qrhId;
 	private Set<ZlajLcMxInfoTb> zlajLcMxInfoTbs = new HashSet<ZlajLcMxInfoTb>();
 
 	// Constructors
@@ -35,7 +37,7 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 
 	/** minimal constructor */
 	public ZlajLcInfoTb(ZlajMainInfoTb zlajMainInfoTb,String lcMz, String lcDetail, String lcSDate,
-			String lcCpyDate, String lcEDate, String lcGfDate,Double lcNo,String lcTzsPath) {
+			String lcCpyDate, String lcEDate, String lcGfDate,Double lcNo,String lcTzsPath,Integer createStatus,Integer qrhId) {
 		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.lcMz = lcMz;
 		this.lcDetail = lcDetail;
@@ -45,11 +47,13 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 		this.lcGfDate = lcGfDate;
 		this.lcNo = lcNo;
 		this.lcTzsPath = lcTzsPath;
+		this.createStatus = createStatus;
+		this.qrhId = qrhId;
 	}
 
 	/** full constructor */
 	public ZlajLcInfoTb(Integer id,ZlajMainInfoTb zlajMainInfoTb,String lcMz, String lcDetail, String lcSDate,
-			String lcCpyDate, String lcEDate, String lcGfDate,Double lcNo,String lcTzsPath) {
+			String lcCpyDate, String lcEDate, String lcGfDate,Double lcNo,String lcTzsPath,Integer createStatus,Integer qrhId) {
 		this.id = id;
 		this.zlajMainInfoTb = zlajMainInfoTb;
 		this.lcMz = lcMz;
@@ -60,6 +64,8 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 		this.lcGfDate = lcGfDate;
 		this.lcNo = lcNo;
 		this.lcTzsPath = lcTzsPath;
+		this.createStatus = createStatus;
+		this.qrhId = qrhId;
 	}
 
 	// Property accessors
@@ -150,6 +156,22 @@ public class ZlajLcInfoTb implements java.io.Serializable {
 
 	public void setLcTzsPath(String lcTzsPath) {
 		this.lcTzsPath = lcTzsPath;
+	}
+
+	public Integer getCreateStatus() {
+		return createStatus;
+	}
+
+	public void setCreateStatus(Integer createStatus) {
+		this.createStatus = createStatus;
+	}
+
+	public Integer getQrhId() {
+		return qrhId;
+	}
+
+	public void setQrhId(Integer qrhId) {
+		this.qrhId = qrhId;
 	}
 	
 }

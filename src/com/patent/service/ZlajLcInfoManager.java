@@ -53,10 +53,12 @@ public interface ZlajLcInfoManager {
 	 * @date 2018-8-31 下午04:35:28
 	 * @param id
 	 * @param comDate 完成时间
+	 * @param createStatus 创建确认书标记（1：未下载，2：已下载,0:全部）
+	 * @param qrhId 确认函编号
 	 * @return
 	 * @throws WEBException
 	 */
-	boolean updateComInfoById(Integer id,String comDate) throws WEBException;
+	boolean updateComInfoById(Integer id,String comDate,Integer createStatus,Integer qrhId) throws WEBException;
 	
 	
 	/**
@@ -134,10 +136,26 @@ public interface ZlajLcInfoManager {
 	 * @date 2019-3-20 下午04:45:22
 	 * @param cpyId 代理机构编号
 	 * @param lcTask 流程任务
+	 * @param ajNo 案件编号
+	 * @param ajTitle 案件标题
+	 * @param cpyId 客户编号
+	 * @param createStatus 创建确认书标记（1：未下载，2：已下载,0:全部）
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajLcInfoTb> listUnComInfoByOpt(Integer cpyId,String lcTask) throws WEBException;
+	List<ZlajLcInfoTb> listUnComInfoByOpt(Integer cpyId,String lcTask,String ajNo,String ajTitle,Integer cusId,Integer createStatus) throws WEBException;
+	
+	/**
+	 * 根据确认函编号获取所有流程信息列表
+	 * @description
+	 * @author Administrator
+	 * @date 2019-3-26 上午09:50:11
+	 * @param qrhId 确认函编号
+	 * @param cpyId 代理机构编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajLcInfoTb> listInfoByQrhId(Integer qrhId,Integer cpyId) throws WEBException;
 	
 	
 }
