@@ -154,6 +154,8 @@
 								}
 								_this.data.lcName = json.lcName;
 								_this.data.remark = json.remark;
+								common.data.lcIdDet = json.lcId;
+								console.log(json.lcId + "--" + common.data.lcIdDet)
 				        		var fileInfo = json.fileInfo,zlInfo = json.zlInfo,lcNo = json.lcNo;
 				        		_this.loadTaskLcDetail(fileInfo,zlInfo,lcNo);
 				        		_this.loadCurrStep(lcNo);
@@ -344,11 +346,15 @@
 							$('.canHideItem').css('visibility','hidden');
 							commonAddColorCls();//不同申请人对应其下联系人 发明人 技术联系人 显示对应申请人色块
 							this.useCommonFun();
+							$('.nowTit').append(tmpStrHtml);
+							//下载客户确认函
+							$('.downCusFile').on('click',function(){
+								common.downCusQrhZipFiles(0);
+							});
 						}else{//客户确认-补正
 							$('.judgeBox').html(nowHtml_cus);
 							form.render();
 						}
-						$('.nowTit').append(tmpStrHtml);
 						this.judgeByCustom();
 					}else if(lcNo == 6){//定稿提交
 						$('.remarkWrap').remove();

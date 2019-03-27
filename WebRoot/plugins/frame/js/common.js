@@ -6,6 +6,9 @@
 layui.define(['rate'],function(exports){
 	var $ = layui.jquery,rate = layui.rate;
     var obj = {
+    	data : {
+    		lcIdDet : 0 //任务详情中的lcId
+    	},
     	getId : function(id){
     		return document.getElementById(id);
     	},
@@ -76,6 +79,43 @@ layui.define(['rate'],function(exports){
 			form.append(input1);   //将查询参数控件提交到表单上
 		  	form.submit();
 		  	layer.closeAll('loading');
+		},
+		//下载客户确认函通用方法
+		downCusQrhZipFiles : function(downFileType){
+			layer.load('1');
+			if(downFileType == 0){//任务详情里面的下载客户确认函 只传lcId
+				var field = {lcId : this.data.lcIdDet};
+			}else{//客户确认函模块进来 带有其他参数 ajTitle ajNo cusId ...
+				
+			}
+			$.ajax({
+				type:'post',
+		        dataType:'json',
+		        data : field,
+		        url:'/zlm.do?action=createBatchCusQrh',
+		        success:function (json){
+		        	if(json['result'] == 'success'){
+		        		layer.closeAll('loading');
+		        		var form = $("<form>");   //定义一个form表单
+		    			form.attr('style', 'display:none'); //在form表单中添加查询参数
+		    			form.attr('target', '');
+		    			form.attr('method', 'post');
+		    			form.attr('action', '/zlm.do?action=downZipFile');
+		    			var input1 = $('<input>');
+		    			input1.attr('type', 'hidden');
+		    			input1.attr('name', 'zipPath');
+		    			input1.attr('value', escape(json.zipPath));
+		    			$('body').append(form);  //将表单放置在web中 
+		    			form.append(input1);   //将查询参数控件提交到表单上
+		    		  	form.submit();
+		        	}else if(json['result'] == 'noAbility'){
+		        		layer.msg('抱歉，您暂无权限下载客户确认函', {icon:5,anim:6,time:2000});
+		        	}else if(json['result'] == 'noInfo'){
+		        		layer.msg('暂无客户确认函', {icon:5,anim:6,time:1500});
+		        	}
+		        	
+		        }
+			});
 		},
 		//导出费用清单 客户清单 费用清单
 		commonExportFun : function(url,name,value){
