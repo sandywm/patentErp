@@ -1173,6 +1173,8 @@ public class ZlMainAction extends DispatchAction {
 							}else{
 								map.put("feeTxFlag", false);
 							}
+						}else{//如果没有代理费(旧案)
+							map.put("feeTxType", -1);
 						}
 					}else if(opt.equals("lcfz")){//流程负责人信息
 						map = new HashMap<String,Object>();
@@ -2451,7 +2453,7 @@ public class ZlMainAction extends DispatchAction {
 							ajType = "fm,syxx";
 						}
 						String zlNoGf = "";
-						String ajTitleStr = Transcode.unescape_new("ajTitle", request);
+						String ajTitle = Transcode.unescape_new("ajTitle", request);
 						String ajFieldId = CommonTools.getFinalStr("ajFieldId", request);
 						String ajSqrId  = CommonTools.getFinalStr("ajSqrId", request);
 						String ajSqrName = Transcode.unescape_new1("ajSqrName", request);
@@ -2524,7 +2526,6 @@ public class ZlMainAction extends DispatchAction {
 										}
 									}
 								}
-								String ajTitle = ajTitleStr.split(",")[i];
 								if(cpyId > 0 && !ajType.equals("")){
 									if(ajType.equals("fm")){
 										varCon = "1";
@@ -2549,10 +2550,12 @@ public class ZlMainAction extends DispatchAction {
 									ajNo = ajNoQt;
 									if(ajTypeArr.length == 2){//发明+新型
 										if(ajType.equals("fm")){
+											ajTitle = Transcode.unescape_new("ajTitle_fm", request);
 											ajUpload = CommonTools.getFinalStr("fmPath", request);
 											dlFee = CommonTools.getFinalStr("dlFee_fm", request);//发明的代理费
 											ajUploadDg = CommonTools.getFinalStr("ajUploadDg_fm", request);//定稿文件
 										}else{//实用新型
+											ajTitle = Transcode.unescape_new("ajTitle_xx", request);
 											ajUpload = CommonTools.getFinalStr("xxPath", request);
 											dlFee = CommonTools.getFinalStr("dlFee_xx", request);//新型的代理费
 											ajUploadDg = CommonTools.getFinalStr("ajUploadDg_xx", request);//定稿文件
