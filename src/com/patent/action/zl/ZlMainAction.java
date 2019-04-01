@@ -2614,8 +2614,10 @@ public class ZlMainAction extends DispatchAction {
 							Integer zlId_2 = 0;
 							String[] ajTypeArr = ajType.split(",");
 							String[] ajEwyqIdArr = ajEwyqId.split(":");
+							String[] ajApplyDateArr = ajApplyDate.split(",");
 							String zlNoGf_curr = zlNoGf;
 							for(Integer i = 0 ; i < ajTypeArr.length ; i++){
+								ajApplyDate = ajApplyDateArr[i];
 								ajType = ajTypeArr[i];
 								if(!ajEwyqId.equals("")){
 									if(ajEwyqIdArr.length == 2){
