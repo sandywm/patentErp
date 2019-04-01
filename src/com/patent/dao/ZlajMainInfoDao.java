@@ -112,9 +112,10 @@ public interface ZlajMainInfoDao {
 	 * @date  2018-8-23 下午09:36:47
 	 * @param sess
 	 * @param ajNoGf 专利/申请号
+	 * @param cpyId 代理机构编号
 	 * @return
 	 */
-	List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess,String ajNoGf);
+	List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess,String ajNoGf,Integer cpyId);
 	
 	/**
 	 * 通过专利标题、申请人、专利类型获取专利信息(导入受理通知书时使用)
@@ -166,4 +167,16 @@ public interface ZlajMainInfoDao {
 	 * @return
 	 */
 	Integer getCountByAddUserId(Session sess,Integer addUserId);
+	
+	/**
+	 * 获取指定专利名称的专利信息（案件正常状态下）
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-1 上午10:20:53
+	 * @param sess
+	 * @param zlTitle 专利标题
+	 * @param cpyId 代理机构编号
+	 * @return
+	 */
+	List<ZlajMainInfoTb> findInfoByZlTitle(Session sess,String zlTitle,Integer cpyId);
 }

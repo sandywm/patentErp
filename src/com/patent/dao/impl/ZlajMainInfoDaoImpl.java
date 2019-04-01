@@ -154,9 +154,9 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 	}
 
 	@Override
-	public List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess, String ajNoGf) {
+	public List<ZlajMainInfoTb> findSpecInfoByOpt(Session sess, String ajNoGf,Integer cpyId) {
 		// TODO Auto-generated method stub
-		String hql = " from ZlajMainInfoTb as zl where zl.ajNoGf = '"+ajNoGf+"'";
+		String hql = " from ZlajMainInfoTb as zl where zl.ajNoGf = '"+ajNoGf+"' and zl.cpyInfoTb.id = "+cpyId;
 		return sess.createQuery(hql).list();
 	}
 
@@ -200,6 +200,14 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 		String hql = "select count(zl.id) from ZlajMainInfoTb as zl where zl.ajAddUserId = "+addUserId;
 		Object count_obj = sess.createQuery(hql).uniqueResult();
 		return CommonTools.longToInt(count_obj);
+	}
+
+	@Override
+	public List<ZlajMainInfoTb> findInfoByZlTitle(Session sess, String zlTitle,
+			Integer cpyId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajMainInfoTb as zl where zl.cpyInfoTb.id = "+cpyId + " and zl.ajTitle = '"+zlTitle+"' and zl.ajStopStatus = 0";
+		return sess.createQuery(hql).list();
 	}
 
 }

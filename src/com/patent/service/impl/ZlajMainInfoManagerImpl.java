@@ -124,12 +124,12 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 	}
 
 	@Override
-	public List<ZlajMainInfoTb> listSpecInfoByZlNo(String ajNoGf) throws WEBException {
+	public List<ZlajMainInfoTb> listSpecInfoByZlNo(String ajNoGf,Integer cpyId) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
 			Session sess = HibernateUtil.currentSession();
-			return zlDao.findSpecInfoByOpt(sess, ajNoGf);
+			return zlDao.findSpecInfoByOpt(sess, ajNoGf,cpyId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -628,6 +628,23 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("修改专利定稿文件时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public List<ZlajMainInfoTb> listInfoByZlTitle(String zlTitle, Integer cpyId)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			return zlDao.findInfoByZlTitle(sess, zlTitle, cpyId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("获取指定专利名称的专利信息（案件正常状态下）时出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

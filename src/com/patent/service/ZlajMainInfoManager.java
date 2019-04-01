@@ -142,10 +142,11 @@ public interface ZlajMainInfoManager {
 	 * @ModifiedBy  
 	 * @date  2018-8-24 下午10:21:30
 	 * @param ajNoGf 专利/申请号
+	 * @param cpyId 代理机构编号
 	 * @return
 	 * @throws WEBException
 	 */
-	List<ZlajMainInfoTb> listSpecInfoByZlNo(String ajNoGf) throws WEBException;
+	List<ZlajMainInfoTb> listSpecInfoByZlNo(String ajNoGf,Integer cpyId) throws WEBException;
 	
 	/**
 	 * 根据主键修改案件终止状态信息
@@ -394,4 +395,16 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	boolean updateZlFaInfoById(Integer zlId,Integer faId)throws WEBException;
+	
+	/**
+	 * 获取指定专利名称的专利信息（案件正常状态下）
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-1 上午10:24:24
+	 * @param zlTitle 专利标题
+	 * @param cpyId 代理机构编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<ZlajMainInfoTb> listInfoByZlTitle(String zlTitle,Integer cpyId)throws WEBException;
 }

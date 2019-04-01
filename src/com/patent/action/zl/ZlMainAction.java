@@ -50,6 +50,7 @@ import com.patent.json.LxrJson;
 import com.patent.json.QrhJson;
 import com.patent.json.SqrJson;
 import com.patent.json.TzsJson;
+import com.patent.module.CpyInfoTb;
 import com.patent.module.CpyUserInfo;
 import com.patent.module.CustomerFmrInfoTb;
 import com.patent.module.CustomerInfoTb;
@@ -2378,6 +2379,105 @@ public class ZlMainAction extends DispatchAction {
 	}
 	
 	/**
+	 * 查看指定的专利号是否存在
+	 * @description
+	 * @author Administrator
+	 * @date 2019-1-25 上午10:32:05
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward checkExistByZlNo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		Integer zlId = CommonTools.getFinalInteger("zlId", request);
+		String zlNoGf = CommonTools.getFinalStr("zlNoGf", request);
+		String msg = "error";
+		Map<String,String> map = new HashMap<String,String>();
+		if(!zlNoGf.equals("")){
+			CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+			if(zlId > 0 && cpy != null){//编辑专利时
+				List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, 0);
+				if(zlList.size() > 0){
+					if(zlList.get(0).getAjNoGf().equals(zlNoGf)){//没变化无需判断
+						msg = "noInfo";
+					}else{
+						if(zlm.listSpecInfoByZlNo(zlNoGf,cpy.getId()).size() > 0){
+							msg = "exist";
+						}else{
+							msg = "noInfo";
+						}
+					}
+				}
+			}else{//增加专利时
+				if(zlm.listSpecInfoByZlNo(zlNoGf,cpy.getId()).size() > 0){
+					msg = "exist";
+				}else{
+					msg = "noInfo";
+				}
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	
+	/**
+	 * 判断专利是否存在,判断专利名称是否存在
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-1 上午10:08:52
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward checkExistByZlTitle(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO);
+		String ajTitle =  Transcode.unescape_new("ajTitle", request);
+		Integer zlId = CommonTools.getFinalInteger("zlId", request);
+		Map<String,String> map = new HashMap<String,String>();
+		CpyInfoTb cpy = cum.getEntityById(this.getLoginUserId(request)).getCpyInfoTb();
+		List<ZlajMainInfoTb> zlList_1 = new ArrayList<ZlajMainInfoTb>();
+		String msg = "error";
+		Integer cpyId = 0;
+		if(cpy != null && !ajTitle.equals("")){
+			cpyId = cpy.getId();
+			if(zlId > 0){//编辑时
+				List<ZlajMainInfoTb>  zlList = zlm.listSpecInfoById(zlId, cpyId);
+				if(zlList.size() > 0){
+					String zlTitle_db = zlList.get(0).getAjTitle();
+					if(!zlTitle_db.equals(ajTitle)){
+						zlList_1 = zlm.listInfoByZlTitle(ajTitle, cpyId);
+					}
+				}
+			}else{//增加时
+				zlList_1 = zlm.listInfoByZlTitle(ajTitle, cpyId);
+			}
+			if(zlList_1.size() > 0){
+				msg = "exist";
+			}else{
+				msg = "noInfo";
+			}
+		}
+		map.put("result", msg);
+		this.getJsonPkg(map, response);
+		return null;
+	}
+	
+	
+	/**
 	 * 增加专利
 	 * @author  Administrator
 	 * @ModifiedBy  
@@ -2476,6 +2576,7 @@ public class ZlMainAction extends DispatchAction {
 						String ajUploadDg = CommonTools.getFinalStr("ajUploadDg", request);//定稿文件
 						String ajUploadHt = CommonTools.getFinalStr("ajUploadHt", request);//合同文件(公用)
 						String payUserInfo = Transcode.unescape_new("payUserInfo", request);//付款方
+						String ajApplyDate = "";//旧案下的申请日
 						String zlNo = "2.0";
 						String zlStatusChi = "流程人员分配";
 						String zlNoFm = "";
@@ -2484,14 +2585,15 @@ public class ZlMainAction extends DispatchAction {
 //							zlNo = "7.0";
 //							zlStatusChi = "等待导入受理/缴费通知书";
 							zlNoGf = CommonTools.getFinalStr("zlNoGf", request).replace(".", "");//统一去掉专利号带点的
+							ajApplyDate = CommonTools.getFinalStr("sqDate", request);
 							if(ajType.equals("fm,syxx")){
 								String[] zlNoGfArr = zlNoGf.split(",");
 								zlNoFm = zlNoGfArr[0];
 								zlNoXx = zlNoGfArr[1];
-								if(zlm.listSpecInfoByZlNo(zlNoFm).size() > 0){
+								if(zlm.listSpecInfoByZlNo(zlNoFm,cpyId).size() > 0){
 									msg = "exist";
 								}else{
-									if(zlm.listSpecInfoByZlNo(zlNoXx).size() > 0){
+									if(zlm.listSpecInfoByZlNo(zlNoXx,cpyId).size() > 0){
 										msg = "exist";
 									}else{
 										msg = "success";
@@ -2500,7 +2602,7 @@ public class ZlMainAction extends DispatchAction {
 							}else{
 								zlNoFm = zlNoGf;
 								zlNoXx = zlNoGf;
-								if(zlm.listSpecInfoByZlNo(zlNoGf).size() > 0){
+								if(zlm.listSpecInfoByZlNo(zlNoGf,cpyId).size() > 0){
 									msg = "exist";
 								}else{
 									msg = "success";
@@ -2510,7 +2612,6 @@ public class ZlMainAction extends DispatchAction {
 						if(msg.equals("success")){
 							Integer zlId_1 = 0;
 							Integer zlId_2 = 0;
-							String ajApplyDate = "";
 							String[] ajTypeArr = ajType.split(",");
 							String[] ajEwyqIdArr = ajEwyqId.split(":");
 							String zlNoGf_curr = zlNoGf;
@@ -2788,53 +2889,6 @@ public class ZlMainAction extends DispatchAction {
 		return null;
 	}
 	
-	/**
-	 * 查看指定的专利号是否存在
-	 * @description
-	 * @author Administrator
-	 * @date 2019-1-25 上午10:32:05
-	 * @param mapping
-	 * @param form
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	public ActionForward checkExistByZlNo(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// TODO Auto-generated method stub
-		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
-		Integer zlId = CommonTools.getFinalInteger("zlId", request);
-		String zlNoGf = CommonTools.getFinalStr("zlNoGf", request);
-		String msg = "error";
-		Map<String,String> map = new HashMap<String,String>();
-		if(!zlNoGf.equals("")){
-			if(zlId > 0){//编辑专利时
-				List<ZlajMainInfoTb> zlList = zlm.listSpecInfoById(zlId, 0);
-				if(zlList.size() > 0){
-					if(zlList.get(0).getAjNoGf().equals(zlNoGf)){//没变化无需判断
-						msg = "noInfo";
-					}else{
-						if(zlm.listSpecInfoByZlNo(zlNoGf).size() > 0){
-							msg = "exist";
-						}else{
-							msg = "noInfo";
-						}
-					}
-				}
-			}else{//增加专利时
-				if(zlm.listSpecInfoByZlNo(zlNoGf).size() > 0){
-					msg = "exist";
-				}else{
-					msg = "noInfo";
-				}
-			}
-		}
-		map.put("result", msg);
-		this.getJsonPkg(map, response);
-		return null;
-	}
-	
 	
 	/**
 	 * 修改专利基本信息(案件定稿提交前才能修改案件基本信息)
@@ -3031,7 +3085,7 @@ public class ZlMainAction extends DispatchAction {
 						if(ajType1.equals("old")){//只有旧案的时候才能编辑专利号
 							zlNoGf = CommonTools.getFinalStr("zlNoGf", request).replace(".", "");//统一去掉专利号带点的
 							if(!zl.getAjNoGf().equals(zlNoGf)){
-								if(zlm.listSpecInfoByZlNo(zlNoGf).size() > 0){
+								if(zlm.listSpecInfoByZlNo(zlNoGf,cpyId).size() > 0){
 									msg = "exist";//存在该专利号
 								}
 							}
@@ -5585,15 +5639,19 @@ public class ZlMainAction extends DispatchAction {
 	public ActionForward getSpecInfo(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ZlajMainInfoManager zlm = (ZlajMainInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_MAIN_INFO);
+		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
 		String ajNoGf = Transcode.unescape_new1("ajNoGf", request);
-		List<ZlajMainInfoTb>  zmList = zlm.listSpecInfoByZlNo(ajNoGf);
+		CpyUserInfo user = cum.getEntityById(this.getLoginUserId(request));
 		String msg = "noInfo";
 		Map<String,String> map = new HashMap<String,String>();
-		if(zmList.size() > 0){
-			ZlajMainInfoTb zl = zmList.get(0);
-			msg = "success";
-			map.put("sqAddress", zl.getAjSqAddress());
-			map.put("sqDate", zl.getAjApplyDate());
+		if(user != null){
+			List<ZlajMainInfoTb>  zmList = zlm.listSpecInfoByZlNo(ajNoGf,user.getCpyInfoTb().getId());
+			if(zmList.size() > 0){
+				ZlajMainInfoTb zl = zmList.get(0);
+				msg = "success";
+				map.put("sqAddress", zl.getAjSqAddress());
+				map.put("sqDate", zl.getAjApplyDate());
+			}
 		}
 		map.put("result", msg);
 		this.getJsonPkg(map, response);
@@ -5696,7 +5754,7 @@ public class ZlMainAction extends DispatchAction {
 						}
 		        	}
 		        	//执行动作
-		        	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(ajNoGf);
+		        	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(ajNoGf,cpyId);
 		        	if(zlList.size() == 0){//说明系统中还没有该专利号的专利/也可能是之前没导入过通知书
 		        		zlList = zlm.listSpecInfoByOpt(zlName, sqrName, zlType,cpyId);
 		        	}

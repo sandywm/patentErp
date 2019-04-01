@@ -773,7 +773,7 @@ public class FeeAction extends DispatchAction {
 				            for(Iterator<FeeImportDealRecordInfo> it = fidrList.iterator() ; it.hasNext();){
 								FeeImportDealRecordInfo fidr = it.next();
 								if(fidr.getFeeName().contains("滞纳金")){
-									List<ZlajMainInfoTb>  zlList = zlm.listSpecInfoByZlNo(fidr.getZlNo());
+									List<ZlajMainInfoTb>  zlList = zlm.listSpecInfoByZlNo(fidr.getZlNo(),cpyId);
 									if(zlList.size() > 0){
 										List<ZlajFeeInfoTb> znjList = fm.listYearFeeByOpt(zlList.get(0).getId(), fidr.getYearNo(), "znjFee");
 										if(znjList.size() > 0){
@@ -1279,7 +1279,7 @@ public class FeeAction extends DispatchAction {
 		        	            	//代理机构缴完费后-补充缴费信息
 		            	            if(feeName.contains("滞纳金")){
 		            	            	//如果是滞纳金，第一次导入时需要增加该笔费用
-		            	            	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(zlNo);
+		            	            	List<ZlajMainInfoTb> zlList = zlm.listSpecInfoByZlNo(zlNo,cpyId);
 		            	            	if(zlList.size() > 0){
 		            	            		Integer zlId = zlList.get(0).getId();
 		            	            		HSSFCell cell13 = row1.getCell(13);//读取第几列
