@@ -107,7 +107,7 @@ public class ZlajLcMxInfoDaoImpl implements ZlajLcMxInfoDao{
 		if(cusId > 0){
 			hql += " and FIND_IN_SET("+cusId+",lcmx.zlajLcInfoTb.zlajMainInfoTb.ajSqrId) > 0";
 		}
-		hql += " order by lcmx.id desc";
+		hql += " order by lcmx.zlajLcInfoTb.lcCpyDate asc";
 		int offset = (pageNo - 1) * pageSize;
 		if (offset < 0) {
 			offset = 0;

@@ -1075,6 +1075,7 @@ public class ZlMainAction extends DispatchAction {
 						map.put("upFile", list_file);
 						map.put("stopStatus", zl.getAjStopStatus());//案件在终止状态下基本信息不能被修改
 						map.put("ajStatus", zl.getAjStatus());//案件流程状态
+						map.put("sqDate", zl.getAjApplyDate());//案件申请日期
 						String selJsFieldStr = zl.getAjFieldId();
 						String[] selJsFieldArr = selJsFieldStr.split(",");
 						List<JsFiledInfoTb> jsList = jsm.listInfoByOpt(cpyId, "");

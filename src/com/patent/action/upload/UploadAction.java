@@ -211,8 +211,8 @@ public class UploadAction extends DispatchAction {
 							if(!upFlag){
 								msg = "outSize";
 							}
-						}else if(checkFileSuffixInfo.equals("file")){//文件限制10M
-							upFlag = ci.checkItemSize(fileItem, 10 * 1024 * 1024);
+						}else if(checkFileSuffixInfo.equals("file")){//文件限制20M
+							upFlag = ci.checkItemSize(fileItem, 20 * 1024 * 1024);
 							if(!upFlag){
 								msg = "outSize";
 							}
