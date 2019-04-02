@@ -4,7 +4,11 @@
 body{
 	background:#f2f2f2;
 	color:#666;
-} 
+}
+input[type="text"]::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder{
+	color:#999;
+}
 .headerWrap{
 	width:100%;
 	height:40px;
@@ -1192,29 +1196,36 @@ body{
 	color:#F47837;
 }
 /* 发明新型专利标题 */
-.fmxxZlTitBox{
+.fmxxZlTitBox,
+.fmxxAjSqBox{
 	width:50%;
 	float:left;
 	line-height:38px;
 }
 .fmxxZlTitBox label,
-.fmxxZlTitBox input{
+.fmxxAjSqBox label,
+.fmxxZlTitBox input,
+.fmxxAjSqBox input{
 	float:left;
 }
-.fmxxZlTitBox label{
+.fmxxZlTitBox label,
+.fmxxAjSqBox label{
 	width:20%;
 	text-align:center;
 	margin-left:41px;
 }
-.fmxxZlTitBox label span{
+.fmxxZlTitBox label span,
+.fmxxAjSqBox label span{
 	color:red;
 }
-.fmxxZlTitBox input{
+.fmxxZlTitBox input,
+.fmxxAjSqBox input{
 	width:70.5%;
 }
 .detColor{
 	color:#F47837;
 }
-#xxEyYqBox{
+#xxEyYqBox,
+.oldAjSqDate{
 	display:none;
 }

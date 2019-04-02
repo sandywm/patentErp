@@ -95,7 +95,7 @@
 	<script src="/Module/zlBasicInfoManager/js/delMethod.js"></script>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var globalZlId = parent.globalZlId,globalMxId = parent.globalTaskOpts.globalMxId,zlTit = parent.globalZlTit,taskDetailOpt='',upSuccSrcArray = [],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
+		var addEditZlOpts = 'editZlOpts',globalZlId = parent.globalZlId,globalMxId = parent.globalTaskOpts.globalMxId,zlTit = parent.globalZlTit,taskDetailOpt='',upSuccSrcArray = [],sqrArray=[],sqrIdArray=[],sqrTxtArray=[],lxrIdArray=[],lxrIdNum=[],fmrIdNum=[],fmrIdArray=[],jsLxrIdNum=[],tmpLxrFmrOpts='',isZlAddFmLxFlag=true;
 		var colorArray = ['blue','red','pink','green','black'];
 		layui.config({
 			base: '/plugins/frame/js/'
@@ -155,7 +155,6 @@
 								_this.data.lcName = json.lcName;
 								_this.data.remark = json.remark;
 								common.data.lcIdDet = json.lcId;
-								console.log(json.lcId + "--" + common.data.lcIdDet)
 				        		var fileInfo = json.fileInfo,zlInfo = json.zlInfo,lcNo = json.lcNo;
 				        		_this.loadTaskLcDetail(fileInfo,zlInfo,lcNo);
 				        		_this.loadCurrStep(lcNo);
@@ -235,7 +234,7 @@
 						}
 						nowHtml_sub += '</div>';
 						nowHtml_sub += '<span id="addSqrBtn" class="addSpan fl">添加/编辑申请人</span></div></div>';
-						nowHtml_sub += '<div class="layui-form-item hasMargTop"><label class="layui-form-label titLabel"><span class="mustItem">*</span>事务联系人：</label>';
+						nowHtml_sub += '<div class="layui-form-item hasMargTop"><label class="layui-form-label titLabel"><span class="mustItem canHideItem">*</span>事务联系人：</label>';
 						nowHtml_sub += '<div class="layui-input-block fixHeiDiv clearfix"><input id="ajLxrId" type="hidden" name="ajLxrId"/>';
 						nowHtml_sub += '<div class="multiBox fl" style="width:100%;">';
 						nowHtml_sub += '<div id="lxrBox" class="multiBox fl">';
@@ -344,6 +343,7 @@
 							$('.judgeBox').html(nowHtml_sub + nowHtml_cus);//客户确认 需要申请人 事务联系人 发明人
 							$('.verifyBox').addClass('hasMargTop');
 							$('.canHideItem').css('visibility','hidden');
+							zlInfoMethod.judgeZlTitExist('ajTitleInp');//判断专利标题是否存在
 							commonAddColorCls();//不同申请人对应其下联系人 发明人 技术联系人 显示对应申请人色块
 							this.useCommonFun();
 							$('.nowTit').append(tmpStrHtml);
@@ -360,6 +360,7 @@
 						$('.remarkWrap').remove();
 						$('.upFileWrap').hide();
 						$('.judgeBox').addClass('dinggaoHei').show().html(nowHtml_sub);
+						zlInfoMethod.judgeZlTitExist('ajTitleInp');//判断专利标题是否存在
 						commonAddColorCls();//不同申请人对应其下联系人 发明人 技术联系人 显示对应申请人色块
 						this.useCommonFun();
 					}else if(this.data.lcName == '补正提交'){
@@ -652,15 +653,15 @@
 							sqrName = _this.getIdStr('delSqrBtn','sqrattrname');
 							ajLxrIdVal = _this.getIdStr('delLxrBtn','lxridattr');
 							ajFmrIdVal = _this.getIdStr('delFmrBtn','fmridattr');
-							lcNo >= 5 && lcNo < 6 ? isCusFlag = true : isCusFlag = false;
-							//客户确认环节 发明人和费减为未必选
+							lcNo >= 5 && lcNo < 6 ? isCusFlag = true : isCusFlag = false; //true为客户确认环节
+							//客户确认环节 发明人和费减为非必选
 							if(ajTitleVal == ''){
 								layer.msg('案件标题不能为空', {icon:5,anim:6,time:1000});
 								return;
 							}else if(ajSqrIdVal == ''){
 								layer.msg('请添加申请人', {icon:5,anim:6,time:1000});
 								return;
-							}else if(ajLxrIdVal == ''){
+							}else if(ajLxrIdVal == '' && !isCusFlag){
 								layer.msg('请添加事务联系人', {icon:5,anim:6,time:1000});
 								return;
 							}else if(ajFmrIdVal == '' && !isCusFlag){//定稿提交

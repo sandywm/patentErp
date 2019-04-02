@@ -404,6 +404,10 @@
 						strHtml += '<input type="radio" name="ajTypeRad" class="ajTypeRad" lay-filter="ajTypeRadFilter" value="old" title="旧案(中途转入)" checked/>';
 					}
 					strHtml += '</div></div>';
+					//旧案下案件申请日
+					if(json.ajType1 == 'old'){
+						strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>案件申请日</label><div class="layui-input-block"><input type="text" value="'+ json.sqDate +'" readonly autocomplete="off" class="layui-input"/></div></div>';	
+					}
 					//案件标题
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span>*</span>案件标题</label><div class="layui-input-block">';
 					strHtml += '<input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)" maxlength="40" value="'+ json.ajTitle +'" autocomplete="off" class="layui-input"/></div></div>';
@@ -470,16 +474,19 @@
 					strHtml += '</div>';
 					//专利难易度 专利代理费用
 					strHtml += '<div class="layui-form-item">';
-					strHtml += '<div class="agentFeeDiv"><label class="layui-form-label"><span class="mustItem">*</span>专利代理费</label>';
+					strHtml += '<div class="agentFeeDiv"><label class="layui-form-label"><span class="dlFeeSpan mustItem">*</span>专利代理费</label>';
 					strHtml += '<div class="layui-input-block"><div class="agentBox" style="display:block;">';
 					strHtml += '<div class="initDlFeeBox fl"><p class="getTypeTxt fl">提醒方式</p>';
 					strHtml += '<div class="getDlFeeType fl"><input type="hidden" id="remindInp" value="'+ json.feeTxType +'"/>';
 					if(json.feeTxType == 0){//时间提醒
-						if(json.feeTxFlag){
+						if(json.feeTxFlag){//表示已经交过费用了，提醒方式不能修改
 							strHtml += '<input type="radio" name="remindInpRad" lay-filter="remindInpFilter" value="0" title="时间提醒" checked/>';
 						}else{
 							strHtml += '<input type="radio" name="remindInpRad" lay-filter="remindInpFilter" value="0" title="时间提醒" checked/>';
 							strHtml += '<input type="radio" name="remindInpRad" lay-filter="remindInpFilter" value="1" title="事务提醒"/>';
+							if(json.ajType1 == 'old'){
+								strHtml += '<input type="radio" name="remindInpRad" lay-filter="remindInpFilter" value="-1" title="无提醒"/>';
+							}
 						}
 					}else if(json.feeTxType == 1){//事务提醒
 						if(json.feeTxFlag){
@@ -487,54 +494,79 @@
 						}else{
 							strHtml += '<input type="radio" name="remindInpRad" lay-filter="remindInpFilter" value="0" title="时间提醒"/>';
 							strHtml += '<input type="radio" name="remindInpRad" lay-filter="remindInpFilter" value="1" title="事务提醒" checked/>';
+							if(json.ajType1 == 'old'){
+								strHtml += '<input type="radio" name="remindInpRad" lay-filter="remindInpFilter" value="-1" title="无提醒"/>';
+							}
+						}
+					}else if(json.feeTxType == -1){
+						if(json.feeTxFlag){
+							strHtml += '<input type="radio" name="remindInpRad" lay-filter="remindInpFilter" value="-1" title="无提醒" checked/>';
+						}else{
+							strHtml += '<input type="radio" name="remindInpRad" lay-filter="remindInpFilter" value="0" title="时间提醒"/>';
+							strHtml += '<input type="radio" name="remindInpRad" lay-filter="remindInpFilter" value="1" title="事务提醒"/>';
+							strHtml += '<input type="radio" name="remindInpRad" lay-filter="remindInpFilter" value="-1" title="无提醒" checked/>';
 						}
 					}
 					strHtml += '</div><p class="initFeeTxt fl"><i class="layui-icon layui-icon-tips"></i><span class="singleDlFee"></span><span class="secInitDlFee"></span></p></div>';
 					strHtml += '<div class="addDlFeeBox fmxxDlFee fl">';
 					strHtml += '<div id="dlFeeListWrap">';
-					singleDlFeeNum = json.feeTxInfo.length;
-					for(var i=0;i<json.feeTxInfo.length;i++){
-						strHtml += '<div class="dlFeeList singleDlFeeList layui-form layui-clear">';
-						if(json.feeTxType == 0){//时间提醒
-							strHtml += '<input type="text" id="remdDateInp_'+ (i+1) +'" class="layui-input remindDateInp" value="'+ json.feeTxInfo[i].feeTxOpt +'" placeholder="请选择提醒日期" autocomplete="off"/>';
-						}else if(json.feeTxType == 1){//事务提醒
-							strHtml += '<div class="shiwuSel layui-form">';
-							strHtml += '<input type="hidden" value="'+ json.feeTxInfo[i].feeTxOpt +'" class="shiwuInp singleInp_shiwu"/>';
-							strHtml += '<select class="shiwuSelect singleSelect" lay-filter="shiwuSelectFilter">';
-							strHtml += '<option value="">请选择事务</option>';
-							if(json.feeTxInfo[i].feeTxOpt == 'sl'){
-								strHtml += '<option value="sl" selected>受理通知书</option>';
-								strHtml += '<option value="gb">公布通知书</option>';
-								if(json.ajType == 'fm'){
-									strHtml += '<option value="sc">实质审查通知书</option>';
+					if(json.feeTxType == 0 || json.feeTxType == 1){
+						singleDlFeeNum = json.feeTxInfo.length;
+						for(var i=0;i<json.feeTxInfo.length;i++){
+							strHtml += '<div class="dlFeeList singleDlFeeList layui-form layui-clear">';
+							if(json.feeTxType == 0){//时间提醒
+								if(json.feeTxFlag == false){
+									strHtml += '<input type="text" id="remdDateInp_'+ (i+1) +'" class="layui-input remindDateInp" value="'+ json.feeTxInfo[i].feeTxOpt +'" placeholder="请选择提醒日期" autocomplete="off"/>';	
+								}else{
+									strHtml += '<input type="text" id="remdDateInp_'+ (i+1) +'" class="layui-input remindDateInp" value="'+ json.feeTxInfo[i].feeTxOpt +'" disabled placeholder="请选择提醒日期" autocomplete="off"/>';
 								}
-								strHtml += '<option value="sq">授权通知书</option>';
-							}else if(json.feeTxInfo[i].feeTxOpt == 'gb'){
-								strHtml += '<option value="sl">受理通知书</option>';
-								strHtml += '<option value="gb" selected>公布通知书</option>';
-								if(json.ajType == 'fm'){
-									strHtml += '<option value="sc">实质审查通知书</option>';
+							}else if(json.feeTxType == 1){//事务提醒
+								strHtml += '<div class="shiwuSel layui-form">';
+								strHtml += '<input type="hidden" value="'+ json.feeTxInfo[i].feeTxOpt +'" class="shiwuInp singleInp_shiwu"/>';
+								if(json.feeTxFlag == false){
+									strHtml += '<select class="shiwuSelect singleSelect" lay-filter="shiwuSelectFilter">';	
+								}else{
+									strHtml += '<select class="shiwuSelect singleSelect" disabled lay-filter="shiwuSelectFilter">';
 								}
-								strHtml += '<option value="sq">授权通知书</option>';
-							}else if(json.feeTxInfo[i].feeTxOpt == 'sc'){
-								strHtml += '<option value="sl">受理通知书</option>';
-								strHtml += '<option value="gb">公布通知书</option>';
-								strHtml += '<option value="sc" selected>实质审查通知书</option>';
-								strHtml += '<option value="sq">授权通知书</option>';
-							}else if(json.feeTxInfo[i].feeTxOpt == 'sq'){
-								strHtml += '<option value="sl">受理通知书</option>';
-								strHtml += '<option value="gb">公布通知书</option>';
-								if(json.ajType == 'fm'){
-									strHtml += '<option value="sc">实质审查通知书</option>';
+								strHtml += '<option value="">请选择事务</option>';
+								if(json.feeTxInfo[i].feeTxOpt == 'sl'){
+									strHtml += '<option value="sl" selected>受理通知书</option>';
+									strHtml += '<option value="gb">公布通知书</option>';
+									if(json.ajType == 'fm'){
+										strHtml += '<option value="sc">实质审查通知书</option>';
+									}
+									strHtml += '<option value="sq">授权通知书</option>';
+								}else if(json.feeTxInfo[i].feeTxOpt == 'gb'){
+									strHtml += '<option value="sl">受理通知书</option>';
+									strHtml += '<option value="gb" selected>公布通知书</option>';
+									if(json.ajType == 'fm'){
+										strHtml += '<option value="sc">实质审查通知书</option>';
+									}
+									strHtml += '<option value="sq">授权通知书</option>';
+								}else if(json.feeTxInfo[i].feeTxOpt == 'sc'){
+									strHtml += '<option value="sl">受理通知书</option>';
+									strHtml += '<option value="gb">公布通知书</option>';
+									strHtml += '<option value="sc" selected>实质审查通知书</option>';
+									strHtml += '<option value="sq">授权通知书</option>';
+								}else if(json.feeTxInfo[i].feeTxOpt == 'sq'){
+									strHtml += '<option value="sl">受理通知书</option>';
+									strHtml += '<option value="gb">公布通知书</option>';
+									if(json.ajType == 'fm'){
+										strHtml += '<option value="sc">实质审查通知书</option>';
+									}
+									strHtml += '<option value="sq" selected>授权通知书</option>';
 								}
-								strHtml += '<option value="sq" selected>授权通知书</option>';
+								strHtml += '</select></div>';
 							}
-							strHtml += '</select></div>';
+							strHtml += '<div class="dlFeeNumBox"><em class="moneyDec">¥</em>';
+							if(json.feeTxFlag == false){
+								strHtml += '<input id="dlFeeInpNum_'+ (i+1) +'" type="text" class="layui-input dlFeeInpNum dlFeeNum_dan" placeholder="请输入'+ zlTypeTxtStr +'专利代理费" value="'+ json.feeTxInfo[i].feePrice +'"/></div>';
+								strHtml += '<i id="delDlFee_'+ (i+1) +'" class="layui-icon layui-icon-delete delDlFee" title="删除"></i>';	
+							}else{
+								strHtml += '<input id="dlFeeInpNum_'+ (i+1) +'" type="text" class="layui-input dlFeeInpNum dlFeeNum_dan" placeholder="请输入'+ zlTypeTxtStr +'专利代理费" disabled value="'+ json.feeTxInfo[i].feePrice +'"/></div>';
+							}
+							strHtml += '</div>';
 						}
-						strHtml += '<div class="dlFeeNumBox"><em class="moneyDec">¥</em>';
-						strHtml += '<input id="dlFeeInpNum_'+ (i+1) +'" type="text" class="layui-input dlFeeInpNum dlFeeNum_dan" placeholder="请输入'+ zlTypeTxtStr +'专利代理费" value="'+ json.feeTxInfo[i].feePrice +'"/></div>';
-						strHtml += '<i id="delDlFee_'+ (i+1) +'" class="layui-icon layui-icon-delete delDlFee" title="删除"></i>';
-						strHtml += '</div>';
 					}
 					strHtml += '</div>';
 					strHtml += '<span id="addDlFeeBtn" class="addSpan fl">添加代理费</span></div>';
@@ -834,16 +866,20 @@
 						strHtml += '<button type="button" id="saveZlBtn" class="layui-btn" style="width:120px;margin-left:0px;">保存专利</button></div></div>';
 					}
 					$('#addNewZl').html(strHtml);
+					zlInfoMethod.judgeZlTitExist('ajTitleInp');//判断专利标题是否存在
 					commonAddColorCls();//不同申请人对应其下联系人 发明人 技术联系人 显示对应申请人色块
+					json.ajType1 == 'old' ? $('.dlFeeSpan').hide() : $('.dlFeeSpan').show();
 					form.render();
 					if(this.data.upZlFlag){
-						for(var i=0;i<json.feeTxInfo.length;i++){
-							laydate.render({
-								elem:'#remdDateInp_' + (i+1),
-								min:zlInfoMethod.getMinDate()
-							});
-							zlInfoMethod.agentDlFee_usual('dlFeeInpNum_'+(i+1));
-							zlInfoMethod.delCurrDlFee('delDlFee_'+(i+1));
+						if(json.feeTxType == 0 || json.feeTxType == 1){
+							for(var i=0;i<json.feeTxInfo.length;i++){
+								laydate.render({
+									elem:'#remdDateInp_' + (i+1),
+									min:zlInfoMethod.getMinDate()
+								});
+								zlInfoMethod.agentDlFee_usual('dlFeeInpNum_'+(i+1));
+								zlInfoMethod.delCurrDlFee('delDlFee_'+(i+1));
+							}
 						}
 						for(var i=0;i<num;i++){
 							laydate.render({
@@ -1411,6 +1447,12 @@
 					  	content: '/Module/zlBasicInfoManager/jsp/viewSubZdInfo.html'
 					});
 				}
+			});
+			//代理费费用收取提醒方式
+			form.on('radio(remindInpFilter)', function(data){
+				var value = data.value;
+				$('#remindInp').val(value);
+				zlInfoMethod.clearResetDlFee();
 			});
 			//专利类型form radio监听事件
 			form.on('radio(zlTypeFilter)', function(data){

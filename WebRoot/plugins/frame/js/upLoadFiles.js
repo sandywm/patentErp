@@ -136,9 +136,16 @@ layui.define(['element','jquery','upload','form','readRes'],function(exports){
 			    			}
 			    		}else{
 			    			//如果是其他文件类类型，单个文件不能大于10M
-			    			if(size > (10 * 1024 * 1024)){
-			    				layer.msg('上传的文件不能大于10M',{icon:5,anim:6,time:1000});
-			    				return;
+			    			if(opts == 'batchImp_tzs'){
+			    				if(size > (20 * 1024 * 1024)){
+				    				layer.msg('上传的通知书单个文件不能大于20M',{icon:5,anim:6,time:2000});
+				    				return;
+				    			}
+			    			}else{
+			    				if(size > (10 * 1024 * 1024)){
+				    				layer.msg('上传的单个文件不能大于10M',{icon:5,anim:6,time:2000});
+				    				return;
+				    			}
 			    			}
 			    		}
 				       var tr = $(['<tr class="hasSelTr noUpDone" id="upload-'+ index +'">',
