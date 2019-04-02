@@ -163,4 +163,33 @@ public class ZlajLcYjInfoManagerImpl implements ZlajLcYjInfoManager{
 		}
 	}
 
+	@Override
+	public void delLcyjByLcMxId(Integer lcmxId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			yjDao = (ZlajLcYjInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_YJ_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			List<ZlajLcYjInfoTb> yjList = yjDao.findInfoByLcMxId(sess, lcmxId);
+			if(yjList.size() > 0){
+				for(int i = 0 ; i < yjList.size() ; i++){
+					yjDao.delete(sess, yjList.get(i).getId());
+					if(i % 10 == 0){
+						sess.flush();
+						sess.clear();
+						tran.commit();
+						tran = sess.beginTransaction();
+					}
+				}
+				tran.commit();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("删除指定流程明细编号的流程移交信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

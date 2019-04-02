@@ -105,4 +105,15 @@ public interface ZlajLcYjInfoDao {
 	 * @return
 	 */
 	ZlajLcYjInfoTb findEntityByOpt(Session sess,Integer applyUserId,String lcTask,Integer zlId);
+	
+	/**
+	 * 根据流程明细编号获取流程任务移交记录
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-1 下午04:27:04
+	 * @param sess
+	 * @param lcmxId 流程明细编号
+	 * @return
+	 */
+	List<ZlajLcYjInfoTb> findInfoByLcMxId(Session sess,Integer lcmxId);
 }

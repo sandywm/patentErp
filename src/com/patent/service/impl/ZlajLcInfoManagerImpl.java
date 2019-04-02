@@ -261,4 +261,27 @@ public class ZlajLcInfoManagerImpl implements ZlajLcInfoManager{
 		}
 	}
 
+	@Override
+	public boolean delLcByLcId(Integer lcId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			ZlajLcInfoTb lc = lcDao.get(sess, lcId);
+			if(lc != null){
+				lcDao.delete(sess, lcId);
+				tran.commit();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("删除指定流程编号的流程信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

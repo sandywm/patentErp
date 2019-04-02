@@ -50,5 +50,10 @@
                 <comment>已读标记[0（未读）,1（已读）]</comment>
             </column>
         </property>
+        <property name="zlId" type="java.lang.Integer">
+            <column name="zl_id" not-null="true">
+                <comment>专利编号</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

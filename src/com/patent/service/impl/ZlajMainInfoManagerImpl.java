@@ -650,4 +650,23 @@ public class ZlajMainInfoManagerImpl implements ZlajMainInfoManager{
 		}
 	}
 
+	@Override
+	public boolean delZlInfoById(Integer zlId) throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			zlDao.delete(sess, zlId);
+			tran.commit();
+			return true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("根据主键删除案件信息时出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
 }

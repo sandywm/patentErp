@@ -157,5 +157,16 @@ public interface ZlajLcInfoManager {
 	 */
 	List<ZlajLcInfoTb> listInfoByQrhId(Integer qrhId,Integer cpyId) throws WEBException;
 	
+	/**
+	 * 删除指定流程编号的流程信息
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-1 下午04:46:35
+	 * @param lcId 流程编号
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean delLcByLcId(Integer lcId) throws WEBException;
+	
 	
 }

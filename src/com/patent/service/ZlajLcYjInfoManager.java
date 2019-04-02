@@ -113,4 +113,15 @@ public interface ZlajLcYjInfoManager {
 	 * @throws WEBException
 	 */
 	ZlajLcYjInfoTb getEntityByOpt(Integer applyUserId,String lcTask,Integer zlId)throws WEBException;
+	
+	/**
+	 * 删除指定流程明细编号的流程移交任务
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-1 下午04:05:48
+	 * @param lcmxId 流程明细编号
+	 * @return
+	 * @throws WEBException
+	 */
+	void delLcyjByLcMxId(Integer lcmxId)throws WEBException;
 }

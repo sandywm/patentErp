@@ -122,4 +122,11 @@ public class ZlajLcYjInfoDaoImpl implements ZlajLcYjInfoDao{
 		return null;
 	}
 
+	@Override
+	public List<ZlajLcYjInfoTb> findInfoByLcMxId(Session sess, Integer lcmxId) {
+		// TODO Auto-generated method stub
+		String hql = " from ZlajLcYjInfoTb as lcyj where lcyj.lcmx.id = "+lcmxId;
+		return sess.createQuery(hql).list();
+	}
+
 }

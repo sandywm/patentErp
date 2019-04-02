@@ -84,4 +84,15 @@ public interface MailInfoDao {
 	 * @return
 	 */
 	List<MailInfoTb> findInfoByOpt(Session sess,Integer acceptUserId,Integer mailId);
+	
+	/**
+	 * 根据专利编号获取所有邮件信息列表
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-2 上午10:18:45
+	 * @param sess
+	 * @param zlId 专利编号
+	 * @return
+	 */
+	List<MailInfoTb> findInfoByZlId(Session sess,Integer zlId);
 }

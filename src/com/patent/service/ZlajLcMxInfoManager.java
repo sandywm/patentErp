@@ -242,4 +242,15 @@ public interface ZlajLcMxInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajLcMxInfoTb> listSpecFjInfoByOpt(Integer zlId) throws WEBException;
+	
+	/**
+	 * 删除指定编号的流程明细
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-1 下午04:43:00
+	 * @param mxId 明细编号
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean delLcmxById(Integer mxId) throws WEBException;
 }

@@ -91,4 +91,11 @@ public class MailInfoDaoImpl implements MailInfoDao{
 		return sess.createQuery(hql).list();
 	}
 
+	@Override
+	public List<MailInfoTb> findInfoByZlId(Session sess, Integer zlId) {
+		// TODO Auto-generated method stub
+		String hql = " from MailInfoTb as m where m.zlId = "+zlId;
+		return sess.createQuery(hql).list();
+	}
+
 }

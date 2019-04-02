@@ -591,7 +591,7 @@ public class PubZlAction extends DispatchAction {
 						mailTitle = "专利任务撤回通知";
 						String zlTitle = pz.getZlTitle();
 						//给发布人发送邮件
-						mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "appUser", mailTitle, "您已主动解除和["+pz.getLqCpyName()+"]代理机构关于对专利任务["+zlTitle+"]的合作关系，代理机构将不能再进行使用!");
+						mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "appUser", mailTitle, "您已主动解除和["+pz.getLqCpyName()+"]代理机构关于对专利任务["+zlTitle+"]的合作关系，代理机构将不能再进行使用!",ajId);
 						lqCpyId = pz.getLqCpyId();
 						
 						//给代理机构管理员发送邮件
@@ -603,11 +603,11 @@ public class PubZlAction extends DispatchAction {
 							if(pz.getLqUserId().equals(cUser.getId())){
 								flag_exsit = true;
 							}
-							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, mailCon);
+							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, mailCon,ajId);
 						}
 						//给领取人发送邮件
 						if(!flag_exsit){
-							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getLqUserId(), "appUser", mailTitle, mailCon);
+							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getLqUserId(), "appUser", mailTitle, mailCon,ajId);
 						}
 						//需要修改对应的案件终止状态--------------------------------------------
 						if(ajId > 0){
@@ -628,7 +628,7 @@ public class PubZlAction extends DispatchAction {
 								mailTitle = "专利任务撤回通知";
 								mailCon = "由于代理机构人员["+pz.getLqUserName()+"]主动撤回。无法再对该任务进行编辑!";
 								//给发布人/公司发送邮件
-								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appUser", mailTitle, "代理机构["+lqCpyName+"]下的员工["+lqUserName+"]主动撤回对您发布的专利任务["+pz.getZlTitle()+"]");
+								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appUser", mailTitle, "代理机构["+lqCpyName+"]下的员工["+lqUserName+"]主动撤回对您发布的专利任务["+pz.getZlTitle()+"]",ajId);
 								//给代理机构所有管理员发送邮件
 								boolean flag_exsit = false;
 								List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(lqCpyId, "管理员");
@@ -637,11 +637,11 @@ public class PubZlAction extends DispatchAction {
 									if(pz.getLqUserId().equals(cUser.getId())){
 										flag_exsit = true;
 									}
-									mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, mailCon);
+									mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, mailCon,ajId);
 								}
 								//给领取人发送邮件
 								if(!flag_exsit){
-									mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getLqUserId(), "cpyUser", mailTitle, mailCon);
+									mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getLqUserId(), "cpyUser", mailTitle, mailCon,ajId);
 								}
 								//需要修改对应的案件终止状态---------------------------------------------
 								if(ajId > 0){
@@ -661,7 +661,7 @@ public class PubZlAction extends DispatchAction {
 							mailTitle = "专利任务领取通知";
 							mailCon = "您发布的专利["+pz.getZlTitle()+"]已被代理机构["+lqCpyName+"]下员工["+lqUserName+"]领取!";
 							//给发布人/公司发送邮件
-							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appUser", mailTitle, mailCon);
+							mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, pz.getApplyInfoTb().getId(), "appUser", mailTitle, mailCon,ajId);
 							//给代理机构所有管理员发送邮件
 							List<CpyUserInfo> cuList = cum.listManagerInfoByOpt(lqCpyId, "管理员");
 							boolean flag_exsit = false;
@@ -670,10 +670,10 @@ public class PubZlAction extends DispatchAction {
 								if(currUserId.equals(cUser.getId())){
 									flag_exsit = true;
 								}
-								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, "员工["+lqUserName+"]已成功领取["+pz.getZlTitle()+"]专利任务!");
+								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", mailTitle, "员工["+lqUserName+"]已成功领取["+pz.getZlTitle()+"]专利任务!",ajId);
 							}
 							if(!flag_exsit){
-								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", mailTitle, "您["+lqUserName+"]已成功领取["+pz.getZlTitle()+"]专利任务!");
+								mm.addMail("taskM", Constants.SYSTEM_EMAIL_ACCOUNT, currUserId, "cpyUser", mailTitle, "您["+lqUserName+"]已成功领取["+pz.getZlTitle()+"]专利任务!",ajId);
 							}
 							//增加领取公司的领取数量
 							flag = cm.updateZlNumById(lqCpyId, 1);

@@ -76,7 +76,7 @@ public class SendEndDateMsg {
 	    				      endChi += cpy.getEndDate()+"到期,为了不影响您的使用，请及时续订";;
 	    				      mailInfo.setContent("尊敬的"+cpyLevelChi+"用户,您的会员"+endChi);  
 	    				      //发送系统平台邮件
-	    				      mm.addMail("endM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", "代理机构会员到期提醒", "尊敬的"+cpyLevelChi+"用户,您的会员"+endChi);
+	    				      mm.addMail("endM", Constants.SYSTEM_EMAIL_ACCOUNT, cUser.getId(), "cpyUser", "代理机构会员到期提醒", "尊敬的"+cpyLevelChi+"用户,您的会员"+endChi,0);
 	    				      boolean flag = SimpleMailSender.sendTextMail(mailInfo);
 	    				      String logPath = WebUrl.LOG_URL + "/" + CurrentTime.getStringDate() + ".txt";
     				    	  File file = new File(logPath);

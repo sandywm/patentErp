@@ -18,10 +18,11 @@ public interface MailInfoManager {
 	 * @param userType 接收人类型
 	 * @param mailTitle 邮件标题
 	 * @param mailContent 邮件内容
+	 * @param zlId 专利编号
 	 * @return
 	 * @throws WEBException
 	 */
-	Integer addMail(String mailType,String sendInfo,Integer acceptUserId,String userType,String mailTitle,String mailContent) throws WEBException;
+	Integer addMail(String mailType,String sendInfo,Integer acceptUserId,String userType,String mailTitle,String mailContent,Integer zlId) throws WEBException;
 	
 	/**
 	 * 修改指定邮件的已读状态
@@ -115,4 +116,25 @@ public interface MailInfoManager {
 	 * @throws WEBException
 	 */
 	List<MailInfoTb> listInfoByOpt(Integer acceptUserId,String userType,Integer mailId) throws WEBException;
+	
+	/**
+	 * 根据专利编号获取该专利的所有邮件
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-2 上午10:25:23
+	 * @param zlId 专利编号
+	 * @return
+	 * @throws WEBException
+	 */
+	List<MailInfoTb> listInfoByZlId(Integer zlId) throws WEBException;
+	
+	/**
+	 * 批量删除指定编号的邮件
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-2 上午10:21:01
+	 * @param mIdStr 邮件编号，用逗号隔开
+	 * @throws WEBException
+	 */
+	void delBatchEmailByIdStr(String mIdStr) throws WEBException;
 }

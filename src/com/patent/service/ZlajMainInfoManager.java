@@ -407,4 +407,15 @@ public interface ZlajMainInfoManager {
 	 * @throws WEBException
 	 */
 	List<ZlajMainInfoTb> listInfoByZlTitle(String zlTitle,Integer cpyId)throws WEBException;
+	
+	/**
+	 * 删除指定专利信息
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-2 上午11:35:46
+	 * @param zlId
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean delZlInfoById(Integer zlId)throws WEBException;
 }

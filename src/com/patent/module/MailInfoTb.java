@@ -21,6 +21,7 @@ public class MailInfoTb implements java.io.Serializable {
 	private String mailContent;
 	private String sendTime;
 	private Integer readStatus;
+	private Integer zlId;
 
 	// Constructors
 
@@ -30,7 +31,7 @@ public class MailInfoTb implements java.io.Serializable {
 
 	public MailInfoTb(String mailType, String sendInfo, Integer acceptUserId,
 			String userType, String mailTitle, String mailContent,
-			String sendTime, Integer readStatus) {
+			String sendTime, Integer readStatus,Integer zlId) {
 		this.mailType = mailType;
 		this.sendInfo = sendInfo;
 		this.acceptUserId = acceptUserId;
@@ -39,12 +40,13 @@ public class MailInfoTb implements java.io.Serializable {
 		this.mailContent = mailContent;
 		this.sendTime = sendTime;
 		this.readStatus = readStatus;
+		this.zlId = zlId;
 	}
 	
 	/** full constructor */
 	public MailInfoTb(Integer id,String mailType, String sendInfo, Integer acceptUserId,
 			String userType, String mailTitle, String mailContent,
-			String sendTime, Integer readStatus) {
+			String sendTime, Integer readStatus,Integer zlId) {
 		this.id = id;
 		this.mailType = mailType;
 		this.sendInfo = sendInfo;
@@ -54,6 +56,7 @@ public class MailInfoTb implements java.io.Serializable {
 		this.mailContent = mailContent;
 		this.sendTime = sendTime;
 		this.readStatus = readStatus;
+		this.zlId = zlId;
 	}
 
 	// Property accessors
@@ -128,6 +131,14 @@ public class MailInfoTb implements java.io.Serializable {
 
 	public void setReadStatus(Integer readStatus) {
 		this.readStatus = readStatus;
+	}
+
+	public Integer getZlId() {
+		return zlId;
+	}
+
+	public void setZlId(Integer zlId) {
+		this.zlId = zlId;
 	}
 
 }
