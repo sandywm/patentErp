@@ -22,8 +22,9 @@
   				<div class="layui-card">
   					<div id="layuiTab" class="layui-tab layui-tab-brief" lay-filter="zlWrapFilter">
   						<input type="hidden" id="lqStatusInp" value="1"/>
-  						<a id="addZlBtn" class="posAbs newAddBtn" opts="addZlOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加新专利</a>
-  						<a id="importBtn" style="display:none;" class="posAbs newAddBtn" href="javascript:void(0)"><i class="iconfont layui-extend-daoru"></i>批量导入通知书</a>
+  						<a id="addZlBtn" style="display:block;" class="posAbs newAddBtn" opts="addZlOpts" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加新专利</a>
+  						<a id="importBtn" class="posAbs newAddBtn" href="javascript:void(0)"><i class="iconfont layui-extend-daoru"></i>批量导入通知书</a>
+  						<a id="addSubBtn" style="display:none;" class="posAbs newAddBtn" href="javascript:void(0)"><i class="layui-icon layui-icon-add-circle"></i>添加主动提交</a>
 						<!--  i class="iconfont layui-extend-bangzhu helpIcon" title="帮助"></i-->
 					</div>   
   				</div>
@@ -34,7 +35,7 @@
    	<script src="/plugins/layui/layui.js"></script>
     <script type="text/javascript">
     	var loginType=parent.loginType,roleName=parent.roleName,hasReadFlag=false,tmpAddBackFee='';
-		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',yjFzrFlag:false,currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,yjTypeTxt:'',applyCause:'',applyName:'',yjId:0,zlType:'',tzsId:0},zlTypeInp='',globalLqStatus=1,globalWid=160,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
+		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',yjFzrFlag:false,currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,yjTypeTxt:'',applyCause:'',applyName:'',yjId:0,zlType:'',tzsId:0},zlTypeInp='',globalLqStatus=1,globalWid=180,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
 		var zlShowTagFlag = '${requestScope.zlTagShowFlag}',tzsShowFlag = '${requestScope.tzsShowFlag}';
 		layui.config({
 			base: '/plugins/frame/js/'
@@ -64,7 +65,9 @@
   					$('.zlStatusInfoBox').hide();
   				}
   				if(lqStatus == 1 || lqStatus == 2){
-  					globalWid=170;
+  					globalWid=180;
+  				}else if(lqStatus == 3){
+  					globalWid=160;
   				}else if(globalLqStatus == 4){
   					globalWid=200;
   				}else{
@@ -85,6 +88,11 @@
   				}else if(lqStatus == 6 && !page.isHasAbility_zlTzs(6)){
   					layer.msg('抱歉，您暂无通知书批量操作的权限', {icon:5,anim:6,time:1500});
   				}
+  				/*if(lqStatus == 7){
+  					$('#addSubBtn').show();
+  				}else{
+  					$('#addSubBtn').hide();
+  				}*/
   				page.queryFun();
   				loadZlInfoList('initLoad');
  			});
@@ -193,6 +201,25 @@
 							layer.msg('抱歉，您暂无批量导入通知书的权限', {icon:5,anim:6,time:1000});
 						}
 					});
+					//添加主动提交
+					$('#addSubBtn').on('click',function(){
+						var fullScreenIndex = layer.open({
+							title:'',
+							type: 2,
+						  	area: ['700px', '500px'],
+						  	fixed: true, //不固定
+						  	maxmin: false,
+						  	shadeClose :false,
+						  	closeBtn:0,
+						  	content: '/Module/zlBasicInfoManager/jsp/addSubmit.html',
+						  	end:function(){
+						  		if(hasReadFlag){
+						  			loadZlInfoList('initLoad');
+						  		}
+						  	}
+						});	
+						layer.full(fullScreenIndex);
+					});
 				},
 				queryFun : function(){
 					$('#queryBtn').on('click',function(){
@@ -263,6 +290,8 @@
 						if(tzsShowFlag == 'true'){
 							strHtmlTit += ' <li zlSearchOpts="" lqStatus="6">通知书批量导入</li>';
 						}
+						//主动提交
+						//strHtmlTit += ' <li zlSearchOpts="shenheOpt" lqStatus="7">主动提交</li>';
 					}
 					strHtmlTit += '</ul>';
 					strHtmlCon += '<div class="layui-card-body layui-tab-content">';
@@ -316,9 +345,14 @@
 							strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="2" title="全部" checked/>';
 							strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="1" title="读取成功"/>';
 							strHtmlCon += '<input type="radio" name="readResStatus" lay-filter="readResFilter" value="0" title="读取失败"/></div>';
-							strHtmlCon += '<table id="zlBasicListTab_6" class="layui-table" lay-filter="zlInfoListTable"></table>';
+							strHtmlCon += '<table id="zlBasicListTab_6" class="layui-table" lay-filter="zlInfoListTable"></table></div>';
 						}
 					}
+					//strHtmlCon += '</div>';
+					//主动提交
+					strHtmlCon += '<div class="layui-tab-item">';
+					//<table id="zlBasicListTab_7" class="layui-table" lay-filter="zlInfoListTable"></table>
+					strHtmlCon += '主动提交的内容啊啦啦啦啦啦';
 					strHtmlCon += '</div>';
 					$('#layuiTab').append(strHtmlTit + strHtmlCon);
 					form.render();
@@ -414,7 +448,7 @@
 					}
 				}
 				layer.load('1');
-				if(lqStatusVal != 4 && lqStatusVal != 5 && lqStatusVal != 6){
+				if(lqStatusVal != 4 && lqStatusVal != 5 && lqStatusVal != 6 && lqStatusVal != 7){
 					table.render({
 						elem: '#zlBasicListTab_'+lqStatusVal,
 						height: 'full-200',
@@ -492,11 +526,21 @@
 								if(globalLqStatus == 0){//流程分配
 									return '<a class="layui-btn layui-btn-xs" lay-event="lcfpFun" zlId="'+ d.id +'" ajTitle="'+ d.ajTitle +'" taskOpts="0"><i class="layui-icon layui-icon-edit"></i>流程分配</a>';
 								}else if(globalLqStatus == 1){//专利任务
-									return '<a class="layui-btn layui-btn-xs" zlId="'+ d.id +'" lay-event="editZlTask" opts="editZlOpts" taskOpts="1" fzUserId="'+ d.fzUserId +'" currLcNo="'+ d.lcNo +'"><i class="layui-icon layui-icon-edit"></i>查看 / 编辑</a>';
+									var tmpStr = '';
+									tmpStr += '<a class="layui-btn layui-btn-xs layui-btn-normal" zlId="'+ d.id +'" lay-event="editZlTask" opts="editZlOpts" taskOpts="1" fzUserId="'+ d.fzUserId +'" currLcNo="'+ d.lcNo +'"><i class="layui-icon layui-icon-edit"></i>查看 / 编辑</a>';
+									if(d.delButton){
+										tmpStr += '<a class="layui-btn layui-btn-xs layui-btn-danger" zlId="'+ d.id +'" ajTitle="'+ d.ajTitle +'" lay-event="delHasCreaZl"><i class="layui-icon layui-icon-delete"></i>删除</a>';
+									}
+									return tmpStr;
 								}else if(globalLqStatus == 2){//撰写任务领取
 									return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="viewInfo" zlId="'+ d.id +'" ajTitle="'+ d.ajTitle +'"><i class="layui-icon layui-icon-search"></i>查看</a> <a class="layui-btn layui-btn-xs" zlId="'+ d.id +'" ajTitle = "'+ d.ajTitle +'" lay-event="lqZlTaskFun"><i class="iconfont layui-extend-lingqu"></i>领取</a>';
 								}else if(globalLqStatus == 3){//已增加专利
-									return '<a class="layui-btn layui-btn-xs" lay-event="editZlInfoHasAdd" opts="editZlOpts" zlId="'+ d.id +'"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
+									var tmpStr = '';
+									tmpStr += '<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="editZlInfoHasAdd" opts="editZlOpts" zlId="'+ d.id +'"><i class="layui-icon layui-icon-edit"></i>编辑</a>';
+									if(d.delButton){
+										tmpStr += '<a class="layui-btn layui-btn-xs layui-btn-danger" zlId="'+ d.id +'" ajTitle="'+ d.ajTitle +'" lay-event="delHasCreaZl"><i class="layui-icon layui-icon-delete"></i>删除</a>';
+									}
+									return tmpStr;
 								}
 							}}
 						]],
@@ -669,8 +713,10 @@
 							layer.closeAll('loading');
 						}
 					});
-				}
-				
+				}/*else if(lqStatusVal == 7){//主动提交
+					layer.closeAll('loading');
+					
+				}*/
 			}
 			form.on('select(ajTypeSel)', function(data){
 				var value = data.value;
@@ -699,7 +745,36 @@
 				}
 			});
 			table.on('tool(zlInfoListTable)',function(obj){
-				if(obj.event == 'editZlTask'){//专利(查看/编辑)
+				var ajTitle = $(this).attr('ajTitle'),zlId = $(this).attr('zlId');
+				if(obj.event == 'delHasCreaZl'){//删除定稿提交前专利
+					layer.confirm('确定要删除[<span style="color:#F47837">' + ajTitle + '</span>]?',{
+						title:'删除专利?',
+					  	skin: 'layui-layer-orange',
+					  	btn: ['确定','取消'] //按钮
+					},function(){
+						layer.load("1");
+						$.ajax({
+	    					type:"post",
+	    			        dataType:"json",
+	    			        data : {zlId : zlId},
+	    			        url:"/zlm.do?action=delZlInfo",
+	    			        success:function (json){
+	    			        	layer.closeAll("loading");	
+	    			        	if(json["result"] == "success"){
+	    			        		layer.msg("删除成功",{icon:1,time:1500},function(){
+	    			        			loadZlInfoList('initLoad');
+	    			        		});
+	    			        	}else if(json["result"] == "noDel"){//定稿提交后不能删除
+	    			        		layer.msg("定稿提交后不能删除专利",{icon:5,anim:6,time:2000});
+	    			        	}else if(json["result"] == "error"){
+	    			        		layer.msg("系统错误，请重试",{icon:5,anim:6,time:1500});
+	    			        	}else if(json["result"] == "noAbility"){
+	    			        		layer.msg("抱歉，您暂无权限删除专利",{icon:5,anim:6,time:2000});
+	    			        	}
+	    			        }
+	    				});
+					});
+				}else if(obj.event == 'editZlTask'){//专利(查看/编辑)
 					addEditZlOpts = $(this).attr('opts');
 					globalZlId = $(this).attr('zlId');
 					addZlFlag = false;

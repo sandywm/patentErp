@@ -457,6 +457,10 @@
 					if(json.ajType1 == 'new'){
 						strHtml += '<input id="ajSqZlNum" maxlength="20" type="text" name="ajSqZlNum" disabled autocomplete="off" value="'+ json.ajNoGf +'" class="layui-input"/></div></div></div>';	
 					}else{
+						var tmpStr = json.ajNoGf.substring(4,5).toUpperCase();
+						var tmpStr_four = json.ajNoGf.substring(0,4).toUpperCase();
+						var tmpStr_end = json.ajNoGf.substring(5).toUpperCase();
+						strHtml += '<p class="zlPatternNum singWid" style="display:block;">'+ tmpStr_four +'<strong class="zlPatColor">'+ tmpStr +'</strong>'+ tmpStr_end +'</p>';
 						strHtml += '<input id="ajSqZlNum" maxlength="20" type="text" name="ajSqZlNum" autocomplete="off" value="'+ json.ajNoGf +'" class="layui-input"/></div></div></div>';
 					}
 					//已领取专利任务

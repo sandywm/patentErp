@@ -62,7 +62,7 @@
 		<div class="layui-form-item clearfix">
 			<div class="itemDiv">
 				<label class="layui-form-label">案件编号</label>
-				<div class="layui-input-inline">
+				<div class="layui-input-block">
 					<input id="ajNumInp" type="text" disabled autocomplete="off" class="layui-input"/>
 				</div>	
 			</div>			
@@ -493,7 +493,6 @@
 		   			        success:function (json){
 		   			        	layer.closeAll('loading');
 		   			        	if(json['result'] == 'success'){
-		   			        		console.log(json)
 		   			        		zlId = json.ajId;
 		   			        		_this.renderZlBasicInfo(json);
 		   			        		_this.bindEvent();
@@ -600,6 +599,10 @@
 					if(json.ajType1 == 'new'){
 						strHtml += '<input id="ajSqZlNum" maxlength="20" type="text" name="ajSqZlNum" disabled autocomplete="off" value="'+ json.ajNoGf +'" class="layui-input"/></div></div></div>';	
 					}else{
+						var tmpStr = json.ajNoGf.substring(4,5).toUpperCase();
+						var tmpStr_four = json.ajNoGf.substring(0,4).toUpperCase();
+						var tmpStr_end = json.ajNoGf.substring(5).toUpperCase();
+						strHtml += '<p class="zlPatternNum singWid" style="display:block;">'+ tmpStr_four +'<strong class="zlPatColor">'+ tmpStr +'</strong>'+ tmpStr_end +'</p>';
 						strHtml += '<input id="ajSqZlNum" maxlength="20" type="text" name="ajSqZlNum" autocomplete="off" value="'+ json.ajNoGf +'" class="layui-input"/></div></div></div>';
 					}
 					//已领取专利任务

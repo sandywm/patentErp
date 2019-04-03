@@ -1,3 +1,7 @@
+/**
+ * @Description: 专利增加/编辑公共方法
+ * @author: hlf
+ */
 var singleDlFeeNum = 0,multiDlFeeNum = 0,currOpts = '';
 layui.define(['laydate','form','upLoadFiles'],function(exports){
 	var laydate = layui.laydate,form = layui.form,globalUpload = layui.upLoadFiles;
@@ -748,9 +752,9 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 				}
 				$('#'+obj).val($('#'+obj).val().toUpperCase());
 				$('#'+obj).prev().show().html(tmpStr_four + '<strong class="zlPatColor">'+ tmpStr +'</strong>' + tmpStr_end);
-				$('.zlPatternNum').on('click',function(){
-					$(this).hide().next().show().focus();
-				});
+			});
+			$('.zlPatternNum').on('click',function(){
+				$(this).hide().next().show().focus();
 			});
 		},
 		//旧案下 发明+新型下增加发明专利号 新型专利号 可编辑
