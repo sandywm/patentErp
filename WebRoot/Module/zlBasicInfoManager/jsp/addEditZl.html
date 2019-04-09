@@ -22,6 +22,18 @@
 				<input type="radio" name="ajTypeRad" class="ajTypeRad" lay-filter="ajTypeRadFilter" value="old" title="旧案(中途转入)"/>
 			</div>	
 		</div>
+		<div class="layui-form-item">
+			<div class="itemDiv">
+				<label class="layui-form-label"><span class="mustItem">*</span>专利类型</label>
+				<input id="zlTypeInp" name="ajType" type="hidden" value=""/>
+				<div class="layui-input-inline">
+					<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>
+					<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型"/>
+					<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>
+					<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>
+				</div>	
+			</div>	
+		</div>
 		<div id="ajSqDateBox" class="layui-form-item">
 			<div class="oldAjSqDate">
 				<label class="layui-form-label"><span class="mustItem">*</span>案件申请日</label>
@@ -35,28 +47,26 @@
 				<label class="layui-form-label"><span class="mustItem">*</span>案件标题</label>
 				<div class="layui-input-block">
 					<input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)" maxlength="40" autocomplete="off" class="layui-input"/>
+					<p class="zlTitTipsTxt"></p>
 				</div>			
 			</div>
 		</div>
-		<div class="layui-form-item">
-			<div class="itemDiv">
-				<label class="layui-form-label"><span class="mustItem">*</span>专利类型</label>
-				<input id="zlTypeInp" name="ajType" type="hidden" value=""/>
-				<div class="layui-input-inline">
-					<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="fm" title="发明"/>
-					<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="syxx" title="实用新型"/>
-					<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观"/>
-					<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="fmxx" title="发明+新型"/>
+		<div class="layui-form-item feeDiv">
+			<label class="layui-form-label titLabel"><span class="mustItem">*</span>是否费减</label>
+			<input id="rateInp" type="hidden"/>
+			<div class="layui-input-block">
+				<input type="radio" name="feeRateInp" value="0" lay-filter="isHasFeeRateFilter" title="无费减">
+				<input type="radio" name="feeRateInp" lay-filter="isHasFeeRateFilter" value="0.7" title="70%">
+				<input type="radio" name="feeRateInp" lay-filter="isHasFeeRateFilter" value="0.85" title="85%">
+			</div>
+		</div>
+		<div id="zlNumBoxWrap" class="layui-form-item">
+			<div class="originZlNumBox">
+				<label class="layui-form-label"><span class="mustItem zlNoMustBe"></span>案件申请号/专利号</label>
+				<div class="layui-input-block">
+					<p class="zlPatternNum singWid"></p>
+					<input id="ajSqZlNum" type="text" name="ajSqZlNum" disabled maxlength="20" autocomplete="off" class="layui-input"/>
 				</div>	
-			</div>	
-			<div class="itemDiv feeDiv">
-				<label class="layui-form-label titLabel"><span class="mustItem">*</span>是否费减</label>
-				<input id="rateInp" type="hidden"/>
-				<div class="layui-input-inline">
-					<input type="radio" name="feeRateInp" value="0" lay-filter="isHasFeeRateFilter" title="无费减">
-					<input type="radio" name="feeRateInp" lay-filter="isHasFeeRateFilter" value="0.7" title="70%">
-					<input type="radio" name="feeRateInp" lay-filter="isHasFeeRateFilter" value="0.85" title="85%">
-				</div>
 			</div>
 		</div>
 		<div class="layui-form-item clearfix">
@@ -65,18 +75,7 @@
 				<div class="layui-input-block">
 					<input id="ajNumInp" type="text" disabled autocomplete="off" class="layui-input"/>
 				</div>	
-			</div>			
-			<div id="zlNumBoxWrap" class="itemDiv">
-				<div class="originZlNumBox">
-					<label class="layui-form-label"><span class="mustItem zlNoMustBe"></span>案件申请号/专利号</label>
-					<div class="layui-input-inline" style="width:69.2%;">
-						<p class="zlPatternNum singWid"></p>
-						<input id="ajSqZlNum" type="text" name="ajSqZlNum" disabled maxlength="20" autocomplete="off" class="layui-input"/>
-					</div>	
-				</div>
-			</div>			
-		</div>
-		<div class="layui-form-item clearfix">
+			</div>		
 			<div class="itemDiv">
 				<label class="layui-form-label">已领取专利任务</label>
 				<div class="layui-input-block">
@@ -85,7 +84,7 @@
 					<span class="selZlTaskSp" title="选择"><i class="layui-icon layui-icon-more"></i></span>
 					<span class="resetSp" title="重置"><i class="layui-icon layui-icon-delete"></i></span>
 				</div>	
-			</div>			
+			</div>					
 		</div>
 		<div class="layui-form-item">
 			<div class="agentFeeDiv">
@@ -273,6 +272,7 @@
 					$('.zlNoMustBe').html('*');
 					$('#rateInp').val(page.data.tmpFeeInpVal);
 					$('#ajSqZlNum').attr('disabled',false);
+					$('#ajSqZlNum').attr('placeholder','请输入案件申请号/专利号');
 					if($('#zlTypeInp').val() == 'fmxx' && zlInfoMethod.data.onlyOneFlag_zlNum){
 						var zlNumDomStr = zlInfoMethod.createFmXxZlNumDom();
 						var sqDateStr = zlInfoMethod.createFmxxAjSqDate();//创建发明/新型案件申请日
@@ -307,6 +307,7 @@
 					$('#rateInp').val('');
 					$('.zlNoMustBe').html('');
 					$('#ajSqZlNum').val('').attr('disabled',true);
+					$('#ajSqZlNum').attr('placeholder','');
 					if($('#fmxxZlNumWrap').length > 0){
 						$('#fmxxZlNumWrap').remove();
 						$('#fmxxAjSqBox').remove();
@@ -546,13 +547,6 @@
 						strHtml += '<input type="radio" name="ajTypeRad" class="ajTypeRad" lay-filter="ajTypeRadFilter" value="old" title="旧案(中途转入)" checked readonly/>';
 					}
 					strHtml += '</div></div>';
-					//旧案下案件申请日
-					if(json.ajType1 == 'old'){
-						strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>案件申请日</label><div class="layui-input-block"><input type="text" value="'+ json.sqDate +'" readonly autocomplete="off" class="layui-input"/></div></div>';	
-					}
-					//案件标题
-					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>案件标题</label><div class="layui-input-block">';
-					strHtml += '<input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)" maxlength="40" value="'+ json.ajTitle +'" autocomplete="off" class="layui-input"/></div></div>';
 					//专利类型
 					strHtml += '<div class="layui-form-item">';
 					strHtml += '<div class="itemDiv"><label class="layui-form-label"><span class="mustItem">*</span>专利类型</label><input id="zlTypeInp" name="ajType" type="hidden" value="'+ json.ajType +'"/><div class="layui-input-inline">';
@@ -573,9 +567,19 @@
 						strHtml += '<input type="radio" name="zlTypeRad" class="zlTypeRad" lay-filter="zlTypeFilter" value="wg" title="外观" checked/>';
 					}
 					strHtml += '</div></div>';
+					
+					strHtml += '</div>';
+					//旧案下案件申请日
 					if(json.ajType1 == 'old'){
-						strHtml += '<div class="itemDiv feeDiv" style="display:block;"><label class="layui-form-label titLabel"><span class="mustItem">*</span>是否费减</label><input id="rateInp" type="hidden" value="'+ json.ajFjInfo +'"/>';
-						strHtml += '<div class="layui-input-inline">';
+						strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>案件申请日</label><div class="layui-input-block"><input type="text" value="'+ json.sqDate +'" readonly autocomplete="off" class="layui-input"/></div></div>';	
+					}
+					//案件标题
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>案件标题</label><div class="layui-input-block">';
+					strHtml += '<input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)" maxlength="40" value="'+ json.ajTitle +'" autocomplete="off" class="layui-input"/><p class="zlTitTipsTxt"></p></div></div>';
+					
+					if(json.ajType1 == 'old'){
+						strHtml += '<div class="layui-form-item feeDiv" style="display:block;"><label class="layui-form-label titLabel"><span class="mustItem">*</span>是否费减</label><input id="rateInp" type="hidden" value="'+ json.ajFjInfo +'"/>';
+						strHtml += '<div class="layui-input-block">';
 						if(json.ajFjInfo == 0){
 							strHtml += '<input type="radio" name="feeRateInp" value="0" lay-filter="isHasFeeRateFilter" title="无费减" checked/>';
 							strHtml += '<input type="radio" name="feeRateInp" lay-filter="isHasFeeRateFilter" value="0.7" title="70%"/>';
@@ -591,7 +595,7 @@
 						}
 						strHtml += '</div></div>';	
 					}
-					strHtml += '</div>';
+					
 					//案件编号 && 案件申请号/专利号
 					strHtml += '<div class="layui-form-item clearfix"><div class="itemDiv"><label class="layui-form-label">案件编号</label><div class="layui-input-inline">';
 					strHtml += '<input id="ajNumInp" type="text" disabled autocomplete="off" value="'+ json.ajNo +'" class="layui-input"/></div></div>';
@@ -602,8 +606,8 @@
 						var tmpStr = json.ajNoGf.substring(4,5).toUpperCase();
 						var tmpStr_four = json.ajNoGf.substring(0,4).toUpperCase();
 						var tmpStr_end = json.ajNoGf.substring(5).toUpperCase();
-						strHtml += '<p class="zlPatternNum singWid" style="display:block;">'+ tmpStr_four +'<strong class="zlPatColor">'+ tmpStr +'</strong>'+ tmpStr_end +'</p>';
-						strHtml += '<input id="ajSqZlNum" maxlength="20" type="text" name="ajSqZlNum" autocomplete="off" value="'+ json.ajNoGf +'" class="layui-input"/></div></div></div>';
+						strHtml += '<p class="zlPatternNum specWid" style="display:block;">'+ tmpStr_four +'<strong class="zlPatColor">'+ tmpStr +'</strong>'+ tmpStr_end +'</p>';
+						strHtml += '<input id="ajSqZlNum" maxlength="20" type="text" placeholder="请输入案件申请号/专利号" name="ajSqZlNum" autocomplete="off" value="'+ json.ajNoGf +'" class="layui-input editAjNum"/></div></div></div>';
 					}
 					//已领取专利任务
 					strHtml += '<div class="layui-form-item clearfix">';

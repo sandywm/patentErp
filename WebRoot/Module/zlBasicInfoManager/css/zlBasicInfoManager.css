@@ -76,26 +76,23 @@ textarea::-webkit-input-placeholder{
 	float:left;
 	position:relative;
 }
+#fmxxZlNumWrap{
+	width:100%;
+}
 .zlNumBox{
+	width:50%;
 	line-height:39px;
 	float:left;
-}
-.zlNumBox{
-	margin-left:27px;
 	position:relative;
-}
-.zlNumBox.hasMargLeft{
-	margin-left:10px;
 }
 .zlNumBox span{
 	color:#f00;
 	margin-right:2px;
 }
-.zlNumBox input{
+/*.zlNumBox input{
 	width:175px;
 	margin-left:5px;
-}
-.zlNumBox span,
+}*/
 .zlNumBox p,
 .zlNumBox label,
 .innerFmxxNum{
@@ -1184,13 +1181,18 @@ textarea::-webkit-input-placeholder{
 }
 .singWid{
 	left:0px;
-	width:97%;
-	padding-left:2.5%;
+	width:96.8%;
+	padding-left:1%;
+}
+.specWid{
+	left:0px;
+	width:95%;
+	padding-left:2.4%;
 }
 .multiWid{
-	left:6px;
-	width:90%;
-	padding-left:5%;
+	left:0px;
+	width:97%;
+	padding-left:2.4%;
 }
 .zlPatColor{
 	color:#F47837;
@@ -1201,6 +1203,7 @@ textarea::-webkit-input-placeholder{
 	width:50%;
 	float:left;
 	line-height:38px;
+	position:relative;
 }
 .fmxxZlTitBox label,
 .fmxxAjSqBox label,
@@ -1209,7 +1212,8 @@ textarea::-webkit-input-placeholder{
 	float:left;
 }
 .fmxxZlTitBox label,
-.fmxxAjSqBox label{
+.fmxxAjSqBox label,
+.zlNumBox label{
 	width:20%;
 	text-align:center;
 	margin-left:41px;
@@ -1218,9 +1222,13 @@ textarea::-webkit-input-placeholder{
 .fmxxAjSqBox label span{
 	color:red;
 }
+.zlNumBox input{
+	width:100%;
+}
 .fmxxZlTitBox input,
-.fmxxAjSqBox input{
-	width:70.5%;
+.fmxxAjSqBox input,
+.innerFmxxNum{
+	width:71.3%;
 }
 .detColor{
 	color:#F47837;
@@ -1228,4 +1236,29 @@ textarea::-webkit-input-placeholder{
 #xxEyYqBox,
 .oldAjSqDate{
 	display:none;
+}
+.zlTitTipsTxt,
+.zlTitTipsTxt_1{
+	line-height:25px;
+	font-size:12px;
+	text-indent:18px;
+	color:red;
+	display:none;
+}
+.zlTitTipsTxt{
+	position:relative;
+}
+.zlTitTipsTxt_1{
+	position:absolute;
+	left:158px;
+	top:36px;
+}
+.zlTitTipsTxt i,
+.zlTitTipsTxt_1 i{
+	position:absolute;
+	left:-18px;
+	top:1px;
+}
+.editAjNum{
+	width:98%;
 }

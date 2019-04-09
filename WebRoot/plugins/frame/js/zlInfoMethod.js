@@ -43,13 +43,13 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
    			        success:function (json){
    			        	layer.closeAll('loading');
    			        	if(json['result'] == 'exist'){//填写 当重复时
-   			        		layer.msg('当前案件标题已存在，请重新填写', {icon:5,anim:6,time:2000});
+   			        		$('#'+obj).next().show().html('<i class="layui-icon layui-icon-tips"></i>当前案件标题已存在');
 							return;
    			        	}else if(json['result'] == 'error'){//为空没有填写时
-   			        		layer.msg('案件标题不能为空', {icon:5,anim:6,time:2000});
+   			        		$('#'+obj).next().show().html('<i class="layui-icon layui-icon-tips"></i>案件标题不能为空');
 							return;
    			        	}else if(json['result'] == 'noInfo'){//right
-   			        		
+   			        		$('#'+obj).next().hide().html('');
    			        	}
    			        }
    				});
@@ -118,6 +118,8 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 				}
 				if(anjianTypeVal == ''){
 					layer.msg('请选择案件类型', {icon:5,anim:6,time:1500});
+				}else if(zlTypeInpVal == ''){
+					layer.msg('请选择专利类型', {icon:5,anim:6,time:1500});
 				}else{
 					var isNewAjTypeFlag = true,isOldAjRightFlag=false;//旧案下各个条件是否都已满足，新案下为true
 					var fmZlTitInpVal = $('#fmZlTitInp').val(),xxZlTitInpVal = $('#xxZlTitInp').val(),fmSqDateInpVal = $('#fmSqDateInp').val(),xxSqDateInpVal = $('#xxSqDateInp').val();
@@ -131,8 +133,6 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 					}
 					if(ajTitleVal == '' && _this.data.switchZlTitFlag || fmZlTitInpVal == '' || xxZlTitInpVal == ''){
 						layer.msg('案件标题不能为空', {icon:5,anim:6,time:1500});
-					}else if(zlTypeInpVal == ''){
-						layer.msg('请选择专利类型', {icon:5,anim:6,time:1500});
 					}else if(isNewAjTypeFlag == false){//旧案
 						//判断费减 案件专利号
 						var rateInpVal = $('#rateInp').val(),ajSqZlNumVal = $('#ajSqZlNum').val();
@@ -760,9 +760,9 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 		//旧案下 发明+新型下增加发明专利号 新型专利号 可编辑
 		createFmXxZlNumDom : function(){
 			var strHtml = '';
-			strHtml += '<div id="fmxxZlNumWrap" class="clearfix"><div class="zlNumBox"><span>*</span><label>发明专利号</label>';
+			strHtml += '<div id="fmxxZlNumWrap" class="clearfix"><div class="zlNumBox"><label><span>*</span>发明专利号</label>';
 			strHtml += '<div class="innerFmxxNum"><p class="zlPatternNum multiWid"></p><input id="fmZlNumInp" type="text" placeholder="请输入发明专利号" maxlength="30" autocomplete="off" class="layui-input"/></div></div>';
-			strHtml += '<div class="zlNumBox hasMargLeft"><span>*</span><label>新型专利号</label>';
+			strHtml += '<div class="zlNumBox"><label><span>*</span>新型专利号</label>';
 			strHtml += '<div class="innerFmxxNum"><p class="zlPatternNum multiWid"></p><input id="xxZlNumInp" type="text" placeholder="请输入新型专利号" maxlength="30" autocomplete="off" class="layui-input"/></div></div>';
 			return strHtml;
 		},
@@ -770,8 +770,8 @@ layui.define(['laydate','form','upLoadFiles'],function(exports){
 		createFmxxZlTitDom : function(){
 			var strHtml = '';
 			strHtml += '<div id="fmxxZlTitBox" class="clearfix">';
-			strHtml += '<div class="fmxxZlTitBox"><label><span>*</span>发明案件标题</label><input id="fmZlTitInp" type="text" placeholder="请输入发明案件标题(40字以内)" maxlength="40" class="layui-input"/></div>';
-			strHtml += '<div class="fmxxZlTitBox"><label><span>*</span>新型案件标题</label><input id="xxZlTitInp" type="text" placeholder="请输入新型案件标题(40字以内)" maxlength="40" class="layui-input"/></div></div>';
+			strHtml += '<div class="fmxxZlTitBox"><label><span>*</span>发明案件标题</label><input id="fmZlTitInp" type="text" placeholder="请输入发明案件标题(40字以内)" maxlength="40" class="layui-input"/><p class="zlTitTipsTxt_1"></p></div>';
+			strHtml += '<div class="fmxxZlTitBox"><label><span>*</span>新型案件标题</label><input id="xxZlTitInp" type="text" placeholder="请输入新型案件标题(40字以内)" maxlength="40" class="layui-input"/><p class="zlTitTipsTxt_1"></p></div></div>';
 			return strHtml;
 		},
 		//发明+新型下增加发明案件申请日 新型案件申请日
