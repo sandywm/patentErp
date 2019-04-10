@@ -570,9 +570,7 @@
 					
 					strHtml += '</div>';
 					//旧案下案件申请日
-					if(json.ajType1 == 'old'){
-						strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>案件申请日</label><div class="layui-input-block"><input type="text" value="'+ json.sqDate +'" readonly autocomplete="off" class="layui-input"/></div></div>';	
-					}
+					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>案件申请日</label><div class="layui-input-block"><input type="text" value="'+ json.sqDate +'" readonly autocomplete="off" class="layui-input"/></div></div>';
 					//案件标题
 					strHtml += '<div class="layui-form-item"><label class="layui-form-label"><span class="mustItem">*</span>案件标题</label><div class="layui-input-block">';
 					strHtml += '<input id="ajTitleInp" type="text" name="ajTitle" placeholder="请输入案件标题(40字以内)" maxlength="40" value="'+ json.ajTitle +'" autocomplete="off" class="layui-input"/><p class="zlTitTipsTxt"></p></div></div>';
