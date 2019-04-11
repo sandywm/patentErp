@@ -73,7 +73,6 @@ layui.define(['rate'],function(exports){
 					bzTjUserId = $('#addBzTjUser_con').attr('userId');
 				var index= parent.layer.getFrameIndex(window.name),
 					isNewAjTypeFlag = true,isOldAjRightFlag=false;
-				console.log(_this.data.zlAjType)
 				_this.data.zlAjType == 'new' ? isNewAjTypeFlag : isNewAjTypeFlag = false;
 				if(_this.data.difflevel == 0){
 					layer.msg('请设置专利难易度！', {icon:5,anim:6,time:1500});

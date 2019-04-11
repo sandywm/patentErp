@@ -20,6 +20,7 @@ textarea::-webkit-input-placeholder{
 	padding:0px;
 	background:#fff;
 	box-shadow:0 3px 5px #ebebeb;
+	display:none;
 }
 .headerWrap span{
 	margin-left:15px;
@@ -1165,7 +1166,8 @@ textarea::-webkit-input-placeholder{
 	color:#999;
 }
 #selFileBtn,
-.hideItem{
+.hideItem,
+.editTabNav{
 	display:none;
 }
 .zlPatternNum{

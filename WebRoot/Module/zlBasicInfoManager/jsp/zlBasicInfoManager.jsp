@@ -36,7 +36,7 @@
     <script type="text/javascript">
     	var loginType=parent.loginType,roleName=parent.roleName,hasReadFlag=false,tmpAddBackFee='';
 		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',yjFzrFlag:false,currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,yjTypeTxt:'',applyCause:'',applyName:'',yjId:0,zlType:'',tzsId:0},zlTypeInp='',globalLqStatus=1,globalWid=180,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
-		var zlShowTagFlag = '${requestScope.zlTagShowFlag}',tzsShowFlag = '${requestScope.tzsShowFlag}';
+		var zlShowTagFlag = '${requestScope.zlTagShowFlag}',tzsShowFlag = '${requestScope.tzsShowFlag}',zlStrOpts='';
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -777,6 +777,7 @@
 				}else if(obj.event == 'editZlTask'){//专利(查看/编辑)
 					addEditZlOpts = $(this).attr('opts');
 					globalZlId = $(this).attr('zlId');
+					zlStrOpts = 'zlDetailOpts';
 					addZlFlag = false;
 					var fullScreenIndex = layer.open({
 						title:'',
@@ -796,6 +797,7 @@
 					layer.full(fullScreenIndex);
 				}else if(obj.event == 'editZlInfoHasAdd'){//我的专利编辑
 					page.data.upZlFlag = common.getPermission('upZl','',0);
+					zlStrOpts = 'zlEditOpts';
 					if(page.data.upZlFlag){
 						addEditZlOpts = $(this).attr('opts');
 						globalZlId = $(this).attr('zlId');
