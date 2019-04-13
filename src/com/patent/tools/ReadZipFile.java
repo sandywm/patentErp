@@ -68,6 +68,9 @@ public class ReadZipFile {
 	        ZipInputStream zin = new ZipInputStream(check,gbk);
 	        //ZipEntry 类用于表示 ZIP 文件条目。
 	        ZipEntry ze;
+	        String filePath = "";//上传压缩包的路径
+	        String tifAbsoPath = "";
+	        String lastFileNamePre = "";
 	        while((ze=zin.getNextEntry())!=null){
 	        	String tzsName = "";//通知书名称
 	        	String zlName = "";//专利名称
@@ -87,11 +90,91 @@ public class ReadZipFile {
 	    		List<FeeDetailJson> list_fd = new ArrayList<FeeDetailJson>();//费用详情
 	    		List<FileListJson> list_fl = new ArrayList<FileListJson>();//电子申请回执清单
 	    		String yearNo = "";//年度数字
+	    		String finalAbsoPath = "";
 	    		//---------------年费滞纳金-----------------//
 	            if(ze.isDirectory()){
 	                //为空的文件夹什么都不做
 	            }else{
 	            	String fileName = ze.getName();
+	            	//----------------------复制文件start-------------------//
+	            	File file = new File(finalPath);
+	            	String fh = "\\";
+            		int indexLen = fileName.indexOf(fh);
+            		if(indexLen == -1){
+            			fh = "/";
+            			indexLen = fileName.indexOf(fh);
+            		}
+					String fileNamePre = "";//文件夹名称
+					String firstFileNamePre = "";//第一个文件夹名称
+					if(indexLen > -1){
+						firstFileNamePre = fileName.substring(0, indexLen);
+						int indexLastLen = fileName.lastIndexOf(fh);
+						fileNamePre = fileName.substring(0, indexLastLen);
+						filePath = file.getParent();
+						File file_c = new File(filePath + "\\fileTemp\\" + fileNamePre);
+						String tifName = fileName.substring(indexLastLen);
+						if(!file_c.exists()){
+							file_c.mkdirs();
+						}
+						try {
+							File mainfestFile = new File(filePath + "\\fileTemp\\" + fileNamePre + tifName);
+							mainfestFile.createNewFile();
+							os = new FileOutputStream(mainfestFile);
+							is = zf.getInputStream(ze);
+							int len;
+							while((len = is.read()) != -1){
+								os.write(len);
+							}
+							//-----------------------------做成压缩包
+							List<File> fileList = new ArrayList<File>();
+							fileList.add(new File(filePath + "\\fileTemp\\" + firstFileNamePre));
+							String finalZipPath = filePath+ "\\" + firstFileNamePre + ".zip";
+							finalAbsoPath = upZipPath.substring(0, upZipPath.lastIndexOf("\\"))+"\\"+firstFileNamePre + ".zip";
+							System.out.println(finalAbsoPath);
+							FileOpration.toZip(fileList, finalZipPath,true);
+							is.close();
+					        os.close();
+							if(fileName.endsWith(".tif")){
+								if((firstFileNamePre+fh+firstFileNamePre+fh+firstFileNamePre).equals(fileName.substring(0, indexLastLen))){
+									File file_c1 = new File(file.getParent() + "\\" + firstFileNamePre + "_tif");
+									String tifName_1 = fileName.substring(indexLastLen);
+									if(!file_c1.exists()){
+										file_c1.mkdirs();
+									}
+									try {
+										File mainfestFile_1 = new File(file.getParent() + "\\" + firstFileNamePre + "_tif\\" + tifName_1);
+										if(lastFileNamePre.equals(firstFileNamePre)){
+											tifAbsoPath += "," + upZipPath.substring(0, upZipPath.lastIndexOf("\\"))+"\\"+firstFileNamePre + "_tif\\"+fileName.substring(indexLastLen+1);
+										}else{
+											tifAbsoPath = upZipPath.substring(0, upZipPath.lastIndexOf("\\"))+"\\"+firstFileNamePre + "_tif\\"+fileName.substring(indexLastLen+1);
+										}
+										mainfestFile_1.createNewFile();
+										os = new FileOutputStream(mainfestFile_1);
+										is = zf.getInputStream(ze);
+										int len_1;
+										while((len_1 = is.read()) != -1){
+											os.write(len_1);
+										}
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									} finally{
+										is.close();
+								        os.close();
+									}
+								}
+								lastFileNamePre = firstFileNamePre;
+							}
+							System.out.println(lastFileNamePre);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} finally{
+							is.close();
+					        os.close();
+						}
+					}
+					//----------------------复制文件end-------------------//
 	            	if(fileName.endsWith("XML") || fileName.endsWith("xml")){
 	                    ZipEntry zip = zf.getEntry(ze.getName());
 	                    InputStream inputstream = null;
@@ -211,7 +294,7 @@ public class ReadZipFile {
 			            	}
 			            	list_sub_d.add(new TzsJson(fwSerial,ajNoGf));//存在数据文件，无需判断
 			            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, sqrName, applyDate,
-			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath,"dataXml"));
+			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,tifAbsoPath,"dataXml"));
 	        			}else if(l11 != null){//电子回单（没有图片）
 	        				tzsName = "电子申请回执";
 	        				zlName = root.element("FAMINGCZMC").getTextTrim();
@@ -227,7 +310,7 @@ public class ReadZipFile {
 	        						list_fl.add(new FileListJson(l.elementText("WENJIANMC"),l.elementText("WENJIANGS"),l.elementText("WENJIANDX")));
 	        					}
 				            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, "", "",
-				            			"", "", "","", fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath,"dataXml"));
+				            			"", "", "","", fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,tifAbsoPath,"dataXml"));
 	        				}
 	        				//不存在申请号的不读取
 	        			}else{//里面不存在数据文件，需要从list.xml中获取(比如补正通知书)
@@ -273,44 +356,14 @@ public class ReadZipFile {
 		        							}
 //			        						feeEdate = CurrentTime.getFinalDate(fwDate, (60+Constants.TD_RECEIVE_DAYS));
 			    			            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, sqrName, applyDate,
-			    			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,upZipPath,"listXml"));
+			    			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,tifAbsoPath,"listXml"));
 		        						}
 	        						}
 	        					}
 	        				}
 	        			}
 	        			inputstream.close();
-	            	}else if(fileName.endsWith(".tif")){
-//    					int indexLen = fileName.indexOf("\\");
-//    					String fileNamePre = "";//文件夹名称
-//    					if(indexLen > -1){
-//    						fileNamePre = fileName.substring(0, indexLen);
-//    						int indexLastLen = fileName.lastIndexOf("\\");
-//    						if((fileNamePre+"\\"+fileNamePre+"\\"+fileNamePre).equals(fileName.substring(0, indexLastLen))){
-//    							String filePathPre = fileNamePre + "\\" + CurrentTime.getStringTime1();
-//    							String filePath = WebUrl.DATA_URL_TZS_IMG + "\\" + filePathPre;
-//    							File file_c = new File(filePath);
-//    							String tifName = fileName.substring(indexLastLen);
-//    							if(!file_c.exists()){
-//    								file_c.mkdirs();
-//    							}
-//    							try {
-//    								File mainfestFile = new File(filePath + "\\" + tifName);
-//    								mainfestFile.createNewFile();
-//    								os = new FileOutputStream(mainfestFile);
-//    								is = zf.getInputStream(ze);
-//    								int len;
-//    								while((len = is.read()) != -1){
-//    									os.write(len);
-//    								}
-//    							} catch (IOException e) {
-//    								// TODO Auto-generated catch block
-//    								e.printStackTrace();
-//    							}
-//    						}
-//    					}
-    					
-    				}
+	            	}
 	            }
 	        }
 	        zin.close();
@@ -319,11 +372,16 @@ public class ReadZipFile {
 	        zf.close();
 	        is.close();
 	        os.close();
+	        if(!filePath.equals("")){
+	        	//删除零时文件夹
+	        	FileOpration.deleteAllFile(filePath + "\\fileTemp");
+	        	FileOpration.deleteFile(finalPath);//删除上传的压缩包
+	        }
         }catch (Exception e) {
 			// TODO Auto-generated catch block
         	map.put("readInfo", "typeError");//只支持ZIP压缩格式的通知书
 			//删除当前通知书压缩包
-//			FileOpration.deleteFile(finalPath);
+			FileOpration.deleteFile(finalPath);
 		}
         return list_all;
 	}
@@ -439,9 +497,9 @@ public class ReadZipFile {
 	 */
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		ReadZipFile rzf = new ReadZipFile();
-//		rzf.copyZipFile(new File("e:\\1122.zip"));
-		rzf.readZipFile_new("e:\\1122.zip", 1, 1, 0);
+//		ReadZipFile rzf = new ReadZipFile();
+//		rzf.copyZipFile(new File("e:\\5tzs.zip"));
+		ReadZipFile.readZipFile_new("e:\\5tzs.zip", 1, 1, 0);
 //		List<TzsJson> tjList = new ArrayList<TzsJson>();
 ////		for(int i = 222 ; i <= 223; i++){
 ////			List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\"+i+".zip",0,0,0);

@@ -24,7 +24,7 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,
 			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore,
 			String lastUpFileBz,String lastUpFileBzSc,String lastUpFileCus,Integer lastUpUserIdBz,
-			Integer lastUpUserIdBzSc,Integer lastUpUserIdCus,String lastBzScRemark,String lastCusRemark) throws WEBException {
+			Integer lastUpUserIdBzSc,Integer lastUpUserIdCus,String lastBzScRemark,String lastCusRemark,String tzsTifPath) throws WEBException {
 		// TODO Auto-generated method stub
 		try {
 			lcDao = (ZlajLcInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_LC_INFO);
@@ -34,7 +34,7 @@ public class ZlajLcMxInfoManagerImpl implements ZlajLcMxInfoManager{
 			ZlajLcMxInfoTb mxInfo = new ZlajLcMxInfoTb(fzUserId, lcDao.get(sess, lcId),
 					lcMxName, lcMxNo, lcMxSDate, lcMxEDate,lcMxUpFile, lcMxUpUserId, lcMxUpDate,
 					lcMxUpSize, lcMxFee, lcMxRemark,lcPjScore,-1,lastUpFileBz,lastUpFileBzSc,
-					lastUpFileCus,lastUpUserIdBz,lastUpUserIdBzSc,lastUpUserIdCus,lastBzScRemark,lastCusRemark);
+					lastUpFileCus,lastUpUserIdBz,lastUpUserIdBzSc,lastUpUserIdCus,lastBzScRemark,lastCusRemark,tzsTifPath);
 			mxDao.save(sess, mxInfo);
 			tran.commit();
 			return mxInfo.getId();

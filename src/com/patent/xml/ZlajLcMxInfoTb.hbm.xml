@@ -120,6 +120,11 @@
                 <comment>上一次客户审核的备注</comment>
             </column>
         </property>
+        <property name="tzsTifPath" type="java.lang.String">
+            <column name="tzs_tif_path" length="500">
+                <comment>通知书图片路径</comment>
+            </column>
+        </property>
         <set name="lcyjs" inverse="true">
             <key>
                 <column name="lc_mx_id" not-null="true">
