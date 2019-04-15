@@ -35,13 +35,14 @@ public interface ZlajLcMxInfoManager {
 	 * @param lastBzScRemark 上一次补正审核的备注
 	 * @param lastCusRemark 上一次客户审核的备注
 	 * @param tzsTifPath 通知书图片路径
+	 * @param tzsName 通知书名称
 	 * @return
 	 * @throws WEBException
 	 */
 	Integer addLcMx(Integer lcId,Integer fzUserId,String lcMxName, Double lcMxNo, String lcMxSDate, String lcMxEDate,
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,String lcMxUpSize,Double lcMxFee,String lcMxRemark,Integer lcPjScore,
 			String lastUpFileBz,String lastUpFileBzSc,String lastUpFileCus,Integer lastUpUserIdBz,
-			Integer lastUpUserIdBzSc,Integer lastUpUserIdCus,String lastBzScRemark,String lastCusRemark,String tzsTifPath) throws WEBException;
+			Integer lastUpUserIdBzSc,Integer lastUpUserIdCus,String lastBzScRemark,String lastCusRemark,String tzsTifPath,String tzsName) throws WEBException;
 	
 	/**
 	 * 修改流程负责人、完成时间、备注等（一般是领取）

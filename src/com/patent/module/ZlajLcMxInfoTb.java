@@ -39,6 +39,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 	private String lastBzScRemark;
 	private String lastCusRemark;
 	private String tzsTifPath;
+	private String tzsName;
 	private Set<ZlajLcYjInfoTb> lcyjs = new HashSet<ZlajLcYjInfoTb>();
 
 	// Constructors
@@ -53,7 +54,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,
 			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore,Integer yjCheckStatus,
 			String lastUpFileBz,String lastUpFileBzSc,String lastUpFileCus,Integer lastUpUserIdBz,
-			Integer lastUpUserIdBzSc,Integer lastUpUserIdCus,String lastBzScRemark,String lastCusRemark,String tzsTifPath) {
+			Integer lastUpUserIdBzSc,Integer lastUpUserIdCus,String lastBzScRemark,String lastCusRemark,String tzsTifPath,String tzsName) {
 		this.lcFzUserId = lcFzUserId;
 		this.zlajLcInfoTb = zlajLcInfoTb;
 		this.lcMxName = lcMxName;
@@ -77,6 +78,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 		this.lastUpUserIdCus = lastUpUserIdCus;
 		this.lastCusRemark = lastCusRemark;
 		this.tzsTifPath = tzsTifPath;
+		this.tzsName = tzsName;
 	}
 
 	/** full constructor */
@@ -85,7 +87,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 			String lcMxUpFile, Integer lcMxUpUserId, String lcMxUpDate,
 			String lcMxUpSize, Double lcMxFee, String lcMxRemark,Integer lcPjScore,Integer yjCheckStatus,
 			String lastUpFileBz,String lastUpFileBzSc,String lastUpFileCus,Integer lastUpUserIdBz,
-			Integer lastUpUserIdBzSc,Integer lastUpUserIdCus,String lastBzScRemark,String lastCusRemark,String tzsTifPath) {
+			Integer lastUpUserIdBzSc,Integer lastUpUserIdCus,String lastBzScRemark,String lastCusRemark,String tzsTifPath,String tzsName) {
 		this.lcFzUserId = lcFzUserId;
 		this.zlajLcInfoTb = zlajLcInfoTb;
 		this.lcMxName = lcMxName;
@@ -109,6 +111,7 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 		this.lastUpUserIdCus = lastUpUserIdCus;
 		this.lastCusRemark = lastCusRemark;
 		this.tzsTifPath = tzsTifPath;
+		this.tzsName = tzsName;
 	}
 
 	// Property accessors
@@ -311,6 +314,14 @@ public class ZlajLcMxInfoTb implements java.io.Serializable {
 
 	public void setTzsTifPath(String tzsTifPath) {
 		this.tzsTifPath = tzsTifPath;
+	}
+
+	public String getTzsName() {
+		return tzsName;
+	}
+
+	public void setTzsName(String tzsName) {
+		this.tzsName = tzsName;
 	}
 
 }

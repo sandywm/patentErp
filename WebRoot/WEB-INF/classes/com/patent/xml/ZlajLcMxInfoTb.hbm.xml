@@ -125,6 +125,11 @@
                 <comment>通知书图片路径</comment>
             </column>
         </property>
+        <property name="tzsName" type="java.lang.String">
+            <column name="tzs_name" length="500">
+                <comment>通知书名称</comment>
+            </column>
+        </property>
         <set name="lcyjs" inverse="true">
             <key>
                 <column name="lc_mx_id" not-null="true">
