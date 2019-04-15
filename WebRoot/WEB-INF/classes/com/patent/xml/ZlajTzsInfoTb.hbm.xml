@@ -70,6 +70,11 @@
                 <comment>读取详情</comment>
             </column>
         </property>
+        <property name="tifPath" type="java.lang.String">
+            <column name="tif_path" length="500">
+                <comment>通知书图片路径</comment>
+            </column>
+        </property>
         <property name="tzsType" type="java.lang.String">
             <column name="tzs_type" length="20">
                 <comment>通知书类型(tzs--通知书,sqd--申请单)</comment>

@@ -28,7 +28,7 @@ public class ZlajTzsInfoManagerImpl implements ZlajTzsInfoManager{
 	
 	@Override
 	public Integer addTzs(Integer zlId,String ajNo,String tzsName,String fwrDate,String gfrDate,String fwSerial,String tzsPath,
-			Integer uploadUserId,Integer readStatus,String readDetail,Integer cpyId,String tzsType) throws WEBException{
+			Integer uploadUserId,Integer readStatus,String readDetail,Integer cpyId,String tzsType,String tifPath) throws WEBException{
 		// TODO Auto-generated method stub
 		try {
 			zlDao = (ZlajMainInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_ZLAJ_MAIN_INFO);
@@ -38,7 +38,7 @@ public class ZlajTzsInfoManagerImpl implements ZlajTzsInfoManager{
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
 			ZlajTzsInfoTb tzs = new ZlajTzsInfoTb(zlId,ajNo,tzsName,fwrDate,gfrDate,fwSerial,tzsPath,uDao.get(sess, uploadUserId),
-					CurrentTime.getCurrentTime(),readStatus,readDetail,cDao.get(sess, cpyId),tzsType);
+					CurrentTime.getCurrentTime(),readStatus,readDetail,cDao.get(sess, cpyId),tzsType,tifPath);
 			tzsDao.save(sess, tzs);
 			tran.commit();
 			return tzs.getId();

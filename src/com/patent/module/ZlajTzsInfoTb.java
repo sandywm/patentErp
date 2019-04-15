@@ -27,6 +27,7 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 	private String readDetail;
 	private CpyInfoTb cpy;
 	private String tzsType;
+	private String tifPath;
 
 	// Constructors
 
@@ -37,7 +38,7 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 	/** minimal constructor */
 	public ZlajTzsInfoTb(Integer ajId, String ajNo,String tzsName,
 			String tzsFwr, String tzsGfr,String fwSerial,String tzsPath,CpyUserInfo user,
-			String uploadTime,Integer readStatus,String readDetail,CpyInfoTb cpy,String tzsType) {
+			String uploadTime,Integer readStatus,String readDetail,CpyInfoTb cpy,String tzsType,String tifPath) {
 		this.ajId = ajId;
 		this.tzsName = tzsName;
 		this.ajNo = ajNo;
@@ -51,12 +52,13 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 		this.readDetail = readDetail;
 		this.cpy = cpy;
 		this.tzsType = tzsType;
+		this.tifPath = tifPath;
 	}
 
 	/** full constructor */
 	public ZlajTzsInfoTb(Integer id,Integer ajId, String ajNo,String tzsName,
 			String tzsFwr, String tzsGfr,String fwSerial,String tzsPath,CpyUserInfo user,
-			String uploadTime,Integer readStatus,String readDetail,CpyInfoTb cpy,String tzsType) {
+			String uploadTime,Integer readStatus,String readDetail,CpyInfoTb cpy,String tzsType,String tifPath) {
 		this.id = id;
 		this.ajId = ajId;
 		this.tzsName = tzsName;
@@ -71,6 +73,7 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 		this.readDetail = readDetail;
 		this.cpy = cpy;
 		this.tzsType = tzsType;
+		this.tifPath = tifPath;
 	}
 
 	// Property accessors
@@ -185,6 +188,14 @@ public class ZlajTzsInfoTb implements java.io.Serializable {
 
 	public void setTzsType(String tzsType) {
 		this.tzsType = tzsType;
+	}
+
+	public String getTifPath() {
+		return tifPath;
+	}
+
+	public void setTifPath(String tifPath) {
+		this.tifPath = tifPath;
 	}
 
 }
