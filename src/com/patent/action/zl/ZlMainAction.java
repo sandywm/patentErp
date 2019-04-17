@@ -4119,7 +4119,7 @@ public class ZlMainAction extends DispatchAction {
 								fileType = fileType_curr;
 								upUser = cum.getEntityById(lcmx.getLastUpUserIdBz()).getUserName();
 							}
-							if(lcmxName.equals("补正修改") || lcmxName.equals("补正审核") || lcmxName.equals("客户确认-补正")){
+							if(lcmxName.equals("专利补正") || lcmxName.equals("补正修改") || lcmxName.equals("补正审核") || lcmxName.equals("客户确认-补正")){
 								if(!lcmx.getTzsTifPath().equals("")){//通知书图片
 									tzsTifPath = lcmx.getTzsTifPath();
 									tzsName = lcmx.getTzsName();
@@ -4136,6 +4136,7 @@ public class ZlMainAction extends DispatchAction {
 							map_f.put("zlType","通知书");
 							map_f.put("imgFilePath", tzsTifPath);
 							String firstTzs = tzsTifPath.split(",")[0];
+							map_f.put("filePathPre", WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\");//文件前缀
 							map_f.put("downFilePath", firstTzs.substring(0, firstTzs.lastIndexOf("\\")));
 							map_f.put("tzsNum", String.valueOf(tzsTifPath.split(",").length));
 							map_f.put("upUser", "");
@@ -5950,14 +5951,22 @@ public class ZlMainAction extends DispatchAction {
 											//删除临时上传通知书压缩包位置
 											FileOpration.deleteFile(path_pre + tzsPath);
 											if(!tifPath_tmp.equals("")){
+												tifPath_tmp = tifPath_tmp.substring(0, tifPath_tmp.length() - 1);//去掉末尾的逗号
 												String[] tifPathArr = tifPath_tmp.split(",");
 												for(Integer i = 0 ; i < tifPathArr.length ; i++){
-													String firstStr = tifPathArr[i].substring(tifPathArr[i].indexOf("\\")+1);//去掉cpyUser
 													//复制上传的通知书图片到指定位置
-													FileOpration.copyFile(path_pre + tifPathArr[i], path_pre + firstStr.substring(firstStr.indexOf("\\")+1));
-													//删除临时上传通知书图片位置
-													FileOpration.deleteFile(path_pre + tifPathArr[i]);
+													String jpgPath_jd = path_pre + upTifPath_final.split(",")[i];
+													String jpgPath = jpgPath_jd.substring(0, jpgPath_jd.lastIndexOf("\\"));
+													File file = new File(jpgPath);
+													if(!file.exists()){
+														file.mkdirs();
+													}
+													FileOpration.copyFile(path_pre + tifPathArr[i], jpgPath_jd);
 												}
+												//删除临时上传通知书图片位置文件夹下所有文件
+												String jpgPath_1 = path_pre + tifPath_tmp.split(",")[0];
+												String filePath = jpgPath_1.substring(0, jpgPath_1.lastIndexOf("\\"));
+												FileOpration.deleteAllFile(filePath);
 											}
 										}
 										Integer tzsId = tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 1, "读取成功", cpyId,tzsType,upTifPath_final);

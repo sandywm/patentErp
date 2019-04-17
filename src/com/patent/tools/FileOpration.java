@@ -1,5 +1,8 @@
 package com.patent.tools;
 
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,6 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.imageio.ImageIO;
+import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
+import javax.media.jai.RenderedOp;
+
+import com.sun.media.jai.codec.FileSeekableStream;
+import com.sun.media.jai.codec.ImageCodec;
+import com.sun.media.jai.codec.ImageEncoder;
+import com.sun.media.jai.codec.JPEGEncodeParam;
 
 /**
  * 文件操作类
@@ -226,10 +239,77 @@ public class FileOpration {
         }
     }
 	 
+	 /**
+	  * tif转换成jpg方法
+	  * @description
+	  * @author Administrator
+	  * @date 2019-4-15 下午04:40:49
+	  * @param filePath
+	  */
+	 public static void tiffTurnJpg(String filePath){
+		 OutputStream ops = null;
+		 try {
+			FileSeekableStream stream = new FileSeekableStream(filePath);//解决源文件不能删除       
+		    PlanarImage in = JAI.create("stream", stream);//读取tiff图片文件        
+			String newFilePath = filePath.replace(".tif", ".jpg");
+			ops = new FileOutputStream(newFilePath);
+			//文件存储输出流
+		     JPEGEncodeParam param = new JPEGEncodeParam();
+		     ImageEncoder image = ImageCodec.createImageEncoder("JPEG", ops, param); //指定输出格式
+		     //解析输出流进行输出
+		     image.encode(in);
+		     //关闭流
+		     ops.flush();
+		     ops.close();
+		     stream.close();
+//		     System.out.println("缩放开始--"+CurrentTime.getStringTime1());
+//		     FileOpration.makeImage(newFilePath, 1240, -1, newFilePath, "JPEG");
+//		     System.out.println("缩放结束--"+CurrentTime.getStringTime1());
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
+	 }
+	 
+	 /**
+	  * 等比缩放图片
+	  * @description
+	  * @author Administrator
+	  * @date 2019-4-15 下午04:59:49
+	  * @param url
+	  * @param newWidth
+	  * @param newHeight
+	  * @param newUrl
+	  * @param formatName 生成图片的格式
+	  * @throws Exception
+	  */
+	 public static void makeImage(String url, int newWidth, int newHeight, String newUrl, String formatName)throws Exception{
+		 //读取图片
+	     BufferedImage bi = ImageIO.read(new File(url));
+	     //用Image里的方法对图片进行等比压缩,只要宽和高其一值为负,则以正的那个值为最大边进行等比压缩
+	     Image image = bi.getScaledInstance(newWidth, newHeight,Image.SCALE_AREA_AVERAGING);
+	     int height = image.getHeight(null);
+	     int width = image.getWidth(null);
+	     //以新的高和宽构造一个新的缓存图片
+	     BufferedImage bi1 = new BufferedImage(width, height,BufferedImage.TYPE_INT_RGB);
+	     Graphics g = bi1.getGraphics();
+	     //在新的缓存图片中画图
+	     g.drawImage(image, 0, 0, null);
+	     //构造IO流输出到文件
+	     FileOutputStream fos = new FileOutputStream(new File(newUrl));
+	     ImageIO.write(bi1, formatName, fos);
+	     fos.flush();
+	     fos.close();
+	 }
+	 
 	 public static void main(String[] args) throws Exception{
-		 List<File> fileList = new ArrayList<File>();
-		 fileList.add(new File("D:\\案卷测试10_0000320191000028"));
-		 fileList.add(new File("D:\\案卷测试11_0000320192000007"));
-		 FileOpration.toZip(fileList, "d:/mytest02.zip",true);
+//		 List<File> fileList = new ArrayList<File>();
+//		 fileList.add(new File("D:\\案卷测试10_0000320191000028"));
+//		 fileList.add(new File("D:\\案卷测试11_0000320192000007"));
+//		 FileOpration.toZip(fileList, "d:/mytest02.zip",true);
+		 FileOpration.tiffTurnJpg("e:\\000002.tif");
+//		 FileOpration.tiffTurnJpg("e:\\000002.tif");
+//		 FileOpration.tiffTurnJpg("e:\\000003.tif");
+		 
+//		 FileOpration.ConvertTif("e:\\000002.tif");
 	 }
 }

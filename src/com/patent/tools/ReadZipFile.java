@@ -69,7 +69,7 @@ public class ReadZipFile {
 	        //ZipEntry 类用于表示 ZIP 文件条目。
 	        ZipEntry ze;
 	        String filePath = "";//上传压缩包的路径
-	        String tifAbsoPath = "";
+	        String jpgAbsoPath = "";
 	        String lastFileNamePre = "";
 	        while((ze=zin.getNextEntry())!=null){
 	        	String tzsName = "";//通知书名称
@@ -130,23 +130,24 @@ public class ReadZipFile {
 							fileList.add(new File(filePath + "\\fileTemp\\" + firstFileNamePre));
 							String finalZipPath = filePath+ "\\" + firstFileNamePre + ".zip";
 							finalAbsoPath = upZipPath.substring(0, upZipPath.lastIndexOf("\\"))+"\\"+firstFileNamePre + ".zip";
-							System.out.println(finalAbsoPath);
 							FileOpration.toZip(fileList, finalZipPath,true);
 							is.close();
 					        os.close();
+					        String newFilePath = "";
 							if(fileName.endsWith(".tif")){
 								if((firstFileNamePre+fh+firstFileNamePre+fh+firstFileNamePre).equals(fileName.substring(0, indexLastLen))){
-									File file_c1 = new File(file.getParent() + "\\" + firstFileNamePre + "_tif");
+									File file_c1 = new File(file.getParent() + "\\" + firstFileNamePre + "_jpg");
 									String tifName_1 = fileName.substring(indexLastLen);
 									if(!file_c1.exists()){
 										file_c1.mkdirs();
 									}
 									try {
-										File mainfestFile_1 = new File(file.getParent() + "\\" + firstFileNamePre + "_tif\\" + tifName_1);
+										newFilePath = upZipPath.substring(0, upZipPath.lastIndexOf("\\"))+"\\"+firstFileNamePre + "_jpg\\"+fileName.substring(indexLastLen+1);
+										File mainfestFile_1 = new File(file.getParent() + "\\" + firstFileNamePre + "_jpg\\" + tifName_1);
 										if(lastFileNamePre.equals(firstFileNamePre)){
-											tifAbsoPath += "," + upZipPath.substring(0, upZipPath.lastIndexOf("\\"))+"\\"+firstFileNamePre + "_tif\\"+fileName.substring(indexLastLen+1);
+											jpgAbsoPath += newFilePath.replace(".tif", ".jpg") + ",";
 										}else{
-											tifAbsoPath = upZipPath.substring(0, upZipPath.lastIndexOf("\\"))+"\\"+firstFileNamePre + "_tif\\"+fileName.substring(indexLastLen+1);
+											jpgAbsoPath = newFilePath.replace(".tif", ".jpg") + ",";
 										}
 										mainfestFile_1.createNewFile();
 										os = new FileOutputStream(mainfestFile_1);
@@ -161,11 +162,12 @@ public class ReadZipFile {
 									} finally{
 										is.close();
 								        os.close();
+								        FileOpration.tiffTurnJpg(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + newFilePath);
+								        FileOpration.deleteFile(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + newFilePath);
 									}
 								}
 								lastFileNamePre = firstFileNamePre;
 							}
-							System.out.println(lastFileNamePre);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -294,7 +296,7 @@ public class ReadZipFile {
 			            	}
 			            	list_sub_d.add(new TzsJson(fwSerial,ajNoGf));//存在数据文件，无需判断
 			            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, sqrName, applyDate,
-			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,tifAbsoPath,"dataXml"));
+			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,jpgAbsoPath,"dataXml"));
 	        			}else if(l11 != null){//电子回单（没有图片）
 	        				tzsName = "电子申请回执";
 	        				zlName = root.element("FAMINGCZMC").getTextTrim();
@@ -310,7 +312,7 @@ public class ReadZipFile {
 	        						list_fl.add(new FileListJson(l.elementText("WENJIANMC"),l.elementText("WENJIANGS"),l.elementText("WENJIANDX")));
 	        					}
 				            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, "", "",
-				            			"", "", "","", fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,tifAbsoPath,"dataXml"));
+				            			"", "", "","", fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,jpgAbsoPath,"dataXml"));
 	        				}
 	        				//不存在申请号的不读取
 	        			}else{//里面不存在数据文件，需要从list.xml中获取(比如补正通知书)
@@ -356,7 +358,7 @@ public class ReadZipFile {
 		        							}
 //			        						feeEdate = CurrentTime.getFinalDate(fwDate, (60+Constants.TD_RECEIVE_DAYS));
 			    			            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, sqrName, applyDate,
-			    			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,tifAbsoPath,"listXml"));
+			    			            			zlType, fjApplyDate, fjRecord,feeEdate, fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,jpgAbsoPath,"listXml"));
 		        						}
 	        						}
 	        					}
