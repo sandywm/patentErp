@@ -1391,13 +1391,16 @@ public class ZlMainAction extends DispatchAction {
 								Map<String,Object> map_d = new HashMap<String,Object>();
 								String tzsName = tzs.getTzsName();
 								map_d.put("tzsId", tzs.getId());
-								map_d.put("tzsName", tzsName.substring(tzsName.lastIndexOf("\\")+1,tzsName.length()));
+								map_d.put("tzsName", tzsName);
 								map_d.put("fwrDate", tzs.getTzsFwr());
 								map_d.put("gfrDate", tzs.getTzsGfr());
-								map_d.put("imgFilePath", tzs.getTifPath());
-								map_d.put("tzsNum", String.valueOf(tzs.getTifPath().split(",").length));
+								String tzsType = tzs.getTzsType();
+								if(tzsType.equals("tzs")){
+									map_d.put("imgFilePath", tzs.getTifPath());
+									map_d.put("tzsNum", String.valueOf(tzs.getTifPath().split(",").length));
+								}
 								map_d.put("downFilePath", tzs.getTzsPath());
-								map_d.put("tzsType", tzs.getTzsType());
+								map_d.put("tzsType", tzsType);
 								list_tzs.add(map_d);
 							}
 							map.put("tzsInfo", list_tzs);
