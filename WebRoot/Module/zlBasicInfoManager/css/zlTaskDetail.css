@@ -612,3 +612,10 @@ body{
 #selAdBtn{
 	display:none;
 }
+.tzsBtn{
+	float:left;
+	position:relative;
+}
+.viewTzsBtn{
+	margin:0 10px;
+}

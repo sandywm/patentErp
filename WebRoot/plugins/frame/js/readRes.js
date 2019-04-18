@@ -2,8 +2,8 @@
  * @Description: 批量读取通知书/缴费单据渲染结构
  * @author: hlf
  */
-layui.define(['jquery','table'],function(exports){
-	var $ = layui.jquery,table = layui.table;
+layui.define(['jquery','table','common'],function(exports){
+	var $ = layui.jquery,table = layui.table,common = layui.common;
     var obj = {
     	renderReadRes : function(opts,readInfo){
     		var strHtml = '';
@@ -50,6 +50,11 @@ layui.define(['jquery','table'],function(exports){
 					    		 return '<span class="readStaAlarm">'+ d.readResultChi +'</span>';
 					    	 }
 					     }},
+					     {field : '', title: '操作', width:120, align:'center',templet:function(d){
+					    	 if(d.result != 'uploadExist'){
+					    		 return '<a class="viewTzs" href="javascript:void(0)" lay-event="viewTzsImg" tzsId="'+ d.tzsId +'">查看</a>';
+					    	 }
+					     }},
 					]],
 					done : function(){
 						$('#isHasReadInp').val(1);//用这个隐藏变量来判断当前读取是否是第一次读取 1：不是第一次 0 第一次
@@ -59,6 +64,12 @@ layui.define(['jquery','table'],function(exports){
     		parent.hasReadFlag = true;
     	}
     };
+	table.on('tool(readResTab_tzs)',function(obj){
+		if(obj.event == 'viewTzsImg'){
+			var tzsId = $(this).attr('tzsId');
+			common.getTzsPath(tzsId,parent.parent);
+		}
+	});
     //输出接口
     exports('readRes', obj);
 });

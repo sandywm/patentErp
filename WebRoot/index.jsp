@@ -12,9 +12,10 @@
 	<link href="/css/dottingAnimation.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/layui/css/modules/layui-icon-extend/iconfont.css" rel="stylesheet" type="text/css"/>
 	<link href="/plugins/pace/pace-theme-flash.min.css" rel="stylesheet" type="text/css"/>
+	<link href="/plugins/swiper/swiper.min.css" rel="stylesheet" type="text/css"/>
+	<script src="/plugins/swiper/swiper.min.js"></script>
 	<script src="/plugins/pace/pace.min.js"></script>
 	<script type="text/javascript">
-		var testIndex = 0;
 		var roleName = "${sessionScope.login_user_role_name}",
 			loginType = "${sessionScope.login_type}";
 	</script>
@@ -94,6 +95,16 @@
 	        © 2018 版权所有 Copyright@2018 Sandy.wm All Rights Reserved.
 	    </div-->
   	</div>
+  	<div class="tzsLayer"></div>
+  	<div class="swiperBox">
+  		<i class="layui-icon layui-icon-close tzsClose" onclick="closeTzsBox()"></i>
+  		<div class="swiper-container">
+	    	<div id="swiperWrap" class="swiper-wrapper"></div>
+	    	<div class="swiper-pagination"></div>
+	    	<div class="swiper-button-next"></div>
+    		<div class="swiper-button-prev"></div>
+	    </div>
+  	</div>
   	<script src="/plugins/jquery/jquery.min.js"></script>
   	<script src="/plugins/layui/layui.js"></script>
   	<script type="text/javascript">
@@ -108,6 +119,7 @@
 	        	$ = layui.jquery,
 	        	i = 0,
 	        	common = layui.common;
+	        
 	        function renderModuleList(){
 	        	var liItem = '';
 	        	if(loginType == 'cpyUser'){//代理机构管理员
@@ -310,6 +322,30 @@
 				});
 			});
 	    });
+	    //查看通知书轮播
+  		function swiperTzs(){
+  			var swiper = new Swiper('.swiper-container', {
+  				 navigation: {
+  			        nextEl: '.swiper-button-next',
+  			        prevEl: '.swiper-button-prev'
+  			     },
+  			     pagination: {
+  			        el: '.swiper-pagination',
+  			        clickable: true,
+  			        renderBullet: function (index, className) {
+  			          return '<span class="' + className + '">' + (index + 1) + '</span>';
+  			        }
+  			      }
+	      	});
+  		}
+  		function showOriginImg(obj){
+			var src = $(obj).attr('src');
+			window.open(src);
+		}
+  		function closeTzsBox(){
+  			$('.tzsLayer').hide();
+			$('.swiperBox').hide();
+  		}
   	</script>
   </body>
 </html>

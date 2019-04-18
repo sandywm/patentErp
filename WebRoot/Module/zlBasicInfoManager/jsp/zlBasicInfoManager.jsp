@@ -1042,7 +1042,8 @@
 						  	content: '/Module/zlBasicInfoManager/jsp/viewReceipt.html'
 						});	
 					}else{
-						layer.msg('正在开发中，后续开放...', {icon:5,anim:6,time:1000});
+						//查看通知书图片
+						common.getTzsPath(globalTaskOpts.tzsId,parent);
 					}
 				}else if(obj.event == 'downFileFun'){
 					var downFilePath = $(this).attr('downFilePath');

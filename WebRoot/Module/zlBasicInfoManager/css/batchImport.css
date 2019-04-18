@@ -139,3 +139,9 @@ body{
 .readStaAlarm{
 	color:#f00;
 }
+.viewTzs{
+	color:#666;
+}
+.viewTzs:hover{
+	color:#F47837;
+}

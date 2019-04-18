@@ -528,6 +528,7 @@
 				},
 				//获取通知书
 				renderTzsDetail : function(json){
+					console.log(json.tzsInfo)
 					var tzsInfo = json.tzsInfo;
 					var strHtml = '';
 					for(var i=0,iLen = tzsInfo.length;i<iLen;i++){
@@ -564,7 +565,8 @@
 							  	content: '/Module/zlBasicInfoManager/jsp/viewReceipt.html'
 							});	
 						}else{
-							layer.msg('正在开发中，后续开放...', {icon:5,anim:6,time:1000});
+							//查看通知书图片
+							common.getTzsPath(globalTaskOpts.tzsId,parent.parent);
 						}
 					});
 					//下载

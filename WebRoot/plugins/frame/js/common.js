@@ -2,6 +2,7 @@
  * @Description: 基础配置
  * @author: hlf
  */
+var tzsImg = [];
 //自定义模块
 layui.define(['rate'],function(exports){
 	var $ = layui.jquery,rate = layui.rate;
@@ -65,6 +66,8 @@ layui.define(['rate'],function(exports){
 				url = '/zlm.do?action=downFile';
 			}else if(downFileType == 1){//下载导出费用记录/发票
 				url = '/zlm.do?action=downFile_1';
+			}else if(downFileType == 2){//任务流程中 通知书类型的下载
+				url = '/zlm.do?action=zipDownLoad';
 			}
 			var form = $("<form>");   //定义一个form表单
 			form.attr('style', 'display:none'); //在form表单中添加查询参数
@@ -160,6 +163,42 @@ layui.define(['rate'],function(exports){
 				strHtml += '<span class="blockSpan">'+ tmpArray[i] +'</span>';
 			}
 			return strHtml;
+		},
+		//获取通知书个数 
+		getTzsPath : function(tzsId,parType){
+			layer.load('1');
+			var _this = this;
+			$.ajax({
+				type:'post',
+		        dataType:'json',
+		        data : {tzsId:tzsId},
+		        url:'/zlm.do?action=getTzsJpgInfo',
+		        success:function (json){
+		        	layer.closeAll('loading');
+		        	if(json['result'] == 'success'){
+		        		//查看通知书图片
+						tzsImg = json.imgFilePath.split(',');
+						_this.viewTzsImg(parType);
+		        	}else if(json['result'] == 'noInfo'){
+		        		layer.msg('暂无此通知书信息！', {icon:5,anim:6,time:1500});
+		        	}
+		        }
+			});
+		},
+		//查看通知书
+		viewTzsImg : function(parType){
+			var str = '';
+			for(var i=0,iLen=tzsImg.length;i<iLen;i++){
+				str +=`
+					<div class='swiper-slide'>
+						<img class='tzsImg' title='查看原图' onclick='showOriginImg(this)' src='Module/uploadFile/${ tzsImg[i] }'/>
+					</div>
+				`;
+			}
+			parType.$('.tzsLayer').show();
+			parType.$('.swiperBox').show();
+			parType.$('#swiperWrap').html(str);
+			parType.swiperTzs();
 		}
     };
     //输出接口

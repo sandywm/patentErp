@@ -217,6 +217,7 @@
 					this.showHideFun_bz();
 				},
 				loadTaskLcDetail : function(fileInfo,zlInfo,lcNo){
+					console.log(fileInfo)
 					var prevHtml = '',nowHtml_jud = '',nowHtml_sub = '',nowHtml_cus='';
 					if(lcNo >= 5 && lcNo < 6 || lcNo == 6){
 						var sqrName  = zlInfo[0].sqrName.split(',');
@@ -287,6 +288,7 @@
 						prevHtml += '<div class="pervFujianCon"><span>附件</span>';
 						prevHtml += '<div class="fujian"><ul id="listFujianTit"><li class="onePrevWid hasBorL">附件名</li><li class="twoPrevWid">附件格式</li><li class="twoPrevWid">附件大小</li><li class="twoPrevWid">附件类型</li><li class="twoPrevWid">上传者</li><li class="twoPrevWid">操作</li></ul>';
 						prevHtml += '<ul id="listFujianCon">';
+						
 						if(fileInfo != undefined){
 							for(var i=0;i<fileInfo.length;i++){
 								prevHtml += '<li>';
@@ -295,7 +297,15 @@
 								prevHtml += '<p class="twoPrevWid">'+ fileInfo[i].fjSize +'</p>';
 								prevHtml += '<p class="twoPrevWid">'+ fileInfo[i].fileType +'</p>';
 								prevHtml += '<p class="twoPrevWid">'+ fileInfo[i].upUser +'</p>';
-								prevHtml += '<p class="twoPrevWid"><a href="javascript:void(0)" class="downLoadBtn" downFilePath="'+ fileInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a></p>';
+								prevHtml += '<p class="twoPrevWid">';
+								if(fileInfo[i].zlType != '通知书'){
+									prevHtml += '<a href="javascript:void(0)" class="downLoadBtn" downFilePath="'+ fileInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';	
+								}else{
+									prevHtml += '<a href="javascript:void(0)" class="tzsBtn viewTzsBtn"><i class="layui-icon layui-icon-search"></i>查看</a>';
+									prevHtml += '<a href="javascript:void(0)" class="tzsBtn downBtn_tzs" downFilePath="'+ fileInfo[i].downFilePath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
+									tzsImg = fileInfo[i].imgFilePath.split(',');
+								}
+								prevHtml += '</p>';
 								prevHtml += '</li>';
 							}	
 						}else{
@@ -316,6 +326,17 @@
 								var downFilePath = $(this).attr('downFilePath');
 								common.downFiles(downFilePath,0);
 							});
+						}
+						if($('.downBtn_tzs').length > 0){//下载附件列表中的通知书
+							$('.downBtn_tzs').on('click',function(){
+								var downFilePath = $(this).attr('downFilePath');
+								common.downFiles(downFilePath,2);
+							});
+							$('.viewTzsBtn').on('click',function(){
+								//查看通知书
+								common.viewTzsImg(parent.parent);
+							});
+							
 						}
 						this.showHideFun();
 					}
@@ -847,6 +868,7 @@
 				page.onLoad();
 			});
 		});
+		
 	</script>
 </body> 
 </html>
