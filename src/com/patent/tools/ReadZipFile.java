@@ -305,15 +305,15 @@ public class ReadZipFile {
 	        				if(l_sqh != null){//存在申请号
 	        					ajNoGf = l_sqh.getTextTrim().replace("申请号：", "");
 	        					ajNoGf = ajNoGf.replace(".", "");//统一去掉专利号带点的
-	        					fwDate = root.element("QIANMINGSJC").getTextTrim().substring(0, 10);
-	        					for(@SuppressWarnings("unchecked")
-	        						Iterator<Element> it = root.elementIterator("SHOUDAOWJ") ; it.hasNext();){
-	        						Element l = it.next().element("WENJIANLB");
-	        						list_fl.add(new FileListJson(l.elementText("WENJIANMC"),l.elementText("WENJIANGS"),l.elementText("WENJIANDX")));
-	        					}
-				            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, "", "",
-				            			"", "", "","", fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,jpgAbsoPath,"dataXml"));
 	        				}
+	        				fwDate = root.element("QIANMINGSJC").getTextTrim().substring(0, 10);
+        					for(@SuppressWarnings("unchecked")
+        						Iterator<Element> it = root.elementIterator("SHOUDAOWJ") ; it.hasNext();){
+        						Element l = it.next().element("WENJIANLB");
+        						list_fl.add(new FileListJson(l.elementText("WENJIANMC"),l.elementText("WENJIANGS"),l.elementText("WENJIANDX")));
+        					}
+			            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, "", "",
+			            			"", "", "","", fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,jpgAbsoPath,"dataXml"));
 	        				//不存在申请号的不读取
 	        			}else{//里面不存在数据文件，需要从list.xml中获取(比如补正通知书)
 	        				l1 = root.element("TONGZHISXJ");
