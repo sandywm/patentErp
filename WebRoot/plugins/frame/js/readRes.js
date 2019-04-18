@@ -51,9 +51,7 @@ layui.define(['jquery','table','common'],function(exports){
 					    	 }
 					     }},
 					     {field : '', title: '操作', width:120, align:'center',templet:function(d){
-					    	 if(d.result != 'uploadExist'){
-					    		 return '<a class="viewTzs" href="javascript:void(0)" lay-event="viewTzsImg" tzsId="'+ d.tzsId +'">查看</a>';
-					    	 }
+					    	return '<a class="viewTzs" href="javascript:void(0)" lay-event="viewTzsImg" tzsId="'+ d.tzsId +'">查看</a>';
 					     }},
 					]],
 					done : function(){
