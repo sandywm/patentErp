@@ -1394,6 +1394,8 @@ public class ZlMainAction extends DispatchAction {
 								map_d.put("tzsName", tzsName.substring(tzsName.lastIndexOf("\\")+1,tzsName.length()));
 								map_d.put("fwrDate", tzs.getTzsFwr());
 								map_d.put("gfrDate", tzs.getTzsGfr());
+								map_d.put("imgFilePath", tzs.getTifPath());
+								map_d.put("tzsNum", String.valueOf(tzs.getTifPath().split(",").length));
 								map_d.put("downFilePath", tzs.getTzsPath());
 								map_d.put("tzsType", tzs.getTzsType());
 								list_tzs.add(map_d);
@@ -4133,10 +4135,9 @@ public class ZlMainAction extends DispatchAction {
 							map_f.put("fileName", tzsName);
 							map_f.put("fjGs", "jpg");
 							map_f.put("fjSize", "");
-							map_f.put("zlType","通知书");
+							map_f.put("fileType","通知书");
 							map_f.put("imgFilePath", tzsTifPath);
 							String firstTzs = tzsTifPath.split(",")[0];
-							map_f.put("filePathPre", WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\");//文件前缀
 							map_f.put("downFilePath", firstTzs.substring(0, firstTzs.lastIndexOf("\\")));
 							map_f.put("tzsNum", String.valueOf(tzsTifPath.split(",").length));
 							map_f.put("upUser", "");
@@ -6817,31 +6818,24 @@ public class ZlMainAction extends DispatchAction {
 				if(fjList.size() > 0){
 					for(Iterator<ZlajLcMxInfoTb> it = fjList.iterator() ; it.hasNext();){
 						ZlajLcMxInfoTb lcfj = it.next();
-						String mxName = lcfj.getLcMxName();
+						String lcName = lcfj.getZlajLcInfoTb().getLcMz();
 						String upUser = cum.getEntityById(lcfj.getLcMxUpUserId()).getUserName();
-						if(mxName.equals("导入补正通知书")){
-							filePath_tzs = lcfj.getZlajLcInfoTb().getLcTzsPath();
+						if(lcName.equals("导入通知书")){//导入通知书
+							filePath_tzs = lcfj.getTzsTifPath();
 							if(!filePath_tzs.equals("")){
-								String[] filePathTzsArr = filePath_tzs.split(",");
-								for(int i = 0 ; i < filePathTzsArr.length ; i++){
-									Map<String,String> map_f = new HashMap<String,String>();
-									String fileName_curr = filePathTzsArr[i].substring((filePathTzsArr[i].lastIndexOf("\\") + 1));//文件名称;
-									Integer lastIndex = fileName_curr.lastIndexOf("_");
-									String lastFjName = fileName_curr.substring(lastIndex+1, fileName_curr.length());
-									Integer lastIndex_1 = lastFjName.indexOf(".");
-									String fjGs = lastFjName.substring(lastIndex_1+1, lastFjName.length());//文件格式
-									String fjSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + filePathTzsArr[i]);//文件大小
-									String downFilePath = filePathTzsArr[i];
-									map_f.put("fileName", fileName_curr);
-									map_f.put("fjGs", fjGs);
-									map_f.put("fjSize", fjSize);
-									map_f.put("fileType", "补正通知书");
-									map_f.put("downFilePath", downFilePath);
-									map_f.put("upUser", upUser);
-									list_fj.add(map_f);
-								}
+								Map<String,String> map_f = new HashMap<String,String>();
+								map_f.put("fileName", lcfj.getTzsName());
+								map_f.put("fjGs", "jpg");
+								map_f.put("fjSize", "");
+								map_f.put("fileType", "通知书");
+								map_f.put("imgFilePath", filePath_tzs);
+								String firstTzs = filePath_tzs.split(",")[0];
+								map_f.put("downFilePath", firstTzs.substring(0, firstTzs.lastIndexOf("\\")));
+								map_f.put("tzsNum", String.valueOf(filePath_tzs.split(",").length));
+								map_f.put("upUser", "");
+								list_fj.add(map_f);
 							}
-						}else if(mxName.equals("补正提交")){
+						}else if(lcName.equals("补正提交")){
 							filePath_bz = lcfj.getLcMxUpFile();//补正提交文件
 							String[] filePathBzArr = filePath_bz.split(",");
 							for(int i = 0 ; i < filePathBzArr.length ; i++){
