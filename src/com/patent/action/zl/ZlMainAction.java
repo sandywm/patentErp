@@ -5513,6 +5513,9 @@ public class ZlMainAction extends DispatchAction {
 		        	}
 		        	Integer zlNum = zlList.size();
 		        	String tzsPath_tmp = tzsPath;
+		        	if(!tifPath.equals("")){
+		        		tifPath = tifPath.substring(0, tifPath.length() - 1);//去掉末尾的逗号
+		        	}
 		        	String tifPath_tmp = tifPath;
 		        	String tzsType = "tzs";
     				if(tzsName.equals("电子申请回执")){
@@ -5902,6 +5905,7 @@ public class ZlMainAction extends DispatchAction {
 						        						}else{
 						        							readResult = "noYearFee";//还没导入年费，无法导入滞纳金
 						        							readResultChi = "还没导入年费，无法导入滞纳金";
+						        							tzsId = tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, readResultChi, cpyId,tzsType,upTifPath_final);
 						        						}
 						    		        		}
 						    		        	}
@@ -5939,6 +5943,7 @@ public class ZlMainAction extends DispatchAction {
 					        				tzsId = tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, "系统还未学习该通知书的读取方法", cpyId,tzsType,upTifPath_final);
 					        			}
 									}else{
+										upTifPath_final = tifPath_tmp;
 										readResult = "noInpTzs";//定稿提交之前不能导入通知书
 				        				readResultChi = "定稿提交完成后才能导入通知书";
 				        				tzsId = tzsm.addTzs(zlId, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, upZipPath_final, currUserId, 0, readResultChi, cpyId,tzsType,upTifPath_final);
@@ -5951,7 +5956,6 @@ public class ZlMainAction extends DispatchAction {
 											//删除临时上传通知书压缩包位置
 											FileOpration.deleteFile(path_pre + tzsPath);
 											if(!tifPath_tmp.equals("")){
-												tifPath_tmp = tifPath_tmp.substring(0, tifPath_tmp.length() - 1);//去掉末尾的逗号
 												String[] tifPathArr = tifPath_tmp.split(",");
 												for(Integer i = 0 ; i < tifPathArr.length ; i++){
 													//复制上传的通知书图片到指定位置
@@ -5987,6 +5991,15 @@ public class ZlMainAction extends DispatchAction {
 									}else{
 										//删除临时上传位置
 										//FileOpration.deleteFile(tzsPath);
+										if(tzsName.equals("电子申请回执")){//电子申请回执
+											List<FileListJson> flList = tJson.getFlList();
+					        				if(flList.size() > 0){
+					        					for(Integer i = 0 ; i < flList.size() ; i++){
+					        						FileListJson flJson = flList.get(i);
+					        						tzsm.addAF(tzsId, flJson.getFileName(), flJson.getFileType(), flJson.getFileSize());
+					        					}
+					        				}
+										}
 									}
 								}
 			        		}else{//案件被终止无法再识别通知书
@@ -6005,6 +6018,15 @@ public class ZlMainAction extends DispatchAction {
 										FileOpration.deleteFile(path_pre + tifPathArr[i]);
 									}
 								}
+								if(tzsName.equals("电子申请回执")){//电子申请回执
+									List<FileListJson> flList = tJson.getFlList();
+			        				if(flList.size() > 0){
+			        					for(Integer i = 0 ; i < flList.size() ; i++){
+			        						FileListJson flJson = flList.get(i);
+			        						tzsm.addAF(tzsId, flJson.getFileName(), flJson.getFileType(), flJson.getFileSize());
+			        					}
+			        				}
+								}
 							}
 							map_d.put("result", readResult);
 							map_d.put("readResultChi", readResultChi);
@@ -6019,7 +6041,7 @@ public class ZlMainAction extends DispatchAction {
 	        			}else if(succZlNum.equals(0)){//不存在正常的专利
 	        				readResult = "noInfo";//该通知书没有匹配到专利
 			        		readResultChi = "该通知书没有匹配到专利";
-			        		tzsId = tzsm.addTzs(0, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "没有匹配到专利", cpyId,tzsType,tifPath_tmp);
+			        		tzsId = tzsm.addTzs(0, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, readResultChi, cpyId,tzsType,tifPath_tmp);
 		    				map_d.put("result", readResult);
 		    				map_d.put("readResultChi", readResultChi);
 		    				map_d.put("tzsName", tzsName);
@@ -6029,6 +6051,15 @@ public class ZlMainAction extends DispatchAction {
 							map_d.put("tzsTifPath", tifPath_tmp);
 							map_d.put("tzsId", tzsId);
 		    				list_d.add(map_d);
+		    				if(tzsName.equals("电子申请回执")){//电子申请回执
+								List<FileListJson> flList = tJson.getFlList();
+		        				if(flList.size() > 0){
+		        					for(Integer i = 0 ; i < flList.size() ; i++){
+		        						FileListJson flJson = flList.get(i);
+		        						tzsm.addAF(tzsId, flJson.getFileName(), flJson.getFileType(), flJson.getFileSize());
+		        					}
+		        				}
+							}
 	        			}else{//存在多个正常的专利(需要在结果页面由人为指派)--发生在没有专利号的情况下
 	        				readResult = "multInfo";//存在多个专利
 			        		readResultChi = "该通知书匹配到多个专利";
@@ -6066,11 +6097,20 @@ public class ZlMainAction extends DispatchAction {
 							map_d.put("tzsTifPath", tifPath_tmp);
 							map_d.put("tzsId", tzsId);
 		    				list_d.add(map_d);
+		    				if(tzsName.equals("电子申请回执")){//电子申请回执
+								List<FileListJson> flList = tJson.getFlList();
+		        				if(flList.size() > 0){
+		        					for(Integer i = 0 ; i < flList.size() ; i++){
+		        						FileListJson flJson = flList.get(i);
+		        						tzsm.addAF(tzsId, flJson.getFileName(), flJson.getFileType(), flJson.getFileSize());
+		        					}
+		        				}
+							}
 	        			}
 		        	}else{//不存在
 		        		readResult = "noInfo";//该通知书没有匹配到专利
 		        		readResultChi = "该通知书没有匹配到专利";
-		        		tzsId = tzsm.addTzs(0, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, "没有匹配到专利", cpyId,tzsType,tifPath_tmp);
+		        		tzsId = tzsm.addTzs(0, ajNoGf,tzsName, fwDate, feeEndDateGf, fwSerial, tzsPath_tmp, currUserId, 0, readResultChi, cpyId,tzsType,tifPath_tmp);
 	    				map_d.put("result", readResult);
 	    				map_d.put("readResultChi", readResultChi);
 	    				map_d.put("tzsName", tzsName);
@@ -6080,6 +6120,15 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("tzsTifPath", tifPath_tmp);
 						map_d.put("tzsId", tzsId);
 	    				list_d.add(map_d);
+	    				if(tzsName.equals("电子申请回执")){//电子申请回执
+							List<FileListJson> flList = tJson.getFlList();
+	        				if(flList.size() > 0){
+	        					for(Integer i = 0 ; i < flList.size() ; i++){
+	        						FileListJson flJson = flList.get(i);
+	        						tzsm.addAF(tzsId, flJson.getFileName(), flJson.getFileType(), flJson.getFileSize());
+	        					}
+	        				}
+						}
 						//删除当前通知书压缩包
 						//FileOpration.deleteFile(tzsPath);
 		        	}
@@ -7158,7 +7207,11 @@ public class ZlMainAction extends DispatchAction {
 		if(tzs != null){
 			map.put("result", "success");
 			map.put("imgFilePath", tzs.getTifPath());
-			map.put("tzsNum", tzs.getTifPath().split(",").length);
+			if(!tzs.getTifPath().equals("")){
+				map.put("tzsNum", tzs.getTifPath().split(",").length);
+			}else{
+				map.put("tzsNum", 0);
+			}
 		}else{
 			map.put("result", "noInfo");
 		}

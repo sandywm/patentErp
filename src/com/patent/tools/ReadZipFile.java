@@ -163,7 +163,7 @@ public class ReadZipFile {
 										is.close();
 								        os.close();
 								        FileOpration.tiffTurnJpg(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + newFilePath);
-								        FileOpration.deleteFile(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + newFilePath);
+//								        System.out.println("jpgAbsoPath:---"+jpgAbsoPath);
 									}
 								}
 								lastFileNamePre = firstFileNamePre;
@@ -501,7 +501,7 @@ public class ReadZipFile {
 		// TODO Auto-generated method stub
 //		ReadZipFile rzf = new ReadZipFile();
 //		rzf.copyZipFile(new File("e:\\5tzs.zip"));
-		ReadZipFile.readZipFile_new("e:\\5tzs.zip", 1, 1, 0);
+		ReadZipFile.readZipFile_new("e:\\new\\5tzs.zip", 1, 1, 0);
 //		List<TzsJson> tjList = new ArrayList<TzsJson>();
 ////		for(int i = 222 ; i <= 223; i++){
 ////			List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\"+i+".zip",0,0,0);

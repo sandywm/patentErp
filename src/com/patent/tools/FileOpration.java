@@ -19,6 +19,7 @@ import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderedOp;
 
+import com.patent.util.WebUrl;
 import com.sun.media.jai.codec.FileSeekableStream;
 import com.sun.media.jai.codec.ImageCodec;
 import com.sun.media.jai.codec.ImageEncoder;
@@ -262,9 +263,12 @@ public class FileOpration {
 		     ops.flush();
 		     ops.close();
 		     stream.close();
+		     //删除源文件-tif
+		     FileOpration.deleteFile(filePath);
 //		     System.out.println("缩放开始--"+CurrentTime.getStringTime1());
 //		     FileOpration.makeImage(newFilePath, 1240, -1, newFilePath, "JPEG");
 //		     System.out.println("缩放结束--"+CurrentTime.getStringTime1());
+		     
 			} catch (Exception e) {
 				e.printStackTrace();
 			} 
