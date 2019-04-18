@@ -841,7 +841,6 @@ public class ZlMainAction extends DispatchAction {
 						map_d.put("readDetail", tzs.getReadDetail());
 						map_d.put("tzsType", tzs.getTzsType());
 						map_d.put("tzsZipPath", tzs.getTzsPath());
-						map_d.put("tzsTifPath", tzs.getTifPath());
 						list_d.add(map_d);
 					}
 					map.put("msg", "success");
@@ -1394,13 +1393,8 @@ public class ZlMainAction extends DispatchAction {
 								map_d.put("tzsName", tzsName);
 								map_d.put("fwrDate", tzs.getTzsFwr());
 								map_d.put("gfrDate", tzs.getTzsGfr());
-								String tzsType = tzs.getTzsType();
-								if(tzsType.equals("tzs")){
-									map_d.put("imgFilePath", tzs.getTifPath());
-									map_d.put("tzsNum", String.valueOf(tzs.getTifPath().split(",").length));
-								}
 								map_d.put("downFilePath", tzs.getTzsPath());
-								map_d.put("tzsType", tzsType);
+								map_d.put("tzsType", tzs.getTzsType());
 								list_tzs.add(map_d);
 							}
 							map.put("tzsInfo", list_tzs);
@@ -7130,6 +7124,36 @@ public class ZlMainAction extends DispatchAction {
 		    	System.out.println("用户取消文件下载");
 		    } 
 		}
+		return null;
+	}
+	
+	/**
+	 * 获取指定通知书的图片信息
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-18 上午09:41:17
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward getTzsJpgInfo(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// TODO Auto-generated method stub
+		ZlajTzsInfoManager tzsm = (ZlajTzsInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_TZS_INFO);
+		Integer tzsId = CommonTools.getFinalInteger("tzsId", request);
+		ZlajTzsInfoTb tzs = tzsm.getEntityById(tzsId);
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(tzs != null){
+			map.put("result", "success");
+			map.put("imgFilePath", tzs.getTifPath());
+			map.put("tzsNum", tzs.getTifPath().split(",").length);
+		}else{
+			map.put("result", "noInfo");
+		}
+		this.getJsonPkg(map, response);
 		return null;
 	}
 }
