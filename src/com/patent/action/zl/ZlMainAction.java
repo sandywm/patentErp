@@ -4133,6 +4133,7 @@ public class ZlMainAction extends DispatchAction {
 							map_f.put("fjGs", "jpg");
 							map_f.put("fjSize", "");
 							map_f.put("fileType","通知书");
+							map_f.put("zlType","通知书");
 							map_f.put("imgFilePath", tzsTifPath);
 							String firstTzs = tzsTifPath.split(",")[0];
 							map_f.put("downFilePath", firstTzs.substring(0, firstTzs.lastIndexOf("\\")));
@@ -6805,6 +6806,7 @@ public class ZlMainAction extends DispatchAction {
 						map_f.put("fjGs", fjGs);
 						map_f.put("fjSize", fjSize);
 						map_f.put("fileType", "定稿文件");
+						map_f.put("zlType", "定稿文件");
 						map_f.put("downFilePath", downFilePath);
 						map_f.put("upUser", upUserDg1);
 						list_fj.add(map_f);
@@ -6825,6 +6827,7 @@ public class ZlMainAction extends DispatchAction {
 								map_f.put("fjGs", "jpg");
 								map_f.put("fjSize", "");
 								map_f.put("fileType", "通知书");
+								map_f.put("zlType", "通知书");
 								map_f.put("imgFilePath", filePath_tzs);
 								String firstTzs = filePath_tzs.split(",")[0];
 								map_f.put("downFilePath", firstTzs.substring(0, firstTzs.lastIndexOf("\\")));
@@ -6866,6 +6869,7 @@ public class ZlMainAction extends DispatchAction {
 								map_f.put("fjGs", fjGs);
 								map_f.put("fjSize", fjSize);
 								map_f.put("fileType", bzType);
+								map_f.put("zlType", bzType);
 								map_f.put("downFilePath", downFilePath);
 								map_f.put("upUser", upUser);
 								list_fj.add(map_f);
