@@ -36,7 +36,7 @@
     <script type="text/javascript">
     	var loginType=parent.loginType,roleName=parent.roleName,hasReadFlag=false,tmpAddBackFee='';
 		var addEditZlOpts='',addZlFlag = false,globalTaskOpts={taskOpts:'0',yjFzrFlag:false,currLcNo:0,fzUserId:0,globalLcMxId:0,globalMxId:0,yjTypeTxt:'',applyCause:'',applyName:'',yjId:0,zlType:'',tzsId:0},zlTypeInp='',globalLqStatus=1,globalWid=180,globalZlId=0,globalZlTit='',clickOptsFlag=false,globalIndex=0;
-		var zlShowTagFlag = '${requestScope.zlTagShowFlag}',tzsShowFlag = '${requestScope.tzsShowFlag}',zlStrOpts='';
+		var zlShowTagFlag = '${requestScope.zlTagShowFlag}',tzsShowFlag = '${requestScope.tzsShowFlag}',zlStrOpts='',receiptNum=0;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -1032,7 +1032,7 @@
 					var tzsType = $(this).attr('tzsType');
 					if(tzsType == 'sqd'){//查看电子回执单
 						layer.open({
-							title:'查看回执单',
+							title:'电子回执单',
 							type: 2,
 						  	area: ['700px', '400px'],
 						  	fixed: true, //不固定

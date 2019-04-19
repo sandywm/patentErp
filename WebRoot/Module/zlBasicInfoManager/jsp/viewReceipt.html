@@ -19,7 +19,6 @@
 	</div>
 	<script src="/plugins/layui/layui.js"></script>
 	<script type="text/javascript">
-		var tzsId = parent.globalTaskOpts.tzsId;
 		layui.config({
 			base: '/plugins/frame/js/'
 		}).extend({ //设定组件别名
@@ -34,10 +33,15 @@
 				},
 				getReceiptCon : function(){
 					var _this = this;
+					if(parent.receiptNum == 0){
+						var field = {tzsId : parent.globalTaskOpts.tzsId};
+					}else{
+						var field = {tzsId : parent.currTzsId};
+					}
 					$.ajax({
   						type:'post',
 				        dataType:'json',
-				        data : {tzsId:tzsId},
+				        data : field,
 				        url:'/zlm.do?action=getApplyFileInfo',
 				        success:function (json){
 				        	if(json['result'] == 'success'){

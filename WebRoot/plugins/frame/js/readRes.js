@@ -51,7 +51,8 @@ layui.define(['jquery','table','common'],function(exports){
 					    	 }
 					     }},
 					     {field : '', title: '操作', width:120, align:'center',templet:function(d){
-					    	return '<a class="viewTzs" href="javascript:void(0)" lay-event="viewTzsImg" tzsId="'+ d.tzsId +'">查看</a>';
+					    	 console.log(d)
+					    	 return '<a class="viewTzs" tzsType="'+ d.tzsType +'" href="javascript:void(0)" lay-event="viewTzsImg" tzsId="'+ d.tzsId +'">查看</a>';
 					     }},
 					]],
 					done : function(){
@@ -64,8 +65,23 @@ layui.define(['jquery','table','common'],function(exports){
     };
 	table.on('tool(readResTab_tzs)',function(obj){
 		if(obj.event == 'viewTzsImg'){
-			var tzsId = $(this).attr('tzsId');
-			common.getTzsPath(tzsId,parent.parent);
+			var tzsId = $(this).attr('tzsId'),
+				tzsType = $(this).attr('tzsType');
+			if(tzsType == 'sqd'){//查看电子回执申请
+				currTzsId = tzsId;
+				layer.open({
+					title:'电子申请回执单',
+					type: 2,
+				  	area: ['700px', '400px'],
+				  	fixed: true, //不固定
+				  	maxmin: false,
+				  	shadeClose :false,
+				  	closeBtn : 1,
+				  	content: '/Module/zlBasicInfoManager/jsp/viewReceipt.html'
+				});	
+			}else{//查看通知书读取的图片
+				common.getTzsPath(tzsId,parent.parent);
+			}
 		}
 	});
     //输出接口
