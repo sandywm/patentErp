@@ -6037,6 +6037,7 @@ public class ZlMainAction extends DispatchAction {
 							map_d.put("tzsZipPath", upZipPath_final);
 							map_d.put("tzsTifPath", upTifPath_final);
 							map_d.put("tzsId", tzsId);
+							map_d.put("tzsType", tzsType);
 							list_d.add(map_d);
 	        			}else if(succZlNum.equals(0)){//不存在正常的专利
 	        				readResult = "noInfo";//该通知书没有匹配到专利
@@ -6050,6 +6051,7 @@ public class ZlMainAction extends DispatchAction {
 		    				map_d.put("tzsZipPath", tzsPath_tmp);
 							map_d.put("tzsTifPath", tifPath_tmp);
 							map_d.put("tzsId", tzsId);
+							map_d.put("tzsType", tzsType);
 		    				list_d.add(map_d);
 		    				if(tzsName.equals("电子申请回执")){//电子申请回执
 								List<FileListJson> flList = tJson.getFlList();
@@ -6096,6 +6098,7 @@ public class ZlMainAction extends DispatchAction {
 		    				map_d.put("tzsZipPath", tzsPath_tmp);
 							map_d.put("tzsTifPath", tifPath_tmp);
 							map_d.put("tzsId", tzsId);
+							map_d.put("tzsType", tzsType);
 		    				list_d.add(map_d);
 		    				if(tzsName.equals("电子申请回执")){//电子申请回执
 								List<FileListJson> flList = tJson.getFlList();
@@ -6119,6 +6122,7 @@ public class ZlMainAction extends DispatchAction {
 	    				map_d.put("tzsZipPath", tzsPath_tmp);
 						map_d.put("tzsTifPath", tifPath_tmp);
 						map_d.put("tzsId", tzsId);
+						map_d.put("tzsType", tzsType);
 	    				list_d.add(map_d);
 	    				if(tzsName.equals("电子申请回执")){//电子申请回执
 							List<FileListJson> flList = tJson.getFlList();
