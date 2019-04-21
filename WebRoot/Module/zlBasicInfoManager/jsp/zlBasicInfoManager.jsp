@@ -1051,7 +1051,11 @@
 					}
 				}else if(obj.event == 'downFileFun'){
 					var downFilePath = $(this).attr('downFilePath');
-					common.downFiles(downFilePath,0);
+					if(downFilePath != ''){
+						common.downFiles(downFilePath,0);
+					}else{
+						layer.msg('暂无通知书', {icon:5,anim:6,time:1000});
+					}
 				}
 			});
 			//form 监听获取查看我的任务 未完成/已完成
