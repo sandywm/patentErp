@@ -706,7 +706,11 @@
 							{field : 'uploadUserName', title: '上传者',width:100, align:'center'},
 							{field : 'uploadTime', title: '上传日期',width:180, align:'center'},
 							{field : '', title: '操作', align:'center',width:180,fixed:'right',templet : function(d){
-								return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="viewTzsResDetail" tzsType="'+ d.tzsType +'" tzsId="'+ d.tzsId +'"><i class="layui-icon layui-icon-search"></i>查看</a><a class="layui-btn layui-btn-xs" lay-event="downFileFun" downFilePath="'+ d.tzsPath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';
+								if(d.tzsType == 'sqd'){
+									return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="viewTzsResDetail" tzsType="'+ d.tzsType +'" tzsId="'+ d.tzsId +'"><i class="layui-icon layui-icon-search"></i>查看</a>';
+								}else{
+									return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="viewTzsResDetail" tzsType="'+ d.tzsType +'" tzsId="'+ d.tzsId +'"><i class="layui-icon layui-icon-search"></i>查看</a><a class="layui-btn layui-btn-xs" lay-event="downFileFun" downFilePath="'+ d.tzsPath +'"><i class="layui-icon layui-icon-download-circle"></i>下载</a>';	
+								}
 							}},
 						]],
 						done : function(){

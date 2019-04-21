@@ -334,7 +334,11 @@
 							});
 							$('.viewTzsBtn').on('click',function(){
 								//查看通知书
-								common.viewTzsImg(parent.parent);
+								if(tzsImg.length > 0){
+									common.viewTzsImg(parent.parent);
+								}else{
+									layer.msg('暂无此通知书信息！', {icon:5,anim:6,time:1500});
+								}
 							});
 							
 						}

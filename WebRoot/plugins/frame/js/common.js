@@ -178,7 +178,11 @@ layui.define(['rate'],function(exports){
 		        	if(json['result'] == 'success'){
 		        		//查看通知书图片
 						tzsImg = json.imgFilePath.split(',');
-						_this.viewTzsImg(parType);
+						if(tzsImg.length > 0){
+							_this.viewTzsImg(parType);
+						}else{
+							layer.msg('暂无此通知书信息!', {icon:5,anim:6,time:1500});
+						}
 		        	}else if(json['result'] == 'noInfo'){
 		        		layer.msg('暂无此通知书信息！', {icon:5,anim:6,time:1500});
 		        	}
