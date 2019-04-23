@@ -174,3 +174,14 @@
   color:#fff;
   background: #007aff !important;
 }
+.loadingBars{
+	width:100px;
+	height:52px;
+	background:url(../../../images/loading-bars.svg);
+	background-size: 100% 100%;
+	position:absolute;
+	left:50%;
+	margin-left:-50px;
+	top:50%;
+	margin-top:-16px;
+}

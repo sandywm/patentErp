@@ -193,16 +193,26 @@ layui.define(['rate'],function(exports){
 		viewTzsImg : function(parType){
 			var str = '';
 			for(var i=0,iLen=tzsImg.length;i<iLen;i++){
-				str +=`
-					<div class='swiper-slide'>
-						<img class='tzsImg' title='查看原图' onclick='showOriginImg(this)' src='Module/uploadFile/${ tzsImg[i] }'/>
-					</div>
-				`;
+				str += '<div class="swiper-slide">';
+				str += '<div class="loadingBars"></div>';
+				str += '<img class="tzsImg" data-src="/Module/uploadFile/'+ tzsImg[i] +'" src="" style="display:none;"/>';
+				str += '</div>';
 			}
 			parType.$('.tzsLayer').show();
 			parType.$('.swiperBox').show();
 			parType.$('#swiperWrap').html(str);
 			parType.swiperTzs();
+			
+			var imgs = parType.$(".tzsImg"), Img = [];
+	        imgs.each(function (i, v) {
+	        	var originSrc = $(v).attr('data-src');
+	            Img[i] = new Image();
+	            Img[i].src = originSrc;
+	            Img[i].onload = function(i) {
+	            	$(v).show().attr('src',originSrc);
+	            	$('.loadingBars').eq(i).hide();
+	            };
+	        });
 		}
     };
     //输出接口

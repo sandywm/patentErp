@@ -98,7 +98,7 @@
   	<div class="tzsLayer"></div>
   	<div class="swiperBox">
   		<i class="layui-icon layui-icon-close tzsClose" onclick="closeTzsBox()"></i>
-  		<div class="swiper-container">
+  		<div class="swiper-container swiper-no-swiping">
 	    	<div id="swiperWrap" class="swiper-wrapper"></div>
 	    	<div class="swiper-pagination"></div>
 	    	<div class="swiper-button-next"></div>
