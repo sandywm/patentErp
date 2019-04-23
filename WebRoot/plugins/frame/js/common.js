@@ -195,7 +195,7 @@ layui.define(['rate'],function(exports){
 			for(var i=0,iLen=tzsImg.length;i<iLen;i++){
 				str += '<div class="swiper-slide">';
 				str += '<div class="loadingBars"></div>';
-				str += '<img class="tzsImg" data-src="/Module/uploadFile/'+ tzsImg[i] +'" src="" style="display:none;"/>';
+				str += '<img class="tzsImg" onclick="showOriginImg(this)" data-src="/Module/uploadFile/'+ tzsImg[i] +'" src="" style="display:none;"/>';
 				str += '</div>';
 			}
 			parType.$('.tzsLayer').show();
