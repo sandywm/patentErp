@@ -22,7 +22,7 @@ public class Constants {
 	public static final Integer JF_SC_END_DATE_CPY = 1080;//实质审查费代理机构期限
 	
 	public static final String SYS_CONFIG_WJ = "e:\\sysConfig.json";//系统配置文件存放地
-	public static final String ZL_FEE_DG = "\\Module\\excelTemp\\zlCommFee.xls";//国家局的标准缴费清单底稿
+	public static final String ZL_FEE_DG = "\\Module\\excelTemp\\zlCommFee.xls";//国家局的标准缴费清单底稿测试
 	public static final Integer TD_RECEIVE_DAYS = 15;//推定收到日
 	
 	public static final Integer DL_FEE_DAYS = 30;//代理费缴纳时间
