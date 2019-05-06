@@ -2,10 +2,13 @@ package com.patent.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -20,6 +23,9 @@ import java.util.regex.Pattern;
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.patent.util.Constants;
 
 public class CommonTools {
@@ -426,49 +432,73 @@ public class CommonTools {
 		}
 		return yearFee;
 	}
+
+	/**
+	 * 检查用户登录结果
+	 * @author wm
+	 * @date 2019-5-6 下午04:36:00
+	 * @param account
+	 * @param password
+	 * @return
+	 * @throws Exception 
+	 * @throws Exception
+	 * @throws FileNotFoundException
+	 */
+	public static String checkLoginUser(String account,String password) throws Exception{
+		String result = "";//格式为登录状态:管理科室：模块(1:油综调配见效率,2:水综合调配方案,3:水综层段合格率,4:作业注水合格率)
+		if(!account.equals("") && !password.equals("")){
+			String s = null;
+			File file = new File("e:/loginUser.json");;
+			InputStreamReader br = new InputStreamReader(new FileInputStream(file),"utf-8");//读取文件,同时指定编码
+			StringBuffer sb = new StringBuffer();
+	        char[] ch = new char[128];  //一次读取128个字符
+	        int len = 0;
+	        while((len = br.read(ch,0, ch.length)) != -1){
+	            sb.append(ch, 0, len);
+	        }
+	        s = sb.toString();
+	        String account_json = "";
+	        String password_json = "";
+	        
+	        JSONObject dataJson = JSON.parseObject(s); 
+	        JSONArray features = dataJson.getJSONArray("userList");// 找到features json数组
+	        for(Integer i = 0 ; i < features.size() ; i++){
+	        	JSONObject stuInfo = features.getJSONObject(i);// 获取features数组的第i个json对象
+	        	account_json = stuInfo.getString("account");//获取账号
+	        	password_json = stuInfo.getString("password");
+	        	if(account_json.equals(account) && password_json.equals(password)){//账号和密码都要相同
+	        		result = "succ";
+	        		result += ":"+stuInfo.getString("groupName") + ":" + stuInfo.getString("moduleId");
+	        		break;
+	        	}else{
+	        		result = "fail";
+	        	}
+	        }
+		}
+		return result;
+	}
 	
-	public static void main(String[] args){
-//		String[] ipArray = {"1.31.255.255","124.117.66.101","222.75.147.27","220.182.50.226","219.159.235.101","61.244.148.166","59.108.49.35","182.116.193.7","61.157.134.73"};
-//		System.out.println(CommonTools.searchIpByBaidu(ipArray[0]));
-//		System.out.println(CommonTools.searchIpByBaidu(ipArray[1]));
-//		System.out.println(CommonTools.searchIpByBaidu(ipArray[2]));
-//		System.out.println(CommonTools.searchIpByBaidu(ipArray[3]));
-//		System.out.println(CommonTools.searchIpByBaidu(ipArray[4]));
-//		System.out.println(CommonTools.searchIpByBaidu(ipArray[5]));
-//		System.out.println(CommonTools.searchIpByBaidu(ipArray[6]));
-//		System.out.println(CommonTools.searchIpByBaidu(ipArray[7]));
-//		System.out.println(CommonTools.searchIpByBaidu(ipArray[8]));
-//		float aa = (float) (3.13 + 3.16) / 2;
-//		System.out.println(aa);
-//		System.out.println(Convert.convertInputNumber(aa));
-//		Map<String,String> map = new HashMap<String,String>();
-//		map.put("userId", "10");
-//		map.put("img1", "img1");
-//		map.put("img2", "img2");
-//		for(Map.Entry<String, String> entry : map.entrySet()){
-//			System.out.println("key = " + entry.getKey() + "  value = " + entry.getValue());
-//		}
-//		System.out.println("-------------");
-//		for(String value :map.values()){
-//			System.out.println("value = "+value);
-//		}
-//		System.out.println("-------------");
-//		
-//		ListIterator<Map.Entry<String, String>> i = new ArrayList<Map.Entry<String, String>>(map.entrySet()).listIterator(map.size());
-//		while(i.hasPrevious()){
-//			Map.Entry<String, String> entry = i.previous();
-//			System.out.println("key = " + entry.getKey() + "  value = " + entry.getValue());
-//		}
-//		System.out.println(CommonTools.getInStoreNo("A_001223"));
-//		
-//		System.out.println(CommonTools.checkMobile(""));
-//		System.out.println(CommonTools.checkMobile("133110"));
-//		System.out.println(CommonTools.checkMobile("13311089766"));
-//		float aba = 118 * 100 / 1000f;
-//		double abc = 118 * 100d / 100000;
-//		String aaa = Convert.convertInputNumber_1(118 * 100d / 100000);
-//		System.out.println(Double.parseDouble(aaa));
-//		System.out.println(aba);
-//		System.out.println(abc);
+	//jsong格式
+	/**{
+		"userList": [{
+			"account": "wulei",
+			"password": "123456",
+			"groupName": "管理一室",
+			"moduleId": "4"
+		}, {
+			"account": "wmk",
+			"password": "123456",
+			"groupName": "管理二室",
+			"moduleId": "1,2"
+		}, {
+			"account": "sandy",
+			"password": "123456",
+			"groupName": "管理二室",
+			"moduleId": "3"
+		}]
+	}**/
+	
+	public static void main(String[] args) throws Exception{
+		System.out.print(CommonTools.checkLoginUser("wmk", "123456"));
 	}
 }
