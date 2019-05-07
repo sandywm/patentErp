@@ -17,6 +17,10 @@ import java.nio.charset.Charset;
 //import java.util.HashMap;
 //import java.util.ListIterator;
 //import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +31,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.patent.util.Constants;
+import com.patent.tools.CommonTools;
 
 public class CommonTools {
 	
@@ -496,9 +501,138 @@ public class CommonTools {
 			"groupName": "管理二室",
 			"moduleId": "3"
 		}]
-	}**/
+	}
+	 * @throws Exception 
+	 * @throws UnsupportedEncodingException **/
+	
+	/**
+	 * 获取指定条件的json数据
+	 * @throws Exception 
+	 * @throws UnsupportedEncodingException 
+	 */
+	public static void readJsonDate(String specYear) throws UnsupportedEncodingException, Exception{
+		String s = null;
+		File file = new File("e:/hgl.json");;
+		InputStreamReader br = new InputStreamReader(new FileInputStream(file),"utf-8");//读取文件,同时指定编码
+		StringBuffer sb = new StringBuffer();
+        char[] ch = new char[128];  //一次读取128个字符
+        int len = 0;
+        while((len = br.read(ch,0, ch.length)) != -1){
+            sb.append(ch, 0, len);
+        }
+        s = sb.toString();
+        JSONObject dataJson = JSON.parseObject(s); 
+        JSONArray features = dataJson.getJSONArray("excelList");// 找到features json数组
+        List<Object> list_d1 = new ArrayList<Object>();
+        Map<String,String> map_d1 = new HashMap<String,String>();
+        map_d1.put("fileName", "测试");
+		map_d1.put("month", "2019-04");
+		map_d1.put("fxDate", "2019-05-01 11:00:00");
+		map_d1.put("filePath", "测试地址");
+		list_d1.add(map_d1);
+        features.add(list_d1);
+        Map<String,Object> map = new HashMap<String,Object>();
+        List<Object> list_d = new ArrayList<Object>();
+        String msg = "noInfo";
+        for(Integer i = 0 ; i < features.size() ; i++){
+        	JSONObject obj = features.getJSONObject(i);// 获取features数组的第i个json对象
+        	Map<String,String> map_d = new HashMap<String,String>();
+        	String year = obj.getString("year");//获取年份
+        	if(year.equals(specYear)){
+        		msg = "success";
+        		map_d.put("fileName", obj.getString("fileName"));
+        		map_d.put("month", obj.getString("month"));
+        		map_d.put("fxDate", obj.getString("fxDate"));
+        		map_d.put("filePath", obj.getString("filePath"));
+        		list_d.add(map_d);
+        	}else{
+        		continue;
+        	}
+        }
+        if(msg.equals("success")){
+        	map.put("fileList", list_d);
+        }
+        map.put("result", msg);
+	}
+	
+	/**{
+	"excelList": [{
+		"fileName": "2019-01_油田地质分析数据",
+		"month" : "2019-01",
+		"fxDate": "2019-02-01 12:05:00",
+		"year": "2019",
+		"filePath": "e:/2019-01_油田地质分析数据.xls"
+	}, {
+		"fileName": "2019-03_油田地质分析数据",
+		"month" : "2019-03",
+		"fxDate": "2019-04-01 12:05:00",
+		"year": "2019",
+		"filePath": "e:/2019-03_油田地质分析数据.xls"
+	}, {
+		"fileName": "2019-02_油田地质分析数据",
+		"month" : "2019-02",
+		"fxDate": "2019-03-01 12:05:00",
+		"year": "2019",
+		"filePath": "e:/2019-02_油田地质分析数据.xls"
+	}, {
+		"fileName": "2018-02_油田地质分析数据",
+		"month" : "2018-02",
+		"fxDate": "2018-03-01 12:05:00",
+		"year": "2018",
+		"filePath": "e:/2018-02_油田地质分析数据.xls"
+	}, {
+		"fileName": "2018-01_油田地质分析数据",
+		"month" : "2018-01",
+		"fxDate": "2018-02-01 12:05:00",
+		"year": "2018",
+		"filePath": "e:/2018-01_油田地质分析数据.xls"
+	}]
+}**/
+	
+	/**
+	 * 往json文件中增加记录
+	 */
+	public static void addJsonData() throws UnsupportedEncodingException, Exception{
+		String s = null;
+		File file = new File("e:/hgl.json");;
+		InputStreamReader br = new InputStreamReader(new FileInputStream(file),"utf-8");//读取文件,同时指定编码
+		StringBuffer sb = new StringBuffer();
+        char[] ch = new char[128];  //一次读取128个字符
+        int len = 0;
+        while((len = br.read(ch,0, ch.length)) != -1){
+            sb.append(ch, 0, len);
+        }
+        s = sb.toString();
+        //新增加的记录
+        JSONObject appObject = new JSONObject();
+        appObject.put("fileName", "2019-05_油田地质分析数据");
+        appObject.put("month", "2019-05");
+        appObject.put("fxDate", "2019-05-01 11:00:00");
+        appObject.put("year", "2019");
+        appObject.put("filePath", "e:/2019-05_油田地质分析数据.xls");
+        
+        String newStr = "";
+        if(s.equals("")){//新增加
+        	JSONArray appArray = new JSONArray();
+        	appArray.add(appObject);
+        	JSONObject jsonObj = new JSONObject();
+        	jsonObj.put("excelList", appArray);
+        	newStr = jsonObj.toJSONString();
+        }else{//追加
+        	JSONObject dataJson = JSON.parseObject(s); 
+            JSONArray features = dataJson.getJSONArray("excelList");// 找到features json数组
+            features.add(appObject);
+            newStr = dataJson.toJSONString();
+        }
+        FileWriter fileWriter = new FileWriter("e:/hgl.json");
+    	PrintWriter out = new PrintWriter(fileWriter);
+    	out.write(newStr);
+    	out.println();
+    	fileWriter.close();
+    	out.close();
+	}
 	
 	public static void main(String[] args) throws Exception{
-		System.out.print(CommonTools.checkLoginUser("wmk", "123456"));
+		CommonTools.addJsonData();
 	}
 }
