@@ -84,7 +84,8 @@
 	            </ul>
 	            <div class="layui-tab-content">
 	                <div class="layui-tab-item layui-show">
-	                	<iframe id="mainIframe" src="user.do?action=goWelcomePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
+	                	<iframe id="mainIframe" src="zlm.do?action=goZlPage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe>
+	                	<!-- iframe id="mainIframe" src="user.do?action=goWelcomePage" frameborder="0" scrolling="yes" width="100%" height="100%"></iframe -->
 	                </div>
 	            </div>
 	        </div>
@@ -138,7 +139,7 @@
 		        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="13" path="fee.do?action=goFeePage"><i class="iconfont layui-extend-fee" style="font-size:14px;margin-right:5px;"></i>费用管理</a></li>';
 		        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="15" path="fee.do?action=goBackFeePage"><i class="iconfont layui-extend-huikuan" style="margin-right:5px;"></i>客户汇款管理</a></li>';
 		        		liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="12" path="customer.do?action=goCusPage"><i class="layui-icon layui-icon-user" style="margin-right:5px;"></i>客户管理</a></li>';
-			        	liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="9"><i class="iconfont layui-extend-goumai"></i>会员续费/购买</a></li>';
+			        	//liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" tab-id="9"><i class="iconfont layui-extend-goumai"></i>会员续费/购买</a></li>';
 	        		}else{
 	        			liItem += '<li class="layui-nav-item navLi"><a href="javascript:void(0)" path="cpyManager.do?action=goCpyDetailPage" tab-id="3"></i><cite>我的代理机构</cite></a></li>';
 	        			//代理机构下除管理员外其他身份登录动态加载对应模块
