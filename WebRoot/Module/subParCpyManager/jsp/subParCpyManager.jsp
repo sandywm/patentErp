@@ -53,7 +53,6 @@
 	   			        dataType:'json',
 	   			        url:'cpyManager.do?action=getSubParCpyData',
 	   			        success:function (json){
-	   			        	console.log(json)
 	   			        	layer.closeAll('loading');
 	   						if(json['result'] == 'existInfo'){//表示存在数据
 	   							var type = '',selfCpyLevelChi='',maxSubNum=0;

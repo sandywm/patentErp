@@ -311,7 +311,7 @@
 			$("#loginOut").on('click',function(){
 				layer.confirm('确认退出系统么？', {
 				  title:'提示',
-				  skin: 'layui-layer-orange',
+				  skin: 'layui-layer-molv',
 				  btn: ['确定','取消'] //按钮
 				},function(){
 					if(roleName == 'super'){

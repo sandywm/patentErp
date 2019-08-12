@@ -371,13 +371,13 @@
 					queryHtmlStr.searchHtml_stop += '<div class="queryItem selWid"><input id="ajStopStatusInp" type="hidden" value="-1"/>';
 					queryHtmlStr.searchHtml_stop += '<select id="ajStopStatusSel" lay-filter="ajStopStatusSel"><option value="">案件终止状态(全部)</option>';
 					queryHtmlStr.searchHtml_stop += '<option value="0">正常</option><option value="1">终止</option></select></div>';
-					queryHtmlStr.searchHtml_NoTit += '<div class="queryItem selWid2"><input id="ajStopStatusInp" type="hidden" value="0"/>';
+					queryHtmlStr.searchHtml_NoTit += '<div class="queryItem selWid2" style="width:118px;"><input id="ajStopStatusInp" type="hidden" value="0"/>';
 					//0：案件编号 1：专利申请号 2：案件标题
-					queryHtmlStr.searchHtml_NoTit += '<select id="ajNoTitSel" lay-filter="ajNoTitSel"><option value="0">案件编号</option>';
-					queryHtmlStr.searchHtml_NoTit += '<option value="1">案件专利号</option><option value="2">案件标题</option></select></div>';
+					queryHtmlStr.searchHtml_NoTit += '<select id="ajNoTitSel" lay-filter="ajNoTitSel"><option value="1">案件专利号</option>';
+					queryHtmlStr.searchHtml_NoTit += '<option value="0">案件编号</option><option value="2">案件标题</option></select></div>';
 					queryHtmlStr.searchHtml_NoTit += '<div class="queryItem inpWid" style="margin-left:-15px;">';
-					queryHtmlStr.searchHtml_NoTit += '<input type="text" id="ajNoTitInp_ajNo" style="border-left:none;" maxlength="25" placeholder="请输入案件编号" autocomplete="off" class="layui-input">';
-					queryHtmlStr.searchHtml_NoTit += '<input type="text" id="ajNoTitInp_ajZlNo" style="border-left:none;display:none;" maxlength="25" placeholder="请输入案件专利号" autocomplete="off" class="layui-input">';
+					queryHtmlStr.searchHtml_NoTit += '<input type="text" id="ajNoTitInp_ajZlNo" style="border-left:none;" maxlength="25" placeholder="请输入案件专利号" autocomplete="off" class="layui-input">';
+					queryHtmlStr.searchHtml_NoTit += '<input type="text" id="ajNoTitInp_ajNo" style="border-left:none;display:none;" maxlength="25" placeholder="请输入案件编号" autocomplete="off" class="layui-input">';
 					queryHtmlStr.searchHtml_NoTit += '<input type="text" id="ajNoTitInp_ajTit" style="border-left:none;display:none;" maxlength="25" placeholder="请输入案件标题" autocomplete="off" class="layui-input"></div>';
 
 					queryHtmlStr.searchHtml_ajType += '<div class="queryItem selWid1"><input id="ajTypeInp" type="hidden" value=""/>';

@@ -256,9 +256,9 @@
 					var reg = /^[\u4E00-\u9FA5]+$/; 
 					if(value == ''){
 						return comName + '名称不能为空';
-					}else if(!reg.test(value)){
+					}/*else if(!reg.test(value)){
 				      return comName + '名称应为汉字';
-				    }else if(value.length < 4 || value.length > 30){
+				    }else */if(value.length < 4 || value.length > 30){
 				    	 return comName + '名称最少为4个字符最多为30个字符';
 				    }
 				},

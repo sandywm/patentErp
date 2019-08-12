@@ -100,9 +100,9 @@
   				},
   				judgeCompName : function(value){
 					var reg = /^[\u4E00-\u9FA5]+$/; 
-					if(!reg.test(value)){
+					/*if(!reg.test(value)){
 				      return '客户名称应为汉字';
-				    }else if(value.length < 4 || value.length > 30){
+				    }else */if(value.length < 4 || value.length > 30){
 				    	 return '客户名称最少为4个字符最多为30个字符';
 				    }
   				},
