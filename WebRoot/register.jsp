@@ -246,9 +246,9 @@
 					var reg = /^[\u4E00-\u9FA5]+$/; 
 					if(value == ''){
 						return '联系人姓名不能为空';
-					}else if(!reg.test(value)){
+					}/*else if(!reg.test(value)){
 				      return '联系人应为汉字';
-				    }else if(value.length < 2 || value.length > 30){
+				    }*/else if(value.length < 2 || value.length > 30){
 				    	 return '联系人姓名最少应为2个字符最多为30个字符';
 				    }
 				},

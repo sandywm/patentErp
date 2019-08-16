@@ -29,9 +29,8 @@
 			</div>				
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label"></label>
-			<div class="layui-input-block">
-				<button type="button" lay-submit lay-filter="setLxrInfo" class="layui-btn" style="width:120px;margin-left:50px;">保存信息</button>
+			<div class="layui-input-block" style="text-align:center;margin-left:0px;">
+				<button type="button" lay-submit lay-filter="setLxrInfo" class="layui-btn" style="width:120px;display:inline-block;">保存信息</button>
 			</div>
 		</div>
 	</div>
@@ -80,9 +79,9 @@
   					var reg = /^[\u4E00-\u9FA5]+$/; 
 					if(value == ''){
 						return '事务联系人姓名不能为空';
-					}else if(!reg.test(value)){
+					}/*else if(!reg.test(value)){
 				      return '事务联系人姓名应为汉字';
-				    }else if(value.length < 2 || value.length > 30){
+				    }*/else if(value.length < 2 || value.length > 30){
 				    	 return '事务联系人姓名最少应为2个字符最多为30个字符';
 				    }
   				},
