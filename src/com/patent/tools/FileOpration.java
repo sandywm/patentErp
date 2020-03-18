@@ -264,10 +264,10 @@ public class FileOpration {
 		     ops.close();
 		     stream.close();
 		     //删除源文件-tif
-		     FileOpration.deleteFile(filePath);
-//		     System.out.println("缩放开始--"+CurrentTime.getStringTime1());
-//		     FileOpration.makeImage(newFilePath, 1240, -1, newFilePath, "JPEG");
-//		     System.out.println("缩放结束--"+CurrentTime.getStringTime1());
+//		     FileOpration.deleteFile(filePath);
+		     System.out.println("缩放开始--"+CurrentTime.getStringTime1());
+		     FileOpration.makeImage(newFilePath, 1240, -1, newFilePath, "JPEG");
+		     System.out.println("缩放结束--"+CurrentTime.getStringTime1());
 		     
 			} catch (Exception e) {
 				e.printStackTrace();

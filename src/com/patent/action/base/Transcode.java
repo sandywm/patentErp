@@ -77,7 +77,7 @@ public class Transcode {
                     }  
                 }  
             }  
-            return tmp.toString().replaceAll(" ","");
+            return tmp.toString();
     	}
     }  
     
@@ -122,7 +122,7 @@ public class Transcode {
                     }  
                 }  
             }  
-            return tmp.toString().replaceAll(" ","");
+            return tmp.toString();
     	}
     }  
     

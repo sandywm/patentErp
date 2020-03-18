@@ -110,70 +110,72 @@ public class ReadZipFile {
 						firstFileNamePre = fileName.substring(0, indexLen);
 						int indexLastLen = fileName.lastIndexOf(fh);
 						fileNamePre = fileName.substring(0, indexLastLen);
-						filePath = file.getParent();
-						File file_c = new File(filePath + "\\fileTemp\\" + fileNamePre);
-						String tifName = fileName.substring(indexLastLen);
-						if(!file_c.exists()){
-							file_c.mkdirs();
-						}
-						try {
-							File mainfestFile = new File(filePath + "\\fileTemp\\" + fileNamePre + tifName);
-							mainfestFile.createNewFile();
-							os = new FileOutputStream(mainfestFile);
-							is = zf.getInputStream(ze);
-							int len;
-							while((len = is.read()) != -1){
-								os.write(len);
+						if(fileNamePre.startsWith("GA")){//其他文件，比如说电子申请回执不需要复制文件
+							filePath = file.getParent();
+							File file_c = new File(filePath + "\\fileTemp\\" + fileNamePre);
+							String tifName = fileName.substring(indexLastLen);
+							if(!file_c.exists()){
+								file_c.mkdirs();
 							}
-							//-----------------------------做成压缩包
-							List<File> fileList = new ArrayList<File>();
-							fileList.add(new File(filePath + "\\fileTemp\\" + firstFileNamePre));
-							String finalZipPath = filePath+ "\\" + firstFileNamePre + ".zip";
-							finalAbsoPath = upZipPath.substring(0, upZipPath.lastIndexOf("\\"))+"\\"+firstFileNamePre + ".zip";
-							FileOpration.toZip(fileList, finalZipPath,true);
-							is.close();
-					        os.close();
-					        String newFilePath = "";
-							if(fileName.endsWith(".tif")){
-								if((firstFileNamePre+fh+firstFileNamePre+fh+firstFileNamePre).equals(fileName.substring(0, indexLastLen))){
-									File file_c1 = new File(file.getParent() + "\\" + firstFileNamePre + "_jpg");
-									String tifName_1 = fileName.substring(indexLastLen);
-									if(!file_c1.exists()){
-										file_c1.mkdirs();
-									}
-									try {
-										newFilePath = upZipPath.substring(0, upZipPath.lastIndexOf("\\"))+"\\"+firstFileNamePre + "_jpg\\"+fileName.substring(indexLastLen+1);
-										File mainfestFile_1 = new File(file.getParent() + "\\" + firstFileNamePre + "_jpg\\" + tifName_1);
-										if(lastFileNamePre.equals(firstFileNamePre)){
-											jpgAbsoPath += newFilePath.replace(".tif", ".jpg") + ",";
-										}else{
-											jpgAbsoPath = newFilePath.replace(".tif", ".jpg") + ",";
-										}
-										mainfestFile_1.createNewFile();
-										os = new FileOutputStream(mainfestFile_1);
-										is = zf.getInputStream(ze);
-										int len_1;
-										while((len_1 = is.read()) != -1){
-											os.write(len_1);
-										}
-									} catch (IOException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									} finally{
-										is.close();
-								        os.close();
-								        FileOpration.tiffTurnJpg(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + newFilePath);
-//								        System.out.println("jpgAbsoPath:---"+jpgAbsoPath);
-									}
+							try {
+								File mainfestFile = new File(filePath + "\\fileTemp\\" + fileNamePre + tifName);
+								mainfestFile.createNewFile();
+								os = new FileOutputStream(mainfestFile);
+								is = zf.getInputStream(ze);
+								int len;
+								while((len = is.read()) != -1){
+									os.write(len);
 								}
-								lastFileNamePre = firstFileNamePre;
+								//-----------------------------做成压缩包
+								List<File> fileList = new ArrayList<File>();
+								fileList.add(new File(filePath + "\\fileTemp\\" + firstFileNamePre));
+								String finalZipPath = filePath+ "\\" + firstFileNamePre + ".zip";
+								finalAbsoPath = upZipPath.substring(0, upZipPath.lastIndexOf("\\"))+"\\"+firstFileNamePre + ".zip";
+								FileOpration.toZip(fileList, finalZipPath,true);
+								is.close();
+						        os.close();
+						        String newFilePath = "";
+								if(fileName.endsWith(".tif")){
+									if((firstFileNamePre+fh+firstFileNamePre+fh+firstFileNamePre).equals(fileName.substring(0, indexLastLen))){
+										File file_c1 = new File(file.getParent() + "\\" + firstFileNamePre + "_jpg");
+										String tifName_1 = fileName.substring(indexLastLen);
+										if(!file_c1.exists()){
+											file_c1.mkdirs();
+										}
+										try {
+											newFilePath = upZipPath.substring(0, upZipPath.lastIndexOf("\\"))+"\\"+firstFileNamePre + "_jpg\\"+fileName.substring(indexLastLen+1);
+											File mainfestFile_1 = new File(file.getParent() + "\\" + firstFileNamePre + "_jpg\\" + tifName_1);
+											if(lastFileNamePre.equals(firstFileNamePre)){
+												jpgAbsoPath += newFilePath.replace(".tif", ".jpg") + ",";
+											}else{
+												jpgAbsoPath = newFilePath.replace(".tif", ".jpg") + ",";
+											}
+											mainfestFile_1.createNewFile();
+											os = new FileOutputStream(mainfestFile_1);
+											is = zf.getInputStream(ze);
+											int len_1;
+											while((len_1 = is.read()) != -1){
+												os.write(len_1);
+											}
+										} catch (IOException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} finally{
+											is.close();
+									        os.close();
+									        FileOpration.tiffTurnJpg(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + newFilePath);
+//									        System.out.println("jpgAbsoPath:---"+jpgAbsoPath);
+										}
+									}
+									lastFileNamePre = firstFileNamePre;
+								}
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} finally{
+								is.close();
+						        os.close();
 							}
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} finally{
-							is.close();
-					        os.close();
 						}
 					}
 					//----------------------复制文件end-------------------//
@@ -231,9 +233,14 @@ public class ReadZipFile {
 			            	}else if(tzsName.equals("费用减缓审批通知书") || tzsName.equals("缴纳申请费通知书")){
 			            		if(tzsName.equals("费用减缓审批通知书")){
 			            			fjApplyDate = CurrentTime.convertFormatDate(root.element("cost_slow_req_date").getTextTrim());
-				            		fjRecord = root.element("cost_slow_mes").getTextTrim();
-				            		fjRate = root.element("cost_slow_rate_annul").getTextTrim();
-				            		fjRate = "0."+fjRate.substring(0, fjRate.length() - 1);
+			            			Element l7 = root.element("no_cost_slow_reason");
+			            			if(l7 == null){//存在费减
+			            				fjRecord = root.element("cost_slow_mes").getTextTrim();
+					            		fjRate = root.element("cost_slow_rate_annul").getTextTrim();
+					            		fjRate = "0."+fjRate.substring(0, fjRate.length() - 1);
+			            			}else{//无费减，或者费减备案不合格
+			            				fjRate = "0";
+			            			}
 			            		}
 			            		feeEdate = CurrentTime.convertFormatDate(root.element("pay_deadline_date").getTextTrim());//缴费截止日期-通知书
 			            		Element fee = root.element("fee_info_all");
@@ -305,15 +312,15 @@ public class ReadZipFile {
 	        				if(l_sqh != null){//存在申请号
 	        					ajNoGf = l_sqh.getTextTrim().replace("申请号：", "");
 	        					ajNoGf = ajNoGf.replace(".", "");//统一去掉专利号带点的
+	        					fwDate = root.element("QIANMINGSJC").getTextTrim().substring(0, 10);
+	        					for(@SuppressWarnings("unchecked")
+	        						Iterator<Element> it = root.elementIterator("SHOUDAOWJ") ; it.hasNext();){
+	        						Element l = it.next().element("WENJIANLB");
+	        						list_fl.add(new FileListJson(l.elementText("WENJIANMC"),l.elementText("WENJIANGS"),l.elementText("WENJIANDX")));
+	        					}
+				            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, "", "",
+				            			"", "", "","", fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,jpgAbsoPath,"dataXml"));
 	        				}
-	        				fwDate = root.element("QIANMINGSJC").getTextTrim().substring(0, 10);
-        					for(@SuppressWarnings("unchecked")
-        						Iterator<Element> it = root.elementIterator("SHOUDAOWJ") ; it.hasNext();){
-        						Element l = it.next().element("WENJIANLB");
-        						list_fl.add(new FileListJson(l.elementText("WENJIANMC"),l.elementText("WENJIANGS"),l.elementText("WENJIANDX")));
-        					}
-			            	list_all.add(new TzsJson(fwSerial, ajNoGf, tzsName,zlName, fwDate, "", "",
-			            			"", "", "","", fjRate,yearNo,list_fd,list_lf,list_fl,finalAbsoPath,jpgAbsoPath,"dataXml"));
 	        				//不存在申请号的不读取
 	        			}else{//里面不存在数据文件，需要从list.xml中获取(比如补正通知书)
 	        				l1 = root.element("TONGZHISXJ");

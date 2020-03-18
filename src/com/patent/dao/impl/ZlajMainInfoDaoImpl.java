@@ -71,7 +71,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and FIND_IN_SET("+cusId+",zl.ajSqrId) > 0";
 		}
 		if(!sDate.equals("")){
-			hql += " and SUBSTR(zl.ajAddDate,1,7) >= '"+sDate+"' and SUBSTR(zl.ajAddDate,1,7) <= '"+eDate+"'";
+			hql += " and SUBSTR(zl.ajAddDate,1,10) >= '"+sDate+"' and SUBSTR(zl.ajAddDate,1,10) <= '"+eDate+"'";
 		}
 		if(lqStatus.equals(0)){
 			hql += " and (( zl.zxUserId = 0 and zl.ajType1 = 'new') or (zl.tzsUserId = 0 and zl.ajType1 = 'old'))";
@@ -118,7 +118,7 @@ public class ZlajMainInfoDaoImpl implements ZlajMainInfoDao{
 			hql += " and FIND_IN_SET("+cusId+",zl.ajSqrId) > 0";
 		}
 		if(!sDate.equals("")){
-			hql += " and SUBSTR(zl.ajAddDate,1,7) >= '"+sDate+"' and SUBSTR(zl.ajAddDate,1,7) <= '"+eDate+"'";
+			hql += " and SUBSTR(zl.ajAddDate,1,10) >= '"+sDate+"' and SUBSTR(zl.ajAddDate,1,10) <= '"+eDate+"'";
 		}
 		if(lqStatus.equals(0)){
 			hql += " and (( zl.zxUserId = 0 and zl.ajType1 = 'new') or (zl.tzsUserId = 0 and zl.ajType1 = 'old'))";

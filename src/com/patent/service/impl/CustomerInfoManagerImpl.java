@@ -16,6 +16,7 @@ import com.patent.module.CustomerFmrInfoTb;
 import com.patent.module.CustomerInfoTb;
 import com.patent.module.CustomerLxrInfoTb;
 import com.patent.service.CustomerInfoManager;
+import com.patent.tools.Convert;
 import com.patent.tools.HibernateUtil;
 import com.patent.util.Constants;
 
@@ -36,7 +37,7 @@ public class CustomerInfoManagerImpl implements CustomerInfoManager{
 			ciDao = (CpyInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CPY_INFO);
 			Session sess = HibernateUtil.currentSession();
 			tran = sess.beginTransaction();
-			CustomerInfoTb cus = new CustomerInfoTb(ciDao.get(sess, cpyId),cusType, cusName, cusiCard,cusAddress, cusZip);
+			CustomerInfoTb cus = new CustomerInfoTb(ciDao.get(sess, cpyId),cusType, cusName, cusiCard,cusAddress, cusZip,0.00);
 			cDao.save(sess, cus);
 			tran.commit();
 			return cus.getId();
@@ -396,6 +397,33 @@ public class CustomerInfoManagerImpl implements CustomerInfoManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new WEBException("根据发明人姓名、身份证号获取改代理机构下的发明人信息列表信息出现异常!");
+		} finally{
+			HibernateUtil.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateCusBalanceById(Integer cusId, Double feePrice)
+			throws WEBException {
+		// TODO Auto-generated method stub
+		try {
+			cDao = (CustomerInfoDao) DaoFactory.instance(null).getDao(Constants.DAO_CUSTOMER_INFO);
+			Session sess = HibernateUtil.currentSession();
+			tran = sess.beginTransaction();
+			CustomerInfoTb cus = cDao.get(sess, cusId);
+			if(cus != null){
+				if(!feePrice.equals(0)){
+					cus.setCusBalance(Convert.convertInputNumber_2(cus.getCusBalance() + feePrice));
+					cDao.update(sess, cus);
+					tran.commit();
+				}
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new WEBException("修改指定客户的账户余额信息出现异常!");
 		} finally{
 			HibernateUtil.closeSession();
 		}

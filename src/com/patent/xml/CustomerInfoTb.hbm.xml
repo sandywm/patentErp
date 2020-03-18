@@ -40,6 +40,11 @@
                 <comment>客户邮编</comment>
             </column>
         </property>
+        <property name="cusBalance" type="java.lang.Double">
+            <column name="cus_balance">
+                <comment>客户账户余额（可为负数）</comment>
+            </column>
+        </property>
         <set name="customerFmrInfoTbs" inverse="true">
             <key>
                 <column name="cus_id" not-null="true">

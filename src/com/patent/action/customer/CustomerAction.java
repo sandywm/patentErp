@@ -242,6 +242,7 @@ public class CustomerAction extends DispatchAction {
 					map.put("cusiCard", cInfo.getCusICard());
 					map.put("cusAddress", cInfo.getCusAddress());
 					map.put("cusZip", cInfo.getCusZip());
+					map.put("cusBalance", cInfo.getCusBalance());
 				}else{
 					msg = "noInfo";
 				}

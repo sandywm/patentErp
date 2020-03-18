@@ -235,4 +235,16 @@ public interface CustomerInfoManager {
 	 * @throws WEBException
 	 */
 	List<CustomerFmrInfoTb> listInfoByOpt(String fmrName,String fmrIcard, Integer cpyId)  throws WEBException;
+	
+	/**
+	 * 修改客户的账户余额
+	 * @description
+	 * @author Administrator
+	 * @date 2019-4-18 上午11:42:18
+	 * @param cusId 客户编号
+	 * @param feePrice 增加或者减少的费用
+	 * @return
+	 * @throws WEBException
+	 */
+	boolean updateCusBalanceById(Integer cusId,Double feePrice)  throws WEBException;
 }

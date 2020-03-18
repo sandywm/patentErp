@@ -22,6 +22,7 @@ public class CustomerInfoTb implements java.io.Serializable {
 	private String cusICard;
 	private String cusAddress;
 	private String cusZip;
+	private Double cusBalance;
 	private Set<CustomerFmrInfoTb> customerFmrInfoTbs = new HashSet<CustomerFmrInfoTb>();
 	private Set<CustomerLxrInfoTb> customerLxrInfoTbs = new HashSet<CustomerLxrInfoTb>();
 
@@ -33,18 +34,19 @@ public class CustomerInfoTb implements java.io.Serializable {
 
 	/** minimal constructor */
 	public CustomerInfoTb(CpyInfoTb cpyInfoTb,String cusType, String cusName, String cusICard,
-			String cusAddress, String cusZip){
+			String cusAddress, String cusZip,Double cusBalance){
 		this.cpyInfoTb = cpyInfoTb;
 		this.cusType = cusType;
 		this.cusName = cusName;
 		this.cusICard = cusICard;
 		this.cusAddress = cusAddress;
 		this.cusZip = cusZip;
+		this.cusBalance = cusBalance;
 	}
 
 	/** full constructor */
 	public CustomerInfoTb(Integer id,CpyInfoTb cpyInfoTb,String cusType, String cusName, String cusICard,
-			String cusAddress, String cusZip) {
+			String cusAddress, String cusZip,Double cusBalance) {
 		this.id = id;
 		this.cpyInfoTb = cpyInfoTb;
 		this.cusType = cusType;
@@ -52,6 +54,7 @@ public class CustomerInfoTb implements java.io.Serializable {
 		this.cusICard = cusICard;
 		this.cusAddress = cusAddress;
 		this.cusZip = cusZip;
+		this.cusBalance = cusBalance;
 	}
 
 	// Property accessors
@@ -126,6 +129,14 @@ public class CustomerInfoTb implements java.io.Serializable {
 
 	public void setCpyInfoTb(CpyInfoTb cpyInfoTb) {
 		this.cpyInfoTb = cpyInfoTb;
+	}
+
+	public Double getCusBalance() {
+		return cusBalance;
+	}
+
+	public void setCusBalance(Double cusBalance) {
+		this.cusBalance = cusBalance;
 	}
 
 

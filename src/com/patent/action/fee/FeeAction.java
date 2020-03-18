@@ -72,6 +72,7 @@ import com.patent.module.ZlajMainInfoTb;
 import com.patent.page.PageConst;
 import com.patent.service.CpyUserInfoManager;
 import com.patent.service.CusBackFeeInfoManager;
+import com.patent.service.CustomerInfoManager;
 import com.patent.service.FeeExportRecordInfoManager;
 import com.patent.service.FeeImportRecordInfoManager;
 import com.patent.service.ZlajFeeInfoManager;
@@ -659,19 +660,23 @@ public class FeeAction extends DispatchAction {
 						            cell.setCellStyle(style);  
 						            cell.setCellValue(serFeePrice); 
 					            }
-					            row = sheet.createRow(currRow++);
+					            row = sheet.createRow(currRow);
+					            sheet.setForceFormulaRecalculation(true);
 					            cell = row.createCell(6); 
 					            cell.setCellStyle(style);  
-					            cell.setCellValue(totalPrice_gf); 
+					            cell.setCellFormula("sum(G6:G"+currRow+")");
 					            
 					            cell = row.createCell(8); 
 					            cell.setCellStyle(style);  
-					            cell.setCellValue(totalPrice_znj); 
+					            cell.setCellFormula("sum(I6:I"+currRow+")");
+//					            cell.setCellValue(totalPrice_znj); 
 					            
 					            cell = row.createCell(9); 
 					            cell.setCellStyle(style);  
-					            cell.setCellValue(totalPrice_ser); 
+					            cell.setCellFormula("sum(J6:J"+currRow+")");
+//					            cell.setCellValue(totalPrice_ser); 
 					            
+					            currRow++;
 					            row = sheet.createRow(currRow);
 					            cell = row.createCell(0); 
 					            cell.setCellStyle(style);  
@@ -679,7 +684,8 @@ public class FeeAction extends DispatchAction {
 					            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, currRow, currRow, 0, 1, sheet, wb);
 					            
 					            cell = row.createCell(2); 
-					            cell.setCellStyle(style);  
+					            cell.setCellStyle(style);
+					            
 					            Double totalPrice = Convert.convertInputNumber_2(totalPrice_gf + totalPrice_znj + totalPrice_ser);
 					            cell.setCellValue(totalPrice_gf + " + " + totalPrice_znj + " + " + totalPrice_ser + " = " + totalPrice + "("+ Convert.MoneyToCNFormat(totalPrice) +")"); 
 					            ReadExcelFile.setJoinBorderStyle(HSSFCellStyle.BORDER_THIN, currRow, currRow, 2, 9, sheet, wb);
@@ -1566,7 +1572,7 @@ public class FeeAction extends DispatchAction {
 	public ActionForward addBackFee(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CpyUserInfoManager cum = (CpyUserInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CPY_USER_INFO); 
-		ZlajFeeInfoManager fm = (ZlajFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_ZLAJ_FEE_INFO);
+		CustomerInfoManager cusm = (CustomerInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUSTOMER_INFO); 
 		CusBackFeeInfoManager cbfm = (CusBackFeeInfoManager) AppFactory.instance(null).getApp(Constants.WEB_CUS_BACK_FEE_INFO);
 		String msg = "error";
 		Map<String,String> map = new HashMap<String,String>();
@@ -1586,63 +1592,64 @@ public class FeeAction extends DispatchAction {
 				String backType = CommonTools.getFinalStr("backType", request);
 				Integer cusId = CommonTools.getFinalInteger("cusId", request);
 				String remark = Transcode.unescape_new("remark", request);
-				Integer dlfStatus = CommonTools.getFinalInteger("dlfStatus",request);//是否包含冲抵代理费(0:不包含，1：包含)
 				if(!backFeePrice.equals("")){
 					Pattern pattern = Pattern.compile("^[+]?[\\d]*$");  
 					if(pattern.matcher(backFeePrice).matches()){//判断输入的汇款费用必须为大于0的整数
-						Double backFeePrice_temp = Double.parseDouble(backFeePrice);//当前汇款剩余费用
+//						Double backFeePrice_temp = Double.parseDouble(backFeePrice);//当前汇款剩余费用
 						Integer cbfId = cbfm.addCBF(backFeePrice, backDate, backType, cusId, cpyId, currUserId, CurrentTime.getCurrentTime(), remark);
 						if(cbfId > 0){
+							cusm.updateCusBalanceById(cusId, Double.parseDouble(backFeePrice));
 							msg = "success";
+							//取消汇款时冲抵，统一改为销售人员冲抵
 							//优先冲抵官费，然后再冲抵代理费
 							//获取所有代缴-已交未平的费用
-							List<ZlajFeeInfoTb> feeList = fm.listUnBackInfoByOpt(cpyId, cusId, "gf");//优先平官费
-							if(feeList.size() > 0){
-								for(Iterator<ZlajFeeInfoTb> it = feeList.iterator() ; it.hasNext();){
-									ZlajFeeInfoTb fee = it.next();
-									Double feePrice = fee.getFeePrice();
-									Double currBackFee = Convert.convertInputNumber_2(feePrice - fee.getBackFee() - fee.getDiscountsFee());//当前应还费用
-									if(backFeePrice_temp >= currBackFee){//够冲抵
-										fm.updateBackFeeInfoById(fee.getId(), backDate, feePrice , 1, 0.0);
-										backFeePrice_temp = Convert.convertInputNumber_2(backFeePrice_temp - currBackFee);
-										//增加冲抵记录
-										cbfm.addCusPz(cbfId, fee.getId(), currBackFee, 0.0);
-									}else{//钱不够冲抵
-										if(backFeePrice_temp > 0){//但还有余钱
-											fm.updateBackFeeInfoById(fee.getId(), backDate, backFeePrice_temp , 0, 0.0);
-											//增加冲抵记录
-											cbfm.addCusPz(cbfId, fee.getId(), backFeePrice_temp, Convert.convertInputNumber_2(currBackFee - backFeePrice_temp));
-											backFeePrice_temp = Convert.convertInputNumber_2(backFeePrice_temp - currBackFee);
-										}else{
-											break;
-										}
-									}
-								}
-							}
-							if(dlfStatus.equals(1)){//还要冲抵代理费
-								if(backFeePrice_temp > 0){
-									List<ZlajFeeInfoTb> dlfList = fm.listUnBackInfoByOpt(cpyId, cusId, "dlf");//未平的代理费
-									if(dlfList.size() > 0){
-										for(Iterator<ZlajFeeInfoTb> it_dlf = dlfList.iterator() ; it_dlf.hasNext();){
-											ZlajFeeInfoTb fee = it_dlf.next();
-											Double feePrice = fee.getFeePrice();
-											Double currBackFee = Convert.convertInputNumber_2(feePrice - fee.getBackFee() - fee.getDiscountsFee());//当前应还费用
-											if(backFeePrice_temp >= currBackFee){//够冲抵
-												fm.updateBackFeeInfoById(fee.getId(), backDate, feePrice , 1, 0.0);
-												backFeePrice_temp = Convert.convertInputNumber_2(backFeePrice_temp - currBackFee);
-												//增加冲抵记录
-												cbfm.addCusPz(cbfId, fee.getId(), feePrice, 0.0);
-											}else{//钱不够冲抵
-												if(backFeePrice_temp > 0){//但还有余钱
-													fm.updateBackFeeInfoById(fee.getId(), backDate, backFeePrice_temp , 0, 0.0);
-													//增加冲抵记录
-													cbfm.addCusPz(cbfId, fee.getId(), backFeePrice_temp, Convert.convertInputNumber_2(currBackFee - backFeePrice_temp));
-												}
-											}
-										}
-									}
-								}
-							}
+//							List<ZlajFeeInfoTb> feeList = fm.listUnBackInfoByOpt(cpyId, cusId, "gf");//优先平官费
+//							if(feeList.size() > 0){
+//								for(Iterator<ZlajFeeInfoTb> it = feeList.iterator() ; it.hasNext();){
+//									ZlajFeeInfoTb fee = it.next();
+//									Double feePrice = fee.getFeePrice();
+//									Double currBackFee = Convert.convertInputNumber_2(feePrice - fee.getBackFee() - fee.getDiscountsFee());//当前应还费用
+//									if(backFeePrice_temp >= currBackFee){//够冲抵
+//										fm.updateBackFeeInfoById(fee.getId(), backDate, feePrice , 1, 0.0);
+//										backFeePrice_temp = Convert.convertInputNumber_2(backFeePrice_temp - currBackFee);
+//										//增加冲抵记录
+//										cbfm.addCusPz(cbfId, fee.getId(), currBackFee, 0.0);
+//									}else{//钱不够冲抵
+//										if(backFeePrice_temp > 0){//但还有余钱
+//											fm.updateBackFeeInfoById(fee.getId(), backDate, backFeePrice_temp , 0, 0.0);
+//											//增加冲抵记录
+//											cbfm.addCusPz(cbfId, fee.getId(), backFeePrice_temp, Convert.convertInputNumber_2(currBackFee - backFeePrice_temp));
+//											backFeePrice_temp = Convert.convertInputNumber_2(backFeePrice_temp - currBackFee);
+//										}else{
+//											break;
+//										}
+//									}
+//								}
+//							}
+//							if(dlfStatus.equals(1)){//还要冲抵代理费
+//								if(backFeePrice_temp > 0){
+//									List<ZlajFeeInfoTb> dlfList = fm.listUnBackInfoByOpt(cpyId, cusId, "dlf");//未平的代理费
+//									if(dlfList.size() > 0){
+//										for(Iterator<ZlajFeeInfoTb> it_dlf = dlfList.iterator() ; it_dlf.hasNext();){
+//											ZlajFeeInfoTb fee = it_dlf.next();
+//											Double feePrice = fee.getFeePrice();
+//											Double currBackFee = Convert.convertInputNumber_2(feePrice - fee.getBackFee() - fee.getDiscountsFee());//当前应还费用
+//											if(backFeePrice_temp >= currBackFee){//够冲抵
+//												fm.updateBackFeeInfoById(fee.getId(), backDate, feePrice , 1, 0.0);
+//												backFeePrice_temp = Convert.convertInputNumber_2(backFeePrice_temp - currBackFee);
+//												//增加冲抵记录
+//												cbfm.addCusPz(cbfId, fee.getId(), feePrice, 0.0);
+//											}else{//钱不够冲抵
+//												if(backFeePrice_temp > 0){//但还有余钱
+//													fm.updateBackFeeInfoById(fee.getId(), backDate, backFeePrice_temp , 0, 0.0);
+//													//增加冲抵记录
+//													cbfm.addCusPz(cbfId, fee.getId(), backFeePrice_temp, Convert.convertInputNumber_2(currBackFee - backFeePrice_temp));
+//												}
+//											}
+//										}
+//									}
+//								}
+//							}
 						}
 					}else{
 						msg = "inpError";
@@ -1709,6 +1716,8 @@ public class FeeAction extends DispatchAction {
 							backType = "支付宝";
 						}else if(backType.equals("bank")){
 							backType = "银行转账";
+						}else if(backType.equals("cash")){
+							backType = "现金";
 						}
 						map_d.put("backType", backType);
 						map_d.put("cusInfo", bf.getCustomerInfoTb().getCusName());

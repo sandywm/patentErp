@@ -481,7 +481,7 @@ public class ZlMainAction extends DispatchAction {
 						Map<String,Object> map_d = new HashMap<String,Object>();
 						map_d.put("id", zl.getId());
 						map_d.put("ajNo", zl.getAjNoQt());
-						map_d.put("ajNoGf", zl.getAjNoGf());
+						map_d.put("ajNoGf", zl.getAjNoGf().equals("") ? "暂无申请回执" : zl.getAjNoGf());
 						map_d.put("ajTitle", zl.getAjTitle());
 						String ajType_db = zl.getAjType();
 						String ajType_new = "";
@@ -1797,14 +1797,30 @@ public class ZlMainAction extends DispatchAction {
 						}
 						String upDate = mx.getLcMxUpDate();//上传日期
 						for(Integer i = 0 ; i < fileNum ; i++){
-							upFileName = upFileArr[i].substring(upFileArr[i].lastIndexOf("\\")+1,upFileArr[i].length());
-							upFileSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upFileArr[i]);
+							String upFile = upFileArr[i];
+							if(upFileArr[i].split(":").length == 2){
+								upFile = upFileArr[i].split(":")[0];
+								String fileType = upFileArr[i].split(":")[1];
+								if(fileType.equals("sq")){
+									fileType = "申请表-";
+								}else if(fileType.equals("df")){
+									fileType = "答复文件-";
+								}else if(fileType.equals("th")){
+									fileType = "替换文件-";
+								}else if(fileType.equals("zm")){
+									fileType = "证明文件-";
+								}
+								upFileName = fileType+upFile.substring(upFile.lastIndexOf("\\")+1,upFile.length());
+							}else{
+								upFileName = upFile.substring(upFile.lastIndexOf("\\")+1,upFile.length());
+							}
+							upFileSize = FileOpration.getFileSize(WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upFile);
 							Map<String,String> map_mx = new HashMap<String,String>();
 							map_mx.put("upFileName", upFileName);
 							map_mx.put("upUserName", upUserName);
 							map_mx.put("upDate", upDate);
 							map_mx.put("upFileSize", upFileSize);
-							map_mx.put("downFilePath", upFileArr[i]);
+							map_mx.put("downFilePath", upFile);
 							list_mx_1.add(map_mx);
 						}
 					}
@@ -4754,7 +4770,8 @@ public class ZlMainAction extends DispatchAction {
 											}
 										}
 									}else if(lcmxName.equals("补正提交")){
-										upZxFile = lcmx.getLastUpFileBz();//定稿文件
+//										upZxFile = lcmx.getLastUpFileBz();//定稿文件
+										upZxFile = "";
 										mxm.updateEdateById(lcMxId, currUserId, "", currUserId, upZxFile, currDate, "", currDate, taskRemark,-1);
 										if(!upZxFile.equals("")){
 											String[] fjNameArr = upZxFile.split(",");
