@@ -551,7 +551,7 @@ public class ReadZipFile {
 	 */
 	public static List<TzsJson> readBatchZlajZipFile(String upZipPath){
 		Charset gbk = Charset.forName("gbk");
-		List<TzsJson> list_sub_d = new ArrayList<TzsJson>();
+		List<TzsJson> list_sub_d1 = new ArrayList<TzsJson>();
 		List<TzsJson> list_all = new ArrayList<TzsJson>();
 		
 		Map<String,Object> map = new HashMap<String,Object>();
@@ -595,7 +595,6 @@ public class ReadZipFile {
         				String fjType = newFileNameArr[2];//附件类型
         				Map<String,String> map_d = new HashMap<String,String>();
         				map_d.put("ajSerialNum", ajSerialNum);
-        				
 	        			System.out.println(newFileName);
 	        		}
 	        	}
