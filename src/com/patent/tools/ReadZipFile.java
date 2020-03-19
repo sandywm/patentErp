@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -497,6 +498,115 @@ public class ReadZipFile {
 		
 	}
 	
+	public static void unZipFiles(String zipPath, String descDir) throws IOException {
+		try{
+			File zipFile = new File(zipPath);
+			if(!zipFile.exists()){
+				throw new IOException("需解压文件不存在.");
+			}
+			File pathFile = new File(descDir);
+			if (!pathFile.exists()) {
+				pathFile.mkdirs();
+			}
+			ZipFile zip = new ZipFile(zipFile, Charset.forName("GBK"));
+			for (@SuppressWarnings("rawtypes")
+			Enumeration entries = zip.entries(); entries.hasMoreElements();) {
+				ZipEntry entry = (ZipEntry) entries.nextElement();
+				String zipEntryName = entry.getName();
+				System.err.println(zipEntryName);
+				InputStream in = zip.getInputStream(entry);
+				String outPath = (descDir + File.separator + zipEntryName).replaceAll("\\*", "/");
+				System.err.println(outPath);
+				// 判断路径是否存在,不存在则创建文件路径
+				File file = new File(outPath.substring(0, outPath.lastIndexOf('/')));
+				if (!file.exists()) {
+					file.mkdirs();
+				}
+				// 判断文件全路径是否为文件夹,如果是上面已经上传,不需要解压
+				if (new File(outPath).isDirectory()) {
+					continue;
+				}
+				// 输出文件路径信息
+				OutputStream out = new FileOutputStream(outPath);
+				byte[] buf1 = new byte[1024];
+				int len;
+				while ((len = in.read(buf1)) > 0) {
+					out.write(buf1, 0, len);
+				}
+				in.close();
+				out.close();
+			}
+		}catch(Exception e){
+			throw new IOException(e);
+		}
+	}
+
+	
+	/**
+	 * 读取压缩包里的内容（批量增加专利时使用）
+	 * @author wm
+	 * @date 2020-3-18 下午09:48:11
+	 * @param upZipPath
+	 * @return
+	 */
+	public static List<TzsJson> readBatchZlajZipFile(String upZipPath){
+		Charset gbk = Charset.forName("gbk");
+		List<TzsJson> list_sub_d = new ArrayList<TzsJson>();
+		List<TzsJson> list_all = new ArrayList<TzsJson>();
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+//		String finalPath = WebUrl.DATA_URL_UP_FILE_UPLOAD + "\\" + upZipPath;//上传文件的绝对路径
+		String finalPath = upZipPath;
+		OutputStream os = null;
+		InputStream is = null;
+		
+        try {
+			ZipFile zf = new ZipFile(finalPath,gbk);
+			FileInputStream fileInputStream = new FileInputStream(finalPath);
+			CheckedInputStream check = new CheckedInputStream(fileInputStream, new CRC32());
+	        ZipInputStream zin = new ZipInputStream(check,gbk);
+	        //ZipEntry 类用于表示 ZIP 文件条目。
+	        ZipEntry ze;
+	        String filePath = "";//上传压缩包的路径
+	        String jpgAbsoPath = "";
+	        String lastFileNamePre = "";
+	        while((ze=zin.getNextEntry())!=null){
+	        	if(ze.isDirectory()){
+	        		
+	        	}else{
+	        		String fileName = ze.getName();
+	        		if(fileName.endsWith("batchCase.xls")){//数据文件
+	        			
+	        		}else{//其他附件
+	        			String newFileName = fileName.substring(fileName.indexOf("/")+1, fileName.length());
+	        			String[] newFileNameArr = newFileName.split("/");
+	        			String ajSerialNum = newFileNameArr[0];//案件序号
+        				String fileType = newFileNameArr[1];//案件类型
+        				String ajType = "";
+        				if(fileType.equals("faming")){
+        					ajType = "fm";
+        				}else if(fileType.equals("waiguan")){
+        					ajType = "wg";
+        				}else if(fileType.equals("xinxing")){
+        					ajType = "syxx";
+        				}else if(ajType.equals("hetong")){
+        					ajType = "fm";
+        				}
+        				String fjType = newFileNameArr[2];//附件类型
+        				Map<String,String> map_d = new HashMap<String,String>();
+        				map_d.put("ajSerialNum", ajSerialNum);
+        				
+	        			System.out.println(newFileName);
+	        		}
+	        	}
+	        }
+        }catch (Exception e) {
+			// TODO Auto-generated catch block
+        	map.put("readInfo", "typeError");//只支持ZIP压缩格式的通知书
+		}
+        return null;
+	}
+	
 	/**
 	 * @description
 	 * @author Administrator
@@ -508,7 +618,9 @@ public class ReadZipFile {
 		// TODO Auto-generated method stub
 //		ReadZipFile rzf = new ReadZipFile();
 //		rzf.copyZipFile(new File("e:\\5tzs.zip"));
-		ReadZipFile.readZipFile_new("e:\\new\\5tzs.zip", 1, 1, 0);
+//		ReadZipFile.readZipFile_new("e:\\new\\5tzs.zip", 1, 1, 0);
+//		ReadZipFile.readBatchZlajZipFile("d:\\批量导入案件.zip");
+		ReadZipFile.unZipFiles("d:\\批量导入案件.zip", "d:");
 //		List<TzsJson> tjList = new ArrayList<TzsJson>();
 ////		for(int i = 222 ; i <= 223; i++){
 ////			List<TzsJson> tj = ReadZipFile.readZipFile_new("E:\\"+i+".zip",0,0,0);
